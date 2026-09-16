@@ -1,0 +1,6 @@
+'use strict';
+const state = require('../conversationState');
+function createGetState(opts) { opts = opts || {}; const cache = new Map(); async function get(conversationId, o) { o = o || {}; if (typeof opts.getMessages !== 'function') return { ok: false, error: 'message source not wired' }; let msgs; try { msgs = await opts.getMessages(conversationId); } catch (e) { return { ok: false, error: `message source failed: ${e.message}` }; } const images = typeof opts.getImages === 'function' ? safe(() => opts.getImages(conversationId)) : null; const full = state.buildState(msgs, { ...(opts.stateOptions || {}), images: images || undefined }); cache.set(String(conversationId), full); return { ok: true, conversation_id: String(conversationId), ...(o.full ? { full } : {}), state: state.publicView(full) }; } function last(conversationId) { return cache.get(String(conversationId)) || null; } return { get, last, spec }; }
+function safe(fn) { try { return fn(); } catch (_) { return null; } }
+const spec = { name: 'get_state', description: 'Structured state of the current conversation: known client details, asked and answered details, open questions, teammate confirmations and escalation state.', parameters: { type: 'object', properties: {}, additionalProperties: false } };
+module.exports = { createGetState, spec };
