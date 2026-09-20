@@ -32,9 +32,16 @@ No business-policy rewrite. FAQ/prompt bytes were not edited.
 
 ## Tests
 
-- Isolated adversarial suite: `luna-current/08_repair_tests/current_checks.js` (audit appendix cases + positives).
-- Runner: `node luna-current/08_repair_tests/run-suite.js` (rebuilds `test_mirror`, syntax-check, adversarial, selftests).
-- `test-escalate-ack-norepeat.js` now injects `teammateHandoffGates` (and `escalateRelatedOnly`) into the VM fixture.
+Ran `node luna-current/08_repair_tests/run-suite.js` after the repair:
+
+| Gate | Result |
+|---|---|
+| Protected prompt/FAQ SHA-256 | Match audit hashes |
+| Syntax (`node --check`, 97 JS files) | OK |
+| Adversarial suite (`current_checks.js`) | 58/58 pass (audit appendix failures + positives) |
+| Included selftests | 20/20 pass, including repaired `test-escalate-ack-norepeat.js` |
+
+Effective isolated settings: `LUNA_PRESEND_MODE=observe`, no production `.env`, transport/model/DNS/child-process blocked. Not a live webhook or VPS measurement.
 
 ## Out of scope
 
