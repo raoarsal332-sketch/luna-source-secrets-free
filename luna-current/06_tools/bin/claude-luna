@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Claude Code launcher for Luna — CoS-aligned, no repeated permission prompts
+set -euo pipefail
+if [ -f "$HOME/.claude-code.env" ]; then
+  # shellcheck disable=SC1090
+  . "$HOME/.claude-code.env"
+fi
+if [ -f /home/ubuntu/.env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . /home/ubuntu/.env
+  set +a
+fi
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+cd /home/ubuntu || exit 1
+# Arsal order: stop asking approve on every tool/edit
+exec claude --permission-mode bypassPermissions --dangerously-skip-permissions "$@"

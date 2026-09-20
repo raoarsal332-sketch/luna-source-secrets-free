@@ -1,0 +1,15 @@
+{
+  "name": "luna-maintainer",
+  "version": "1.0.0",
+  "description": "Approval-gated self-improvement layer for the Luna support bot. Observes, analyses, proposes, tests and scores - then stops for a human.",
+  "main": "index.js",
+  "bin": { "luna-maintainer": "./cli.js" },
+  "scripts": {
+    "test": "node test/run-tests.js",
+    "self-test": "node cli.js self-test"
+  },
+  "dependencies": {},
+  "optionalDependencies": {},
+  "license": "ISC",
+  "private": true
+}

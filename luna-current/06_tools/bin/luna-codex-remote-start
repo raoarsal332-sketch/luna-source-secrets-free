@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm use 22 >/dev/null 2>&1 || true
+export CODEX_SANDBOX="${CODEX_SANDBOX:-danger-full-access}"
+mkdir -p "$HOME/logs"
+CFG=( -c 'sandbox_mode="danger-full-access"' -c 'approval_policy="never"' )
+codex "${CFG[@]}" app-server daemon enable-remote-control >/tmp/luna-codex-rc-enable.out 2>&1 || cat /tmp/luna-codex-rc-enable.out >&2 || true
+if ! codex "${CFG[@]}" app-server daemon start >/tmp/luna-codex-rc-start.out 2>&1; then
+  codex "${CFG[@]}" app-server daemon bootstrap --remote-control >/tmp/luna-codex-rc-boot.out 2>&1 || true
+  codex "${CFG[@]}" app-server daemon start >/tmp/luna-codex-rc-start2.out 2>&1 || true
+fi
+codex "${CFG[@]}" remote-control start --json >/tmp/luna-codex-rc-json.out 2>&1 || true
+echo "STATUS:"
+codex "${CFG[@]}" app-server daemon version 2>&1 | head -20 || true
+echo "REMOTE:"
+codex "${CFG[@]}" remote-control --json 2>&1 | head -40 || true
+echo "Pair with: luna-codex-remote-pair"

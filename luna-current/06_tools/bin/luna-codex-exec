@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="${LUNA_CODEX_ROOT:-/home/ubuntu/luna-codex-staging}"
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm use 22 >/dev/null 2>&1 || true
+
+# Intercom MCP (Codex) — load token for bearer auth; never echo it
+if [ -f /home/ubuntu/.env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . /home/ubuntu/.env
+  set +a
+fi
+if [ -f "$HOME/.config/luna-codex/openai.env" ]; then
+  set -a; . "$HOME/.config/luna-codex/openai.env"; set +a
+fi
+cd "$ROOT"
+PROMPT=${*:-}
+[ -n "$PROMPT" ] || { echo "Usage: LUNA_CODEX_ROOT=/home/ubuntu luna-codex-exec <task>" >&2; exit 2; }
+exec codex exec \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  --ephemeral \
+  -C "$ROOT" \
+  -c 'sandbox_mode="danger-full-access"' \
+  -c 'approval_policy="never"' \
+  "$PROMPT"

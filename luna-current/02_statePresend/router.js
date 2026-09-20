@@ -1,0 +1,60 @@
+'use strict';
+
+/**
+ * router.js - Phase 4. Deterministic FAST vs FULL routing.
+ *
+ * decide(state, features) -> { route: 'FAST'|'FULL', reasons: string[] }
+ *
+ * FAST is only for simple, clearly grounded single questions with no open
+ * state. Everything else is FULL. The engine decides what FAST skips
+ * (state-heavy prompts, tool calls, extra validators); presend still runs the
+ * cheap subset on FAST (format, leaks, live guards, duplicates, already-collected).
+ */
+
+const T = require('./textUtils');
+
+const CALC_RE = /\b(?:how much|calculate|percent|%|profit target|drawdown|\d+\s*(?:usd|\$|k)\b|days? left|how many days|deadline|split)\b/i;
+const IDENTITY_RE = /\b(?:not my account|someone else|on behalf|my friend'?s? account|hacked|unauthori[sz]ed|change (?:the )?(?:name|email|owner)|transfer (?:the )?account)\b/i;
+
+const DEFAULTS = { longConversation: 12, maxFastClientTokens: 40 };
+
+function decide(state, features, opts) {
+  const o = { ...DEFAULTS, ...(opts || {}) };
+  const s = state || {};
+  const f = features || {};
+  const reasons = [];
+  const last = s.last_client_message || f.text || '';
+
+  if ((s.counts && s.counts.total >= o.longConversation)) reasons.push('long-conversation');
+  if ((s.client_burst && s.client_burst.length >= 2) || f.clientMessagesSinceLastReply >= 2) reasons.push('multiple-client-messages');
+  if (s.pending_questions && s.pending_questions.filter((q) => q.kind === 'question').length >= 2) reasons.push('multiple-questions');
+  if (s.recent_corrections && s.recent_corrections.length && isRecent(s)) reasons.push('correction');
+  if (s.topic_changed) reasons.push('topic-change');
+  if (s.human_active) reasons.push('teammate-active');
+  if (s.human_confirmed_facts && s.human_confirmed_facts.length) reasons.push('teammate-confirmed-facts');
+  if (s.escalated) reasons.push('escalated');
+  if (s.waiting_for) reasons.push('waiting-for-client-detail');
+  if (s.pending_items && s.pending_items.filter((p) => p.type === 'detail').length && (s.asked_items || []).length >= 2) reasons.push('repetition-risk');
+  if (f.knowledgeLevel && f.knowledgeLevel !== 'supported') reasons.push(`knowledge-${f.knowledgeLevel}`);
+  if (f.hasImage || (s.images && s.images.received > 0 && !s.last_client_is_short_ack && f.imageNeedsExtraction)) reasons.push('image-extraction');
+  if (CALC_RE.test(last) && /\d/.test(last)) reasons.push('calculation');
+  if (IDENTITY_RE.test(last)) reasons.push('identity-sensitive');
+  if (f.previousPresendFailed) reasons.push('previous-presend-failure');
+  if (T.tokens(last).length > o.maxFastClientTokens) reasons.push('long-message');
+  if (s.active_topics && s.active_topics.length >= 3) reasons.push('multiple-issues');
+  if (f.forceFull) reasons.push('forced');
+
+  return { route: reasons.length ? 'FULL' : 'FAST', reasons };
+}
+
+function isRecent(s) {
+  const c = s.recent_corrections[s.recent_corrections.length - 1];
+  const total = (s.counts && s.counts.total) || 0;
+  return !total || c.index === undefined || c.index >= total - 3;
+}
+
+/** What the engine may skip on FAST. Informational contract for index.js. */
+const FAST_SKIPS = ['full-history-stuffing', 'get_state tool exposure', 'search_knowledge beyond top-1 FAQ hit', 'calc tool', 'multi-ask coverage check', 'knowledge-claim audit', 'regeneration'];
+const FAST_KEEPS = ['existing live locks (identityEscalateGates, softEdges, escalateRelatedOnly, Fin-wait, spreadAskGate, imageAskGuard, MT5/platform lock)', 'format/leak check', 'duplicate/already-replied check', 'already-collected detail check', 'human contradiction check'];
+
+module.exports = { decide, DEFAULTS, FAST_SKIPS, FAST_KEEPS };

@@ -1,0 +1,58 @@
+diff --git a/control.js b/control.js
+index dd7cd97..ca1c112 100644
+--- a/control.js
++++ b/control.js
+@@ -2,8 +2,10 @@ const fs = require('fs');
+ const axios = require('axios');
+ 
+ const CONTROL_SECRET = process.env.CONTROL_SECRET || '';
+-const STATE_FILE = '/home/ubuntu/bot-control.json';
+-const PROMPT_FILE = '/home/ubuntu/system-prompt.txt';
++// Env-overridable so a sandbox / staging run can never mutate live control state.
++// Defaults are unchanged, so production behaviour is identical without the env vars.
++const STATE_FILE = process.env.LUNA_CONTROL_STATE_FILE || '/home/ubuntu/bot-control.json';
++const PROMPT_FILE = process.env.LUNA_PROMPT_FILE || '/home/ubuntu/system-prompt.txt';
+ const ADMIN_ID = '10118526';
+ const INTERCOM_BASE = 'https://api.intercom.io';
+ 
+diff --git a/index.js b/index.js
+index e90c8b9..2635a86 100644
+--- a/index.js
++++ b/index.js
+@@ -12,6 +12,12 @@ const LUNA_STATE_PRESEND_VERSION = 'fresh-2026-09-16-botstop-owner-only-v1';
+ /* LUNA_TOOLS_V1:BEGIN:require */
+ const lunaToolsRuntime = require('./lunaToolsRuntime');
+ /* LUNA_TOOLS_V1:END:require */
++/* LUNA_MAINTAINER_V1:BEGIN:require */
++// Observation only. Never mutates the reply, never throws, and does nothing
++// when MAINTAINER_ENABLED=false. See luna-maintainer/README.md.
++let __maintainer = { observe: () => [], sweepAnalytics: () => [] };
++try { __maintainer = require('./luna-maintainer').create(); } catch (__e) { console.error('[maintainer] disabled:', __e && __e.message); }
++/* LUNA_MAINTAINER_V1:END:require */
+ 
+ /**
+  * FRESH Luna engine - fresh-2026-09-16-botstop-owner-only-v1 (audit harden: promo SCOPE reset gate + note email + spread FP + bot-stop + FAQ fallthrough + identity strip)
+@@ -3704,6 +3710,23 @@ stPack.state.escalateAwaitingFirstTeammate = true;
+     let __presend = { body: body, send: true };
+     try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: parts, knowledge: null }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] failed (fail-open)', __e && __e.message); }
+     /* LUNA_STATE_PRESEND_V1:END:hookP */
++    /* LUNA_MAINTAINER_V1:BEGIN:observe */
++    try {
++      __maintainer.observe(__presend, {
++        conversationId: conversationId,
++        messageId: latestUser && latestUser.id,
++        clientText: text,
++        authorType: 'customer',
++        isNote: false,
++        sent: !!(__presend && __presend.send),
++        body: body,
++        escalated: !!(typeof escalateRequested !== 'undefined' && escalateRequested),
++        assignedToId: (full && full.admin_assignee_id) || '',
++        retries: (__presend && __presend.attempts) || 0,
++        engine: LUNA_STATE_PRESEND_VERSION,
++      });
++    } catch (__e) { /* observation must never affect the reply */ }
++    /* LUNA_MAINTAINER_V1:END:observe */
+     if (__presend.send) await postClientCommentOnce(conversationId, body, latestUser, clientName); /* LUNA_STATE_PRESEND_V1:guardSend */
+     return res.sendStatus(200);
+     } finally {

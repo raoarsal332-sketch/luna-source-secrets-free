@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm use 22 >/dev/null 2>&1 || true
+codex remote-control stop 2>/dev/null || true
+codex app-server daemon disable-remote-control 2>/dev/null || true
+codex app-server daemon stop 2>/dev/null || true
+echo "Codex remote-control / app-server stop requested."

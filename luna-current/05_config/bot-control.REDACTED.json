@@ -1,0 +1,46 @@
+{
+  "paused": true,
+  "pausedUntil": null,
+  "aiOff": {
+    "REDACTED_ID_1": true,
+    "REDACTED_ID_2": true,
+    "REDACTED_ID_3": true,
+    "REDACTED_ID_4": true,
+    "REDACTED_ID_5": true,
+    "REDACTED_ID_6": true,
+    "REDACTED_ID_7": true,
+    "REDACTED_ID_8": true,
+    "REDACTED_ID_9": true,
+    "REDACTED_ID_10": true,
+    "REDACTED_ID_11": true,
+    "REDACTED_ID_12": true,
+    "REDACTED_ID_13": true,
+    "REDACTED_ID_14": true,
+    "REDACTED_ID_15": true,
+    "REDACTED_ID_16": true,
+    "REDACTED_ID_17": true,
+    "REDACTED_ID_18": true,
+    "REDACTED_ID_19": true,
+    "REDACTED_ID_20": true,
+    "REDACTED_ID_21": true,
+    "REDACTED_ID_22": true
+  },
+  "testMode": true,
+  "testAllowNames": [
+    "Bot test"
+  ],
+  "testAllowConversationIds": [
+    "REDACTED_ID_1",
+    "REDACTED_ID_2",
+    "REDACTED_ID_3",
+    "REDACTED_ID_4",
+    "REDACTED_ID_5",
+    "REDACTED_ID_6"
+  ],
+  "config": {
+    "model": "gpt-5.6-luna",
+    "welcomeEnabled": true,
+    "repliesEnabled": true
+  },
+  "_export_note": "Conversation IDs redacted. No secrets. Live snapshot."
+}

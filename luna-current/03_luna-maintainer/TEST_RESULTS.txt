@@ -1,0 +1,29 @@
+  ok  fingerprint ignores conversation id, so one systemic failure is one bucket
+  ok  store aggregates repeats and keeps bounded samples
+  ok  presend hard fails are imported verbatim, not re-detected
+  ok  turn detectors cover what presend structurally cannot see
+  ok  teammate corrections come from the existing humanCorrectionCapture shape
+  ok  observe() never throws on malformed input
+  ok  low confidence is forced to insufficient evidence
+  ok  an LLM failure degrades safely instead of guessing
+  ok  forbidden paths are refused
+  ok  a proposal with no tests is refused
+  ok  a proposal with no rollback is refused
+  ok  an empty patch is refused
+  ok  a path escape is refused
+  ok  insufficient evidence blocks proposal generation entirely
+  ok  the ledger blocks a repeat and new evidence unblocks it
+  ok  sandbox lives outside the production root
+  ok  patching in the sandbox leaves the production file byte-identical
+  ok  sandbox refuses a path escape and redirects Luna state files
+  ok  the golden suite passes against the shipped Luna source
+  ok  a good patch fixes the targets, causes no regressions and needs approval
+  ok  a regressing patch fails evaluation and is remembered by the ledger
+  ok  the AI cannot approve its own patch
+  ok  an unevaluated proposal cannot be approved
+  ok  dry run writes nothing to Luna
+  ok  approved deploy backs up, applies, health-checks and rolls back cleanly
+  ok  post-deploy monitoring auto-rolls back on a threshold breach
+  ok  history and audit trail record the whole decision chain
+27 passed, 0 failed
+26/26 golden cases passed against /home/claude/luna_src/luna-export

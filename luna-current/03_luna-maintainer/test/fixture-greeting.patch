@@ -1,0 +1,13 @@
+diff --git a/teammateHandoffGates.js b/teammateHandoffGates.js
+index 7f4ad38..596ea9c 100644
+--- a/teammateHandoffGates.js
++++ b/teammateHandoffGates.js
+@@ -45,7 +45,7 @@ function isShortClientAckExpanded(text) {
+ function isGreetingOnlyClientMsg(text) {
+   const t = normalizeAckText(text);
+   if (!t || t.length > 40) return false;
+-  return /^(hi|hello|hey|yo|hola|ciao|good\s*(morning|afternoon|evening)|sup)[.!?\s]*$/i.test(t);
++  return /^(hi|hello|hey|yo|hola|ciao|good\s*(morning|afternoon|evening)|sup|salam|salaam|salam\s*alaikum|assalam\s*o?\s*alaikum|assalamu\s*alaikum|aoa)[.!?\s]*$/i.test(t);
+ }
+ 
+ function isEmojiOnlyClientMsg(text) {
