@@ -2290,6 +2290,13 @@ function rememberEscalateStatusBody(conversationId, body) {
 }
 
 function pickEscalateStatusReply(seed) {
+  const bank = Array.isArray(escalateRelatedOnly.STATUS_ONLY_REPLIES)
+    ? escalateRelatedOnly.STATUS_ONLY_REPLIES
+    : [];
+  if (Array.isArray(seed)) {
+    const available = bank.filter((r) => !seed.some((ex) => bodiesNearlyIdentical(r, ex)));
+    return available.length ? available[0] : null;
+  }
   return escalateRelatedOnly.pickEscalateStatusReply(seed);
 }
 

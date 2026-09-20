@@ -250,6 +250,7 @@ const MIN_PNG = Buffer.from(
   env.setAxios(async () => { effects += 1; throw Error('synthetic timeout after acceptance'); });
   main.__setTestDoubles({ icRequest: null });
   parts = [bot, older]; sends = [];
+  allow('unknown-redelivery');
   await main.postClientCommentOnce('unknown-redelivery', 'Please check the account number in your dashboard.', older, 'Test');
   await main.postClientCommentOnce('unknown-redelivery', 'Please check the account number in your dashboard.', older, 'Test');
   record('unknown-write-not-repeated-on-redelivery', 1, effects, { freshRemoteView: 'same stale parts both times' });

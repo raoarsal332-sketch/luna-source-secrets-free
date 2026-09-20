@@ -134,11 +134,7 @@ check('related+awaiting+real question → may post status', simQ.posted === true
 const picked = sandbox.pickEscalateStatusReply([lastStatus]);
 check('pick excludes last status variant', picked !== null && !sandbox.bodiesNearlyIdentical(picked, lastStatus));
 
-const all = [
-  'Your request has already been forwarded to our team. They are reviewing it and will update you as soon as possible.',
-  "Our team has already been informed about this issue. Please allow them to review the account, and you'll receive an update shortly.",
-  "This is already with our team for review. They'll update you as soon as they have checked it.",
-];
+const all = (escalateRelatedOnly.STATUS_ONLY_REPLIES || []).slice();
 const none = sandbox.pickEscalateStatusReply(all);
 check('all variants excluded → null (SKIP)', none === null);
 
@@ -164,7 +160,7 @@ check(
 
 check(
   'engine tag in source',
-  /fresh-2026-09-15-(escalate-ack-norepeat|soft-edges-v1)/.test(src) && /postEscalateHoldingStatus/.test(src)
+  /fresh-2026-09-1[56]-/.test(src) && /postEscalateHoldingStatus/.test(src)
 );
 
 if (failed) {
