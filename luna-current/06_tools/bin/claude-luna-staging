@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -f "$HOME/.claude-code.env" ]; then . "$HOME/.claude-code.env"; fi
+if [ -f /home/ubuntu/.env ]; then set -a; . /home/ubuntu/.env; set +a; fi
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+cd /home/ubuntu/luna-codex-staging || exit 1
+exec claude --permission-mode bypassPermissions --dangerously-skip-permissions "$@"

@@ -1,0 +1,15 @@
+[
+  { "id": "guard-greeting-hi", "kind": "module", "reviewed": true, "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["hi"], "expected": { "equals": true } },
+  { "id": "guard-greeting-hello", "kind": "module", "reviewed": true, "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["good morning"], "expected": { "equals": true } },
+  { "id": "guard-not-greeting-question", "kind": "module", "reviewed": true, "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["salam sir my payout is delayed"], "expected": { "equals": false } },
+  { "id": "guard-not-greeting-heythere", "kind": "module", "reviewed": true, "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["hey there can you check my account"], "expected": { "equals": false } },
+  { "id": "guard-short-ack", "kind": "module", "reviewed": true, "module": "teammateHandoffGates", "fn": "isShortClientAckExpanded", "args": ["thanks"], "expected": { "equals": true } },
+  { "id": "guard-presend-duplicate", "kind": "presend", "reviewed": true,
+    "messages": [{ "role": "client", "text": "hello" }, { "role": "bot", "text": "Thanks for reaching out. How can I help?" }, { "role": "client", "text": "hello?" }],
+    "draft": "Thanks for reaching out. How can I help?",
+    "expected": { "presend_ok": false, "send": false, "must_fail_codes": ["DUPLICATE_REPLY"] } },
+  { "id": "guard-presend-clean", "kind": "presend", "reviewed": true,
+    "messages": [{ "role": "client", "text": "What are your payout rules?" }],
+    "draft": "Payouts are processed after the review is complete. I will confirm the exact timing for you.",
+    "expected": { "presend_ok": true, "send": true } }
+]

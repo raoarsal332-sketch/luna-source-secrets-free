@@ -1,0 +1,10 @@
+ Describing process with id 0 - name intercom-bot 
+│ status            │ online                                        │
+│ name              │ intercom-bot                                  │
+│ restarts          │ 116                                           │
+│ uptime            │ 62m                                           │
+│ script path       │ /home/ubuntu/index.js                         │
+│ interpreter       │ node                                          │
+│ interpreter args  │ N/A                                           │
+│ exec cwd          │ /home/ubuntu                                  │
+│ unstable restarts │ 0                                             │

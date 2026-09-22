@@ -1,0 +1,106 @@
+=== EXAMPLE IMPROVEMENT EVENT ===
+{
+  "fingerprint": "3bd037257a5aed92",
+  "code": "MISSED_ESCALATION",
+  "detector": "turn",
+  "severity": "critical",
+  "summary": "Roman Urdu greeting restarted the bot after a teammate handoff",
+  "occurrences": 4,
+  "engine": "fresh-2026-09-16-botstop-owner-only-v1",
+  "samples": [
+    {
+      "conversationId": "conv_91400",
+      "messageId": "msg_0",
+      "evidence": {
+        "clientText": "salam",
+        "escalated": false,
+        "assignedToId": "9629759",
+        "sent": true
+      },
+      "at": 1789598328034
+    },
+    {
+      "conversationId": "conv_91401",
+      "messageId": "msg_1",
+      "evidence": {
+        "clientText": "salam",
+        "escalated": false,
+        "assignedToId": "9629759",
+        "sent": true
+      },
+      "at": 1789598328035
+    }
+  ]
+}
+
+=== EXAMPLE AI-PROPOSED FIX ===
+{
+  "id": "prop_ac6b57fbcd9d544c",
+  "detectedProblem": "Roman Urdu greetings (\"salam\", \"assalam o alaikum\", \"aoa\") are not treated as greeting-only, so Luna re-engages after a teammate has taken over.",
+  "rootCause": {
+    "category": "business_rule",
+    "explanation": "The greeting-only allowlist in teammateHandoffGates covers English forms only, so Roman Urdu greetings fall through to the full reply path after a teammate handoff.",
+    "confidence": 0.84,
+    "evidenceRefs": [
+      "clientText",
+      "signature"
+    ],
+    "suspectedComponents": [
+      "teammateHandoffGates.isGreetingOnlyClientMsg"
+    ],
+    "insufficientEvidence": false
+  },
+  "changeKind": "business_rule_adjustment",
+  "affectedPaths": [
+    "teammateHandoffGates.js"
+  ],
+  "expectedBenefit": "Greeting-only Roman Urdu messages stop re-triggering the bot after a human handoff.",
+  "regressionRisk": "A longer message that opens with \"salam\" could be misread as a greeting; the 40-character cap and the anchored regex limit this.",
+  "requiredTests": [
+    "greeting-romanurdu-salam",
+    "greeting-romanurdu-assalam",
+    "greeting-romanurdu-aoa"
+  ],
+  "rollbackPlan": "Restore the backup tarball, or revert teammateHandoffGates.js to the previous commit.",
+  "status": "draft"
+}
+
+patch:
+diff --git a/teammateHandoffGates.js b/teammateHandoffGates.js
+index 7f4ad38..596ea9c 100644
+--- a/teammateHandoffGates.js
++++ b/teammateHandoffGates.js
+@@ -45,7 +45,7 @@ function isShortClientAckExpanded(text) {
+ function isGreetingOnlyClientMsg(text) {
+   const t = normalizeAckText(text);
+   if (!t || t.length > 40) return false;
+-  return /^(hi|hello|hey|yo|hola|ciao|good\s*(morning|afternoon|evening)|sup)[.!?\s]*$/i.test(t);
++  return /^(hi|hello|hey|yo|hola|ciao|good\s*(morning|afternoon|evening)|sup|salam|salaam|salam\s*alaikum|assalam\s*o?\s*alaikum|assalamu\s*alaikum|aoa)[.!?\s]*$/i.test(t);
+ }
+ 
+ function isEmojiOnlyClientMsg(text) {
+
+=== EXAMPLE EVALUATION REPORT ===
+EVALUATION REPORT eval_27e149f7b60f6c3b  (proposal prop_ac6b57fbcd9d544c)
+time: 2026-09-16T22:38:48.107Z
+RESULT: PASS
+
+metric                      baseline   candidate       delta
+cases                         10.000      10.000      +0.000
+passed                         7.000      10.000      +3.000
+failed                         3.000       0.000      -3.000
+passRate                       0.700       1.000      +0.300
+answerCorrectness              0.700       1.000      +0.300
+unsupportedClaimRate           0.000       0.000      +0.000
+duplicateRate                  0.100       0.100      +0.000
+escalationErrorRate            0.000       0.000      +0.000
+hardFailsTotal                 1.000       1.000      +0.000
+softWarningsTotal              0.000       0.000      +0.000
+avgLatencyMs                   2.600       0.700      -1.900
+
+target cases fixed : true
+new regressions    : none
+gate failures      : none
+
+status now: awaiting_approval
+deploy attempt: {"status":"dry_run","proposalId":"prop_ac6b57fbcd9d544c","detail":"MAINTAINER_DRY_RUN=true - nothing was written to production."}

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export LUNA_ROOT="${LUNA_ROOT:-/home/ubuntu}"
+cd "$LUNA_ROOT"
+# Prefer nvm node if present
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  # shellcheck disable=SC1090
+  . "$HOME/.nvm/nvm.sh"
+fi
+exec node "$LUNA_ROOT/tools/luna-local-chat.js" "$@"

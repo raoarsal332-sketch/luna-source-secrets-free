@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export LUNA_CODEX_ROOT=/home/ubuntu
+exec /home/ubuntu/bin/luna-codex-exec "$@"

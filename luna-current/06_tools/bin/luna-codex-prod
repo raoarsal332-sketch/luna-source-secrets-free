@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Convenience: Codex against production Luna tree (same machine access as CoS).
+export LUNA_CODEX_ROOT=/home/ubuntu
+exec /home/ubuntu/bin/luna-codex "$@"

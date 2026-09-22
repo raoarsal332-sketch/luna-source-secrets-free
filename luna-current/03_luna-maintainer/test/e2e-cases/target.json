@@ -1,0 +1,8 @@
+[
+  { "id": "greeting-romanurdu-salam", "kind": "module", "reviewed": true, "title": "Roman Urdu greeting must count as greeting-only",
+    "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["salam"], "expected": { "equals": true } },
+  { "id": "greeting-romanurdu-assalam", "kind": "module", "reviewed": true,
+    "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["assalam o alaikum"], "expected": { "equals": true } },
+  { "id": "greeting-romanurdu-aoa", "kind": "module", "reviewed": true,
+    "module": "teammateHandoffGates", "fn": "isGreetingOnlyClientMsg", "args": ["aoa"], "expected": { "equals": true } }
+]
