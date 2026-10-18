@@ -1,0 +1,5242 @@
+{
+  "setId": "packs-dev-t742",
+  "version": 1,
+  "scope": "matcher-calibration-development",
+  "synthetic": true,
+  "language": "en",
+  "catalogFile": "staging-repair-t739/packs/faq-approved-answers-packs-v1.json",
+  "catalogSha256": "bed88e6ab45c74a378273f301a197ee56b8276c312bb4bca081c7c9efb6b2318",
+  "disjointFrom": [
+    "staging-repair-t739/packs/tests/paraphrases.js",
+    "staging-repair-t739/packs/tests/heldout.js",
+    "staging-repair-t739/packs/tests/cases.js"
+  ],
+  "sealedSet": null,
+  "requestedModel": null,
+  "actualModel": "grok-4.7",
+  "labelRule": "SEND only when one sendable English body covers every asked fact. ABSTAIN when none does, when two or more neighbour bodies each cover the asked fact, when the wording sits between neighbours and neither covers it, when two intents need two bodies, when the subject is not Packs-owned, when the asked fact is an unresolved policy, or when the text is obfuscated. PERSONAL when the asked fact is the customer own account value, or a mix that includes that fact. PERSONAL rows are stop outputs, not retrieval targets. Absence of a personal hit is not permission to send.",
+  "outcomeEnum": [
+    "SEND",
+    "ABSTAIN",
+    "PERSONAL"
+  ],
+  "rows": [
+    {
+      "id": "PD-001",
+      "slice": "near-neighbour",
+      "text": "Describe an Elite Pack as three reward cards opened on the dashboard, paid for with Pack Credits, and held until the trader chooses to apply one.",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Product definition. Auto-apply body has no three-card or Pack Credits definition."
+    },
+    {
+      "id": "PD-002",
+      "slice": "near-neighbour",
+      "text": "Which effects can those reward cards have: wider rules, fewer minimum trading days, added drawdown, a better profit split, faster payouts, or a checkout discount?",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Overview effect list. Auto-apply does not catalogue effects."
+    },
+    {
+      "id": "PD-003",
+      "slice": "near-neighbour",
+      "text": "Is the published answer simply no: nothing changes an account until the trader applies the card and picks the account?",
+      "outcome": "SEND",
+      "answerId": "packs.card-auto-apply.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "Auto-apply is the yes/no. Overview lacks the pick-the-account clause."
+    },
+    {
+      "id": "PD-004",
+      "slice": "near-neighbour",
+      "text": "Do discount cards stay off the account until Save for checkout is chosen, with no automatic alternative?",
+      "outcome": "SEND",
+      "answerId": "packs.card-auto-apply.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "Discount-at-checkout sentence is only in the auto-apply body."
+    },
+    {
+      "id": "PD-005",
+      "slice": "near-neighbour",
+      "text": "Do cards change an account by themselves, or does the trader apply a compatible card?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en",
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state that cards are not automatic and the trader applies them."
+    },
+    {
+      "id": "PD-006",
+      "slice": "near-neighbour",
+      "text": "What balance pays for a pack, and does the trader open that pack personally?",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Pack Credits plus self-open. The three-card body has neither."
+    },
+    {
+      "id": "PD-007",
+      "slice": "near-neighbour",
+      "text": "Name the dashboard product that sells reward cards for Pack Credits and keeps each card until it is applied.",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Overview product sentence without asking for the integer count."
+    },
+    {
+      "id": "PD-008",
+      "slice": "near-neighbour",
+      "text": "State both the exact card count in every pack and that each card is drawn on its own.",
+      "outcome": "SEND",
+      "answerId": "packs.cards-per-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "coveredBy": [
+        "packs.cards-per-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Only the three-card body has both the count and the independent draw."
+    },
+    {
+      "id": "PD-009",
+      "slice": "near-neighbour",
+      "text": "Is the pack size fixed at exactly three, with each draw standing alone rather than as one roll?",
+      "outcome": "SEND",
+      "answerId": "packs.cards-per-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "coveredBy": [
+        "packs.cards-per-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Same unique conjunction, second wording."
+    },
+    {
+      "id": "PD-010",
+      "slice": "near-neighbour",
+      "text": "How many cards does one Elite Pack contain?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state three cards. The independent-draw clause is not asked."
+    },
+    {
+      "id": "PD-011",
+      "slice": "near-neighbour",
+      "text": "Are accounts a card is applied to, and accounts a card opens, simulated trading accounts?",
+      "outcome": "SEND",
+      "answerId": "packs.simulated.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "coveredBy": [
+        "packs.simulated.en"
+      ],
+      "needsAll": null,
+      "note": "Only the simulated body names accounts a card applies to or opens."
+    },
+    {
+      "id": "PD-012",
+      "slice": "near-neighbour",
+      "text": "Does the simulated-account statement extend to every account a card opens?",
+      "outcome": "SEND",
+      "answerId": "packs.simulated.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "coveredBy": [
+        "packs.simulated.en"
+      ],
+      "needsAll": null,
+      "note": "The phrase \"every account a card opens\" is only in the simulated body."
+    },
+    {
+      "id": "PD-013",
+      "slice": "near-neighbour",
+      "text": "In one product picture, what is opened on the dashboard and which balance buys it?",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Overview definition. Simulated body does not define the product."
+    },
+    {
+      "id": "PD-014",
+      "slice": "near-neighbour",
+      "text": "Who opens the pack, and are the cards kept until the trader applies them?",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Overview hold-until-apply. Not in the simulated body."
+    },
+    {
+      "id": "PD-015",
+      "slice": "near-neighbour",
+      "text": "Are FundedElite accounts simulated trading accounts?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "coveredBy": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "needsAll": null,
+      "note": "Overview says all FundedElite accounts are simulated. The simulated body says all services relate to simulated accounts."
+    },
+    {
+      "id": "PD-016",
+      "slice": "near-neighbour",
+      "text": "List the credit price of Ignition, Breakout, Market Maker, Whale, and Oracle.",
+      "outcome": "SEND",
+      "answerId": "packs.pack-costs-floors.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "needsAll": null,
+      "note": "Only the cost table has all five prices."
+    },
+    {
+      "id": "PD-017",
+      "slice": "near-neighbour",
+      "text": "What credit prices are published for Tier 1, Tier 2, and Tier 3?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-costs-floors.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "needsAll": null,
+      "note": "Ignition, Breakout, and Market Maker prices are not in the Whale follow-up."
+    },
+    {
+      "id": "PD-018",
+      "slice": "near-neighbour",
+      "text": "For the Whale pack alone, give the tier number, the credit price, the floor, and the Exotic per-card percent.",
+      "outcome": "SEND",
+      "answerId": "packs.followup.whale-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Only the Whale follow-up has price, floor, and the 0.050% Exotic rate together."
+    },
+    {
+      "id": "PD-019",
+      "slice": "near-neighbour",
+      "text": "Which tier number is Whale, and what Exotic rate does that follow-up print beside the price?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.whale-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Tier number plus Exotic rate is not in the all-tier price list."
+    },
+    {
+      "id": "PD-020",
+      "slice": "near-neighbour",
+      "text": "What is the Whale credit price and what rarity floor does Whale have?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state 12,500 credits and an Uncommon-or-better floor."
+    },
+    {
+      "id": "PD-021",
+      "slice": "near-neighbour",
+      "text": "Give Oracle credit price, Rare-or-better floor, Exotic percent, and whether an upgrade offer exists afterward.",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Only the Oracle follow-up contains all four facts."
+    },
+    {
+      "id": "PD-022",
+      "slice": "near-neighbour",
+      "text": "Why does the Oracle follow-up say there is no upgrade offer after opening?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "The reason \"because it is the top tier\" is only in the Oracle follow-up."
+    },
+    {
+      "id": "PD-023",
+      "slice": "near-neighbour",
+      "text": "Quote only the credit prices for Ignition through Market Maker, not the Oracle follow-up.",
+      "outcome": "SEND",
+      "answerId": "packs.pack-costs-floors.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "needsAll": null,
+      "note": "Those three prices exist only in the cost table."
+    },
+    {
+      "id": "PD-024",
+      "slice": "near-neighbour",
+      "text": "Which published line lists every tier credit cost from 3,000 through 15,000?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-costs-floors.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "needsAll": null,
+      "note": "The full price ladder is only the cost table."
+    },
+    {
+      "id": "PD-025",
+      "slice": "near-neighbour",
+      "text": "What are Oracle's credit price and rarity floor, with no other facts?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state 15,000 credits and a Rare-or-better floor."
+    },
+    {
+      "id": "PD-026",
+      "slice": "near-neighbour",
+      "text": "Define a floor as the lowest rarity a pack can hold.",
+      "outcome": "SEND",
+      "answerId": "packs.rarity-floor.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.rarity-floor.en"
+      ],
+      "needsAll": null,
+      "note": "Only the floor body defines the word."
+    },
+    {
+      "id": "PD-027",
+      "slice": "near-neighbour",
+      "text": "Which published sentence says Whale never contains Common, without quoting a credit price?",
+      "outcome": "SEND",
+      "answerId": "packs.rarity-floor.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.rarity-floor.en"
+      ],
+      "needsAll": null,
+      "note": "The wording \"never contains Common\" is the floor body, not the price table."
+    },
+    {
+      "id": "PD-028",
+      "slice": "near-neighbour",
+      "text": "Quote the credit cost of each named tier and the floor written next to it.",
+      "outcome": "SEND",
+      "answerId": "packs.pack-costs-floors.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "needsAll": null,
+      "note": "Prices plus floors for every tier are the cost table."
+    },
+    {
+      "id": "PD-029",
+      "slice": "near-neighbour",
+      "text": "What credit amount is published beside Breakout and beside Market Maker?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-costs-floors.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "needsAll": null,
+      "note": "Those prices are absent from the floor definition."
+    },
+    {
+      "id": "PD-030",
+      "slice": "near-neighbour",
+      "text": "Do Whale and Oracle have rarity floors, and what are those floors?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en",
+        "packs.which-pack-best.en"
+      ],
+      "needsAll": null,
+      "note": "Cost table, floor body, and which-pack body all state the Whale and Oracle floors."
+    },
+    {
+      "id": "PD-031",
+      "slice": "near-neighbour",
+      "text": "What Common percent is published for Ignition, and is Common listed as absent from Whale?",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "The 67.3% Ignition Common cell exists only in the drop-rate table."
+    },
+    {
+      "id": "PD-032",
+      "slice": "near-neighbour",
+      "text": "May those per-card percentages be rounded?",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "Only the drop-rate body says the figures may be rounded."
+    },
+    {
+      "id": "PD-033",
+      "slice": "near-neighbour",
+      "text": "State Whale's tier number together with its Exotic per-card percent.",
+      "outcome": "SEND",
+      "answerId": "packs.followup.whale-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Tier number is not in the drop-rate table. The percent alone would be shared."
+    },
+    {
+      "id": "PD-034",
+      "slice": "near-neighbour",
+      "text": "Whale follow-up: credit price plus the statement that no specific card is guaranteed.",
+      "outcome": "SEND",
+      "answerId": "packs.followup.whale-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "The price is not in the drop-rate body."
+    },
+    {
+      "id": "PD-035",
+      "slice": "near-neighbour",
+      "text": "What Exotic percentage per card does Whale publish?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state 0.050% per card for Whale."
+    },
+    {
+      "id": "PD-036",
+      "slice": "near-neighbour",
+      "text": "What Legendary percent is published for Breakout?",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "0.45% Breakout Legendary is only in the drop-rate table."
+    },
+    {
+      "id": "PD-037",
+      "slice": "near-neighbour",
+      "text": "What Mythic percent is published for Market Maker?",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "0.055% Market Maker Mythic is only in the drop-rate table."
+    },
+    {
+      "id": "PD-038",
+      "slice": "near-neighbour",
+      "text": "Oracle follow-up Exotic percent, plus the reason there is no later upgrade offer.",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "The top-tier reason is not in the drop-rate table."
+    },
+    {
+      "id": "PD-039",
+      "slice": "near-neighbour",
+      "text": "Which tier number is Oracle in the follow-up that also prints 0.080% Exotic?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Tier number plus percent is not a drop-rate-table sentence."
+    },
+    {
+      "id": "PD-040",
+      "slice": "near-neighbour",
+      "text": "What is Oracle's published Exotic percentage per card?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state 0.080% per card for Oracle."
+    },
+    {
+      "id": "PD-041",
+      "slice": "near-neighbour",
+      "text": "What does the word floor mean, as the lowest rarity a pack can hold?",
+      "outcome": "SEND",
+      "answerId": "packs.rarity-floor.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.rarity-floor.en"
+      ],
+      "needsAll": null,
+      "note": "Definition is only in the floor body."
+    },
+    {
+      "id": "PD-042",
+      "slice": "near-neighbour",
+      "text": "Quote the sentence that every Oracle card is Rare or better, as a floor rule rather than a percent.",
+      "outcome": "SEND",
+      "answerId": "packs.rarity-floor.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.rarity-floor.en"
+      ],
+      "needsAll": null,
+      "note": "Floor body states the Oracle rule without a percent table."
+    },
+    {
+      "id": "PD-043",
+      "slice": "near-neighbour",
+      "text": "Quote the Epic percent for Whale from the per-card table.",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "10.2% Whale Epic is only in the drop-rate table."
+    },
+    {
+      "id": "PD-044",
+      "slice": "near-neighbour",
+      "text": "Are Primordial odds normally inside the ordinary per-card table?",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "Drop-rate body says Primordial is not normally in ordinary odds. The floor body does not discuss Primordial."
+    },
+    {
+      "id": "PD-045",
+      "slice": "near-neighbour",
+      "text": "Does Whale include Common cards?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "coveredBy": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "needsAll": null,
+      "note": "Drop rates say Common is not in Whale. The floor body says Whale never contains Common."
+    },
+    {
+      "id": "PD-046",
+      "slice": "near-neighbour",
+      "text": "Can Pack Credits buy a challenge, be resold, or carry a monetary value?",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Cannot-buy-challenges, resellable, and no monetary value are the two-balance body."
+    },
+    {
+      "id": "PD-047",
+      "slice": "near-neighbour",
+      "text": "Do Pack Credits expire with the account, and is only the converted portion removed from withdrawable payout?",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Expiry and \"only the converted part\" are the two-balance body."
+    },
+    {
+      "id": "PD-048",
+      "slice": "near-neighbour",
+      "text": "Unexpected charges and a subscription-status issue on credits: which answer sends both to the human team?",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "That pair of issues is named only in the withdraw body."
+    },
+    {
+      "id": "PD-049",
+      "slice": "near-neighbour",
+      "text": "A refund dispute about credits, together with an unexpected charge, goes where?",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The withdraw body lists refund disputes and unexpected charges for the human team. The legal body does not mention unexpected charges."
+    },
+    {
+      "id": "PD-050",
+      "slice": "near-neighbour",
+      "text": "Can Pack Credits be cashed out or transferred?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies say Pack Credits cannot be cashed out or transferred."
+    },
+    {
+      "id": "PD-051",
+      "slice": "near-neighbour",
+      "text": "At what rate do Payout Credits pay for a selected bundle, and what shortfall control can appear at open?",
+      "outcome": "SEND",
+      "answerId": "packs.convert-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "One payout credit per one dollar, and Convert and buy, are only in the convert body."
+    },
+    {
+      "id": "PD-052",
+      "slice": "near-neighbour",
+      "text": "Is the shortfall path named Convert and buy, and is it limited to the shortfall?",
+      "outcome": "SEND",
+      "answerId": "packs.convert-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Those words are only in the convert body."
+    },
+    {
+      "id": "PD-053",
+      "slice": "near-neighbour",
+      "text": "Are Pack Credits barred from buying challenges and from being resold?",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The convert body does not state those prohibitions."
+    },
+    {
+      "id": "PD-054",
+      "slice": "near-neighbour",
+      "text": "Do the two balances differ in whether they expire with the account?",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Expiry with the account is the two-balance body, not the convert steps."
+    },
+    {
+      "id": "PD-055",
+      "slice": "near-neighbour",
+      "text": "Does conversion happen only when the customer explicitly chooses it?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies say conversion is an explicit customer choice."
+    },
+    {
+      "id": "PD-056",
+      "slice": "near-neighbour",
+      "text": "Who receives unexpected charges, missing-credit reports, and subscription-status issues?",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.withdraw-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The withdraw list is not the convert procedure."
+    },
+    {
+      "id": "PD-057",
+      "slice": "near-neighbour",
+      "text": "Until a voluntary conversion, do Payout Credits remain the balance that can be cashed out, and who handles a charge surprise?",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.withdraw-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Cash-out-until-convert plus unexpected charges. Convert has neither charge path."
+    },
+    {
+      "id": "PD-058",
+      "slice": "near-neighbour",
+      "text": "Walk through converting on the Credits tab, including the one-for-one dollar rate.",
+      "outcome": "SEND",
+      "answerId": "packs.convert-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.withdraw-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Procedure and rate are only the convert body."
+    },
+    {
+      "id": "PD-059",
+      "slice": "near-neighbour",
+      "text": "When an opening is short of credits, what named offer can cover just that shortfall?",
+      "outcome": "SEND",
+      "answerId": "packs.convert-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.withdraw-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Convert and buy is only the convert body."
+    },
+    {
+      "id": "PD-060",
+      "slice": "near-neighbour",
+      "text": "Is moving payout value into Pack Credits a voluntary step rather than an automatic one?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.withdraw-credits.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en",
+        "packs.convert-payout-credits.en",
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Withdraw says until you voluntarily convert. Convert says nothing converts unless chosen. The two-balance body says the same."
+    },
+    {
+      "id": "PD-061",
+      "slice": "near-neighbour",
+      "text": "Which payment methods can complete a credit bundle: card, crypto, or Payout Credits?",
+      "outcome": "SEND",
+      "answerId": "packs.buy-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.buy-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The method list is only in the buy body."
+    },
+    {
+      "id": "PD-062",
+      "slice": "near-neighbour",
+      "text": "Does Luna ever purchase credits or top them up on the trader's behalf?",
+      "outcome": "SEND",
+      "answerId": "packs.buy-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.buy-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Never purchases or tops up is the buy body. Monthly says never subscribes or cancels, which is a different refusal."
+    },
+    {
+      "id": "PD-063",
+      "slice": "near-neighbour",
+      "text": "May a Monthly quantity be larger than the same one-off amount?",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Only the monthly body compares quantities."
+    },
+    {
+      "id": "PD-064",
+      "slice": "near-neighbour",
+      "text": "A Monthly plan charges today and then on that same date each month. When do the credits arrive?",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Billing-date arrival is only the monthly body."
+    },
+    {
+      "id": "PD-065",
+      "slice": "near-neighbour",
+      "text": "Can Pack Credits be bought on a monthly basis?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Buy says the picker offers Monthly. The monthly body describes Monthly plans. Both answer yes."
+    },
+    {
+      "id": "PD-066",
+      "slice": "near-neighbour",
+      "text": "The first Monthly charge is today, later charges reuse that date, and credits land on the billing date. What is that schedule?",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.monthly-subscription.en",
+        "packs.cancel-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Schedule is the monthly body. The cancel body does not state it."
+    },
+    {
+      "id": "PD-067",
+      "slice": "near-neighbour",
+      "text": "Luna never subscribes a trader to Monthly and never cancels it for them. Is the larger-quantity point also stated there?",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.monthly-subscription.en",
+        "packs.cancel-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Larger quantities plus never-subscribes is the monthly body. Cancel says Luna does not cancel, but not the quantity comparison."
+    },
+    {
+      "id": "PD-068",
+      "slice": "near-neighbour",
+      "text": "How many clicks does the FAQ assign to cancelling a Monthly credits plan?",
+      "outcome": "SEND",
+      "answerId": "packs.cancel-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.monthly-subscription.en",
+        "packs.cancel-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.cancel-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Two clicks is only the cancel body."
+    },
+    {
+      "id": "PD-069",
+      "slice": "near-neighbour",
+      "text": "After cancel, does the plan remain through the end of the month already paid and then stop, without Luna cancelling it?",
+      "outcome": "SEND",
+      "answerId": "packs.cancel-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.monthly-subscription.en",
+        "packs.cancel-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.cancel-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "End of the paid month is the cancel wording. Monthly says the paid period stays until it ends, without that month-end sentence."
+    },
+    {
+      "id": "PD-070",
+      "slice": "near-neighbour",
+      "text": "If a Monthly credits plan is cancelled, does the period already paid stay active until it ends?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.monthly-subscription.en",
+        "packs.cancel-subscription.en"
+      ],
+      "coveredBy": [
+        "packs.monthly-subscription.en",
+        "packs.cancel-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies say cancel leaves the paid period active until it ends."
+    },
+    {
+      "id": "PD-071",
+      "slice": "near-neighbour",
+      "text": "Are redeem keys single-use, and does Luna invent, expose, validate, or redeem one?",
+      "outcome": "SEND",
+      "answerId": "packs.my-packs-keys.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.my-packs-keys.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.my-packs-keys.en"
+      ],
+      "needsAll": null,
+      "note": "Key handling refusals are only the My Packs body."
+    },
+    {
+      "id": "PD-072",
+      "slice": "near-neighbour",
+      "text": "My Packs stores unopened free packs from promos, giveaways, and keys. Is that what the tab is for?",
+      "outcome": "SEND",
+      "answerId": "packs.my-packs-keys.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.my-packs-keys.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.my-packs-keys.en"
+      ],
+      "needsAll": null,
+      "note": "Tab contents are the My Packs body. Pack Pass does not define the tab."
+    },
+    {
+      "id": "PD-073",
+      "slice": "near-neighbour",
+      "text": "Do free packs advance Pack Pass, and which pack is awarded when the meter fills?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-pass.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.my-packs-keys.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "Free packs do not count, and the award is a free Ignition. My Packs does not state the meter rule."
+    },
+    {
+      "id": "PD-074",
+      "slice": "near-neighbour",
+      "text": "Eligible credit-purchased packs move Pack Pass, and the exact count is dashboard-only. What is that rule?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-pass.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.my-packs-keys.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "Meter inputs and dashboard-only threshold are the Pack Pass body."
+    },
+    {
+      "id": "PD-075",
+      "slice": "near-neighbour",
+      "text": "Does Pack Pass produce a free pack that waits unopened?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.my-packs-keys.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.my-packs-keys.en",
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "My Packs says it holds Pack Pass free packs. Pack Pass says the full meter grants a free pack. The Ignition name is not required here."
+    },
+    {
+      "id": "PD-076",
+      "slice": "near-neighbour",
+      "text": "Under which Inventory headings do cards wait, and what is the order Use card, review, select account, Apply?",
+      "outcome": "SEND",
+      "answerId": "packs.inventory-use-card.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.eligibility-labels.en"
+      ],
+      "coveredBy": [
+        "packs.inventory-use-card.en"
+      ],
+      "needsAll": null,
+      "note": "Headings and click order are only the inventory body."
+    },
+    {
+      "id": "PD-077",
+      "slice": "near-neighbour",
+      "text": "Which control on a discount card saves it for an eligible later purchase?",
+      "outcome": "SEND",
+      "answerId": "packs.inventory-use-card.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.eligibility-labels.en"
+      ],
+      "coveredBy": [
+        "packs.inventory-use-card.en"
+      ],
+      "needsAll": null,
+      "note": "Save for checkout as a step is the inventory procedure."
+    },
+    {
+      "id": "PD-078",
+      "slice": "near-neighbour",
+      "text": "Which exact type strings appear on labels, such as 2 Step Challenge, Any account, or Checkout?",
+      "outcome": "SEND",
+      "answerId": "packs.eligibility-labels.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.eligibility-labels.en"
+      ],
+      "coveredBy": [
+        "packs.eligibility-labels.en"
+      ],
+      "needsAll": null,
+      "note": "The label vocabulary is only the eligibility body."
+    },
+    {
+      "id": "PD-079",
+      "slice": "near-neighbour",
+      "text": "Which example families does the label answer name, including Skip a Step, Funded Reset, and Drawdown Ceiling 15%?",
+      "outcome": "SEND",
+      "answerId": "packs.eligibility-labels.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.eligibility-labels.en"
+      ],
+      "coveredBy": [
+        "packs.eligibility-labels.en"
+      ],
+      "needsAll": null,
+      "note": "Those family names are only in the eligibility body."
+    },
+    {
+      "id": "PD-080",
+      "slice": "near-neighbour",
+      "text": "How do discount cards relate to checkout?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.eligibility-labels.en"
+      ],
+      "coveredBy": [
+        "packs.inventory-use-card.en",
+        "packs.eligibility-labels.en"
+      ],
+      "needsAll": null,
+      "note": "Inventory says Save for checkout. Eligibility includes Checkout as a label and names checkout discount cards. Neither extra fact is asked."
+    },
+    {
+      "id": "PD-081",
+      "slice": "near-neighbour",
+      "text": "Cards wait under Challenge, Funded/Instant, Discount, or Exotic. What are those Inventory groups?",
+      "outcome": "SEND",
+      "answerId": "packs.inventory-use-card.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.inventory-use-card.en"
+      ],
+      "needsAll": null,
+      "note": "The four headings are only the inventory body."
+    },
+    {
+      "id": "PD-082",
+      "slice": "near-neighbour",
+      "text": "Describe the apply sequence from Use card through Apply card, including the review of effect, rarity, and uses.",
+      "outcome": "SEND",
+      "answerId": "packs.inventory-use-card.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.inventory-use-card.en"
+      ],
+      "needsAll": null,
+      "note": "The click sequence is only the inventory body."
+    },
+    {
+      "id": "PD-083",
+      "slice": "near-neighbour",
+      "text": "Published answer: no. A card changes an account only when applied, and the trader picks the account. Any exception for merely owning it?",
+      "outcome": "SEND",
+      "answerId": "packs.card-auto-apply.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "The flat no plus pick-the-account is the auto-apply body."
+    },
+    {
+      "id": "PD-084",
+      "slice": "near-neighbour",
+      "text": "Is there an automatic account change, or do discount cards wait for Save for checkout?",
+      "outcome": "SEND",
+      "answerId": "packs.card-auto-apply.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "Automatic negation plus discount checkout is the auto-apply body. Inventory lacks the automatic negation."
+    },
+    {
+      "id": "PD-085",
+      "slice": "near-neighbour",
+      "text": "How is a discount card saved so it can apply at a later checkout?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.inventory-use-card.en",
+        "packs.card-auto-apply.en"
+      ],
+      "coveredBy": [
+        "packs.inventory-use-card.en",
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state Save for checkout."
+    },
+    {
+      "id": "PD-086",
+      "slice": "near-neighbour",
+      "text": "May ordinary discount cards stack with a checkout offer when the card text says so?",
+      "outcome": "SEND",
+      "answerId": "packs.discount-stacking.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "coveredBy": [
+        "packs.discount-stacking.en"
+      ],
+      "needsAll": null,
+      "note": "Ordinary-card stacking is only the stacking body."
+    },
+    {
+      "id": "PD-087",
+      "slice": "near-neighbour",
+      "text": "Among discount cards, which named card is the exception, and may the ordinary ones still stack?",
+      "outcome": "SEND",
+      "answerId": "packs.discount-stacking.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "coveredBy": [
+        "packs.discount-stacking.en"
+      ],
+      "needsAll": null,
+      "note": "The exception-versus-ordinary contrast is only the stacking body."
+    },
+    {
+      "id": "PD-088",
+      "slice": "near-neighbour",
+      "text": "Name the four Exotic cards and the once-per-trader-for-life limit.",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "The four-name list is only the Exotic body."
+    },
+    {
+      "id": "PD-089",
+      "slice": "near-neighbour",
+      "text": "What does Instant Override provide, how is each use limited, and when do credentials arrive?",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "Three 400K Instant Elite accounts, one per use, credentials within 24h. Not in the stacking body."
+    },
+    {
+      "id": "PD-090",
+      "slice": "near-neighbour",
+      "text": "Founder's Key is 60% off eligible platform purchases for one year and does not combine with other website discounts. What is that rule?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "coveredBy": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state the Founder's Key percent, duration, and non-combination rule."
+    },
+    {
+      "id": "PD-091",
+      "slice": "near-neighbour",
+      "text": "Ordinary discount cards may stack as the card states, while Founder's Key does not combine. What is the exception?",
+      "outcome": "SEND",
+      "answerId": "packs.discount-stacking.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "coveredBy": [
+        "packs.discount-stacking.en"
+      ],
+      "needsAll": null,
+      "note": "Ordinary-versus-key rule is not the timed chain schedule."
+    },
+    {
+      "id": "PD-092",
+      "slice": "near-neighbour",
+      "text": "Founder's Key lasts one year at 60% and is the stacking exception. Do ordinary cards follow that same ban?",
+      "outcome": "SEND",
+      "answerId": "packs.discount-stacking.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "coveredBy": [
+        "packs.discount-stacking.en"
+      ],
+      "needsAll": null,
+      "note": "The ordinary-card permission is only the stacking body."
+    },
+    {
+      "id": "PD-093",
+      "slice": "near-neighbour",
+      "text": "After a credit-bought pack, what percent applies within two minutes, what percent starts at the third successive open, and what is the upgrade percent?",
+      "outcome": "SEND",
+      "answerId": "packs.chain-upgrade-discounts.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "coveredBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "needsAll": null,
+      "note": "15%, 20%, and 10% are only the chain body."
+    },
+    {
+      "id": "PD-094",
+      "slice": "near-neighbour",
+      "text": "After a free pack, what same-pack percent and next-tier percent last for ninety seconds?",
+      "outcome": "SEND",
+      "answerId": "packs.chain-upgrade-discounts.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "coveredBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "needsAll": null,
+      "note": "5% and 10% for 90 seconds are only the chain body."
+    },
+    {
+      "id": "PD-095",
+      "slice": "near-neighbour",
+      "text": "Can pack discounts be combined with each other?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:neither-covers",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.discount-stacking.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Stacking allows ordinary cards and bans Founder's Key. Chain bans combining with a Special Pack. Neither body answers an unqualified combine question."
+    },
+    {
+      "id": "PD-096",
+      "slice": "near-neighbour",
+      "text": "After a paid open, give the two-minute percent, the third-successive percent, and the next-tier upgrade percent.",
+      "outcome": "SEND",
+      "answerId": "packs.chain-upgrade-discounts.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "coveredBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "needsAll": null,
+      "note": "The schedule is only the chain body."
+    },
+    {
+      "id": "PD-097",
+      "slice": "near-neighbour",
+      "text": "Oracle has no upgrade on that chain, and a free-pack window lasts ninety seconds. What percents does the free-pack window use?",
+      "outcome": "SEND",
+      "answerId": "packs.chain-upgrade-discounts.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "coveredBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "needsAll": null,
+      "note": "Free-pack 5% and 10% for 90 seconds, plus Oracle having no upgrade, are the chain body. The Oracle follow-up lacks the percents."
+    },
+    {
+      "id": "PD-098",
+      "slice": "near-neighbour",
+      "text": "What is a Special Pack, and what happens to it when the countdown ends?",
+      "outcome": "SEND",
+      "answerId": "packs.special-packs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "coveredBy": [
+        "packs.special-packs.en"
+      ],
+      "needsAll": null,
+      "note": "Time-limited deal that expires when the timer ends is only the Special Pack body."
+    },
+    {
+      "id": "PD-099",
+      "slice": "near-neighbour",
+      "text": "Where does a trader see the countdown on a time-limited pack deal?",
+      "outcome": "SEND",
+      "answerId": "packs.special-packs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "coveredBy": [
+        "packs.special-packs.en"
+      ],
+      "needsAll": null,
+      "note": "Countdown on the Packs tab is the Special Pack body."
+    },
+    {
+      "id": "PD-100",
+      "slice": "near-neighbour",
+      "text": "If a Special Pack and a chain discount both apply, which offer wins, and may someone promise it is still active?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "coveredBy": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies say the better offer wins and that an offer must not be promised still active."
+    },
+    {
+      "id": "PD-101",
+      "slice": "near-neighbour",
+      "text": "List Instant Override, Lifetime Split, Founder's Key, and Open Season, including the once-per-life limit.",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.followup.payout-boost-100.en"
+      ],
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "The four Exotic names are not in the payout-boost body."
+    },
+    {
+      "id": "PD-102",
+      "slice": "near-neighbour",
+      "text": "Open Season removes scalping restrictions for how long, and on which account kinds?",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.followup.payout-boost-100.en"
+      ],
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "Twelve months on qualifying Challenge, Instant, and funded accounts is only the Exotic body."
+    },
+    {
+      "id": "PD-103",
+      "slice": "near-neighbour",
+      "text": "Payout Boost 100% is which rarity, on which accounts, and how often per payout cycle?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.payout-boost-100.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.followup.payout-boost-100.en"
+      ],
+      "coveredBy": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "needsAll": null,
+      "note": "Legendary, funded accounts, once per payout cycle. Not in the Exotic body."
+    },
+    {
+      "id": "PD-104",
+      "slice": "near-neighbour",
+      "text": "The payout-boost card keeps the full profit split on the next payout and is not Lifetime Split or Split 70/80/90. What is it?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.payout-boost-100.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.followup.payout-boost-100.en"
+      ],
+      "coveredBy": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "needsAll": null,
+      "note": "That distinction is only the payout-boost body."
+    },
+    {
+      "id": "PD-105",
+      "slice": "near-neighbour",
+      "text": "What does the 100% card do?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:neither-covers",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.followup.payout-boost-100.en"
+      ],
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Lifetime Split and Payout Boost 100% are different cards. The wording does not pick one body."
+    },
+    {
+      "id": "PD-106",
+      "slice": "near-neighbour",
+      "text": "What are The Million's published size, split, max drawdown, daily drawdown, minimum trading days, and leverage?",
+      "outcome": "SEND",
+      "answerId": "packs.the-million.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.the-million.en"
+      ],
+      "coveredBy": [
+        "packs.the-million.en"
+      ],
+      "needsAll": null,
+      "note": "Those parameters are only the Primordial body."
+    },
+    {
+      "id": "PD-107",
+      "slice": "near-neighbour",
+      "text": "Is The Million transferable, and which restrictions remain even though scaling, weekend, and consistency limits are absent?",
+      "outcome": "SEND",
+      "answerId": "packs.the-million.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.the-million.en"
+      ],
+      "coveredBy": [
+        "packs.the-million.en"
+      ],
+      "needsAll": null,
+      "note": "Non-transferable plus remaining drawdown and minimum-day rules are the Primordial body."
+    },
+    {
+      "id": "PD-108",
+      "slice": "near-neighbour",
+      "text": "How many Exotic cards exist, and is each limited to once per trader for life?",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.the-million.en"
+      ],
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "Four Exotics, once per trader. The Primordial body is a different card."
+    },
+    {
+      "id": "PD-109",
+      "slice": "near-neighbour",
+      "text": "Founder's Key and Open Season: what does each do, inside the Exotic set?",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.the-million.en"
+      ],
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "Both effects are in the Exotic body and not in The Million parameters."
+    },
+    {
+      "id": "PD-110",
+      "slice": "near-neighbour",
+      "text": "A card that can come from Whale or Oracle and is limited to once in a lifetime. Which rule answers that?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:neither-covers",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.exotic-cards.en",
+        "packs.the-million.en"
+      ],
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Both the Exotic set and The Million match once-per-lifetime and Whale/Oracle. The question adds no collection or four-name fact that would pick one."
+    },
+    {
+      "id": "PD-111",
+      "slice": "near-neighbour",
+      "text": "How many regular collection cards are there, and how are they split across the six rarities?",
+      "outcome": "SEND",
+      "answerId": "packs.card-count.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.collection.en",
+        "packs.card-count.en"
+      ],
+      "coveredBy": [
+        "packs.card-count.en"
+      ],
+      "needsAll": null,
+      "note": "76 and the 9/13/13/14/13/14 split are only the count body."
+    },
+    {
+      "id": "PD-112",
+      "slice": "near-neighbour",
+      "text": "What total is given for full collection discovery before The Million, and how many of those cards are Exotic?",
+      "outcome": "SEND",
+      "answerId": "packs.card-count.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.collection.en",
+        "packs.card-count.en"
+      ],
+      "coveredBy": [
+        "packs.card-count.en"
+      ],
+      "needsAll": null,
+      "note": "80 total and 4 Exotic are the count body."
+    },
+    {
+      "id": "PD-113",
+      "slice": "near-neighbour",
+      "text": "Does Collection track cards already discovered and the recent pulls?",
+      "outcome": "SEND",
+      "answerId": "packs.collection.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.collection.en",
+        "packs.card-count.en"
+      ],
+      "coveredBy": [
+        "packs.collection.en"
+      ],
+      "needsAll": null,
+      "note": "Discovered cards and recent pulls are the Collection body, not the count."
+    },
+    {
+      "id": "PD-114",
+      "slice": "near-neighbour",
+      "text": "Is personal discovery progress on Collection dashboard-only?",
+      "outcome": "SEND",
+      "answerId": "packs.collection.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.collection.en",
+        "packs.card-count.en"
+      ],
+      "coveredBy": [
+        "packs.collection.en"
+      ],
+      "needsAll": null,
+      "note": "That sentence is only the Collection body."
+    },
+    {
+      "id": "PD-115",
+      "slice": "near-neighbour",
+      "text": "Explain the collection.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:neither-covers",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.collection.en",
+        "packs.card-count.en"
+      ],
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Count answers catalogue size. Collection answers the tab. The request does not pick one."
+    },
+    {
+      "id": "PD-116",
+      "slice": "near-neighbour",
+      "text": "Openings that miss Epic or better fill a meter, a full meter guarantees Epic or better on the next pack, and an Epic or better pull resets it. What is that meter?",
+      "outcome": "SEND",
+      "answerId": "packs.lucky-streak.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.lucky-streak.en"
+      ],
+      "needsAll": null,
+      "note": "The Epic guarantee and reset are only Lucky Streak."
+    },
+    {
+      "id": "PD-117",
+      "slice": "near-neighbour",
+      "text": "Lucky Streak thresholds are dashboard-only and must not be invented. What does a full meter guarantee?",
+      "outcome": "SEND",
+      "answerId": "packs.lucky-streak.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.lucky-streak.en"
+      ],
+      "needsAll": null,
+      "note": "The Epic-or-better guarantee is not Pack Pass."
+    },
+    {
+      "id": "PD-118",
+      "slice": "near-neighbour",
+      "text": "Which packs move the Pack Pass meter, do free packs count, and what is awarded at the end?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-pass.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "Credit-purchased packs, free packs excluded, free Ignition. Not Lucky Streak."
+    },
+    {
+      "id": "PD-119",
+      "slice": "near-neighbour",
+      "text": "Pack Pass awards a free Ignition and hides the exact threshold on the dashboard. What purchases qualify?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-pass.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "Qualifying purchases are credit-purchased packs. Lucky Streak uses openings without Epic+."
+    },
+    {
+      "id": "PD-120",
+      "slice": "near-neighbour",
+      "text": "A meter fills toward a reward and the exact threshold is dashboard-only. Which meter is that?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "coveredBy": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies say the exact threshold is dashboard-only and that a full meter grants a reward. The question names neither Epic nor Ignition."
+    },
+    {
+      "id": "PD-121",
+      "slice": "near-neighbour",
+      "text": "Can an eligible new-account purchase include a free pack and pack credits, and will a specific tier or percent be quoted as settled fact?",
+      "outcome": "SEND",
+      "answerId": "packs.free-packs-general.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.free-packs-general.en",
+        "packs.atom-bundle-distinct.en"
+      ],
+      "coveredBy": [
+        "packs.free-packs-general.en"
+      ],
+      "needsAll": null,
+      "note": "The refusal to quote a tier is the free-pack general body. The Atom body does not say that."
+    },
+    {
+      "id": "PD-122",
+      "slice": "near-neighbour",
+      "text": "Instead of quoting a free-pack tier, what does that answer tell a trader to inspect on the dashboard?",
+      "outcome": "SEND",
+      "answerId": "packs.free-packs-general.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.free-packs-general.en",
+        "packs.atom-bundle-distinct.en"
+      ],
+      "coveredBy": [
+        "packs.free-packs-general.en"
+      ],
+      "needsAll": null,
+      "note": "Check My Packs and Credits is the free-pack general instruction."
+    },
+    {
+      "id": "PD-123",
+      "slice": "near-neighbour",
+      "text": "What example benefit does the Atom answer attach to a three-account Atom order?",
+      "outcome": "SEND",
+      "answerId": "packs.atom-bundle-distinct.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.free-packs-general.en",
+        "packs.atom-bundle-distinct.en"
+      ],
+      "coveredBy": [
+        "packs.atom-bundle-distinct.en"
+      ],
+      "needsAll": null,
+      "note": "Free Market Maker pack plus credits on a 3-account order is only the Atom body."
+    },
+    {
+      "id": "PD-124",
+      "slice": "near-neighbour",
+      "text": "Should those two promos be assumed to combine when checkout does not show both?",
+      "outcome": "SEND",
+      "answerId": "packs.atom-bundle-distinct.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.free-packs-general.en",
+        "packs.atom-bundle-distinct.en"
+      ],
+      "coveredBy": [
+        "packs.atom-bundle-distinct.en"
+      ],
+      "needsAll": null,
+      "note": "Unless checkout shows both is only the Atom body."
+    },
+    {
+      "id": "PD-125",
+      "slice": "near-neighbour",
+      "text": "Are Elite Atom same-order multi-account bundle promos separate from Elite Packs launch free-pack promos?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.free-packs-general.en",
+        "packs.atom-bundle-distinct.en"
+      ],
+      "coveredBy": [
+        "packs.free-packs-general.en",
+        "packs.atom-bundle-distinct.en"
+      ],
+      "needsAll": null,
+      "note": "Both bodies state that the Atom bundle promo is separate from the launch free-pack promo."
+    },
+    {
+      "id": "PD-126",
+      "slice": "near-neighbour",
+      "text": "Are pack purchases generally final, which consumer code is named for a statutory withdrawal right, and what age rule is stated?",
+      "outcome": "SEND",
+      "answerId": "packs.refunds-legal.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.refunds-legal.en"
+      ],
+      "needsAll": null,
+      "note": "Italian Consumer Code, generally final, and 18+ are only the legal body."
+    },
+    {
+      "id": "PD-127",
+      "slice": "near-neighbour",
+      "text": "Will Luna issue a legal conclusion on one refund case, or do those disputes go to the human team?",
+      "outcome": "SEND",
+      "answerId": "packs.refunds-legal.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.refunds-legal.en"
+      ],
+      "needsAll": null,
+      "note": "The refusal to give a legal conclusion is the legal body. Withdraw mentions refund disputes but not legal conclusions."
+    },
+    {
+      "id": "PD-128",
+      "slice": "near-neighbour",
+      "text": "Subscription-status trouble and an unexpected charge on credits are directed where?",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Those two issues are named in the withdraw body and not in the legal body."
+    },
+    {
+      "id": "PD-129",
+      "slice": "near-neighbour",
+      "text": "Missing credits are grouped with unexpected charges as human-team issues in the cash-out answer. What else is in that group?",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The withdraw group is refund disputes, missing credits, unexpected charges, and subscription status. The question asks for that group."
+    },
+    {
+      "id": "PD-130",
+      "slice": "near-neighbour",
+      "text": "Do the published pack answers treat a Pack Credit balance as cash that can be taken out?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "margin-neighbour:both-cover",
+      "stopDecision": null,
+      "neighbourPair": [
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en"
+      ],
+      "coveredBy": [
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en",
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Legal body says not cashable. Withdraw says they cannot be cashed out. The two-balance body says they are not cash."
+    },
+    {
+      "id": "PD-131",
+      "slice": "general-policy",
+      "text": "From the main menu, what five tabs does the Elite Packs page list?",
+      "outcome": "SEND",
+      "answerId": "packs.dashboard-tabs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.dashboard-tabs.en"
+      ],
+      "needsAll": null,
+      "note": "Only the dashboard body names Packs, My Packs, Inventory, Collection, and Credits."
+    },
+    {
+      "id": "PD-132",
+      "slice": "general-policy",
+      "text": "On every Elite Packs tab, what sits at the top right together with the two balances?",
+      "outcome": "SEND",
+      "answerId": "packs.dashboard-tabs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.dashboard-tabs.en"
+      ],
+      "needsAll": null,
+      "note": "Redeem key at the top right of every tab, beside the two balances, is the dashboard sentence."
+    },
+    {
+      "id": "PD-133",
+      "slice": "general-policy",
+      "text": "Is there one best pack for every trader, or does the choice follow the credits they want to spend and the floor they want?",
+      "outcome": "SEND",
+      "answerId": "packs.which-pack-best.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.which-pack-best.en"
+      ],
+      "needsAll": null,
+      "note": "No single best pack, plus spend and floor, is the which-pack body."
+    },
+    {
+      "id": "PD-134",
+      "slice": "general-policy",
+      "text": "Higher tiers cost more credits and carry better rarity odds. Does that still leave no universal best pack, and is a named card promised?",
+      "outcome": "SEND",
+      "answerId": "packs.which-pack-best.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.which-pack-best.en"
+      ],
+      "needsAll": null,
+      "note": "The no-universal-best claim plus the no-specific-card promise is the which-pack body. A guarantee sentence alone would also match drop rates."
+    },
+    {
+      "id": "PD-135",
+      "slice": "general-policy",
+      "text": "At which gesture are credits deducted: cutting the seal or Fast open, rather than while the pack is only a preview?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "Deducted at cut seal or Fast open, not at preview, is only the opening body."
+    },
+    {
+      "id": "PD-136",
+      "slice": "general-policy",
+      "text": "Closing before the reveal is not charged, Fast open leaves the odds alone, and a free copy is consumed before credits. What opening is that?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "Those three opening rules are only the opening body."
+    },
+    {
+      "id": "PD-137",
+      "slice": "general-policy",
+      "text": "A card printed ×2, ×3, or ×5 spends each use on a separate account or purchase, one at a time. Can the uses be dumped onto one account together?",
+      "outcome": "SEND",
+      "answerId": "packs.uses-multiplier.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.uses-multiplier.en"
+      ],
+      "needsAll": null,
+      "note": "One-at-a-time separate uses are only the multiplier body."
+    },
+    {
+      "id": "PD-138",
+      "slice": "general-policy",
+      "text": "When a multiplied card is used up it leaves Inventory and stays in Collection, and a duplicate pull combines uses. Is that the rule?",
+      "outcome": "SEND",
+      "answerId": "packs.uses-multiplier.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.uses-multiplier.en"
+      ],
+      "needsAll": null,
+      "note": "Leave-inventory, stay-in-collection, and combine uses are only the multiplier body."
+    },
+    {
+      "id": "PD-139",
+      "slice": "general-policy",
+      "text": "If the only clue is the color purple or pink, with no official name, will an answer guess the card?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.purple-card-ambiguous.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "needsAll": null,
+      "note": "The color body refuses to guess from color alone."
+    },
+    {
+      "id": "PD-140",
+      "slice": "general-policy",
+      "text": "What must be read from Inventory or Collection, a card name or a rarity label, before a color-only card is identified?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.purple-card-ambiguous.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "needsAll": null,
+      "note": "Official name or rarity label is the color body."
+    },
+    {
+      "id": "PD-141",
+      "slice": "general-policy",
+      "text": "One-off credit bundles paid in crypto are reduced by what percent?",
+      "outcome": "SEND",
+      "answerId": "packs.crypto-discount.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.crypto-discount.en"
+      ],
+      "needsAll": null,
+      "note": "Five percent off the bundle price is only the crypto body."
+    },
+    {
+      "id": "PD-142",
+      "slice": "general-policy",
+      "text": "Does Luna process a crypto payment, or only describe the published bundle reduction?",
+      "outcome": "SEND",
+      "answerId": "packs.crypto-discount.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.crypto-discount.en"
+      ],
+      "needsAll": null,
+      "note": "Luna never processes payments is the crypto body."
+    },
+    {
+      "id": "PD-143",
+      "slice": "general-policy",
+      "text": "If a pack, card, reward, key, or credits never showed up, which three details should be sent to support?",
+      "outcome": "SEND",
+      "answerId": "packs.missing-reward.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.missing-reward.en"
+      ],
+      "needsAll": null,
+      "note": "Pack or card name, an account identifier, and the approximate time."
+    },
+    {
+      "id": "PD-144",
+      "slice": "general-policy",
+      "text": "When reporting a reward that did not appear, may passwords or one-time codes be pasted into chat?",
+      "outcome": "SEND",
+      "answerId": "packs.missing-reward.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.missing-reward.en"
+      ],
+      "needsAll": null,
+      "note": "Never send passwords, OTPs, or sensitive credentials is the missing-reward body."
+    },
+    {
+      "id": "PD-145",
+      "slice": "general-policy",
+      "text": "All three opened cards land in Inventory. Credits are not taken at the preview step. Which opening rule is that?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "Destination Inventory plus not-at-preview is the opening body. The three-card body does not mention preview or Inventory."
+    },
+    {
+      "id": "PD-146",
+      "slice": "general-policy",
+      "text": "Skip · Fast open is an alternative to cutting the seal. Does that shortcut change the odds?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "Fast open does not change odds is the opening body."
+    },
+    {
+      "id": "PD-147",
+      "slice": "general-policy",
+      "text": "Bigger credit bundles may show a bonus, and those sizes stay on the live dashboard. Does Luna buy the bundle for the trader?",
+      "outcome": "SEND",
+      "answerId": "packs.buy-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.buy-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Live-dashboard bonus plus never purchases is the buy body, without asking for today's number."
+    },
+    {
+      "id": "PD-148",
+      "slice": "general-policy",
+      "text": "Add credits from the Credits tab or the plus beside the balance, then pick a bundle. Where does that start?",
+      "outcome": "SEND",
+      "answerId": "packs.buy-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.buy-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The entry points are only the buy body."
+    },
+    {
+      "id": "PD-149",
+      "slice": "first-person-policy",
+      "text": "If I am the one opening, does Fast open change my odds or only skip the seal animation?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "First person asks the published Fast-open rule, not a personal result."
+    },
+    {
+      "id": "PD-150",
+      "slice": "first-person-policy",
+      "text": "If I close the screen before the reveal, does the published rule still take my credits?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "The rule is that closing before reveal is not charged."
+    },
+    {
+      "id": "PD-151",
+      "slice": "first-person-policy",
+      "text": "If I already have a free copy, is that copy used before my credits when I open?",
+      "outcome": "SEND",
+      "answerId": "packs.opening-and-charges.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "needsAll": null,
+      "note": "Free copy before credits is the published order, not a lookup of their copy."
+    },
+    {
+      "id": "PD-152",
+      "slice": "first-person-policy",
+      "text": "If I am short of credits at the moment of opening, what named choice can the dashboard offer me for just the gap?",
+      "outcome": "SEND",
+      "answerId": "packs.convert-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Convert and buy for the shortfall is the procedure."
+    },
+    {
+      "id": "PD-153",
+      "slice": "first-person-policy",
+      "text": "If I choose Payout Credits to pay a bundle, how many of those credits equal one dollar of the bundle?",
+      "outcome": "SEND",
+      "answerId": "packs.convert-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "The one-for-one rate is the convert rule."
+    },
+    {
+      "id": "PD-154",
+      "slice": "first-person-policy",
+      "text": "I am asking the rule, not a balance: do Pack Credits I might buy expire when the account does?",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Expiry with the account is the published two-balance rule."
+    },
+    {
+      "id": "PD-155",
+      "slice": "first-person-policy",
+      "text": "If I convert only part of a payout balance, does just that converted part stop being withdrawable?",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Only the converted part stops being withdrawable. Not a request for their remainder."
+    },
+    {
+      "id": "PD-156",
+      "slice": "first-person-policy",
+      "text": "If I pay a one-off bundle in crypto, is five percent taken off, and does Luna handle the payment for me?",
+      "outcome": "SEND",
+      "answerId": "packs.crypto-discount.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.crypto-discount.en"
+      ],
+      "needsAll": null,
+      "note": "Percent plus never-processes. First person is the generic payer."
+    },
+    {
+      "id": "PD-157",
+      "slice": "first-person-policy",
+      "text": "If I start a Monthly credits plan, is the first charge today and do later credits land on that billing date?",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "The billing schedule is the rule."
+    },
+    {
+      "id": "PD-158",
+      "slice": "first-person-policy",
+      "text": "If I pick Monthly rather than one-off, may the quantity be larger than the same one-off amount?",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Quantity comparison is the monthly rule."
+    },
+    {
+      "id": "PD-159",
+      "slice": "first-person-policy",
+      "text": "If I follow the FAQ cancel path on a Monthly credits plan, how many clicks is that path, and does the paid month run to its end?",
+      "outcome": "SEND",
+      "answerId": "packs.cancel-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.cancel-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Two clicks plus end of the paid month is the cancel body."
+    },
+    {
+      "id": "PD-160",
+      "slice": "first-person-policy",
+      "text": "If I cancel the Monthly credits plan the FAQ way, is that two clicks, and does Luna refuse to cancel it for me?",
+      "outcome": "SEND",
+      "answerId": "packs.cancel-subscription.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.cancel-subscription.en"
+      ],
+      "needsAll": null,
+      "note": "Two clicks plus Luna does not cancel. The monthly body lacks the click count."
+    },
+    {
+      "id": "PD-161",
+      "slice": "first-person-policy",
+      "text": "If I use a card marked ×5, must each of my uses go to a different account or purchase, one at a time?",
+      "outcome": "SEND",
+      "answerId": "packs.uses-multiplier.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.uses-multiplier.en"
+      ],
+      "needsAll": null,
+      "note": "The multiplier rule, not a count of uses remaining on their card."
+    },
+    {
+      "id": "PD-162",
+      "slice": "first-person-policy",
+      "text": "If I pull a duplicate of a multiplied card, do the uses combine under the published rule?",
+      "outcome": "SEND",
+      "answerId": "packs.uses-multiplier.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.uses-multiplier.en"
+      ],
+      "needsAll": null,
+      "note": "Duplicate pulls combine uses. Not a lookup of their card."
+    },
+    {
+      "id": "PD-163",
+      "slice": "first-person-policy",
+      "text": "If I finish the 80-card discovery, which packs can then produce The Million?",
+      "outcome": "SEND",
+      "answerId": "packs.the-million.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.the-million.en"
+      ],
+      "needsAll": null,
+      "note": "Whale and Oracle after the full 80-card collection."
+    },
+    {
+      "id": "PD-164",
+      "slice": "first-person-policy",
+      "text": "If I claim The Million, which Inventory path does the FAQ give, and how soon does the team open it?",
+      "outcome": "SEND",
+      "answerId": "packs.the-million.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.the-million.en"
+      ],
+      "needsAll": null,
+      "note": "Inventory, Claim The Million, team opens within 24h."
+    },
+    {
+      "id": "PD-165",
+      "slice": "first-person-policy",
+      "text": "If I am choosing among tiers as a generic buyer, is there a single best pack, or does it depend on spend and floor?",
+      "outcome": "SEND",
+      "answerId": "packs.which-pack-best.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.which-pack-best.en"
+      ],
+      "needsAll": null,
+      "note": "Generic buyer of the rule. No inventory, balance, or eligibility lookup."
+    },
+    {
+      "id": "PD-166",
+      "slice": "first-person-policy",
+      "text": "If I move to a higher tier for better rarity odds, is there still no single best pack for a generic buyer like me, and is a named card still unpromised?",
+      "outcome": "SEND",
+      "answerId": "packs.which-pack-best.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.which-pack-best.en"
+      ],
+      "needsAll": null,
+      "note": "No-single-best plus no named-card promise. Drop rates lack the no-single-best sentence."
+    },
+    {
+      "id": "PD-167",
+      "slice": "first-person-policy",
+      "text": "If I open the Elite Packs page from the main menu, which five tabs should I expect to see?",
+      "outcome": "SEND",
+      "answerId": "packs.dashboard-tabs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.dashboard-tabs.en"
+      ],
+      "needsAll": null,
+      "note": "The five tab names are the dashboard rule."
+    },
+    {
+      "id": "PD-168",
+      "slice": "first-person-policy",
+      "text": "If I look at any of those tabs, do the two balances and the Redeem key button sit at the top right as a layout rule?",
+      "outcome": "SEND",
+      "answerId": "packs.dashboard-tabs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.dashboard-tabs.en"
+      ],
+      "needsAll": null,
+      "note": "Placement rule. The values of the balances are not requested."
+    },
+    {
+      "id": "PD-169",
+      "slice": "first-person-policy",
+      "text": "If I buy any pack, is the card count always exactly three, each draw on its own?",
+      "outcome": "SEND",
+      "answerId": "packs.cards-per-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.cards-per-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Count plus independent draw."
+    },
+    {
+      "id": "PD-170",
+      "slice": "first-person-policy",
+      "text": "If I ask only what a floor means, is it the lowest rarity that pack can hold?",
+      "outcome": "SEND",
+      "answerId": "packs.rarity-floor.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.rarity-floor.en"
+      ],
+      "needsAll": null,
+      "note": "Definition only."
+    },
+    {
+      "id": "PD-171",
+      "slice": "first-person-policy",
+      "text": "If I read the per-card table, may the percentages be rounded, and is Common absent from Whale in that table?",
+      "outcome": "SEND",
+      "answerId": "packs.drop-rates.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.drop-rates.en"
+      ],
+      "needsAll": null,
+      "note": "Rounded plus the Whale Common cell. Not a request for their last pull."
+    },
+    {
+      "id": "PD-172",
+      "slice": "first-person-policy",
+      "text": "If I consider only Whale, what tier, price, floor, and Exotic percent should I use from the follow-up?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.whale-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "All four Whale follow-up facts."
+    },
+    {
+      "id": "PD-173",
+      "slice": "first-person-policy",
+      "text": "If I consider only Oracle, what price, floor, Exotic percent, and upgrade outcome should I expect?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Oracle follow-up covers all four. Cost table lacks the Exotic percent and the upgrade sentence."
+    },
+    {
+      "id": "PD-174",
+      "slice": "first-person-policy",
+      "text": "If the card in front of me is an ordinary discount card, may it stack with a checkout offer when the card text says so?",
+      "outcome": "SEND",
+      "answerId": "packs.discount-stacking.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.discount-stacking.en"
+      ],
+      "needsAll": null,
+      "note": "Ordinary stacking rule. \"In front of me\" is the generic actor, not a request to read Inventory."
+    },
+    {
+      "id": "PD-175",
+      "slice": "first-person-policy",
+      "text": "If I open a second paid pack within two minutes, what same-pack percent does the chain rule publish?",
+      "outcome": "SEND",
+      "answerId": "packs.chain-upgrade-discounts.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "needsAll": null,
+      "note": "15% within two minutes is the chain schedule."
+    },
+    {
+      "id": "PD-176",
+      "slice": "first-person-policy",
+      "text": "If a Special Pack timer ends, is the deal over, and where was that countdown shown?",
+      "outcome": "SEND",
+      "answerId": "packs.special-packs.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.special-packs.en"
+      ],
+      "needsAll": null,
+      "note": "Expires when the timer ends, countdown on the Packs tab."
+    },
+    {
+      "id": "PD-177",
+      "slice": "first-person-policy",
+      "text": "If a label says 2 Step Challenge or Any account, what is that string doing on the card?",
+      "outcome": "SEND",
+      "answerId": "packs.eligibility-labels.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.eligibility-labels.en"
+      ],
+      "needsAll": null,
+      "note": "Label vocabulary. Not their eligibility."
+    },
+    {
+      "id": "PD-178",
+      "slice": "first-person-policy",
+      "text": "If I apply a card the published way, what is the click order from Use card to Apply card?",
+      "outcome": "SEND",
+      "answerId": "packs.inventory-use-card.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.inventory-use-card.en"
+      ],
+      "needsAll": null,
+      "note": "The procedure, not which card they hold."
+    },
+    {
+      "id": "PD-179",
+      "slice": "first-person-policy",
+      "text": "If I am given a redeem key, is it single-use, and will Luna redeem it for me?",
+      "outcome": "SEND",
+      "answerId": "packs.my-packs-keys.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.my-packs-keys.en"
+      ],
+      "needsAll": null,
+      "note": "Key rule. Not whether their key is valid."
+    },
+    {
+      "id": "PD-180",
+      "slice": "first-person-policy",
+      "text": "If I want the Pack Pass award, do free packs count, and what pack is granted when the meter fills?",
+      "outcome": "SEND",
+      "answerId": "packs.pack-pass.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.pack-pass.en"
+      ],
+      "needsAll": null,
+      "note": "Meter rule. Not whether their meter is full."
+    },
+    {
+      "id": "PD-181",
+      "slice": "first-person-policy",
+      "text": "If I go a stretch without Epic or better, what does a full Lucky Streak meter guarantee on the next pack?",
+      "outcome": "SEND",
+      "answerId": "packs.lucky-streak.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.lucky-streak.en"
+      ],
+      "needsAll": null,
+      "note": "Epic-or-better guarantee. Not their meter value."
+    },
+    {
+      "id": "PD-182",
+      "slice": "first-person-policy",
+      "text": "If I buy an eligible new account, can a free pack and pack credits be included, and will a specific tier be quoted as settled fact?",
+      "outcome": "SEND",
+      "answerId": "packs.free-packs-general.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.free-packs-general.en"
+      ],
+      "needsAll": null,
+      "note": "The general free-pack rule refuses a settled tier. Not a lookup of what they received."
+    },
+    {
+      "id": "PD-183",
+      "slice": "first-person-policy",
+      "text": "If I place a three-account Atom order, what example pack benefit is named, and should I assume it merges with the launch free pack?",
+      "outcome": "SEND",
+      "answerId": "packs.atom-bundle-distinct.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.atom-bundle-distinct.en"
+      ],
+      "needsAll": null,
+      "note": "The distinction, not whether their order deposited a pack."
+    },
+    {
+      "id": "PD-184",
+      "slice": "first-person-policy",
+      "text": "If I ask whether pack purchases are generally final, which code and which age rule come with that answer?",
+      "outcome": "SEND",
+      "answerId": "packs.refunds-legal.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.refunds-legal.en"
+      ],
+      "needsAll": null,
+      "note": "General legal posture. Not their order."
+    },
+    {
+      "id": "PD-185",
+      "slice": "first-person-policy",
+      "text": "If a reward never appears, what should I send support, and must I leave passwords out of the chat?",
+      "outcome": "SEND",
+      "answerId": "packs.missing-reward.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.missing-reward.en"
+      ],
+      "needsAll": null,
+      "note": "The reporting procedure. Not whether their reward was restored."
+    },
+    {
+      "id": "PD-186",
+      "slice": "first-person-policy",
+      "text": "If a card opens an account for me under the rules, is that account still simulated?",
+      "outcome": "SEND",
+      "answerId": "packs.simulated.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.simulated.en"
+      ],
+      "needsAll": null,
+      "note": "Accounts a card opens are simulated. Not whether one was opened for them."
+    },
+    {
+      "id": "PD-187",
+      "slice": "first-person-policy",
+      "text": "If I only know a card by the color pink, will you guess it, or do I need the official name?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.purple-card-ambiguous.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "needsAll": null,
+      "note": "Color refusal. Not an inventory read."
+    },
+    {
+      "id": "PD-188",
+      "slice": "first-person-policy",
+      "text": "If I read Payout Boost 100%, is it Legendary, once per payout cycle, on funded accounts, and different from Lifetime Split?",
+      "outcome": "SEND",
+      "answerId": "packs.followup.payout-boost-100.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "needsAll": null,
+      "note": "The boost definition."
+    },
+    {
+      "id": "PD-189",
+      "slice": "first-person-policy",
+      "text": "If I am counting the catalogue, how many regular cards are there and how do the six rarities split?",
+      "outcome": "SEND",
+      "answerId": "packs.card-count.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.card-count.en"
+      ],
+      "needsAll": null,
+      "note": "The 76 and the rarity split."
+    },
+    {
+      "id": "PD-190",
+      "slice": "first-person-policy",
+      "text": "If I open Collection, does it track discovered cards and recent pulls, with personal progress left on the dashboard?",
+      "outcome": "SEND",
+      "answerId": "packs.collection.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.collection.en"
+      ],
+      "needsAll": null,
+      "note": "Tab behavior. Not their discovery list."
+    },
+    {
+      "id": "PD-191",
+      "slice": "first-person-policy",
+      "text": "If I ask what an Elite Pack is, in one pass: three cards, Pack Credits, I open it, I keep cards until I apply them.",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.overview.en"
+      ],
+      "needsAll": null,
+      "note": "Overview definition in the first person as the generic actor."
+    },
+    {
+      "id": "PD-192",
+      "slice": "first-person-policy",
+      "text": "If a card is merely sitting with me, can it change an account before I apply it and pick the account?",
+      "outcome": "SEND",
+      "answerId": "packs.card-auto-apply.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.card-auto-apply.en"
+      ],
+      "needsAll": null,
+      "note": "The no-automatic rule. Not whether theirs is applied."
+    },
+    {
+      "id": "PD-193",
+      "slice": "first-person-policy",
+      "text": "If I ask what Instant Override and Lifetime Split are, as published cards, what does each do?",
+      "outcome": "SEND",
+      "answerId": "packs.exotic-cards.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.exotic-cards.en"
+      ],
+      "needsAll": null,
+      "note": "Two Exotic definitions. Not ownership."
+    },
+    {
+      "id": "PD-194",
+      "slice": "first-person-policy",
+      "text": "If I add credits, can I pay the bundle by card, crypto, or Payout Credits, and will Luna tap the button for me?",
+      "outcome": "SEND",
+      "answerId": "packs.buy-credits.en",
+      "reason": null,
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [
+        "packs.buy-credits.en"
+      ],
+      "needsAll": null,
+      "note": "Payment methods plus never-purchases."
+    },
+    {
+      "id": "PD-195",
+      "slice": "personal-account-state",
+      "text": "Count the Pack Credits posted on my Credits tab at this moment.",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks for the customer balance."
+    },
+    {
+      "id": "PD-196",
+      "slice": "personal-account-state",
+      "text": "Did the giveaway key I submitted last night land in My Packs?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks whether their key was delivered."
+    },
+    {
+      "id": "PD-197",
+      "slice": "personal-account-state",
+      "text": "Is Open Season already switched on for my trader profile?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their Exotic ownership state."
+    },
+    {
+      "id": "PD-198",
+      "slice": "personal-account-state",
+      "text": "Which three cards came out of the pack I opened before lunch?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks the contents of their opening."
+    },
+    {
+      "id": "PD-199",
+      "slice": "personal-account-state",
+      "text": "Is Founder's Key sitting in my Inventory or already saved for a purchase?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks where their card is."
+    },
+    {
+      "id": "PD-200",
+      "slice": "personal-account-state",
+      "text": "Has support marked the Ignition I reported as restored on my login?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks the status of their missing item."
+    },
+    {
+      "id": "PD-201",
+      "slice": "personal-account-state",
+      "text": "What number does my Pack Pass meter show right now?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their meter value. The threshold rule is not the question."
+    },
+    {
+      "id": "PD-202",
+      "slice": "personal-account-state",
+      "text": "Have I already used my once-per-lifetime Exotic allowance?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their lifetime receipt state."
+    },
+    {
+      "id": "PD-203",
+      "slice": "personal-account-state",
+      "text": "Did this morning's Monthly renewal charge the card on my billing profile?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks whether their subscription charged."
+    },
+    {
+      "id": "PD-204",
+      "slice": "personal-account-state",
+      "text": "What rarity did my last Oracle opening actually show?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their pull, not the Oracle floor rule."
+    },
+    {
+      "id": "PD-205",
+      "slice": "personal-account-state",
+      "text": "Is Lifetime Split already attached to any account I own?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their Exotic application state."
+    },
+    {
+      "id": "PD-206",
+      "slice": "personal-account-state",
+      "text": "How many uses remain on the ×3 card in my Inventory?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their remaining uses, not the multiplier rule."
+    },
+    {
+      "id": "PD-207",
+      "slice": "personal-account-state",
+      "text": "Is the Special Pack countdown still running on my Packs tab tonight?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their live offer state. The definition of a Special Pack is not enough."
+    },
+    {
+      "id": "PD-208",
+      "slice": "personal-account-state",
+      "text": "Did my free copy get consumed on the open I just did?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks what happened on their open."
+    },
+    {
+      "id": "PD-209",
+      "slice": "personal-account-state",
+      "text": "Am I eligible, on my account, for a Founder's Key discount at checkout?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their eligibility, which the label body does not decide."
+    },
+    {
+      "id": "PD-210",
+      "slice": "personal-account-state",
+      "text": "Which challenge of mine currently has a Drawdown Buffer card applied?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their account state."
+    },
+    {
+      "id": "PD-211",
+      "slice": "personal-account-state",
+      "text": "Did The Million claim I sent get opened by the team yet?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their claim status. The 24h procedure is not a status read."
+    },
+    {
+      "id": "PD-212",
+      "slice": "personal-account-state",
+      "text": "What is the cashable payout balance under my name today?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their payout balance."
+    },
+    {
+      "id": "PD-213",
+      "slice": "personal-account-state",
+      "text": "Was the crypto bundle I paid for an hour ago posted to my credits?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their purchase delivery."
+    },
+    {
+      "id": "PD-214",
+      "slice": "personal-account-state",
+      "text": "Is my redeem key still unused, or did someone spend it?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their key status. Single-use is the rule, not this question."
+    },
+    {
+      "id": "PD-215",
+      "slice": "personal-account-state",
+      "text": "Show the recent pulls listed on my Collection.",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their discovery progress."
+    },
+    {
+      "id": "PD-216",
+      "slice": "personal-account-state",
+      "text": "Did the 15% chain window still apply to the second pack I bought?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks whether their order received the offer."
+    },
+    {
+      "id": "PD-217",
+      "slice": "personal-account-state",
+      "text": "Is Instant Override credential mail already in my inbox?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their receipt."
+    },
+    {
+      "id": "PD-218",
+      "slice": "personal-account-state",
+      "text": "How many Epic-or-better misses are on my Lucky Streak meter?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their meter, not the guarantee rule."
+    },
+    {
+      "id": "PD-219",
+      "slice": "personal-account-state",
+      "text": "Did the Atom order I placed deposit a Market Maker pack onto my account?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Receipt on their account. The separation rule does not confirm delivery."
+    },
+    {
+      "id": "PD-220",
+      "slice": "personal-account-state",
+      "text": "Is the Monthly plan on my profile set to renew on the 18th?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their billing status."
+    },
+    {
+      "id": "PD-221",
+      "slice": "personal-account-state",
+      "text": "Which of my funded accounts, if any, has Payout Boost 100% queued?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their card placement."
+    },
+    {
+      "id": "PD-222",
+      "slice": "personal-account-state",
+      "text": "Did a Common card come out of the Whale pack I opened?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their result, not the floor rule."
+    },
+    {
+      "id": "PD-223",
+      "slice": "personal-account-state",
+      "text": "What bonus, if any, was added to the bundle on my receipt?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their live bonus. Bundle bonuses are dashboard-only and this asks for theirs."
+    },
+    {
+      "id": "PD-224",
+      "slice": "personal-account-state",
+      "text": "Has my refund dispute on the credit purchase been accepted?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their dispute outcome."
+    },
+    {
+      "id": "PD-225",
+      "slice": "personal-account-state",
+      "text": "Are the cards from yesterday's open visible in my Inventory yet?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their inventory presence."
+    },
+    {
+      "id": "PD-226",
+      "slice": "personal-account-state",
+      "text": "Did support receive the missing-key note I sent, and is the key back?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their ticket state."
+    },
+    {
+      "id": "PD-227",
+      "slice": "personal-account-state",
+      "text": "What split percent is actually set on the account I funded last week?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their account parameter, not the card catalogue."
+    },
+    {
+      "id": "PD-228",
+      "slice": "personal-account-state",
+      "text": "Is the purple card I pulled an Epic or a Legendary?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks them to identify their card from color plus possession. The color body refuses to guess, but the question is their card."
+    },
+    {
+      "id": "PD-229",
+      "slice": "personal-account-state",
+      "text": "Can you confirm I own Primordial and read its drawdown off my account?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their ownership."
+    },
+    {
+      "id": "PD-230",
+      "slice": "personal-account-state",
+      "text": "How many Pack Credits will expire with my account, as of today?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-account-state",
+      "stopDecision": "refuse",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asks their expiry exposure, not the general expiry rule."
+    },
+    {
+      "id": "PD-231",
+      "slice": "mixed",
+      "text": "What floor does Oracle use, and did my last Oracle opening respect it?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Oracle floor is published. Their opening is account state."
+    },
+    {
+      "id": "PD-232",
+      "slice": "mixed",
+      "text": "Explain how Pack Pass awards a free Ignition, and say whether my meter has filled.",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The award rule is general. The meter reading is theirs."
+    },
+    {
+      "id": "PD-233",
+      "slice": "mixed",
+      "text": "Are Pack Credits cashable in general, and can you cash out the ones on my balance?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The cash-out rule is general. Their balance is not."
+    },
+    {
+      "id": "PD-234",
+      "slice": "mixed",
+      "text": "What does Instant Override grant, and has mine already been delivered?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The card definition plus their receipt."
+    },
+    {
+      "id": "PD-235",
+      "slice": "mixed",
+      "text": "How many cards are in every pack, and which three did I just pull?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The count is general. Their pull is not."
+    },
+    {
+      "id": "PD-236",
+      "slice": "mixed",
+      "text": "Where do redeem keys get entered, and is the key I typed still unused?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The button rule plus their key status."
+    },
+    {
+      "id": "PD-237",
+      "slice": "mixed",
+      "text": "What percent do crypto one-off bundles take off, and was my payment charged the reduced price?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The percent is general. Their charge is not."
+    },
+    {
+      "id": "PD-238",
+      "slice": "mixed",
+      "text": "When are credits deducted on an open, and were mine deducted before the reveal?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The timing rule plus their charge."
+    },
+    {
+      "id": "PD-239",
+      "slice": "mixed",
+      "text": "What is a Special Pack, and is the one on my screen still inside its timer?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The definition plus their live timer."
+    },
+    {
+      "id": "PD-240",
+      "slice": "mixed",
+      "text": "How does Lucky Streak reset, and how full is my meter?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The reset rule plus their meter."
+    },
+    {
+      "id": "PD-241",
+      "slice": "mixed",
+      "text": "Which tab lists the five Elite Packs sections, and what does my Credits tab show for a balance?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The tab list plus their balance."
+    },
+    {
+      "id": "PD-242",
+      "slice": "mixed",
+      "text": "May ordinary discount cards stack, and is the card saved on my checkout still stackable?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The stacking rule plus their saved card."
+    },
+    {
+      "id": "PD-243",
+      "slice": "mixed",
+      "text": "What are The Million's drawdown numbers, and do I already have that card?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Parameters plus their ownership."
+    },
+    {
+      "id": "PD-244",
+      "slice": "mixed",
+      "text": "Do free packs move Pack Pass, and did the free pack on my account move it?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The rule plus their meter history."
+    },
+    {
+      "id": "PD-245",
+      "slice": "mixed",
+      "text": "Who should receive a missing-reward report, and has my report been actioned?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The procedure plus their ticket."
+    },
+    {
+      "id": "PD-246",
+      "slice": "mixed",
+      "text": "Are the accounts a card opens simulated, and did a card open one for me today?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The simulated rule plus their account event."
+    },
+    {
+      "id": "PD-247",
+      "slice": "mixed",
+      "text": "What does Founder's Key do, and is it applied to my current challenge checkout?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The card rule plus their checkout state."
+    },
+    {
+      "id": "PD-248",
+      "slice": "mixed",
+      "text": "How do I cancel a Monthly credits plan, and is mine still inside the paid month?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The cancel procedure plus their period."
+    },
+    {
+      "id": "PD-249",
+      "slice": "mixed",
+      "text": "What Exotic percent does Whale publish, and what did my Whale pack drop?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The rate plus their drop."
+    },
+    {
+      "id": "PD-250",
+      "slice": "mixed",
+      "text": "Are Atom bundle promos separate from launch free packs, and which of those did my order receive?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The distinction plus their receipt."
+    },
+    {
+      "id": "PD-251",
+      "slice": "mixed",
+      "text": "What does a full collection discovery total, and how many cards has my Collection discovered?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The 80-card total plus their progress."
+    },
+    {
+      "id": "PD-252",
+      "slice": "mixed",
+      "text": "Do uses on a ×3 card combine when a duplicate is pulled, and how many uses do I have left?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The combine rule plus their remainder."
+    },
+    {
+      "id": "PD-253",
+      "slice": "mixed",
+      "text": "What age rule sits on pack purchases, and am I recorded as old enough on my profile?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The 18+ rule plus their profile."
+    },
+    {
+      "id": "PD-254",
+      "slice": "mixed",
+      "text": "Where do unopened giveaway packs sit, and is the promo pack still in my My Packs?",
+      "outcome": "PERSONAL",
+      "answerId": null,
+      "reason": "personal-mixed-stop",
+      "stopDecision": "handoff",
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The tab rule plus their inventory."
+    },
+    {
+      "id": "PD-255",
+      "slice": "not-packs-owned",
+      "text": "What is the daily loss limit on a standard Elite Atom funded account, before any pack card?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Atom account rule. The Atom body only separates bundle promos from launch free packs."
+    },
+    {
+      "id": "PD-256",
+      "slice": "not-packs-owned",
+      "text": "How many stages does an Elite Atom evaluation have before it becomes funded?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Atom challenge structure is not an Elite Packs body."
+    },
+    {
+      "id": "PD-257",
+      "slice": "not-packs-owned",
+      "text": "Does Elite Atom allow trading during scheduled news on the evaluation?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Atom trading permission is not in the pack catalogue."
+    },
+    {
+      "id": "PD-258",
+      "slice": "not-packs-owned",
+      "text": "Where does an Elite Atom credential email get downloaded from?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Atom onboarding is not a pack-key or dashboard-tab fact."
+    },
+    {
+      "id": "PD-259",
+      "slice": "not-packs-owned",
+      "text": "What homepage coupon applies to challenge fees this weekend?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "A challenge-fee coupon is not an Elite Packs discount card."
+    },
+    {
+      "id": "PD-260",
+      "slice": "not-packs-owned",
+      "text": "Can a seasonal evaluation sale stack with a newsletter coupon code?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Website coupons are not the Founder's Key or ordinary card-stacking rule."
+    },
+    {
+      "id": "PD-261",
+      "slice": "not-packs-owned",
+      "text": "Is a two-step challenge cheaper when the fee is paid by bank card?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Challenge checkout price is not the crypto bundle reduction or a pack discount card."
+    },
+    {
+      "id": "PD-262",
+      "slice": "not-packs-owned",
+      "text": "How do affiliate discounts apply when someone buys an evaluation?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Affiliate pricing is not a sendable pack body."
+    },
+    {
+      "id": "PD-263",
+      "slice": "not-packs-owned",
+      "text": "How do I cancel the market-data subscription that is billed outside Pack Credits?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "A data subscription is not the Monthly Pack Credits plan."
+    },
+    {
+      "id": "PD-264",
+      "slice": "not-packs-owned",
+      "text": "Does platform membership renew monthly even when no pack is ever bought?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Platform membership is not the credits subscription."
+    },
+    {
+      "id": "PD-265",
+      "slice": "not-packs-owned",
+      "text": "Where is billing for the charting add-on subscription?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Add-on billing is not the Credits tab cancel path."
+    },
+    {
+      "id": "PD-266",
+      "slice": "not-packs-owned",
+      "text": "If the funded-account subscription is paused, does platform login remain?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Funded-account subscription is not the Monthly credits plan."
+    },
+    {
+      "id": "PD-267",
+      "slice": "not-packs-owned",
+      "text": "Refund the evaluation fee from the challenge that failed last week.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "An evaluation fee refund is not the pack-purchase legal body, and it is not a Packs-owned turn."
+    },
+    {
+      "id": "PD-268",
+      "slice": "not-packs-owned",
+      "text": "What refund window applies to a reset of a funded account?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Reset fees are not pack purchases."
+    },
+    {
+      "id": "PD-269",
+      "slice": "not-packs-owned",
+      "text": "A duplicate charge posted for an evaluation. Reverse that challenge charge.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "A challenge billing duplicate is not a Pack Credits dispute under the pack bodies."
+    },
+    {
+      "id": "PD-270",
+      "slice": "not-packs-owned",
+      "text": "Are challenge fees refundable after the first trade is placed?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Challenge-fee policy is not the pack purchase finality body."
+    },
+    {
+      "id": "PD-271",
+      "slice": "not-packs-owned",
+      "text": "What credit score is required before a challenge can be purchased?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Consumer credit score is not Pack Credits."
+    },
+    {
+      "id": "PD-272",
+      "slice": "not-packs-owned",
+      "text": "How do I rotate the platform API key on a trading login?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "An API key is not a single-use redeem key."
+    },
+    {
+      "id": "PD-273",
+      "slice": "not-packs-owned",
+      "text": "Where is checkout for a standalone 50K evaluation that includes no pack?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Evaluation checkout is not Save for checkout on a discount card."
+    },
+    {
+      "id": "PD-274",
+      "slice": "not-packs-owned",
+      "text": "Do you issue store credit when a friend buys a challenge?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Referral store credit is not Pack Credits or Payout Credits."
+    },
+    {
+      "id": "PD-275",
+      "slice": "not-packs-owned",
+      "text": "What time does the listed futures session open on Sunday?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Market hours are not a pack body."
+    },
+    {
+      "id": "PD-276",
+      "slice": "not-packs-owned",
+      "text": "How do I reset the password on the trader login?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Login recovery is not a pack flow."
+    },
+    {
+      "id": "PD-277",
+      "slice": "not-packs-owned",
+      "text": "Is a MetaTrader bridge included with every funded account by default?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Platform bundling is not a pack card effect."
+    },
+    {
+      "id": "PD-278",
+      "slice": "not-packs-owned",
+      "text": "What leverage does a plain 100K challenge use before any card is applied?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Baseline challenge leverage is not Leverage Boost 1:50 and not The Million's 1:100."
+    },
+    {
+      "id": "PD-279",
+      "slice": "not-packs-owned",
+      "text": "Can the server region be changed on the trading platform?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Platform settings are not a pack body."
+    },
+    {
+      "id": "PD-280",
+      "slice": "not-packs-owned",
+      "text": "Is there a monthly inactivity fee on funded accounts that never bought a pack?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Inactivity fees are not the Monthly credits plan."
+    },
+    {
+      "id": "PD-281",
+      "slice": "not-packs-owned",
+      "text": "Where is the payout calendar for an ordinary funded account, ignoring cards?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Ordinary payout timing is not Payout Boost 100%."
+    },
+    {
+      "id": "PD-282",
+      "slice": "not-packs-owned",
+      "text": "What identity documents are required for a trading-profit payout?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "not-packs-owned",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Payout compliance is not a pack body."
+    },
+    {
+      "id": "PD-283",
+      "slice": "obfuscation",
+      "text": "dr0p r@t3s 0r4cle 3x0tic pct",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-284",
+      "slice": "obfuscation",
+      "text": "W h a l e   f l o o r   a n d   p r i c e",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-285",
+      "slice": "obfuscation",
+      "text": "c.r.e.d.i.t.s c.a.s.h.o.u.t y/n",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-286",
+      "slice": "obfuscation",
+      "text": "inst4nt 0verride what do3s it d0",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-287",
+      "slice": "obfuscation",
+      "text": "refu^nd my p@ck cred1ts now pls",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-288",
+      "slice": "obfuscation",
+      "text": "subscr1ption cancel m0nthly ##clicks",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-289",
+      "slice": "obfuscation",
+      "text": "at0m bundle == free pack promo ??",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-290",
+      "slice": "obfuscation",
+      "text": "d1sc0unt st4ck founders k3y 60",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-291",
+      "slice": "obfuscation",
+      "text": "m y p a c k s k e y s i n g l e u s e",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-292",
+      "slice": "obfuscation",
+      "text": "x3 x5 u s e s c 0 m b i n e",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-293",
+      "slice": "obfuscation",
+      "text": "the m1llion every rule l1fted??",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-294",
+      "slice": "obfuscation",
+      "text": "l u c k y   s t r e a k   m e t e r   d i g i t s",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-295",
+      "slice": "obfuscation",
+      "text": "simulat3d or real $$$ a c c o u n t",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-296",
+      "slice": "obfuscation",
+      "text": "apply c4rd autom@tically to acct?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-297",
+      "slice": "obfuscation",
+      "text": "5% cryp t0 on b u n d l e?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-298",
+      "slice": "obfuscation",
+      "text": "p u r p l e c a r d guess = which",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-299",
+      "slice": "obfuscation",
+      "text": "op3n s3al when ch4rged credits",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-300",
+      "slice": "obfuscation",
+      "text": "d0 I 0wn wh4le pack y/n status",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-301",
+      "slice": "obfuscation",
+      "text": "c0nvert pay0ut 1 per $ sh0rtfall",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-302",
+      "slice": "obfuscation",
+      "text": "pack p@ss free ign1tion thresh0ld",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "obfuscated",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Concealed spelling. Do not recover a sendable id and do not deobfuscate."
+    },
+    {
+      "id": "PD-303",
+      "slice": "multi-intent",
+      "text": "Name the five Elite Packs tabs, and state what Founder's Key does.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.dashboard-tabs.en",
+        "packs.exotic-cards.en"
+      ],
+      "note": "Tab list and the Exotic card are different bodies."
+    },
+    {
+      "id": "PD-304",
+      "slice": "multi-intent",
+      "text": "What is Whale's credit price, and what Common percent does Ignition publish?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.pack-costs-floors.en",
+        "packs.drop-rates.en"
+      ],
+      "note": "Whale price is not in the drop table. Ignition Common percent is not in the Whale follow-up or required from the price list alone. No one body has both."
+    },
+    {
+      "id": "PD-305",
+      "slice": "multi-intent",
+      "text": "What is the click path that applies a card, and which consumer code is named for pack refunds?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.inventory-use-card.en",
+        "packs.refunds-legal.en"
+      ],
+      "note": "Apply path and the legal code are different bodies."
+    },
+    {
+      "id": "PD-306",
+      "slice": "multi-intent",
+      "text": "How does Lucky Streak reset after an Epic pull, and do free packs advance Pack Pass?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.lucky-streak.en",
+        "packs.pack-pass.en"
+      ],
+      "note": "Each meter rule is a different body."
+    },
+    {
+      "id": "PD-307",
+      "slice": "multi-intent",
+      "text": "How many regular collection cards exist, and on which date do Monthly credits arrive?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.card-count.en",
+        "packs.monthly-subscription.en"
+      ],
+      "note": "Catalogue size and the billing date are different bodies."
+    },
+    {
+      "id": "PD-308",
+      "slice": "multi-intent",
+      "text": "Are accounts a card opens simulated, and what percent comes off a crypto one-off bundle?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.simulated.en",
+        "packs.crypto-discount.en"
+      ],
+      "note": "Simulated accounts and the crypto percent are different bodies."
+    },
+    {
+      "id": "PD-309",
+      "slice": "multi-intent",
+      "text": "Will a color-only card be guessed, and what Exotic percent does Oracle publish?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.followup.purple-card-ambiguous.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "note": "Color refusal and the Oracle percent are different bodies."
+    },
+    {
+      "id": "PD-310",
+      "slice": "multi-intent",
+      "text": "When during an open are credits deducted, and may an ordinary discount card stack?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.opening-and-charges.en",
+        "packs.discount-stacking.en"
+      ],
+      "note": "Opening charge timing and ordinary stacking are different bodies."
+    },
+    {
+      "id": "PD-311",
+      "slice": "multi-intent",
+      "text": "Where do the two balances sit on every tab, and what max drawdown does The Million publish?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.dashboard-tabs.en",
+        "packs.the-million.en"
+      ],
+      "note": "Layout and Primordial parameters are different bodies."
+    },
+    {
+      "id": "PD-312",
+      "slice": "multi-intent",
+      "text": "Which example label family includes Drawdown Ceiling 15%, and what is the payout-credit conversion rate per dollar?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.eligibility-labels.en",
+        "packs.convert-payout-credits.en"
+      ],
+      "note": "Label examples and the conversion rate are different bodies."
+    },
+    {
+      "id": "PD-313",
+      "slice": "multi-intent",
+      "text": "What happens when a Special Pack countdown ends, and who handles an unexpected credit charge?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.special-packs.en",
+        "packs.withdraw-credits.en"
+      ],
+      "note": "Timer expiry and the charge escalation are different bodies."
+    },
+    {
+      "id": "PD-314",
+      "slice": "multi-intent",
+      "text": "What example benefit is named for a three-account Atom order, and is each card in a pack drawn on its own?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.atom-bundle-distinct.en",
+        "packs.cards-per-pack.en"
+      ],
+      "note": "The Atom example and the independent draw are different bodies."
+    },
+    {
+      "id": "PD-315",
+      "slice": "multi-intent",
+      "text": "How often can Payout Boost 100% be used per payout cycle, and which methods pay for a credit bundle?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.followup.payout-boost-100.en",
+        "packs.buy-credits.en"
+      ],
+      "note": "Boost cadence and payment methods are different bodies."
+    },
+    {
+      "id": "PD-316",
+      "slice": "multi-intent",
+      "text": "Does Collection keep recent pulls, and what same-pack percent applies within two minutes of a paid open?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.collection.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "note": "Recent pulls and the chain percent are different bodies."
+    },
+    {
+      "id": "PD-317",
+      "slice": "multi-intent",
+      "text": "What three details go to support when a reward is missing, and is there a single best pack?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.missing-reward.en",
+        "packs.which-pack-best.en"
+      ],
+      "note": "The report checklist and the no-best-pack rule are different bodies."
+    },
+    {
+      "id": "PD-318",
+      "slice": "multi-intent",
+      "text": "Define a rarity floor, and do duplicate multiplied cards combine their uses?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.rarity-floor.en",
+        "packs.uses-multiplier.en"
+      ],
+      "note": "Floor definition and combining uses are different bodies."
+    },
+    {
+      "id": "PD-319",
+      "slice": "multi-intent",
+      "text": "How many FAQ clicks cancel a Monthly credits plan, and what Mythic percent does Market Maker publish?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.cancel-subscription.en",
+        "packs.drop-rates.en"
+      ],
+      "note": "Two clicks and the Mythic cell are different bodies."
+    },
+    {
+      "id": "PD-320",
+      "slice": "multi-intent",
+      "text": "Are redeem keys single-use, and what leverage does The Million publish?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "multi-intent",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": [
+        "packs.my-packs-keys.en",
+        "packs.the-million.en"
+      ],
+      "note": "Key rule and Primordial leverage are different bodies."
+    },
+    {
+      "id": "PD-321",
+      "slice": "unresolved-policy",
+      "text": "What free-pack tier, discount percent, and credit amount does a new 50K account include?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:free-pack-tier-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The specific tier is the unsettled Help Center versus landing conflict. free-packs-general refuses to quote it and does not contain the 50K figure."
+    },
+    {
+      "id": "PD-322",
+      "slice": "unresolved-policy",
+      "text": "Quote the Help Center line for 100K and above: the percent, the pack name, and the credit amount.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:free-pack-tier-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "That line lives only on the non-sendable help-center row."
+    },
+    {
+      "id": "PD-323",
+      "slice": "unresolved-policy",
+      "text": "The launch landing and the Help Center disagree on free-pack numbers. Which number is the settled one?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:free-pack-tier-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "No sendable body picks a winner. The general body only says not to quote a number."
+    },
+    {
+      "id": "PD-324",
+      "slice": "unresolved-policy",
+      "text": "Which launch-landing account sizes receive a Market Maker rather than a Whale as the free pack?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:free-pack-tier-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Size-to-pack mapping is the unresolved tier table."
+    },
+    {
+      "id": "PD-325",
+      "slice": "unresolved-policy",
+      "text": "Are the provisional 5K-to-25K free-pack tiers approved to be sent as fact?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:free-pack-tier-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Asking to emit the non-sendable provisional row."
+    },
+    {
+      "id": "PD-326",
+      "slice": "unresolved-policy",
+      "text": "Confirm the slogan that The Million lifts every rule, as settled fact, and set aside the parameter table.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:the-million-every-rule-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The conflict row is non-sendable. Demanding the slogan against the table is not covered by the sendable Million body, which keeps the table."
+    },
+    {
+      "id": "PD-327",
+      "slice": "unresolved-policy",
+      "text": "Send the every-rule-lifted wording instead of the FAQ parameter table.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:the-million-every-rule-conflict",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "That wording is the non-sendable conflict row."
+    },
+    {
+      "id": "PD-328",
+      "slice": "unresolved-policy",
+      "text": "How many credits are in the largest bundle on the dashboard today, including its bonus?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:live-bundle-sizes",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Buy-credits says exact bundle sizes and bonuses are live-dashboard only and does not list them."
+    },
+    {
+      "id": "PD-329",
+      "slice": "unresolved-policy",
+      "text": "What bonus percent is attached to the current one-off credit bundle?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:live-bundle-sizes",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "No sendable body states today's bonus percent."
+    },
+    {
+      "id": "PD-330",
+      "slice": "unresolved-policy",
+      "text": "Is the fifteen-percent same-pack chain offer still live at this minute?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:live-offer-freshness",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Chain says never promise an offer is still active and does not confirm this minute."
+    },
+    {
+      "id": "PD-331",
+      "slice": "unresolved-policy",
+      "text": "What percent is the Special Pack on the countdown showing right now?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:live-offer-freshness",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Special Packs expire with the timer. The live percent is not a sendable fact."
+    },
+    {
+      "id": "PD-332",
+      "slice": "unresolved-policy",
+      "text": "How many openings without Epic or better does it take to fill Lucky Streak?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:dashboard-only-meter-thresholds",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The body says the threshold is dashboard-only and not to invent a number. The digit is not in the body."
+    },
+    {
+      "id": "PD-333",
+      "slice": "unresolved-policy",
+      "text": "What exact count of credit-purchased packs fills Pack Pass?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:dashboard-only-meter-thresholds",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "Pack Pass withholds the threshold. The digit is not covered."
+    },
+    {
+      "id": "PD-334",
+      "slice": "unresolved-policy",
+      "text": "If a pack has already been opened, does a statutory withdrawal right still exist?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:opened-pack-statutory-right",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The legal body does not decide the opened-pack case. It refuses individual legal conclusions."
+    },
+    {
+      "id": "PD-335",
+      "slice": "unresolved-policy",
+      "text": "Give a yes or no legal ruling on withdrawal after the seal has been cut.",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:opened-pack-statutory-right",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "A ruling after the seal is cut is the unsettled opened-pack question."
+    },
+    {
+      "id": "PD-336",
+      "slice": "unresolved-policy",
+      "text": "The Packs tab is showing a different Ignition price than 3,000. What is the live override?",
+      "outcome": "ABSTAIN",
+      "answerId": null,
+      "reason": "unresolved-policy:live-offer-freshness",
+      "stopDecision": null,
+      "neighbourPair": null,
+      "coveredBy": [],
+      "needsAll": null,
+      "note": "The cost table says live offers show on the tab and does not provide an override figure."
+    }
+  ]
+}
