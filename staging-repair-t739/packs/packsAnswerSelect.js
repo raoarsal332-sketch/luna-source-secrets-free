@@ -599,9 +599,18 @@ async function selectPacksAnswer(text, opts) {
   const winners = new Set();
   for (const c of gate.clauses || []) {
     if (c.verdict !== pregate.VERDICT.GENERAL || c.anaphoric) continue;
+    // A condition is not its own question. A fragment that selects nothing is not a
+    // second intent; a fragment that selects a different row is.
+    if (c.frame === 'cond' || c.frame === 'cond-procedure') continue;
+    if (c.intro && /^(?:if|unless|because|since|although|though|whereas)$/.test(c.intro)) continue;
     const w = bestProductMatch(c.text, prod, gate);
     if (!w.id) {
-      return tag(selectId('packs.handoff.unverified', 'handoff', 0.99, 'clause-unresolved-no-partial-answer', prod));
+      const clauseHasItem = pregate.PACKS_ITEM_RE.test(c.text) || pregate.NAMED_CARD_RE.test(c.text);
+      const covered = clauseHasItem && SELECTORS.some((sel) => sel.id + '.en' === overall.id && sel.test(c.text, prod, gate));
+      if (clauseHasItem && !covered) {
+        return tag(selectId('packs.handoff.unverified', 'handoff', 0.99, 'clause-unresolved-no-partial-answer', prod));
+      }
+      continue;
     }
     winners.add(w.id);
   }

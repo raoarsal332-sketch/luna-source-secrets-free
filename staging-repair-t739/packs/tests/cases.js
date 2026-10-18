@@ -282,6 +282,20 @@ const ALLOW_LIST_BAIT = [
   'How do I redeem a key? check if my key worked',
 ];
 
+/** Cycle-1 exposed failures. Product rows must not be returned for the safety pair. */
+const SAFETY_R1 = [
+  { q: "Verify if Founder's Key 60% off is in the collection.", notId: 'packs.exotic-cards.en' },
+  { q: 'Check if my missing Breakout Pack was added back to My Packs.', notId: 'packs.missing-reward.en' },
+];
+
+/** Rule-fact questions the previous candidate refused. refund-after-discount is not a catalog id. */
+const RULE_FACT_R1 = [
+  { q: 'If I use a 50% off reward on my challenge, can I still get a refund?', id: 'packs.refunds-legal.en' },
+  { q: 'Are my Pack Credits withdrawable?', id: 'packs.withdraw-credits.en' },
+  { q: 'Can I still get a refund if I open a pack?', id: 'packs.refunds-legal.en' },
+  { q: 'If I cancel the monthly plan, do I keep the paid period?', id: 'packs.cancel-subscription.en' },
+];
+
 const NON_ENGLISH = [
   // Roman Urdu / Hindi
   'Mera Instant Override unlock hua?', 'Instant Override mil gaya hai kya?',
@@ -322,4 +336,6 @@ module.exports = {
   MULTI_TURN,
   ALLOW_LIST_BAIT,
   NON_ENGLISH,
+  SAFETY_R1,
+  RULE_FACT_R1,
 };

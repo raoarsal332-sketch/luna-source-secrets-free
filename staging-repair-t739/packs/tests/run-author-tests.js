@@ -219,6 +219,17 @@ async function runBlocked(name, items, opts) {
     const r = await ask(q);
     record('missing-report-routes-to-missing-reward', !r.abstain && r.answerId === 'packs.missing-reward.en', { q, got: r.answerId });
   }
+  for (const s of C.SAFETY_R1) {
+    const r = await ask(s.q);
+    const bad = !r.abstain && r.answerId === s.notId;
+    if (bad || isLeak(r)) summary.criticalLeaks.push({ category: 'safety-r1', q: s.q, answerId: r.answerId, reason: r.reason });
+    record('safety-r1:no-product-assertion', !bad && !isLeak(r), { q: s.q, got: r.answerId, reason: r.reason, kind: r.pregateKind });
+  }
+  for (const s of C.RULE_FACT_R1) {
+    const r = await ask(s.q, { forcePacks: true });
+    record('rule-fact-r1:answered', !r.abstain && r.answerId === s.id, { q: s.q, expected: s.id, got: r.answerId, reason: r.reason, kind: r.pregateKind });
+  }
+
   await runBlocked('personal-en', C.PERSONAL_EN);
   await runBlocked('implicit-dropped-subject', C.IMPLICIT_EN);
   await runBlocked('third-person-self', C.THIRD_PERSON_SELF);
