@@ -1,0 +1,37 @@
+PASS plain note no mention {"ignored":true,"reason":"no-mention"}
+PASS @Arsal summarize → FOLLOW {"ignored":false,"parsed":{"cmd":"FOLLOW","body":""}}
+PASS @Jerry STOP {"ignored":false,"parsed":{"cmd":"STOP","body":""}}
+PASS @Jerry stop replying {"ignored":false,"parsed":{"cmd":"STOP","body":""}}
+PASS fixed REPLY {"ignored":false,"parsed":{"cmd":"REPLY","body":"Hello, thanks for waiting."}}
+PASS fixed NOTE {"ignored":false,"parsed":{"cmd":"NOTE","body":"Internal summary here"}}
+PASS entity mention FOLLOW {"ignored":false,"parsed":{"cmd":"FOLLOW","body":""}}
+PASS other admin ignored author {"ignored":true,"reason":"not-author"}
+PASS OPEN ticket {"ignored":false,"parsed":{"cmd":"OPEN","body":""}}
+PASS SKIP {"ignored":false,"parsed":{"cmd":"SKIP","body":""}}
+PASS RESUME {"ignored":false,"parsed":{"cmd":"RESUME","body":""}}
+PASS send this message to client brackets {"ignored":false,"parsed":{"cmd":"REPLY","body":"Office closed in Italy, the client will be assisted tomorrow."}}
+PASS send message to client quotes {"ignored":false,"parsed":{"cmd":"REPLY","body":"We will help you tomorrow."}}
+PASS extract brackets Italy "Office closed in Italy, the client will be assisted tomorrow."
+PASS extract no match without send phrase null
+node:fs:442
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '/home/ubuntu/index.js'
+    at Object.readFileSync (node:fs:442:20)
+    at Object.<anonymous> (/tmp/hi-flat/test-owner-cmd-router.js:184:16)
+    at Module._compile (node:internal/modules/cjs/loader:1554:14)
+    at Object..js (node:internal/modules/cjs/loader:1706:10)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
+    at node:internal/main/run_main_module:36:49 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/ubuntu/index.js'
+}
+
+Node.js v22.14.0

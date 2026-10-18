@@ -1,0 +1,14 @@
+PASS isShortClientAck("ok, thank you")
+PASS isShortClientAck("Okay, thanks!")
+PASS isShortClientAck("thank you")
+PASS isShortClientAck long question false
+PASS related+awaiting+shortAck → no status post
+PASS related+awaiting+real question → may post status
+PASS pick excludes last status variant
+PASS all variants excluded → null (SKIP)
+PASS normalize near-identical
+PASS bodiesNearlyIdentical ignores punct
+PASS normalize duplicate of last → different or skip (not same)
+PASS engine tag in source
+
+All escalate-ack-norepeat unit checks passed

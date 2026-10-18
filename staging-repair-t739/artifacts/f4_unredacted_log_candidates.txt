@@ -1,0 +1,87 @@
+# t739 F4: console sites in candidate/index.js that print e.message/e.stack/JSON/slices and were NOT changed (static grep, NOT proven to carry customer text; each needs reviewer inspection)
+19:    console.error('STATE_PATH_GUARD cannot read ecosystem.config.js:', e && e.message);
+27:    console.error('STATE_PATH_DECLARATION_UNSAFE', JSON.stringify(__v.problems));
+32:    console.error('STATE_PATH_ENFORCED', c.key, 'launch env had', JSON.stringify(c.had), '-> using declared', c.now);
+207:    setImmediate(() => { replayAuthDeferred('auth-recovered').catch((e) => console.error('AUTH_REPLAY_ERR', e && e.message)); });
+225:  } catch (e) { console.error('AUTH_DEFER_WRITE_FAIL', conversationId, e && e.message); }
+245:      try { await handleWebhook(req, res); replayed += 1; } catch (e) { console.error('AUTH_REPLAY_ERR', id, e && e.message); }
+366:      console.error('IC_REQ_ERR', tag, url, e && e.message);
+519:    console.log('enrichNoteMentionsHtml admins fail', e && e.message);
+800:    console.error('resolveNoteEmail contact fetch fail', e && e.message);
+987:    console.error('NOTE_EN_OVERLAY fail', label || '', e && e.message);
+1047:    console.error('PROBLEM_SUMMARY_POLISH fail', e && e.message);
+1519:    console.error('PROMO_RESOLVE_FAIL', e && e.message);
+2327:    console.error('PARTNERSHIP_ROUTE build fail', e && e.message);
+2347:        console.error('PARTNERSHIP_ROUTE note-attempt-error', conversationId, attempt, e && e.message);
+2415:    console.error('ESCALATE_NOTE_NON_ACCOUNT build fail', where, e && e.message);
+2535:      console.error('IDENTITY_BEFORE_ESCALATE refetch fail', conversationId, e && e.message);
+2756:    console.error('ESCALATIONS summarize fail', e && e.message);
+3280:    console.error('TICKET_STATE_PRUNE_ERR', e && e.message);
+3832:    if (upload && quotedOnly.has(upload)) { console.log('IMAGE_SKIP quoted-history', String(a.name || '').slice(0, 40)); continue; }
+4019:    console.error('IMAGE_FETCH_ERR', e && e.message);
+4426:    console.error('ESCALATE_STATE_RECORD_FAIL', conversationId, e && e.message);
+5666:    console.error('testMode fin-wait check failed', e && e.message);
+6251:    Promise.resolve().then(() => handleWebhook(req, res)).catch((e) => console.error('BURST_RERUN_ERR', key, e && e.message));
+6467:      console.error('PRODUCT_BOTH_FAMILY_GUARD_ERR', conversationId, e && e.message);
+6512:    } catch (e) { console.error('REPEATED_DIRECT_REPLY_RETRY_FAILED', conversationId, e && e.message); return null; }
+6595:        console.error('POSTGATE_REVALIDATE_ERROR', conversationId, e && e.message);
+6614:      } catch (e) { console.error('POSTGATE_PROMISE_STRIP_ERROR', conversationId, e && e.message); }
+6653:          console.error('POSTGATE_SAFE_FALLBACK_ERROR', conversationId, e && e.message);
+6696:    console.error('identical-body dedupe fail', conversationId, e && e.message);
+6719:    console.error('PUBLIC_RESTATEMENT_SEND_CHECK_FAIL', conversationId, e && e.message);
+7383:          handleWebhook(request, response).catch((e) => console.error('ASSIST_KICK_ERR', conversationId, e && e.message));
+7460:        console.error('OWNER_CMD_FAIL', conversationId, e && e.message);
+7522:    console.error('REVIEW_FLOW state', conversationId, e && e.message);
+7546:    console.error('REVIEW_FLOW decide-error (normal reply continues)', conversationId, e && e.message);
+8188:          console.log('SKIP teammate-handoff', route.reason || defer.reason, conversationId, JSON.stringify(route.log || {}));
+8474:    console.log('TURN_INTENT', conversationId, JSON.stringify({ intent: __decision.intent, kind: __decision.kind, reason: __decision.intentReason, components: __decision.intentComponents, offTopic: __decision.offTopic || undefined, supportContext: __decis
+8480:      console.log('TURN_DIAG', conversationId, JSON.stringify({
+8506:      console.log('SMALLTALK_LIGHT_PATH', conversationId, JSON.stringify({ intent: __decision.intent, components: __supportMeta ? __decision.intentComponents : __social.components, kbSearch: false, tools: false, answerPlan: false, route: 'FAST' }));
+8609:        console.error('FAQ_RETRIEVE_FAIL', e && e.message);
+8634:      } catch (e) { console.error('PRODUCT_COMPARISON_BUILD_FAILED', conversationId, e && e.message); }
+8709:      } catch (e) { console.error('MIXED_GENERAL_PART_ERR', conversationId, e && e.message); }
+8754:        console.error('PROMO_INJECT_FAIL', e && e.message);
+8953:          console.log('TOOL_BUDGET_EMPTY_FALLBACK wait-ack silence', conversationId, __whyS.slice(0, 60));
+9028:      console.error('POLICY_FACT_GUARD fail', conversationId, e && e.message);
+9121:        console.error('TEAMMATE_SCOPE force fail', conversationId, e && e.message);
+9160:      } catch (e) { console.error('PHANTOM_TEAMMATE_SKIP_ERR', conversationId, e && e.message); }
+9309:          console.error('ESCALATE->REPLY force fail', e && e.message);
+9437:          console.error('identity re-fetch fail', e && e.message);
+9740:    } catch (e) { console.error('ATTRIBUTE_FOLLOWUP_SCOPE_REPAIR_ERR', conversationId, e && e.message); }
+9770:    } catch (e) { console.error('IMAGE_SCOPE_REPAIR_ERR', conversationId, e && e.message); }
+9804:        } catch (e) { console.error('PRODUCT_COMPARISON_REGEN_FAILED', conversationId, e && e.message); }
+9832:          console.log('PENDING_ASK stock-template draft', conversationId, JSON.stringify({
+9858:      } catch (e) { console.error('PENDING_ASK regenerate failed', conversationId, e && e.message); }
+10166:            console.error('PRESEND_REGENERATE_WITH_TOOLS_FAILED', conversationId, e && e.message);
+10197:      } catch (e) { console.error('PRESEND_REGENERATE_FAILED', conversationId, e && e.message); }
+10218:        } catch (e) { console.error('PRODUCT_COMPARISON_PRESEND_RECOVERY_FAILED', conversationId, e && e.message); }
+10297:        } catch (e) { console.error('REPEATED_QUESTION_RETRY_FAILED', conversationId, e && e.message); }
+10403:              console.error('GENERAL_ACCOUNT_ASK regenerate failed', conversationId, e && e.message);
+10606:                } catch (e) { console.error('PARTIAL_ANSWER_FACTS_ERR', conversationId, e && e.message); }
+10709:                } catch (e) { console.error('PARTIAL_ANSWER_SHARED_ERR', conversationId, e && e.message); }
+10762:                console.error('PARTIAL_ANSWER_ERR', conversationId, e && e.message);
+10794:                } catch (e) { console.error('PROMISE_STRIP held-draft failed', conversationId, e && e.message); }
+10928:                        } catch (e) { console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_STRIP_ERR', conversationId, e && e.message); }
+10944:                    console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_GATE_ERR', conversationId, e && e.message);
+10948:                console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_FAILED', conversationId, e && e.message);
+10976:            } catch (e) { console.error('NOT_PUBLISHED_ANSWER_ERR', conversationId, e && e.message); }
+10997:            } catch (e) { console.error('MISSED_QUESTION_FALLBACK_ERR', conversationId, e && e.message); }
+11152:              } catch (e) { console.error('DELEGATED_GENERAL_ANSWER_ERR', conversationId, e && e.message); }
+11266:        console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
+11289:    console.error('WEBHOOK_ERR', e && e.message, e && e.stack);
+11402:    console.error('RISK_OWNED divert failed', conversationId, e && e.message);
+11633:        console.error('DEFER_POLL_ITEM', cid, e && e.message);
+11637:    console.error('DEFER_POLL_ERR', e && e.message);
+11652:      console.error('AUTO_CLOSE_SEARCH_ERR', e && e.message);
+11672:        console.error('AUTO_CLOSE_ITEM_ERR', id, e && e.message);
+11764:        console.error('TEAMBOX_SEARCH_ERR', job.label, e && e.message);
+11775:          console.error('TEAMBOX_POLL_ITEM_ERR', job.label, id, e && e.message);
+11784:      console.error('JERRY_SEARCH_ERR', e && e.message);
+11797:        console.error('TEAMBOX_POLL_ITEM_ERR', 'JERRY', id, e && e.message);
+11862:    setTimeout(() => { replayAuthDeferred('startup').catch((e) => console.error('AUTH_REPLAY_START_ERR', e && e.message)); }, 30000);
+11865:      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_START_ERR', e && e.message));
+11866:      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_START_ERR', e && e.message));
+11867:      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_START_ERR', e && e.message));
+11871:      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_ERR', e && e.message));
+11872:      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_POLL_ERR', e && e.message));
+11873:      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_POLL_ERR', e && e.message));

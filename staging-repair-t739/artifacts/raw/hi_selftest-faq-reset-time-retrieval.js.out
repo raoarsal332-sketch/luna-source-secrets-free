@@ -1,0 +1,6 @@
+FAIL "what time does my daily loss limit reset" surfaces the clock article false == true
+FAIL "when does the daily drawdown reset" surfaces the clock article false == true
+FAIL "what timezone is the dashboard" surfaces the clock article false == true
+PASS plain daily loss limit % ask does NOT pull the clock article
+PASS account reset fee ask does NOT pull the clock article
+RESULT: FAIL (2 passed)

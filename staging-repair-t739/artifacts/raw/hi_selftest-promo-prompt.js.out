@@ -1,0 +1,45 @@
+PASS 1step-has-35
+PASS 1step-weekly
+PASS 1step-no-40
+PASS 1step-no-canned
+PASS bulk-how-auto
+PASS bulk-no-canned-required
+PASS bulk-generic
+PASS bulk-no-canned-2
+PASS bulk-no-invented-tiers
+PASS ie-300k-50
+PASS flash5
+PASS new50-existing
+PASS catalyst-no
+PASS hist-2step-family
+PASS hist-2step-no-40
+PASS wired-require
+PASS wired-resolve
+PASS wired-contextual-ai
+PASS no-canned-direct-send
+PASS wired-engine
+PASS wired-prompt-module
+PASS prompt-export
+PASS promos-exports-prompt
+node:fs:442
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open './system-prompt.txt'
+    at Object.readFileSync (node:fs:442:20)
+    at Object.<anonymous> (/tmp/hi-flat/selftest-promo-prompt.js:86:15)
+    at Module._compile (node:internal/modules/cjs/loader:1554:14)
+    at Object..js (node:internal/modules/cjs/loader:1706:10)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
+    at node:internal/main/run_main_module:36:49 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: './system-prompt.txt'
+}
+
+Node.js v22.14.0

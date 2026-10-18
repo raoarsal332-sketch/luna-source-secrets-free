@@ -449,9 +449,15 @@ function buildViews(text) {
 }
 
 function inspect(input) {
-  const raw = input === undefined || input === null ? '' : String(input);
+  let raw = '';
+  const result = { hold: false, code: '', tier: '', view: '', len: 0 };
+  try {
+    raw = input === undefined || input === null ? '' : String(input);
+  } catch (_) {
+    return { ...result, hold: true, code: CODES.ERROR, tier: 'error' };
+  }
   const len = raw.length;
-  const result = { hold: false, code: '', tier: '', view: '', len };
+  result.len = len;
   if (!raw.trim()) return result;
   try {
     if (len > MAX_SCAN_CHARS) return { ...result, hold: true, code: CODES.TOO_LARGE, tier: 'size' };
@@ -508,36 +514,41 @@ function holdFinalPublic({ screened, rendered } = {}) {
  * message_type is not an internal note is treated as customer-visible. Every string field is
  * inspected on its own and joined with the others (fields can be assembled by Intercom).
  */
+const ERROR_HOLD = (stage) => ({ hold: true, code: CODES.ERROR, tier: 'error', view: '', len: 0, stage });
+
 function holdOutgoingPayload(method, data) {
-  const m = String(method || 'get').toLowerCase();
-  if (['get', 'head', 'options'].includes(m)) return null;
-  if (!data || typeof data !== 'object') return null;
-  if (String(data.message_type || '') === 'note') return null;
-  const strings = leafStrings(data, [], 0).filter((s) => s.length);
+  try {
+    const m = String(method || 'get').toLowerCase();
+    if (['get', 'head', 'options'].includes(m)) return null;
+    if (!data || typeof data !== 'object') return null;
+    if (String(data.message_type || '') === 'note') return null;
+    return holdStrings(leafStrings(data, [], 0), 'payload');
+  } catch (_) {
+    return ERROR_HOLD('payload');
+  }
+}
+
+function holdStrings(all, stage) {
+  const strings = all.filter((s) => s.length);
   for (const s of strings) {
     const r = inspect(s);
-    if (r.hold) return { ...r, stage: 'payload' };
+    if (r.hold) return { ...r, stage };
   }
   if (strings.length > 1) {
     const r = inspect(strings.join('\n'));
-    if (r.hold) return { ...r, stage: 'payload-joined' };
+    if (r.hold) return { ...r, stage: stage + '-joined' };
   }
   return null;
 }
 
 /** Plan bodies persisted by the owner-command ledger: hold before anything reaches disk. */
 function holdPlanForPersistence(plan) {
-  if (!plan || typeof plan !== 'object') return null;
-  const strings = leafStrings(plan, [], 0).filter((s) => s.length);
-  for (const s of strings) {
-    const r = inspect(s);
-    if (r.hold) return { ...r, stage: 'plan' };
+  try {
+    if (!plan || typeof plan !== 'object') return null;
+    return holdStrings(leafStrings(plan, [], 0), 'plan');
+  } catch (_) {
+    return ERROR_HOLD('plan');
   }
-  if (strings.length > 1) {
-    const r = inspect(strings.join('\n'));
-    if (r.hold) return { ...r, stage: 'plan-joined' };
-  }
-  return null;
 }
 
 function holdResult(hold) {

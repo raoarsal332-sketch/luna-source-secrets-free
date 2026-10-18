@@ -1,0 +1,16 @@
+PASS 1a plan-diff only → not promo short-circuit
+PASS 1b history plan-diff then "2 step" → not promo
+PASS 1c mixed plan-diff + discount → not pure SEP35 short-circuit
+PASS 1d SEP35 on 2 step lite → promo OK
+PASS 1e never treat canned bulk as required paste target
+PASS 2a Italian live-agent ask detected
+PASS 2b Hinglish + short UI live-agent
+PASS 2c Fin handoff phrase
+PASS 3a non-ask status/email wording
+PASS 3b login id / trading account asks
+PASS 3c preSend blocks email re-ask when account known
+PASS 4a English/Italian/Japanese FAQ unchanged
+PASS 4b strip Cyrillic+CJK junk append
+PASS 4c full JA reply kept
+PASS 4d Trustpilot + PropFirmMatch preserved
+ALL PASS 15

@@ -1,0 +1,14 @@
+PASS daily loss answer covers a "how much can I lose in one day" ask
+PASS withdrawal answer covers a "when can I withdraw" ask
+PASS holding-time answer covers a "how long must I hold" ask
+PASS an AI disclosure covers an "are you a real person or a bot?" ask
+PASS hyphenated product name + max/maximum: "lite 1 step" ask is covered by "Lite 1-Step ... maximum"
+PASS account-size wording: "200k" ask is covered by a "$200,000" answer
+PASS account-size wording: "200k" ask is covered by a "$200K" answer
+PASS a different account size is still missed
+PASS same hyphen/max vocabulary but a different question is still missed
+PASS identity ask with no disclosure at all is still missed
+PASS topic echo with no answer is still missed
+PASS answer to a different question is still missed
+PASS multi-ask: one answered, the other still missed
+ALL PASS 13

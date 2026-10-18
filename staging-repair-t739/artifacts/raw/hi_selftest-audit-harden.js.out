@@ -1,0 +1,29 @@
+PASS: engine id audit-harden or pre-bump spacing
+PASS: 1a Haydar-like bare discount after reset → bypass promo
+PASS: 1b what is SEP35 → promo OK
+PASS: 1c discount on reset fee → bypass
+PASS: 1d handleCustomerMessage no SEP35 after reset discount
+PASS: 1e SEP35 ask still returns promo
+PASS: 2a isUsableClientEmail rejects Jurjen-style intercom-mail
+PASS: 2b collectEscalateIds skips intercom-mail only
+PASS: 2c index buildEscalate filters email (source marker)
+PASS: 2d identityEscalationNoteExtras filters
+PASS: 3a Sparsh personal login → false
+PASS: 3b naganathan give me spread check account → true
+PASS: 3c what are your spreads → true
+PASS: 3d password+login without spread → false
+PASS: 4a SPREAD_TEST_REPLY source has no em/en dash
+PASS: 4b STATUS_ONLY_REPLIES no em dash
+PASS: 4c canned paths wrap postProcess
+PASS: 5a what happens if I violate → FALLTHROUGH
+PASS: 5b what if payout rejected → FALLTHROUGH
+PASS: 5c soft-ack still SKIP
+PASS: 5d related status still STATUS_ONLY
+PASS: 6a parseAuthorizedNoteCommand bot please stop
+PASS: 6b bot-stop is owner-only (AUGUST/other teammates cannot STOP)
+PASS: 7a preSend blocks re-ask when account known
+PASS: 7b stripKnownAccountAsk marker in index
+PASS: 8a formatAccountField used in collectEscalateIds paths
+PASS: 8b formatAccountField joins ranked
+
+ALL PASS selftest-audit-harden

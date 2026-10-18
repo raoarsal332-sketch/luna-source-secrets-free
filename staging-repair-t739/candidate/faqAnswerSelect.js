@@ -254,9 +254,11 @@ async function selectApprovedAnswer(text, opts) {
   }
 
   const gateInputs = [raw, opts.priorClientTexts];
+  let languageDropped = false;
   if (typeof opts.modelClassify === 'function') {
     let modelOutcome = null;
     if (languageGate(...gateInputs).lang === 'uncertain') {
+      languageDropped = true;
       modelOutcome = { abstain: true, reason: 'language-uncertain' };
     } else
     try {
@@ -290,6 +292,7 @@ async function selectApprovedAnswer(text, opts) {
       };
     }
     if (modelOutcome && !modelOutcome.abstain && languageGate(...gateInputs).lang === 'uncertain') {
+      languageDropped = true;
       modelOutcome = { abstain: true, reason: 'language-uncertain' };
     }
     if (modelOutcome && !modelOutcome.abstain) {
@@ -306,7 +309,7 @@ async function selectApprovedAnswer(text, opts) {
   if (best && best.reason === 'model-classify' && languageGate(...gateInputs).lang === 'uncertain') {
     return { abstain: true, reason: 'language-uncertain', lang };
   }
-  if (!best) return { abstain: true, reason: 'no-confident-match', lang };
+  if (!best) return { abstain: true, reason: languageDropped ? 'language-uncertain' : 'no-confident-match', lang };
   if (best.confidence < CONFIDENCE_THRESHOLD) {
     return { abstain: true, reason: 'below-threshold', lang, confidence: best.confidence, answerId: best.answerId };
   }

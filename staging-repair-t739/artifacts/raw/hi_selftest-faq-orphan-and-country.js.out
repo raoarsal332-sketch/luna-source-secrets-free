@@ -1,0 +1,18 @@
+PASS A1 no product-less "Daily loss limit" article exists
+PASS A2 no bare "Daily and Max loss limits:" articles (4 products share that heading)
+FAIL A3 the Catalyst 3% daily loss text stays attributed to Catalyst article containing the 3% text not found
+PASS B1 "how much can I lose in one day" does not retrieve Restricted Countries first
+FAIL B2 the 2-Step loss-limit article is retrieved for that question no 2-Step loss-limit article in: 
+FAIL B3 "can I trade from Pakistan?" still retrieves Restricted Countries first Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Restricted Countries'
+
+FAIL B4 "I live in the USA, can I open an MT5 account?" still retrieves Restricted Countries first Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Restricted Countries'
+
+RESULT: FAIL (3 passed)

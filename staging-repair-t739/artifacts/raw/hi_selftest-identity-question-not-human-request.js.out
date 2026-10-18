@@ -1,0 +1,8 @@
+PASS "are you a real person or a bot?" -> honest AI answer must not raise MISSED_ESCALATION
+PASS "are you a real person?" -> honest AI answer must not raise MISSED_ESCALATION
+PASS "is this a real human or AI?" -> honest AI answer must not raise MISSED_ESCALATION
+PASS "I want to speak to a real person" -> FAQ draft must still raise MISSED_ESCALATION
+PASS "can I talk to a real agent please" -> FAQ draft must still raise MISSED_ESCALATION
+PASS "connect me to a live agent" -> FAQ draft must still raise MISSED_ESCALATION
+PASS identity question still escalates when the draft ignores it and the client also wants a manager
+ALL PASS 7

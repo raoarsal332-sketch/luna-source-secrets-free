@@ -1,0 +1,203 @@
+--- base/index.js	2026-10-18 13:14:11.688704687 +0000
++++ candidate/index.js	2026-10-18 13:30:29.919780521 +0000
+@@ -88,6 +88,21 @@
+ /* LUNA_RESPONSES_V1:END:require */
+ const control = require('./control');
+ const writeOpStore = require('./writeOpStore');
++const publicCredentialHold = require('./publicCredentialHold'); /* PUBLIC_CREDENTIAL_HOLD_V1 (t739) */
++const faqModuleGates = require('./faqModuleGates'); /* FAQ_MODULE_GATES_V1 (t739): hook for Packs/Atom detectors */
++/* LOG_TEXT_REDACTION_V1 (t739): customer and model text never go to logs. Reason codes, lengths and
++ * non-sensitive ids only. */
++function logLen(value) { return '[redacted len=' + String(value == null ? '' : value).length + ']'; }
++function icErrorCodes(data) {
++  try {
++    const errs = data && Array.isArray(data.errors) ? data.errors : [];
++    return errs.map((e) => String((e && e.code) || '').replace(/[^A-Za-z0-9_.-]/g, '').slice(0, 40)).filter(Boolean).slice(0, 5).join(',');
++  } catch (_) { return ''; }
++}
++function credentialHoldLog(url, hold) {
++  const cid = (String(url || '').match(/conversations\/(\d+)/) || [])[1] || '';
++  console.error(...publicCredentialHold.logLine(cid, hold));
++}
+ let faqKb = null;
+ try {
+   faqKb = require('./faq-kb');
+@@ -238,6 +253,9 @@
+ async function icRequest(method, url, data, tag, opScope, retryPermission) {
+   const faqVeto = faqAssistance.privilegedVeto((String(url).match(/conversations\/(\d+)/) || [])[1], data && data.message_type || 'other-write');
+   if (!['get','head','options'].includes(String(method).toLowerCase()) && faqVeto) return faqVeto;
++  // PUBLIC_CREDENTIAL_HOLD_V1: nothing credential-bearing reaches the fast-ack store or the transport.
++  const __credHold = publicCredentialHold.holdOutgoingPayload(method, data);
++  if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
+   // Fast-ack worker only. Direct handleWebhook / pollers / sync mode have no event
+   // context, so this returns the existing request unchanged.
+   if (!webhookFastAck.currentStore()) return icRequestUnguarded(method, url, data, tag, opScope, retryPermission);
+@@ -281,6 +299,9 @@
+   let opId = null;
+ 
+   if (isWrite) {
++    // PUBLIC_CREDENTIAL_HOLD_V1: last check on the exact payload, before any op record is created.
++    const __credHold = publicCredentialHold.holdOutgoingPayload(method, data);
++    if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
+     opId = writeOpStore.opKey(method, url, data, opScope);
+     const prev = writeOpStore.get(opId);
+     if (writeOpStore.shouldSkipReplay(prev)) {
+@@ -356,7 +377,7 @@
+     return { ok: false, unknown: true, status: last.status || 0, data: last.data };
+   }
+   if (opId) writeOpStore.set(opId, { status: 'failed', scoped: !!opScope });
+-  console.error('IC_REQ_FAIL', tag, url, last.status, JSON.stringify(last.data || '').slice(0, 300));
++  console.error('IC_REQ_FAIL', tag, url, last.status, 'codes=' + icErrorCodes(last.data), logLen(JSON.stringify(last.data || '')));
+   return { ok: false, status: last.status, data: last.data };
+ }
+ 
+@@ -1016,10 +1037,10 @@
+         clientTexts,
+       });
+       if (repaired.repaired) {
+-        console.log('PROBLEM_SUMMARY_REPAIRED', repaired.reason, polished.slice(0, 80), '=>', repaired.problem.slice(0, 80));
++        console.log('PROBLEM_SUMMARY_REPAIRED', repaired.reason, logLen(polished), '=>', logLen(repaired.problem));
+         polished = repaired.problem;
+       }
+-      console.log('PROBLEM_SUMMARY_POLISHED', raw.slice(0, 80), '=>', polished.slice(0, 80));
++      console.log('PROBLEM_SUMMARY_POLISHED', logLen(raw), '=>', logLen(polished));
+       return polished;
+     }
+   } catch (e) {
+@@ -1220,7 +1241,7 @@
+       clientTexts,
+     });
+     if (pre.repaired) {
+-      console.log('PROBLEM_PRE_REPAIR', pre.reason, String(problemText).slice(0, 80), '=>', pre.problem.slice(0, 80));
++      console.log('PROBLEM_PRE_REPAIR', pre.reason, logLen(problemText), '=>', logLen(pre.problem));
+       problemText = pre.problem;
+     }
+   }
+@@ -4193,7 +4214,7 @@
+   s = s.replace(/\s{2,}/g, ' ').replace(/\s+([,.!?])/g, '$1').trim();
+   if (!s) return ESCALATE_CLIENT_HANDOFF_DEFAULT;
+   if (s !== before) {
+-    console.log('ESCALATE_HANDOFF_SOFTENED', String(before).slice(0, 120), '=>', s.slice(0, 120));
++    console.log('ESCALATE_HANDOFF_SOFTENED', logLen(before), '=>', logLen(s));
+   }
+   return s;
+ }
+@@ -6112,6 +6133,15 @@
+   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
+   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
+   const finalBody = messageType === 'note' ? String(body || '') : toHtml(body);
++  if (messageType === 'comment') {
++    // PUBLIC_CREDENTIAL_HOLD_V1: final public-content boundary. The screened text and the rendered
++    // payload are both checked; a hit holds the send. Nothing is rewritten.
++    const __credHold = publicCredentialHold.holdFinalPublic({ screened: body, rendered: finalBody });
++    if (__credHold) {
++      credentialHoldLog('conversations/' + conversationId, __credHold);
++      return publicCredentialHold.holdResult(__credHold);
++    }
++  }
+   const r = await icRequest(
+     'post',
+     'https://api.intercom.io/conversations/' + conversationId + '/reply',
+@@ -6589,7 +6619,7 @@
+       if (fbHits.length) {
+         console.log('POSTGATE_SUPPRESSED', conversationId, 'candidate=' + hits.join(',') + ' fallback=' + fbHits.join(','));
+         // POSTGATE_DIAG_V1: which check fired and on what (validator detail only: a figure or a phrase, no transcript).
+-        try { console.log('POSTGATE_FAIL_DETAIL', conversationId, JSON.stringify(__lastPostgateFails.map((f) => [f.code, String(f.detail || '').slice(0, 160)]))); } catch (_) {}
++        try { console.log('POSTGATE_FAIL_DETAIL', conversationId, JSON.stringify(__lastPostgateFails.map((f) => [f.code, logLen(f.detail)]))); } catch (_) {}
+         // Live silence on 215476039051125: both candidate and identity fallback failed
+         // mandatory postgate -> return null left the client unanswered. Prefer a
+         // number-free stock line that itself passes the same revalidation.
+@@ -6995,7 +7025,7 @@
+     ],
+   });
+   const rawOut = ((ai.choices[0] && ai.choices[0].message && ai.choices[0].message.content) || '').trim();
+-  console.log('OWNER_CMD_LLM_RAW', conversationId, rawOut.slice(0, 240));
++  console.log('OWNER_CMD_LLM_RAW', conversationId, logLen(rawOut));
+   return parseOwnerCommandAction(rawOut);
+ }
+ 
+@@ -7048,6 +7078,10 @@
+     return 'NOTE';
+   }
+   if (action === 'REPLY') {
++    if (plan && plan.held) {
++      await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(plan.held), 'command:' + commandPartId);
++      return 'HELD';
++    }
+     if (!body) {
+       await postReply(conversationId, 'note', 'I could not draft a client reply from that instruction , please clarify.', 'command:' + commandPartId);
+       return 'CLARIFY';
+@@ -7059,7 +7093,9 @@
+     // Owner-dictated public REPLY: never welcome-intro, never already-replied skip (Escalations often have prior Arsal notes).
+     let out = postProcessModelReply(body, conversationId);
+     const r = await postReply(conversationId, 'comment', out);
+-    if (r && r.status >= 200 && r.status < 300) {
++    if (r && r.held) {
++      await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(r.holdCode), 'command:' + commandPartId);
++    } else if (r && r.status >= 200 && r.status < 300) {
+       await postReply(conversationId, 'note', 'Sent to client.', 'command:' + commandPartId);
+     } else {
+       console.log('OWNER_REPLY_FAIL', conversationId, r && r.status);
+@@ -7360,7 +7396,9 @@
+       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
+       let out = postProcessModelReply(cmdBody, conversationId);
+       const r = await postReply(conversationId, 'comment', out);
+-      if (r && r.status >= 200 && r.status < 300) {
++      if (r && r.held) {
++        await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(r.holdCode), 'command:' + partId);
++      } else if (r && r.status >= 200 && r.status < 300) {
+         await postReply(conversationId, 'note', 'Sent to client.', 'command:' + partId);
+       } else {
+         console.log('AUTH_NOTE REPLY_FAIL', conversationId, r && r.status);
+@@ -7390,12 +7428,24 @@
+       try {
+         const exactSend = extractOwnerSendToClientBody(plain);
+         const mentionNote = extractOwnerMentionAskReplyBody(plain);
+-        const plan = context.record.plan || (exactSend
++        let plan = context.record.plan || (exactSend
+           ? { action: 'REPLY', body: exactSend }
+           : mentionNote
+             ? { action: 'NOTE', body: mentionNote }
+             : await interpretOwnerCommandViaLlm(conversationId, full, plain, authorId));
+         if (String(plan.body || '').length > 16000) throw authorizedCommandRetry('plan-too-large');
++        // PUBLIC_CREDENTIAL_HOLD_V1: a plan body that carries a credential pair is never persisted
++        // (not even for retry) and is never executed. Only a body-free held marker is kept.
++        const __planHold = publicCredentialHold.holdPlanForPersistence(plan);
++        if (__planHold) {
++          credentialHoldLog('conversations/' + conversationId, __planHold);
++          const __act = String(plan.action || '').toUpperCase();
++          plan = {
++            action: ['REPLY', 'NOTE', 'CLOSE', 'OPEN', 'SKIP', 'STOP', 'RESUME', 'NOOP', 'CLARIFY'].includes(__act) ? __act : 'NOOP',
++            held: publicCredentialHold.safeCode(__planHold.code),
++            bodyLength: Number(__planHold.len || 0),
++          };
++        }
+         context.record.plan = plan;
+         persistAuthorizedCommand(context);
+         const done = await executeOwnerActionPlan(conversationId, full, plan, plain, partId);
+@@ -9136,7 +9186,7 @@
+           console.log('SKIP->REPLY scope_decline', conversationId);
+         }
+       } else {
+-        console.log('SKIP model', conversationId, parsed.body);
++        console.log('SKIP model', conversationId, logLen(parsed.body));
+         return res.sendStatus(200);
+       }
+     }
+@@ -10621,7 +10671,7 @@
+                   try { return require('./challengeVariantGuard').sharedFactStatus(q, '') === 'missing'; } catch (_) { return false; }
+                 };
+                 const __unpublished = general.filter((m) => __genuineQuestion(m) && !__evidenceCovers(m) && !__sharedFactAsk(m));
+-                console.log('PARTIAL_ANSWER_UNITS', conversationId, where, JSON.stringify(general.map((m) => ({ q: String(m).slice(0, 80), genuine: __genuineQuestion(m), covered: __evidenceCovers(m) }))), 'en', __english(text), __english(partialBody));
++                console.log('PARTIAL_ANSWER_UNITS', conversationId, where, JSON.stringify(general.map((m) => ({ q: logLen(m), genuine: __genuineQuestion(m), covered: __evidenceCovers(m) }))), 'en', __english(text), __english(partialBody));
+                 // Name the topic in Luna's own words ("a timeframe for payouts"), never by quoting the client's
+                 // sentence back. TOPIC_SAFE_HONEST_LINE_V1 (2026-09-26, live 215476112354442 / 215476109613017): the
+                 // topic used to be the first five raw words of the client's message ("the answer on hy was checking
+@@ -12004,6 +12054,7 @@
+ function faqAssistanceDeps() {
+   return {
+     recover:ownershipUnavailableResult,
++    moduleGates: faqModuleGates.list,
+     fetch: (id) => fetchConversation(id), parts: authoritativeConversationParts, control,
+     clientName: (full) => (contactBits(full) || {}).name || '',
+     ownership: (full, parts) => ownershipBoundary.evaluate(full, parts, ownershipOptions(full.id)),

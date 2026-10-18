@@ -1,0 +1,7 @@
+PASS scopeDecline flag: decline is sent, not escalated
+[statePresend] presend enforce conversation=selftest-scope-17923314109350.35456756928317956 route=FULL codes=MISSED_QUESTION final=needs-escalate
+PASS no flag: same decline text still fails closed
+[statePresend] presend enforce conversation=selftest-scope-17923314109620.058951531024381776 route=FULL codes=EMPTY_REPLY final=fallback-reply
+[statePresend] presend enforce conversation=selftest-scope-17923314109630.290750756737999 route=FULL codes=EMPTY_REPLY final=fallback-reply
+PASS scopeDecline flag does not change how an empty draft is handled
+ALL PASS 3

@@ -1,0 +1,56 @@
+--- base/faqAssistance.js	2026-10-18 13:14:11.688704687 +0000
++++ candidate/faqAssistance.js	2026-10-18 13:31:01.031478822 +0000
+@@ -37,7 +37,7 @@
+ 
+ /** Approved-answer abstain: no plan, but legacy/KB path may still answer (pending catalog rows). */
+ function approvedSelectAbstainFallthrough(reason) {
+-  return /^(?:no-confident-match|needs-owner-approval|below-threshold|unknown-answer-id|classifier-empty|classifier-unknown-or-nonsendable|classifier-low-confidence|classifier-timeout|classifier-error)$/.test(
++  return /^(?:no-confident-match|needs-owner-approval|below-threshold|unknown-answer-id|classifier-empty|classifier-unknown-or-nonsendable|classifier-low-confidence|classifier-timeout|classifier-error|language-uncertain)$/.test(
+     String(reason || '')
+   );
+ }
+@@ -397,6 +397,25 @@
+   return /[^\u0000-\u007f]/.test(String(text || ''));
+ }
+ 
++function disabledModuleHit(text, d) {
++  const gates = typeof d.moduleGates === 'function' ? d.moduleGates() : d.moduleGates || [];
++  for (const g of gates) {
++    let on;
++    try {
++      on = !!g.enabled();
++    } catch (_) {
++      on = false;
++    }
++    if (on) continue;
++    try {
++      if (g.detect(text)) return g.id;
++    } catch (_) {
++      return g.id;
++    }
++  }
++  return null;
++}
++
+ async function prepare(full, parts, topic, d) {
+   const cid = String((full && full.id) || '');
+   let reason = ownershipFailClosed(full, parts, d) || controls(cid, full, d) || historyCheck(full, parts, d);
+@@ -440,6 +459,18 @@
+     return { reason: 'mixed-unowned-escalation', terminal: false };
+   }
+ 
++  // Module-off fail-closed: an unowned English turn that a disabled module (Packs/Atom) claims
++  // must not be answered from the generic V12 selection or the model path. The reason is
++  // terminal, is not in DEFER_TO_MAIN_PATH, and posts no reply, note or assignment.
++  if (!humanOwns) {
++    const moduleHit = disabledModuleHit(text, d);
++    if (moduleHit) {
++      const gate = selectMod.languageGate(text, priorClientTexts(parts));
++      if (gate.lang === 'en') return { reason: 'module-off-fail-closed', terminal: true };
++      if (gate.lang === 'uncertain') return { reason: 'language-uncertain-module-off', terminal: false };
++    }
++  }
++
+   const requireOwnerApproved = d.requireOwnerApprovedAnswers !== false;
+   const selectOptsBase = {
+     humanOwns,

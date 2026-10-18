@@ -1,0 +1,11 @@
+[statePresend] presend enforce conversation=selftest-missedq-a-1792331410792 route=FULL codes=MISSED_QUESTION final=regenerated-ok
+PASS gate(): regenerate wired fixes MISSED_QUESTION with a real answer
+[statePresend] presend enforce conversation=selftest-missedq-b-1792331410819 route=FULL codes=MISSED_QUESTION final=clarify-reply
+PASS gate(): unclear follow-up on a missed question gets a clarify ask, not the holding line
+[statePresend] presend enforce conversation=selftest-missedq-b2-1792331410822 route=FULL codes=MISSED_QUESTION final=clarify-reply
+[statePresend] presend enforce conversation=selftest-missedq-b2-1792331410822 route=FAST codes=MISSED_QUESTION final=needs-escalate
+PASS gate(): repeated unclear follow-up escalates instead of re-asking clarify forever
+[statePresend] presend enforce conversation=selftest-missedq-c-1792331410826 route=FAST codes=MISSED_QUESTION final=needs-escalate
+PASS gate(): understood question the draft cannot answer escalates, not the holding line
+PASS presendMega: true multi-ask miss still raises MISSED_QUESTION (regression guard)
+ALL PASS 5

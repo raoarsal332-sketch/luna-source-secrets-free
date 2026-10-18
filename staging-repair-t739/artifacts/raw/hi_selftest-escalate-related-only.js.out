@@ -1,0 +1,20 @@
+PASS 1a awaiting + any update on IP review → STATUS_ONLY
+PASS 1b awaiting + how long / is my proof enough / reset now → STATUS_ONLY
+PASS 2a awaiting + ok thanks → SKIP
+PASS 2b awaiting + thanks / got it → SKIP
+PASS 3a awaiting + what is catalyst challenge? → FALLTHROUGH (not status-only)
+PASS 3b awaiting + what is SEP35? → FALLTHROUGH
+PASS 3c awaiting + lite vs standard features → FALLTHROUGH
+PASS 3d awaiting + general leverage ask → FALLTHROUGH
+PASS 4a not awaiting → FALLTHROUGH
+PASS 4b after teammate public reply → gate clears
+PASS 4c Luna/Arsal reply does NOT clear awaiting
+PASS 5a pickEscalateStatusReply varies and never invents outcomes
+PASS 6a buildEscalateContext detects ip_risk topic
+PASS 6b unrelated non-FAQ still FALLTHROUGH (not status-only)
+PASS 6c handoff-only Arsal lock + payout issue supersedes awaiting
+PASS 6d status wording naming a different topic supersedes awaiting
+PASS 6e same payout follow-up remains STATUS_ONLY
+PASS 6f unrelated clear FAQ keeps prior awaiting lock armed
+PASS 7 engine id tag present
+ALL PASS 19

@@ -1,0 +1,29 @@
+PASS isGreetingOrSmallTalk true: "what are you doing ?"
+PASS isGreetingOrSmallTalk true: "what r u doing"
+PASS isGreetingOrSmallTalk true: "are you there"
+PASS isGreetingOrSmallTalk true: "you there ?"
+PASS isGreetingOrSmallTalk true: "anyone there?"
+PASS isGreetingOrSmallTalk true: "who are you"
+PASS isGreetingOrSmallTalk true: "are you a bot"
+PASS isGreetingOrSmallTalk true: "are you human"
+PASS isGreetingOrSmallTalk true: "is this a bot"
+PASS isGreetingOrSmallTalk true: "how atre you ?"
+PASS isGreetingOrSmallTalk true: "i said how are you ?"
+PASS isGreetingOrSmallTalk true: "hi"
+PASS isGreetingOrSmallTalk true: "Arsal ?"
+PASS isGreetingOrSmallTalk true: "Arsal"
+PASS isGreetingOrSmallTalk true: "Elite AI?"
+PASS isGreetingOrSmallTalk false: "what are you doing with my payout request"
+PASS isGreetingOrSmallTalk false: "are you human enough to fix my account"
+PASS isGreetingOrSmallTalk false: "what is my profit target?"
+PASS isGreetingOrSmallTalk false: "how do I reset my account?"
+PASS gate(): chitchat "what are you doing ?" sends model draft unchanged
+PASS gate(): chitchat variant
+PASS gate(): chitchat variant
+PASS gate(): chitchat variant
+[statePresend] presend enforce conversation=selftest-smalltalk-trap route=FAST codes=MISSED_QUESTION final=needs-escalate
+PASS gate(): real question stays fail-closed
+PASS isCovered(): generic offerings question covered by substantive on-topic reply
+PASS isCovered(): real specific question still needs real overlap
+PASS gate(): "Arsal ?" after a good services answer sends unchanged
+ALL PASS 27

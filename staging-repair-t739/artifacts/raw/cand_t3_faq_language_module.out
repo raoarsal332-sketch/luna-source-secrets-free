@@ -1,0 +1,34 @@
+== faq/language/module (candidate)
+  ok   F5 "please" is no longer a Roman Urdu cue (candidate) / was one at baseline
+  ok   F5 languageGate tri-state
+  ok   F5 model route is gated BEFORE the call: short catalog term with no English evidence never reaches the classifier
+  ok   F5 model route runs when prior customer messages are English
+  ok   F5 model route is gated AFTER the classifier: evidence that disappears during the call drops the model pick (any sendable id)
+  ok   F5 language never establishes intent: English evidence alone selects nothing
+  ok   F5 deterministic cue routes are not gated (documented owner decision): "free trial?" still selects
+  ok   F5 V12 keeps exactly 12 sendable answers and every one is still selected by its question
+  ok   F5 differential: with no model, candidate selection equals baseline on a mixed corpus (non-English main route unchanged)
+  ok   F5 non-English text with a model: unchanged route (model still consulted, gate says non-en)
+  ok   F1 unowned + English + module detector hit + flag OFF -> terminal module-off-fail-closed
+  ok   F1 reason is not in the defer list and finishPrepareWithoutPlan returns handled:true
+  ok   F1 side effects: no public reply, no note, no assignment, no model/classifier call, no FAQ ledger entry
+  ok   F1 flag ON for the module: branch not taken
+  ok   F1 default config (flags unset) is OFF
+  ok   F1 only 1/true/on/yes turn a flag on
+  ok   F1 human-owned conversation: branch not taken
+  ok   F1 non-English text: branch not taken (non-English main route unchanged)
+  ok   F1 uncertain language: non-terminal language-uncertain-module-off (legacy path, no V12 selection)
+  ok   F1 detector that throws counts as a hit (fails closed)
+  ok   F1 precedence: Risk team ownership, aiOff, human request and fin-wait all outrank the new branch
+  ok   F1 no gate registered (shipped default): prepare equals baseline behaviour on the same input
+OBS|v12-unowned-offer|{"out":null,"pub":0}
+  ok   preserved: V12 answer is selected and sent through the real send path, once, for an unowned English ask
+OBS|v12-owned-offer|{"out":{"handled":true,"reason":"confirmed","result":{"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"The 2-Step Lite daily loss limit is 4%.","created_at":1792331517,"author":{"type":"admin","id":"10118526"}}},"backend":{"status":"not-needed"}},"pub":1,"reason":["oss.en\"],\"receiptIds\":[\"9001\"],\"backendStatus\":\"not-needed\"}"]}
+  ok   preserved: V12 approved answer is sent once, byte-equal to the approved body, when a human owns the ticket (Option B)
+OBS|stop-history|{"reason":"ownership-ambiguous-fail-closed","terminal":true}
+  ok   preserved: STOP in history, Risk/Escalations team, aiOff -> silence reasons unchanged
+  ok   preserved: duplicate prevention - the second offer for the same turn does not send again
+  ok   preserved: concurrent offers serialize and send at most once (locks)
+  ok   preserved: ownership write lock serialises concurrent public sends for one conversation
+  ok   no egress attempt was made in this process
+RESULT faq/language/module (candidate): 29 passed, 0 failed, 29 total

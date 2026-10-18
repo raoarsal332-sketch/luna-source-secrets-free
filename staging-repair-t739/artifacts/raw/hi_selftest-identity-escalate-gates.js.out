@@ -1,0 +1,18 @@
+PASS 1 collectEscalateIds + account_sufficient
+PASS 2 both empty → ask account once, then WAIT (no empty-identity escalate)
+PASS 2b explicit client decline is still the escape hatch (must not hang forever)
+PASS 2c real account after the asks proceeds
+PASS 3 clientSaidNoAccount + declinedAccount ready
+PASS 4 account + declinedEmail → ready, no email ask
+PASS 5 extractAccountNumbersFromText patterns
+PASS 5b extraction does NOT invent accounts
+PASS 6 preSend blocks email ask when account present
+PASS 7 preSend blocks account ask when declined / known
+PASS 8 preSend does NOT block normal replies that merely mention account/email
+PASS 9 detectIdentityAskFields recognises live ask variants
+PASS 10 soft-edge ask variants + multi-line + non-asks
+PASS 11 challenge size must not beat real accounts (Sebastian)
+PASS 12 IPv4 digits must not beat explicit account (Aryan)
+PASS 13 latest bare account beats earlier unlabeled number (Preston)
+PASS 14 extractAccountNumbersFromText strips IP and sizes
+ALL PASS 17

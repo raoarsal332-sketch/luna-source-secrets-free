@@ -1,0 +1,7 @@
+PASS user.created → wait
+PASS Elite owns, no live-agent → wait
+PASS client "No, I need a live agent" → do not wait
+PASS Italian live-agent ask → do not wait
+PASS Fin handoff phrase in history → do not wait
+PASS Arsal assigned but Elite still owning, no handoff → still wait
+ALL PASS 6

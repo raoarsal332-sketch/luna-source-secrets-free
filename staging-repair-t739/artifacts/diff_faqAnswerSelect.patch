@@ -1,0 +1,118 @@
+--- base/faqAnswerSelect.js	2026-10-18 13:14:11.688704687 +0000
++++ candidate/faqAnswerSelect.js	2026-10-18 13:48:00.657249337 +0000
+@@ -12,6 +12,10 @@
+   return /[^\u0000-\u007f]/.test(String(text || ''));
+ }
+ 
++const ES_CUE_RE = /\b(?:el|la|los|las|qué|que|cuál|cual|límite|limite|pérdida|perdida|días|dias|apalancamiento)\b/i;
++// 'please' is ordinary English and is deliberately not a Roman Urdu cue.
++const UR_LATN_CUE_RE = /\b(?:hai|hain|mein|kitna|kya|nahi|nahin|bhai|ka|ki|ke|ho\s+gaya|aap|aapki|aap\s*ka)\b/i;
++
+ function detectLangHint(text) {
+   const t = String(text || '');
+   if (/[\u0600-\u06ff]/.test(t) && /[\u0600-\u06ff]{3,}/.test(t)) {
+@@ -20,15 +24,52 @@
+     return 'ur';
+   }
+   if (/[\u0900-\u097f]/.test(t)) return 'hi';
+-  if (/\b(?:el|la|los|las|qué|que|cuál|cual|límite|limite|pérdida|perdida|días|dias|apalancamiento)\b/i.test(t)) {
+-    return 'es';
+-  }
+-  if (/\b(?:hai|hain|mein|kitna|kya|nahi|nahin|bhai|please|ka|ki|ke|ho\s+gaya|aap|aapki|aap\s*ka)\b/i.test(t)) {
+-    return 'ur-latn';
+-  }
++  if (ES_CUE_RE.test(t)) return 'es';
++  if (UR_LATN_CUE_RE.test(t)) return 'ur-latn';
+   return 'en';
+ }
+ 
++const EN_FUNCTION_WORDS = new Set(
++  'a an the is are was were am be been do does did can could will would should may might i me my we our you your it its this that these those what when where which who whom why how to of in on at for from with without about and or but if so not no yes as by than then there here have has had get got need want please thanks thank hello hi'.split(
++    ' '
++  )
++);
++
++function englishEvidence(text) {
++  const words = String(text || '')
++    .toLowerCase()
++    .match(/[a-z']+/g);
++  if (!words || words.length < 3) return false;
++  const seen = new Set(words.filter((w) => EN_FUNCTION_WORDS.has(w)));
++  seen.delete('please');
++  seen.delete('thanks');
++  seen.delete('thank');
++  seen.delete('hello');
++  seen.delete('hi');
++  return seen.size >= 2;
++}
++
++function nonEnglishEvidence(text) {
++  const t = String(text || '');
++  return hasNonLatin(t) || ES_CUE_RE.test(t) || UR_LATN_CUE_RE.test(t);
++}
++
++/**
++ * Tri-state language gate. A short catalog term ("payout?") is not English evidence: English
++ * needs function-word evidence in the current text or in prior customer messages. Language
++ * never establishes intent; this only decides whether the model-classifier route may run.
++ * 'non-en' is returned unchanged for the existing non-English route.
++ */
++function languageGate(text, priorTexts) {
++  const cur = String(text || '');
++  if (nonEnglishEvidence(cur)) return { lang: 'non-en', basis: 'current-non-english' };
++  if (englishEvidence(cur)) return { lang: 'en', basis: 'current-english' };
++  const prior = (Array.isArray(priorTexts) ? priorTexts : []).map((x) => String(x || '')).filter(Boolean);
++  if (prior.some(nonEnglishEvidence)) return { lang: 'non-en', basis: 'prior-non-english' };
++  if (prior.some(englishEvidence)) return { lang: 'en', basis: 'prior-english' };
++  return { lang: 'uncertain', basis: 'no-reliable-evidence' };
++}
++
+ function productHint(text) {
+   const t = String(text || '').toLowerCase();
+   if (/2\s*-?\s*step\s*lite|lite\s*2\s*-?\s*step|2step\s*lite/.test(t)) return '2step-lite';
+@@ -212,8 +253,14 @@
+     }
+   }
+ 
++  const gateInputs = [raw, opts.priorClientTexts];
++  let languageDropped = false;
+   if (typeof opts.modelClassify === 'function') {
+     let modelOutcome = null;
++    if (languageGate(...gateInputs).lang === 'uncertain') {
++      languageDropped = true;
++      modelOutcome = { abstain: true, reason: 'language-uncertain' };
++    } else
+     try {
+       const ms = Math.max(50, Number(opts.classifyTimeoutMs) || 1200);
+       const classified = await Promise.race([
+@@ -244,6 +291,10 @@
+         reason: String(e && e.message) === 'select-timeout' ? 'classifier-timeout' : 'classifier-error',
+       };
+     }
++    if (modelOutcome && !modelOutcome.abstain && languageGate(...gateInputs).lang === 'uncertain') {
++      languageDropped = true;
++      modelOutcome = { abstain: true, reason: 'language-uncertain' };
++    }
+     if (modelOutcome && !modelOutcome.abstain) {
+       if (!best || modelOutcome.confidence >= best.confidence) {
+         best = modelOutcome;
+@@ -255,7 +306,10 @@
+     }
+   }
+ 
+-  if (!best) return { abstain: true, reason: 'no-confident-match', lang };
++  if (best && best.reason === 'model-classify' && languageGate(...gateInputs).lang === 'uncertain') {
++    return { abstain: true, reason: 'language-uncertain', lang };
++  }
++  if (!best) return { abstain: true, reason: languageDropped ? 'language-uncertain' : 'no-confident-match', lang };
+   if (best.confidence < CONFIDENCE_THRESHOLD) {
+     return { abstain: true, reason: 'below-threshold', lang, confidence: best.confidence, answerId: best.answerId };
+   }
+@@ -287,6 +341,7 @@
+ module.exports = {
+   CONFIDENCE_THRESHOLD,
+   detectLangHint,
++  languageGate,
+   productHint,
+   accountStatusAsk,
+   payoutConsistencyAsk,

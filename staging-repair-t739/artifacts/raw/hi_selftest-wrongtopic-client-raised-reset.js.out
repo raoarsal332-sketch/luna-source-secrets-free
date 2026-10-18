@@ -1,0 +1,5 @@
+PASS client raised free retry + payout split -> on-topic answer must NOT be WRONG_TOPIC
+PASS client asked about second chance split in other wording -> still not WRONG_TOPIC
+PASS client asked ONLY about payout, draft pushes reset/retry -> must still fail closed
+PASS client asked ONLY about withdrawal, draft name-checks payout but pushes retry -> still fail closed
+ALL PASS 4

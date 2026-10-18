@@ -1,0 +1,7 @@
+IDENTITY_BEFORE_ESCALATE asked missing test-a {
+  needAccount: true,
+  needEmail: false,
+  kind: 'ACCOUNT',
+  decision: 'both_missing_ask_account'
+}
+ALL PASS identity-before-escalate
