@@ -87,11 +87,11 @@ const FOREIGN_MARKERS = new Set(
     'el la los las una uno unos cual cuales cuanto cuanta cuantos como donde cuando porque pago pagos retiro retiros ' +
     'cuenta reembolso reembolsos devolucion devolver mi mis su sus tengo puedo quiero precio precios cuota perdida ' +
     'limite diario recompensa apalancamiento ' +
-    'os as qual quais quanto saque saques conta reembolsar devolucao preco precos taxa meu minha voce ' +
-    'hai hain hoon kya kitna kitni kitne nahi nahin mein main bhai wapas paisa paisay paise aap apka apki mera meri ' +
+    'os qual quais quanto saque saques conta reembolsar devolucao preco precos taxa meu minha voce ' +
+    'hai hain hoon kya kitna kitni kitne nahi nahin mein bhai wapas paisa paisay paise aap apka apki mera meri ' +
     'mujhe kab kaise kyun kyu karo karna milega milay milta ka ki ke se ko tak abhi bata batao btao ' +
     'le les des quel quelle combien remboursement compte mon ma mes prix ' +
-    'der die das wie viel kosten auszahlung konto erstattung preis ' +
+    'der das wie viel kosten auszahlung konto erstattung preis ' +
     'qeemat keemat qimat'
   ).split(' ')
 );
@@ -211,17 +211,17 @@ function canon(t) {
     slots.ords.push(ORD_WORDS[w]);
     return ' ORD ';
   });
-  c = c.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(times?|payouts?|withdrawals?|cash\s*-?\s*outs?|settlements?)\b/g, (m, n, w) => {
+  c = c.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(times?|payouts?|withdrawals?|cash\s*-?\s*outs?|settlements?|distributions?|disbursements?)\b/g, (m, n, w) => {
     const v = ORD_WORDS[n] || Number(n);
     slots.ords.push(v);
-    return /^time/.test(w) ? ' ORD times ' : ' ORD ' + w + ' ';
+    return /^time/.test(w) ? ' ORD times ' : ' ORD PAYOUT ';
   });
   c = c.replace(/\badd\s*-?\s*ons?\b/g, ' addon ');
   c = c.replace(/\bcheck\s*-?\s*out\b/g, ' checkout ');
   c = c.replace(/\b(?:real|live)\s+(?:money|capital|funds|trading\s+capital|accounts?)\b/g, ' REALCAPITAL ');
   c = c.replace(/\b(?:before|without|excluding|ignoring)\s+(?:any\s+)?(?:coupons?|codes?|discounts?)\b/g, ' PRELIST ');
   c = c.replace(
-    /\b(?:pay\s*-?\s*outs?|payouts?|withdrawals?|withdraw(?:s|ing|n)?|cash\s*-?\s*outs?|(?:get|gets|getting|got|am|are|is|be|been|being|was|were)\s+paid(?:\s+out)?|paid\s+out|pay(?:ing|s)?\s+out|reward\s+requests?)\b/g,
+    /\b(?:pay\s*-?\s*outs?|payouts?|withdrawals?|withdraw(?:s|ing|n)?|cash\s*-?\s*outs?|settlements?|distributions?|disbursements?|(?:get|gets|getting|got|am|are|is|be|been|being|was|were)\s+paid(?:\s+out)?|paid\s+out|pay(?:ing|s)?\s+out|reward\s+requests?)\b/g,
     ' PAYOUT '
   );
   c = c.replace(/\b(?:elite\s*atom|atom)\b/g, ' ATOM ');
@@ -254,7 +254,7 @@ const RX = {
   moneyGeneric: /\b(?:money|cash|funds?|dollars?|usd|bucks|capital|payments?|deposits?|investment|invested|earnings)\b/,
   priceWord: /\b(?:price|prices|pricing|priced|cost|costs|costing|fee|fees|charge|charges|cheap|cheaper|cheapest|expensive)\b/,
   spend:
-    /\b(?:paid|payed|spent|spend|spending|bought|purchased|deposited|billed|charged|invested|put\s+(?:down|in)|forked|shelled|coughed|handed|wired|transferred|sent|gave|dropped|laid\s+out)\b/,
+    /\b(?:paid|payed|spent|spend|spending|bought|purchased|deposited|billed|charged|invested|put\s+(?:down|in|into)|forked|shelled|coughed|handed|wired|transferred|sent|gave|dropped|laid\s+out)\b/,
   firstPerson: /\b(?:i|im|ive|id|ill|we|my|our|mine|me|us)\b/,
   possessiveFee: /\b(?:my|our)\s+(?:\w+\s+){0,2}(?:fee|fees|payment|purchase|order|deposit|investment|money|cash|funds|spend)\b/,
   profitWord: /\b(?:profit|profits|reward|rewards|earned|gains?)\b/,
@@ -297,12 +297,21 @@ function evidenceFrom(c, slots, n) {
   e.moneyGeneric = has(RX.moneyGeneric);
   e.strongRecovery = has(RX.strongRecovery);
   e.weakRecovery = has(RX.weakRecovery);
+  // "back" inside a drawdown movement ("drops back under") is not a refund.
+  if (
+    e.weakRecovery &&
+    !/\b(?:return\w*|recover\w*|revers\w*|credit\w*)\b/.test(c) &&
+    /\b(?:mov\w*|drop\w*|fall\w*|trail\w*|slid\w*)\s+back\b|\bback\s+(?:down|under|below|above)\b/.test(c)
+  ) {
+    e.weakRecovery = false;
+  }
   e.transfer = has(RX.transferVerb);
   e.profit = has(RX.profitWord);
   e.splitWord = has(RX.splitWord);
   e.timing = has(RX.timing) || slots.nums.length > 0 && /\b(?:days|weeks)\b/.test(c);
   const splitCoreEarly = /\b(?:splits?|share|shares|sharing|keep|kept|cut)\b/.test(c) || /PCT\s+of\s+(?:the\s+|my\s+)?(?:profit|reward)/.test(c);
-  e.cap = has(RX.cap) || (e.payout && /\bPCT\b/.test(c) && !splitCoreEarly);
+  // Any payout percentage is not a cap. The published cap is 3%; 0.5% is the funded profitable-day threshold.
+  e.cap = has(RX.cap) || (e.payout && slots.pcts.includes(3) && !splitCoreEarly);
   e.rules = has(RX.rules);
   e.change = has(RX.change);
   e.calc = has(RX.calc);
