@@ -51,4 +51,10 @@ OWNER-REVIEWABLE DEFAULT. When a module detector claims the turn and that module
 
 `node tests/t3_faq_language_module.js` 29/29. `node tests/t6_modules.js` 35/35.
 
-Not done yet: transport regressions, full suite rerun, freeze. Atom r1 copy waits until after the freeze. Packs r1 is not copied.
+## Step 5 — regressions
+
+`tests/t8_remediation_r1.js` covers the exposed failures: safe replies delivered through `postClientCommentOnce` and `icRequest` (including the `admin_id` envelope), lone password / cue-free secret / cross-message split held, S10 ledger has no plaintext password, pending spread map size 0, bare follow-up after `SAFE_SPREAD_REPLY` sends no credential, and spread-test routing. False-hold measurement on 17 safe bodies with `admin_id` 10118526: 0 holds.
+
+Candidate: `node tests/t8_remediation_r1.js` 6/6.
+
+Not done yet: full suite rerun, freeze. Atom r1 copy waits until after the freeze. Packs r1 is not copied.
