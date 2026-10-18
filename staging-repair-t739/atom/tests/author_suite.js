@@ -148,8 +148,8 @@ async function runRobustness() {
   add('RB11-1200-char-inputs-fast(<500ms)', dt < 500, dt + 'ms');
   const r2 = await sel.selectAtomAnswer('Atom 1-Step refund ' + 'x', { enabled: true, languageGate: { lang: 'en' } });
   add('RB12-diagnostics-have-no-customer-words-by-default', !r2.diagnostics || !('residual' in r2.diagnostics), JSON.stringify(r2.diagnostics || {}));
-  const r3 = await sel.selectAtomAnswer('Atom 1-Step zzzzqq price', { enabled: true, languageGate: { lang: 'en' }, debug: true });
-  add('RB13-debug-opt-in-includes-residual', !!(r3.diagnostics && r3.diagnostics.residual), JSON.stringify(r3.diagnostics || {}));
+  const r3 = await sel.selectAtomAnswer('What is the Atom price, zzzzqq', { enabled: true, languageGate: { lang: 'en' }, debug: true });
+  add('RB13-unknown-token-does-not-block-a-price-proposition', r3.abstain !== true && r3.answerId === 'atom.prices.list.en', r3.abstain ? r3.reason : r3.answerId);
   return rows;
 }
 

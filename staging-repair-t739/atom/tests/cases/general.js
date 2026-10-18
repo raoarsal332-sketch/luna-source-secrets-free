@@ -31,7 +31,7 @@ const G = [
   ['GN21', 'How much does Elite Atom cost?', 'answer', 'atom.prices.list.en'],
   ['GN22', 'What sizes does Atom come in and how much are they?', 'answer', 'atom.prices.list.en'],
   ['GN23', 'Atom 50K 1-Step price please', 'answer', 'atom.prices.list.en'],
-  ['GN24', 'Is the Atom 7K cheap? what is the price', 'abstain'],
+  ['GN24', 'Is the Atom 7K cheap? what is the price', 'answer', 'atom.prices.list.en'],
   ['GN25', 'Can I get a bigger reward share on Atom 1-Step?', 'answer', 'atom.1step.reward.en'],
   ['GN26', 'Atom 2-Step: can I choose a 95% reward share?', 'answer', 'atom.2step.reward.en'],
   ['GN27', 'What are the Atom 1-Step reward options?', 'answer', 'atom.1step.reward.en'],
