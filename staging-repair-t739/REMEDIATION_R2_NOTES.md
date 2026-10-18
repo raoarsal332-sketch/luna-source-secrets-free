@@ -5,7 +5,9 @@ Author record for remediation cycle 2 of 2 (final) for MT5 and shared F1/F5. Ind
 - Requested model: claude-sonnet-5-5
 - Actual model this cycle: grok-4.7
 - Branch: `t739-mt5-shared`
-- Parent: `d8cc2e68e61befc9d46e28ffc636fb1d3cf86d31` (`t739-integrated-r1-full`)
+- Content commit: `47768c490a91fd805b1fbc0da6d263d1f074e1ca`
+- Freeze marker commit message: `t739: freeze t739-integrated-r2` (the commit that adds the updated `artifacts/MANIFEST.sha256` and `artifacts/FROZEN_CANDIDATE.md`)
+- Parent of the content commit: `d8cc2e68e61befc9d46e28ffc636fb1d3cf86d31` (`t739-integrated-r1-full`)
 - Hard limits unchanged: no SSH, no VPS, no production, no network calls to Intercom or any external API, synthetic credentials only (`99999001` / `Fake#Pass1`), no deployment.
 - Approved guard `candidate/spreadPublicGuard.js` remains `2158c43f3fbb4c6470983065613864f477d8959e46b79c7bed2a520788bdca8c`, byte-identical to `base/spreadPublicGuard.2158c43f.js`. Exports only `SAFE_SPREAD_REPLY` and `blocksPublicCredentialPair`. No file with sha256 prefix `846c225f`.
 - Packs and Atom selector files are not edited in the r2 code commit. They stay the r1 bytes (`af30a48` and `b9af481`). The cycle-2 byte copy is a later commit, `t739-integrated-r2-full`.
