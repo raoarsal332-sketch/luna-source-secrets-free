@@ -4076,11 +4076,15 @@ const spreadPublicGuard = require('./spreadPublicGuard');
 const SPREAD_TEST_REPLY = spreadPublicGuard.SAFE_SPREAD_REPLY;
 /** Mixed spreads+other: defer template into the single final public send (O02). */
 const pendingSpreadTemplateAppend = new Map();
-function buildSpreadTestReply(customerText) {
-  if (spreadPublicGuard && typeof spreadPublicGuard.buildSafeSpreadReply === 'function') {
-    return spreadPublicGuard.buildSafeSpreadReply(customerText);
-  }
+function buildSpreadTestReply() {
   return SPREAD_TEST_REPLY;
+}
+const __spreadSquash = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+/** Append the contained spread reply once to a mixed answer (never credentials). */
+function appendSafeSpreadReply(body) {
+  const b = String(body || '');
+  if (__spreadSquash(b).includes(__spreadSquash(SPREAD_TEST_REPLY))) return b;
+  return b.trim() ? `${b.trim()}\n\n${SPREAD_TEST_REPLY}` : SPREAD_TEST_REPLY;
 }
 function lastPublicBotBodyFromParts(parts) {
   if (!Array.isArray(parts)) return '';
@@ -4094,12 +4098,13 @@ function lastPublicBotBodyFromParts(parts) {
   }
   return '';
 }
-function priorBotWasAuthorizedSpreadTemplate(parts) {
+/** True only when the last public bot message was exactly the contained spread reply. */
+function priorBotWasContainedSpreadReply(parts) {
   const body = lastPublicBotBodyFromParts(parts);
-  if (!body || !spreadPublicGuard || typeof spreadPublicGuard.isAuthorizedInvestorSpreadTemplate !== 'function') {
-    return false;
-  }
-  return !!spreadPublicGuard.isAuthorizedInvestorSpreadTemplate(body);
+  if (!body) return false;
+  const a = __spreadSquash(body);
+  const b = __spreadSquash(SPREAD_TEST_REPLY);
+  return a.length > 0 && a === b;
 }
 /* MT5_CONTAINMENT_V1:END */
 
@@ -6341,16 +6346,16 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     return null;
   }
   /* MT5_CONTAINMENT_V1:BEGIN */
-  // O02: mixed spreads+other — append exact approved template to THIS single send
+  // O02: mixed spreads+other — append the contained spread reply to THIS single send
   // (never a prior early post). Ownership / STOP / aiOff / Risk / already-replied /
   // presend gates below still apply unchanged.
   try {
     const __pendKey = String(conversationId);
     const __pend = pendingSpreadTemplateAppend.get(__pendKey);
-    if (__pend && spreadPublicGuard && typeof spreadPublicGuard.appendApprovedSpreadTemplate === 'function') {
-      const __before = String(body || '');
-      body = spreadPublicGuard.appendApprovedSpreadTemplate(body, __pend.customerText || '');
+    if (__pend) {
       pendingSpreadTemplateAppend.delete(__pendKey);
+      const __before = String(body || '');
+      body = appendSafeSpreadReply(body);
       if (body !== __before) console.log('SPREAD_TEST_REPLY_MIXED_APPEND', conversationId);
     }
   } catch (_) { /* never block send on append helper */ }
@@ -8252,20 +8257,20 @@ const handleWebhook = async (req, res) => {
     // Pure spread → one canned send + return.
     // Mixed spreads+other (O02) → do NOT post early; defer exact template onto the
     // single final public reply in postClientCommentOnceInner (append before guard).
-    // Bare follow-ups ("send again" / "what's the server") only when prior Luna
-    // public reply was the authorized spread-test template.
+    // Bare follow-ups ("send again" / "what's the server") only when the prior Luna
+    // public reply was the contained spread reply; the answer is that same text.
     {
       const __bareFollow =
         __spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
         && __spreadAskGate.isBareSpreadFollowUpAsk(text)
-        && priorBotWasAuthorizedSpreadTemplate(parts);
+        && priorBotWasContainedSpreadReply(parts);
       const __spreadAsk = isSpreadCheckAsk(text) || __bareFollow;
       if (__spreadAsk) {
         const mixed = !__bareFollow
           && __spreadAskGate && typeof __spreadAskGate.hasAdditionalNonSpreadAsk === 'function'
           && __spreadAskGate.hasAdditionalNonSpreadAsk(text);
         if (!mixed) {
-          const spreadBody = postProcessModelReply(buildSpreadTestReply(text), conversationId);
+          const spreadBody = postProcessModelReply(buildSpreadTestReply(), conversationId);
           await postClientCommentOnce(conversationId, spreadBody, latestUser, clientName);
           console.log(__bareFollow ? 'SPREAD_TEST_REPLY_FOLLOWUP' : 'SPREAD_TEST_REPLY', conversationId);
           return res.sendStatus(200);
@@ -11279,6 +11284,7 @@ const handleWebhook = async (req, res) => {
     return res.sendStatus(200);
     } finally {
       clientReplyInflight.delete(inflightKey);
+      pendingSpreadTemplateAppend.delete(inflightKey);
       scheduleBurstRerun(inflightKey);
       /* LUNA_RESPONSES_V1: close the episode on EVERY exit path from the AI section (reply
        * sent, hold, escalate, early return or throw) and emit its LUNA_EPISODE summary. A
