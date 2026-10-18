@@ -1,0 +1,2 @@
+HARNESS ERROR TypeError: Cannot read properties of undefined (reading 'packsEnabled')
+    at main (/tmp/int/packs_base/tests/run-author-tests.js:122:65)

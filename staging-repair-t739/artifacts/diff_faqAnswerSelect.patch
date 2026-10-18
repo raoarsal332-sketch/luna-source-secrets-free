@@ -1,5 +1,5 @@
 --- base/faqAnswerSelect.js	2026-10-18 13:14:11.688704687 +0000
-+++ candidate/faqAnswerSelect.js	2026-10-18 13:48:00.657249337 +0000
++++ candidate/faqAnswerSelect.js	2026-10-18 13:59:40.064186022 +0000
 @@ -12,6 +12,10 @@
    return /[^\u0000-\u007f]/.test(String(text || ''));
  }
@@ -11,7 +11,7 @@
  function detectLangHint(text) {
    const t = String(text || '');
    if (/[\u0600-\u06ff]/.test(t) && /[\u0600-\u06ff]{3,}/.test(t)) {
-@@ -20,15 +24,52 @@
+@@ -20,15 +24,79 @@
      return 'ur';
    }
    if (/[\u0900-\u097f]/.test(t)) return 'hi';
@@ -52,67 +52,111 @@
 +}
 +
 +/**
++ * The single language-gate result shape shared by this selector, the Packs module and the
++ * Atom module (see faqModuleAdapter.normalizeGate). `lang` is the tri-state; `language`,
++ * `confident` and `allowsAnswer` are the Packs-required fields; Atom reads `lang`/`language`.
++ */
++function mkGate(lang, basis) {
++  const en = lang === 'en';
++  return {
++    lang,
++    language: en ? 'en' : lang === 'non-en' ? 'non-en' : 'unknown',
++    confident: lang !== 'uncertain',
++    allowsAnswer: en,
++    basis,
++  };
++}
++
++/**
 + * Tri-state language gate. A short catalog term ("payout?") is not English evidence: English
 + * needs function-word evidence in the current text or in prior customer messages. Language
-+ * never establishes intent; this only decides whether the model-classifier route may run.
++ * never establishes intent; this only decides whether a route may run at all.
 + * 'non-en' is returned unchanged for the existing non-English route.
 + */
 +function languageGate(text, priorTexts) {
 +  const cur = String(text || '');
-+  if (nonEnglishEvidence(cur)) return { lang: 'non-en', basis: 'current-non-english' };
-+  if (englishEvidence(cur)) return { lang: 'en', basis: 'current-english' };
++  if (nonEnglishEvidence(cur)) return mkGate('non-en', 'current-non-english');
++  if (englishEvidence(cur)) return mkGate('en', 'current-english');
 +  const prior = (Array.isArray(priorTexts) ? priorTexts : []).map((x) => String(x || '')).filter(Boolean);
-+  if (prior.some(nonEnglishEvidence)) return { lang: 'non-en', basis: 'prior-non-english' };
-+  if (prior.some(englishEvidence)) return { lang: 'en', basis: 'prior-english' };
-+  return { lang: 'uncertain', basis: 'no-reliable-evidence' };
++  if (prior.some(nonEnglishEvidence)) return mkGate('non-en', 'prior-non-english');
++  if (prior.some(englishEvidence)) return mkGate('en', 'prior-english');
++  return mkGate('uncertain', 'no-reliable-evidence');
++}
++
++/** Gate for one clause evaluated inside a longer customer turn: any non-English evidence wins, then any English evidence. */
++function languageGateForTurn(clause, turnText, priorTexts) {
++  const a = languageGate(clause, priorTexts);
++  if (!turnText || turnText === clause) return a;
++  const b = languageGate(turnText, priorTexts);
++  if (a.lang === 'non-en' || b.lang === 'non-en') return a.lang === 'non-en' ? a : b;
++  if (a.lang === 'en') return a;
++  if (b.lang === 'en') return b;
++  return a;
 +}
 +
  function productHint(text) {
    const t = String(text || '').toLowerCase();
    if (/2\s*-?\s*step\s*lite|lite\s*2\s*-?\s*step|2step\s*lite/.test(t)) return '2step-lite';
-@@ -212,8 +253,14 @@
+@@ -184,7 +252,14 @@
+   if (accountStatusAsk(raw)) return { abstain: true, reason: 'account-status-boundary' };
+   if (opts.humanOwns && payoutConsistencyAsk(raw)) return { abstain: true, reason: 'backend-adjacent-payout' };
+ 
+-  const lang = opts.langHint || detectLangHint(raw);
++  // One gate, evaluated for every route (deterministic cue, contextual follow-up, model classifier)
++  // and re-evaluated before the result is built. Uncertain language never selects anything, and an
++  // English verdict is never re-rendered into another locale by a hint.
++  const gateNow = () => languageGateForTurn(raw, opts.turnText, opts.priorClientTexts);
++  if (gateNow().lang === 'uncertain') return { abstain: true, reason: 'language-uncertain' };
++
++  let lang = opts.langHint || detectLangHint(raw);
++  if (gateNow().lang === 'en') lang = 'en';
+   const prod = productHint(raw);
+   const surface = raw
+     .normalize('NFKD')
+@@ -212,8 +287,13 @@
      }
    }
  
-+  const gateInputs = [raw, opts.priorClientTexts];
 +  let languageDropped = false;
    if (typeof opts.modelClassify === 'function') {
      let modelOutcome = null;
-+    if (languageGate(...gateInputs).lang === 'uncertain') {
++    if (gateNow().lang === 'uncertain') {
 +      languageDropped = true;
 +      modelOutcome = { abstain: true, reason: 'language-uncertain' };
 +    } else
      try {
        const ms = Math.max(50, Number(opts.classifyTimeoutMs) || 1200);
        const classified = await Promise.race([
-@@ -244,6 +291,10 @@
+@@ -244,6 +324,10 @@
          reason: String(e && e.message) === 'select-timeout' ? 'classifier-timeout' : 'classifier-error',
        };
      }
-+    if (modelOutcome && !modelOutcome.abstain && languageGate(...gateInputs).lang === 'uncertain') {
++    if (modelOutcome && !modelOutcome.abstain && gateNow().lang === 'uncertain') {
 +      languageDropped = true;
 +      modelOutcome = { abstain: true, reason: 'language-uncertain' };
 +    }
      if (modelOutcome && !modelOutcome.abstain) {
        if (!best || modelOutcome.confidence >= best.confidence) {
          best = modelOutcome;
-@@ -255,7 +306,10 @@
+@@ -255,7 +339,11 @@
      }
    }
  
 -  if (!best) return { abstain: true, reason: 'no-confident-match', lang };
-+  if (best && best.reason === 'model-classify' && languageGate(...gateInputs).lang === 'uncertain') {
++  if (best && gateNow().lang === 'uncertain') {
 +    return { abstain: true, reason: 'language-uncertain', lang };
 +  }
++  if (best && gateNow().lang === 'en') lang = 'en';
 +  if (!best) return { abstain: true, reason: languageDropped ? 'language-uncertain' : 'no-confident-match', lang };
    if (best.confidence < CONFIDENCE_THRESHOLD) {
      return { abstain: true, reason: 'below-threshold', lang, confidence: best.confidence, answerId: best.answerId };
    }
-@@ -287,6 +341,7 @@
+@@ -287,6 +375,8 @@
  module.exports = {
    CONFIDENCE_THRESHOLD,
    detectLangHint,
 +  languageGate,
++  languageGateForTurn,
    productHint,
    accountStatusAsk,
    payoutConsistencyAsk,

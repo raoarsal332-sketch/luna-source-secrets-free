@@ -1,0 +1,39 @@
+== modules (candidate)
+  ok   G1 shared gate result is canonical for en / non-en / uncertain and carries the Packs-required fields
+  ok   G2 the canonical English gate is accepted by the real Packs and the real Atom selector (no language-gate abstain)
+  ok   G3 canonical uncertain and non-English gates are refused by both real selectors (language-gate reasons)
+  ok   G4 adapter fails closed for absent / malformed / inconsistent gates and both selectors then abstain
+  ok   G5 adapter maps Packs-shaped and Atom-shaped English gates to the canonical shape
+  ok   G6 modules called with no gate at all abstain (fail closed, nothing selected)
+  ok   D1 both module detectors are registered by the shipped candidate, both OFF by default
+  ok   D2 flag semantics: only 1/true/on/yes turn Packs on; Atom follows the module's own LUNA_ATOM_SELECTOR_ENABLED
+OBS|atom-detector-claimed|293/293
+  ok   D3 Atom detector claims every Atom author-case question (general + controls)
+  ok   D4 Atom detector: follow-up in an Atom chain is claimed, a non-follow-up after an Atom mention and plain V12 asks are not
+OBS|packs-detector|claimed=279 module-scope-cases=90 claimed-though-module-says-not-packs=0
+  ok   D5 Packs detector covers every phrase the real Packs selector answers by its own scope (no caller hint), plus obfuscated terms
+  ok   D6 neither detector claims the 12 V12 questions, plain account asks or generic English
+  ok   D7 degraded detector (module file missing) falls back to a coarse word test and never throws
+  ok   F1e2e: Packs and Atom English asks, unowned, flags OFF: handleWebhook records ZERO writes (no reply, note, assignment) and no model call
+  ok   F1e2e control: a non-module English ask on the same route is still answered (the branch does not silence everything)
+  ok   F1 mixed turn: a clearly module-specific English clause + a general V12 clause is terminal silent (no partial answer)
+  ok   F1 mixed turn: module clause + a backend/account clause is terminal silent too (and the order of the clauses does not matter)
+  ok   F1 mixed language: an English module clause inside a turn that also contains Spanish is still claimed; a purely non-English module ask is not
+  ok   F1 uncertain language: "Elite Packs?" alone is NOT terminal (documented gap) and reaches no V12 selection
+  ok   F1 runs before intent classification: a module ask that classifies as small talk / support-meta still cannot reach the main path
+  ok   F1 not taken: human-owned conversation, customer human request, fin-wait / controls outrank, flags ON route to the module
+  ok   F1 side effects (trace): terminal reason is not deferred, handled:true, no ledger, no note, no assignment, no model, one body-free log line
+  ok   ON1 Packs ON (isolated env): the real Packs selector is consulted with the unified gate; delivery is NOT wired, so the turn stays silent
+  ok   ON2 Atom ON (isolated env): real Atom selector consulted; refusal/abstain classes stay silent; nothing is sent
+  ok   ON3 one module ON does not turn the other off-gate into an answer: Packs ON + Atom OFF still silences Atom asks as module-off
+  ok   ON4 ON path with a non-English or uncertain gate does not call the module as English (non-English route unchanged / non-terminal)
+  ok   ON5 default config afterwards: flags unset in this process, both OFF
+  ok   F5b deterministic cue route: no English evidence -> approved abstention for every V12 cue question stripped to a bare catalog term
+  ok   F5b deterministic cue route: English evidence in the SAME turn (another clause) or a prior customer message lets the cue select
+  ok   F5b contextual follow-up route is gated the same way
+  ok   F5b an English verdict cannot be re-rendered into another locale by a language hint
+  ok   F5b the gate is re-evaluated before the result: English evidence that vanishes during the model call drops ANY pick, deterministic included
+  ok   F5b non-English main route unchanged: ES / Roman Urdu / Urdu-script deterministic asks still select with no English evidence
+  ok   F5b prepare passes the whole turn as language evidence: "Do you have a free trial? Are you a broker?" is selected clause by clause
+  ok   no generic stub other than the inert startup ones was called; no egress
+RESULT modules (candidate): 35 passed, 0 failed, 35 total

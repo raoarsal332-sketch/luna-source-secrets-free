@@ -111,4 +111,4 @@ RESOLVED {
 GENERIC_STUB_CALLS_AT_INIT ["logRedact.install","luna-maintainer.create"]
 EGRESS_ATTEMPTS_AT_INIT []
 FAKE_REQUESTS_AT_INIT 0
-STATE_DIR /tmp/t739-state-W8nUsm files: control.json,system-prompt.txt
+STATE_DIR /tmp/t739-state-iFoLFv files: control.json,system-prompt.txt

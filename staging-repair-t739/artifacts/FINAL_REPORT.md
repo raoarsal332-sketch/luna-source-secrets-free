@@ -1,5 +1,7 @@
 # t739 MT5 shared-file repair: candidate FREEZE report (author report, not a review)
 
+> **Superseded in part (initial integrated candidate, Packs + Atom).** The module integration, the shared language gate, F1 for mixed turns, the deterministic-route gate, the baseline-leak table and the current hashes are in `INTEGRATION_REPORT.md`, `MANIFEST.sha256` and `FROZEN_CANDIDATE.md`. The hashes of `faqAssistance.js`, `faqAnswerSelect.js` and `faqModuleGates.js` in section 1 below are from the previous freeze and are no longer current. `index.js` and `publicCredentialHold.js` are unchanged.
+
 Model id: **Claude Sonnet 5.5** (author and single integration owner of `index.js`, `faqAssistance.js`, `faqAnswerSelect.js`).
 Branch: `t739-mt5-shared` (repo is private; never merged to main, no PR to main).
 Authorization t739, owner Arsal. T0 2026-10-18 18:15 PKT. Non-production staging only.
