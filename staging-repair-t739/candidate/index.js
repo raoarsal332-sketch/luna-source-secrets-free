@@ -103,6 +103,10 @@ function credentialHoldLog(url, hold) {
   const cid = (String(url || '').match(/conversations\/(\d+)/) || [])[1] || '';
   console.error(...publicCredentialHold.logLine(cid, hold));
 }
+function credentialHoldForWrite(method, url, data) {
+  const cid = (String(url || '').match(/conversations\/(\d+)/) || [])[1] || '';
+  return publicCredentialHold.holdOutgoingPayload(method, data, { conversationId: cid });
+}
 let faqKb = null;
 try {
   faqKb = require('./faq-kb');
@@ -254,7 +258,7 @@ async function icRequest(method, url, data, tag, opScope, retryPermission) {
   const faqVeto = faqAssistance.privilegedVeto((String(url).match(/conversations\/(\d+)/) || [])[1], data && data.message_type || 'other-write');
   if (!['get','head','options'].includes(String(method).toLowerCase()) && faqVeto) return faqVeto;
   // PUBLIC_CREDENTIAL_HOLD_V1: nothing credential-bearing reaches the fast-ack store or the transport.
-  const __credHold = publicCredentialHold.holdOutgoingPayload(method, data);
+  const __credHold = credentialHoldForWrite(method, url, data);
   if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
   // Fast-ack worker only. Direct handleWebhook / pollers / sync mode have no event
   // context, so this returns the existing request unchanged.
@@ -300,7 +304,7 @@ async function icRequestUnguarded(method, url, data, tag, opScope, retryPermissi
 
   if (isWrite) {
     // PUBLIC_CREDENTIAL_HOLD_V1: last check on the exact payload, before any op record is created.
-    const __credHold = publicCredentialHold.holdOutgoingPayload(method, data);
+    const __credHold = credentialHoldForWrite(method, url, data);
     if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
     opId = writeOpStore.opKey(method, url, data, opScope);
     const prev = writeOpStore.get(opId);
@@ -379,6 +383,20 @@ async function icRequestUnguarded(method, url, data, tag, opScope, retryPermissi
   if (opId) writeOpStore.set(opId, { status: 'failed', scoped: !!opScope });
   console.error('IC_REQ_FAIL', tag, url, last.status, 'codes=' + icErrorCodes(last.data), logLen(JSON.stringify(last.data || '')));
   return { ok: false, status: last.status, data: last.data };
+}
+
+function rememberVisibleContext(conversationId, convOrParts) {
+  try {
+    const parts = Array.isArray(convOrParts) ? convOrParts : authoritativeConversationParts(convOrParts);
+    if (!parts) return;
+    const texts = [];
+    for (const p of parts) {
+      if (!p || p.part_type === 'note') continue;
+      const body = stripHtml(String(p.body || '')).trim();
+      if (body) texts.push(body);
+    }
+    publicCredentialHold.rememberConversationContext(conversationId, texts);
+  } catch (_) { /* current-body detection still runs when context cannot be read */ }
 }
 
 function stripHtml(s) {
@@ -5963,6 +5981,7 @@ async function fetchConversation(id) {
     console.log('fetchConversation fail', id, r.status);
     return null;
   }
+  rememberVisibleContext(id, r.data);
   return r.data;
 }
 
@@ -6141,7 +6160,7 @@ async function postReplyWithOwnershipLock(conversationId, messageType, body, opS
   if (messageType === 'comment') {
     // PUBLIC_CREDENTIAL_HOLD_V1: final public-content boundary. The screened text and the rendered
     // payload are both checked; a hit holds the send. Nothing is rewritten.
-    const __credHold = publicCredentialHold.holdFinalPublic({ screened: body, rendered: finalBody });
+    const __credHold = publicCredentialHold.holdFinalPublic({ screened: body, rendered: finalBody, conversationId });
     if (__credHold) {
       credentialHoldLog('conversations/' + conversationId, __credHold);
       return publicCredentialHold.holdResult(__credHold);
@@ -7441,7 +7460,8 @@ async function processAuthorizedNoteCommands(conversationId, full) {
         if (String(plan.body || '').length > 16000) throw authorizedCommandRetry('plan-too-large');
         // PUBLIC_CREDENTIAL_HOLD_V1: a plan body that carries a credential pair is never persisted
         // (not even for retry) and is never executed. Only a body-free held marker is kept.
-        const __planHold = publicCredentialHold.holdPlanForPersistence(plan);
+        rememberVisibleContext(conversationId, full);
+        const __planHold = publicCredentialHold.holdPlanForPersistence(plan, { conversationId });
         if (__planHold) {
           credentialHoldLog('conversations/' + conversationId, __planHold);
           const __act = String(plan.action || '').toUpperCase();

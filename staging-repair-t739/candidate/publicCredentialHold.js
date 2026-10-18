@@ -21,7 +21,7 @@
 
 const guard = require('./spreadPublicGuard');
 
-const VERSION = 'PUBLIC_CREDENTIAL_HOLD_V1';
+const VERSION = 'PUBLIC_CREDENTIAL_HOLD_V1+t739-r1';
 const MAX_SCAN_CHARS = 200000;
 
 const CODES = Object.freeze({
@@ -29,6 +29,9 @@ const CODES = Object.freeze({
   LABELLED: 'CRED_PAIR_LABELLED',
   UNLABELLED: 'CRED_PAIR_UNLABELLED',
   SPLIT: 'CRED_PAIR_SPLIT_UNLABELLED',
+  SECRET_LABELLED: 'CRED_SECRET_LABELLED',
+  SECRET_SHAPED: 'CRED_SECRET_SHAPED',
+  CONTEXT: 'CRED_PAIR_CONTEXT',
   URL: 'CRED_PAIR_URL',
   ENCODED: 'CRED_PAIR_ENCODED',
   TOO_LARGE: 'CRED_SCAN_TOO_LARGE',
@@ -37,14 +40,14 @@ const CODES = Object.freeze({
 
 /** Gaps that remain after this module. Reported verbatim; they stay release blockers. */
 const KNOWN_GAPS = Object.freeze([
-  'Pair split across two separate public messages (no cross-message memory at the send boundary).',
+  'Cross-message pairs are held only from the recent texts the caller registered for that conversation (last 8 public bodies, 4000 characters). A pair older than that window, or whose id half has no login/account/server cue, is not held.',
   'Password supplied only as spaced, worded or per-letter characters (login digits are folded, password characters are not).',
   'Paraphrased secret with no label word and no adjacency or strong-token shape (for example a short dictionary-word secret).',
   'Purely alphabetic labelled secret without an internal capital (cannot be told apart from ordinary words such as "password: required").',
   'Reversed, shifted (other than ROT13), compressed, encrypted or steganographic encodings; base64/hex only one level deep.',
   'Languages and scripts whose password/login label is not in the built-in label lists.',
-  'A login or password that appears only inside an image, attachment or link target that is not part of the message body.',
-  'Single logins without a password (policy: the hold is for a login together with a password).',
+  'A login or password that appears only inside an image. Link targets and attachment URLs that are fields of the outgoing payload are scanned; pixels are not.',
+  'A login id with no secret in the current customer-visible text or the registered recent context is not a hold.',
 ]);
 
 const INVISIBLE_RE = /[\u00AD\u034F\u061C\u115F\u1160\u17B4\u17B5\u180B-\u180F\u200B-\u200F\u202A-\u202E\u2060-\u206F\u3164\uFE00-\uFE0F\uFEFF\uFFA0]|\uDB40[\uDC00-\uDFFF]/g;
@@ -299,6 +302,7 @@ function labelledSecrets(view) {
       if (view[end] === '?' || view[end] === '/') continue;
       let i = end;
       let explicit = false;
+      let contentBridges = 0;
       for (let hops = 0; hops < 8; hops++) {
         const sepMatch = /^[\s:=\-\u2013\u2014>\[\]()"'\u201C\u201D\u2018\u2019*_`~|\\.,;]*/.exec(view.slice(i, i + 80));
         const sep = sepMatch ? sepMatch[0] : '';
@@ -307,13 +311,25 @@ function labelledSecrets(view) {
         const tm = /^[^\s"'\u201C\u201D\u2018\u2019<>`]+/.exec(view.slice(i, i + 256));
         if (!tm) break;
         let tok = tm[0].split(/&(?=[a-z_]+=)/i)[0];
+        if (/[:=]$/.test(tok)) {
+          explicit = true;
+          tok = tok.replace(/[:=]+$/, '');
+        }
         const low = trimToken(tok).toLowerCase();
-        if (FILLER.has(low)) {
-          if (low === 'is' || low === 'are' || low === 'was' || low === 'es' || low === 'est' || low === 'ist') explicit = true;
+        if (low === 'is' || low === 'are' || low === 'was' || low === 'es' || low === 'est' || low === 'ist') explicit = true;
+        // Words may sit between the label and the value ("password you requested: X").
+        // A later token counts only when a separator made the assignment explicit, or it is the
+        // first token. That keeps "password policy … v1.2.3-beta" from becoming a secret.
+        const bridge = (FILLER.has(low) || SECRET_STOP.has(low) || /^[a-z][a-z']{0,14}$/.test(low)) && !acceptLabelledSecret(tok, strong, explicit);
+        if (bridge) {
+          if (!FILLER.has(low)) contentBridges += 1;
+          if (contentBridges > 6) break;
           i += tm[0].length;
           continue;
         }
-        if (acceptLabelledSecret(tok, strong, explicit)) found.push({ start: i, end: i + tok.length, strong });
+        if (acceptLabelledSecret(tok, strong, explicit) && (explicit || contentBridges === 0)) {
+          found.push({ start: i, end: i + tok.length, strong });
+        }
         break;
       }
     }
@@ -359,19 +375,50 @@ function strongTokenAnywhere(view) {
   return false;
 }
 
-function detectInView(view) {
-  const allIds = extractIds(view);
-  if (!allIds.length) return null;
+function viewSignals(view) {
   const secrets = labelledSecrets(view);
-  const ids = allIds.filter((id) => !secrets.some((s) => id.start >= s.start && id.end <= s.end));
-  if (!ids.length) return null;
-  const cue = LOGIN_CUE_RE.test(view);
-  if (secrets.length) {
-    const near = ids.some((id) => secrets.some((s) => Math.abs(s.start - id.end) <= 80 || Math.abs(id.start - s.end) <= 80));
-    if (cue || near) return CODES.LABELLED;
+  return {
+    secrets,
+    shaped: strongTokenAnywhere(view),
+    ids: extractIds(view).filter((id) => !secrets.some((s) => id.start >= s.start && id.end <= s.end)),
+    cue: LOGIN_CUE_RE.test(view),
+  };
+}
+
+/** Pair inside one view. A labelled or strong-shaped secret is a hold even when no login id is present. */
+function detectInView(view) {
+  const sig = viewSignals(view);
+  if (sig.ids.length) {
+    if (sig.secrets.length) {
+      const near = sig.ids.some((id) => sig.secrets.some((s) => Math.abs(s.start - id.end) <= 80 || Math.abs(id.start - s.end) <= 80));
+      if (sig.cue || near) return CODES.LABELLED;
+    }
+    if (sig.ids.some((id) => adjacentSecret(view, id, sig.cue))) return CODES.UNLABELLED;
+    if (sig.cue && sig.shaped) return CODES.SPLIT;
   }
-  if (ids.some((id) => adjacentSecret(view, id, cue))) return CODES.UNLABELLED;
-  if (cue && strongTokenAnywhere(view)) return CODES.SPLIT;
+  if (sig.secrets.length) return CODES.SECRET_LABELLED;
+  if (sig.shaped) return CODES.SECRET_SHAPED;
+  return null;
+}
+
+/**
+ * A pair split across the current customer-visible text and recent turns.
+ * Holds only when the current text itself supplies one half (a secret, or an id with a login cue)
+ * and the context supplies the other half. An innocent reply is not held just because history
+ * already contained a pair.
+ */
+function detectContextSplit(view, contextViews) {
+  if (!contextViews || !contextViews.length) return null;
+  const cur = viewSignals(view);
+  const curSecret = cur.secrets.length > 0 || cur.shaped;
+  const curId = cur.ids.length > 0 && cur.cue;
+  if (!curSecret && !curId) return null;
+  for (const cv of contextViews) {
+    const ctx = viewSignals(cv.text);
+    const ctxSecret = ctx.secrets.length > 0 || ctx.shaped;
+    const ctxId = ctx.ids.length > 0 && ctx.cue;
+    if ((curSecret && ctxId) || (curId && ctxSecret)) return CODES.CONTEXT;
+  }
   return null;
 }
 
@@ -448,7 +495,16 @@ function buildViews(text) {
   return { views, decoded };
 }
 
-function inspect(input) {
+function contextViewsOf(contextText) {
+  if (!contextText || !String(contextText).trim()) return [];
+  try {
+    return buildViews(String(contextText)).views;
+  } catch (_) {
+    return [];
+  }
+}
+
+function inspect(input, contextText) {
   let raw = '';
   const result = { hold: false, code: '', tier: '', view: '', len: 0 };
   try {
@@ -462,13 +518,14 @@ function inspect(input) {
   try {
     if (len > MAX_SCAN_CHARS) return { ...result, hold: true, code: CODES.TOO_LARGE, tier: 'size' };
     const { views, decoded } = buildViews(raw);
+    const ctxViews = contextViewsOf(contextText);
     // Approved containment guard, unchanged, on the screened/rendered text and on tag-stripped text.
     const guardInputs = [['raw', raw], ['decoded', decoded], ...views.filter((v) => v.name === 'plain' || v.name === 'spaced').map((v) => [v.name, v.text])];
     for (const [name, t] of guardInputs) {
       if (guard.blocksPublicCredentialPair(t)) return { ...result, hold: true, code: CODES.GUARD, tier: 'guard', view: name };
     }
     for (const v of views) {
-      const code = detectInView(v.text);
+      const code = detectInView(v.text) || detectContextSplit(v.text, ctxViews);
       if (code) return { ...result, hold: true, code, tier: 'detector', view: v.name };
     }
     if (urlParamPair(decoded)) return { ...result, hold: true, code: CODES.URL, tier: 'url', view: 'decoded' };
@@ -476,7 +533,7 @@ function inspect(input) {
       const sub = buildViews(seg);
       if (guard.blocksPublicCredentialPair(seg)) return { ...result, hold: true, code: CODES.ENCODED, tier: 'encoded', view: 'segment' };
       for (const v of sub.views) {
-        if (detectInView(v.text)) return { ...result, hold: true, code: CODES.ENCODED, tier: 'encoded', view: 'segment:' + v.name };
+        if (detectInView(v.text) || detectContextSplit(v.text, ctxViews)) return { ...result, hold: true, code: CODES.ENCODED, tier: 'encoded', view: 'segment:' + v.name };
       }
     }
     return result;
@@ -485,12 +542,86 @@ function inspect(input) {
   }
 }
 
-function leafStrings(value, out, depth) {
-  if (depth > 6 || out.length > 200) return out;
-  if (typeof value === 'string') out.push(value);
-  else if (Array.isArray(value)) for (const v of value) leafStrings(v, out, depth + 1);
-  else if (value && typeof value === 'object') for (const [k, v] of Object.entries(value)) { out.push(String(k)); leafStrings(v, out, depth + 1); }
+/**
+ * Customer-visible content only. Object keys and envelope ids (admin_id, message_type, type, …)
+ * are never inspected. Known content fields and link/attachment URL fields are collected by name;
+ * HTML bodies also contribute their visible text and href/src targets.
+ */
+const CONTENT_FIELDS = new Set(['body', 'html', 'text', 'plain_text', 'message', 'content']);
+const URL_FIELDS = new Set(['url', 'href', 'src', 'attachment_url', 'content_url', 'download_url', 'link']);
+
+function isContentKey(key) {
+  return CONTENT_FIELDS.has(key);
+}
+function isUrlKey(key) {
+  return URL_FIELDS.has(key) || /(?:^|_)(?:url|href|src)$/.test(key) || /_urls$/.test(key);
+}
+
+function hrefsInHtml(html) {
+  const urls = [];
+  const re = /\b(?:href|src)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gi;
+  let m;
+  while ((m = re.exec(String(html || '')))) {
+    const u = m[1] || m[2] || m[3] || '';
+    if (u) urls.push(u);
+  }
+  return urls;
+}
+
+function pushVisibleString(out, parentKey, value) {
+  if (typeof value !== 'string' || !value) return;
+  if (isContentKey(parentKey)) {
+    const text = stripTags(value, ' ');
+    if (text.trim()) out.push(text);
+    for (const u of hrefsInHtml(value)) out.push(u);
+  } else if (isUrlKey(parentKey)) {
+    out.push(value);
+  }
+}
+
+function collectVisible(value, out, depth, parentKey) {
+  if (depth > 6 || out.length > 200 || value == null) return out;
+  if (typeof value === 'string') {
+    pushVisibleString(out, parentKey, value);
+    return out;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      if (typeof item === 'string' && isUrlKey(parentKey)) out.push(item);
+      else collectVisible(item, out, depth + 1, parentKey);
+    }
+    return out;
+  }
+  if (typeof value === 'object') {
+    for (const [k, v] of Object.entries(value)) collectVisible(v, out, depth + 1, String(k).toLowerCase());
+  }
   return out;
+}
+
+const contextByConv = new Map();
+const MAX_CONTEXT_TEXTS = 8;
+const MAX_CONTEXT_CHARS = 4000;
+
+/** Recent public customer and outgoing bodies for one conversation. Detection only; not logged. */
+function rememberConversationContext(conversationId, texts) {
+  const id = String(conversationId || '');
+  if (!id) return;
+  const kept = [];
+  let budget = MAX_CONTEXT_CHARS;
+  const arr = Array.isArray(texts) ? texts : [];
+  for (let i = arr.length - 1; i >= 0 && kept.length < MAX_CONTEXT_TEXTS; i--) {
+    let t = '';
+    try { t = String(arr[i] == null ? '' : arr[i]).slice(0, 2000); } catch (_) { t = ''; }
+    if (!t.trim() || t.length > budget) continue;
+    budget -= t.length;
+    kept.push(t);
+  }
+  contextByConv.set(id, kept.reverse());
+}
+
+function contextFor(conversationId) {
+  const list = contextByConv.get(String(conversationId || ''));
+  return list && list.length ? list.join('\n') : '';
 }
 
 /**
@@ -498,54 +629,58 @@ function leafStrings(value, out, depth) {
  * `screened` is the text after publicReplyBoundary.screen; `rendered` is the payload body after
  * toHtml. Both are inspected, and so is their concatenation (a pair assembled across them).
  */
-function holdFinalPublic({ screened, rendered } = {}) {
+function holdFinalPublic({ screened, rendered, conversationId } = {}) {
+  const ctx = contextFor(conversationId);
   const views = [['screened', screened], ['rendered', rendered]];
   for (const [stage, text] of views) {
-    const r = inspect(text);
+    const r = inspect(text, ctx);
     if (r.hold) return { ...r, stage };
   }
-  const joined = inspect(String(screened || '') + '\n' + String(rendered || ''));
+  const joined = inspect(String(screened || '') + '\n' + String(rendered || ''), ctx);
   if (joined.hold) return { ...joined, stage: 'joined' };
   return null;
 }
 
 /**
  * Hold decision on the actual transport payload of an Intercom write. Any write whose
- * message_type is not an internal note is treated as customer-visible. Every string field is
- * inspected on its own and joined with the others (fields can be assembled by Intercom).
+ * message_type is not an internal note is treated as customer-visible. Only customer-visible
+ * content is inspected (body text, rendered HTML text, href/src, attachment URLs). Envelope
+ * keys and ids are not.
  */
 const ERROR_HOLD = (stage) => ({ hold: true, code: CODES.ERROR, tier: 'error', view: '', len: 0, stage });
 
-function holdOutgoingPayload(method, data) {
+function holdOutgoingPayload(method, data, opts) {
   try {
     const m = String(method || 'get').toLowerCase();
     if (['get', 'head', 'options'].includes(m)) return null;
     if (!data || typeof data !== 'object') return null;
     if (String(data.message_type || '') === 'note') return null;
-    return holdStrings(leafStrings(data, [], 0), 'payload');
+    const cid = opts && opts.conversationId;
+    return holdStrings(collectVisible(data, [], 0, ''), 'payload', contextFor(cid));
   } catch (_) {
     return ERROR_HOLD('payload');
   }
 }
 
-function holdStrings(all, stage) {
-  const strings = all.filter((s) => s.length);
+function holdStrings(all, stage, contextText) {
+  const strings = all.filter((s) => s && s.length);
   for (const s of strings) {
-    const r = inspect(s);
+    const r = inspect(s, contextText);
     if (r.hold) return { ...r, stage };
   }
   if (strings.length > 1) {
-    const r = inspect(strings.join('\n'));
+    const r = inspect(strings.join('\n'), contextText);
     if (r.hold) return { ...r, stage: stage + '-joined' };
   }
   return null;
 }
 
 /** Plan bodies persisted by the owner-command ledger: hold before anything reaches disk. */
-function holdPlanForPersistence(plan) {
+function holdPlanForPersistence(plan, opts) {
   try {
     if (!plan || typeof plan !== 'object') return null;
-    return holdStrings(leafStrings(plan, [], 0), 'plan');
+    const cid = opts && opts.conversationId;
+    return holdStrings(collectVisible(plan, [], 0, ''), 'plan', contextFor(cid));
   } catch (_) {
     return ERROR_HOLD('plan');
   }
@@ -580,6 +715,7 @@ module.exports = {
   KNOWN_GAPS,
   MAX_SCAN_CHARS,
   inspect,
+  rememberConversationContext,
   holdFinalPublic,
   holdOutgoingPayload,
   holdPlanForPersistence,

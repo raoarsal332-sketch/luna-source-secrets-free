@@ -67,7 +67,38 @@ hit('HTML entity encoded colon', `Password&#58; ${P} Login&#58; ${L}`);
 hit('percent encoded text', encodeURIComponent(`Login: ${L} Password: ${P}`));
 hit('rot13 label', `Ybtva: ${L} Cnffjbeq: ${P}`.replace(/./g, (c) => c));
 hit('split over lines with labels apart', `Password:\n${P}\n\nLogin:\n${L}`);
-pass('GAP (policy): a lone labelled password without any login is not a pair', `Your password: ${P}`);
+test('HOLD  lone labelled password with no login id (MT5-2)', () => {
+  const r = d.inspect(`Here is the investor password you requested: ${P}`);
+  assert.strictEqual(r.hold, true, r.code);
+  assert.strictEqual(r.code, 'CRED_SECRET_LABELLED');
+  assert.strictEqual(d.inspect(`Your password: ${P}`).hold, true);
+});
+test('HOLD  cue-free strong-shaped secret with no login id (MT5-2)', () => {
+  const r = d.inspect(`Here is what you requested: ${P}`);
+  assert.strictEqual(r.hold, true, r.code);
+  assert.strictEqual(r.code, 'CRED_SECRET_SHAPED');
+});
+test('HOLD  password split from an earlier login (MT5-2 context)', () => {
+  d.rememberConversationContext('mt5-2', [`Login ${L} on Fake-Server. Use that server.`]);
+  const r = d.holdFinalPublic({
+    screened: `The password for that login is ${P}.`,
+    rendered: `<p>The password for that login is ${P}.</p>`,
+    conversationId: 'mt5-2',
+  });
+  assert.ok(r && r.hold, 'split pair was not held');
+  const plan = d.holdPlanForPersistence({ action: 'REPLY', body: `The password for that login is ${P}.` }, { conversationId: 'mt5-2' });
+  assert.ok(plan && plan.hold, 'plan persistence did not see the split');
+});
+test('PASS  envelope admin_id is not a credential (MT5-1)', () => {
+  const guard = require(path.join(root, 'candidate', 'spreadPublicGuard'));
+  const broker = require(path.join(root, 'candidate', 'faqApprovedAnswers')).get('faq.is-broker.en').body;
+  for (const body of [guard.SAFE_SPREAD_REPLY, broker, 'Los spreads se ven en la plataforma.', 'Os spreads aparecem na plataforma.']) {
+    const r = d.holdOutgoingPayload('post', { message_type: 'comment', type: 'admin', admin_id: '10118526', body });
+    assert.strictEqual(r, null, body.slice(0, 40));
+  }
+  const joined = d.holdOutgoingPayload('post', { message_type: 'comment', type: 'admin', admin_id: '10118526', body: 'Your account is a demo account on the server.' });
+  assert.strictEqual(joined, null);
+});
 
 pass('FAQ-style answer', 'The daily loss limit for 2-Step accounts is 5% of the initial balance.');
 pass('reset-password instructions', 'To reset your password, use the Forgot password link on the login page. Never share it with anyone.');
