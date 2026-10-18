@@ -1,0 +1,58 @@
+catalog:json-hash                                             1/1    
+catalog:matches-baseline                                      1/1    
+catalog:44-english-base-rows                                  1/1    
+catalog:40-sendable                                           1/1    
+catalog:all-sendable-are-english                              1/1    
+catalog:non-sendable-rows                                     4/4    
+catalog:translations-non-sendable                             1/1    
+controls:cover-all-40-sendable-ids                            1/1    
+config:off-by-default                                         1/1    
+config:off-by-default-empty-opts                              1/1    
+config:enabled-false-explicit                                 1/1    
+config:enabled-truthy-string-not-enough                       1/1    
+config:default-config-frozen-off                              1/1    
+control-gates                                                 5/5    
+language-gate:absent-fails-closed                             1/1    
+language-gate:malformed-or-negative-fails-closed             12/12   
+language-gate:valid-allows                                    1/1    
+language-gate:en-subtag                                       1/1    
+pregate:non-string-input-blocked                              6/6    
+pregate:productSelectPermitted-fail-closed                    7/7    
+pregate:productSelectPermitted-true-only-for-real-permit      1/1    
+pregate:overlong-input-blocked                                1/1    
+pregate:no-pathological-latency                               1/1    
+general-controls                                             79/79   
+must-stay-general:gate-permits                               13/13   
+must-stay-general:selects                                     9/9    
+boundary-controls                                             6/6    
+missing-report-routes-to-missing-reward                       4/4    
+safety-r1:no-product-assertion                                2/2    
+rule-fact-r1:answered                                         4/4    
+personal-en                                                  58/58   
+implicit-dropped-subject                                     30/30   
+third-person-self                                            14/14   
+confirm-without-possessive                                    8/8    
+unicode-zwsp-homoglyph                                       20/20   
+mixed                                                        20/20   
+allow-list-bait                                              18/18   
+strict:personal-refuse-or-handoff                            58/58   
+strict:mixed-refuse-or-handoff                               20/20   
+strict:third-person-refuse-or-handoff                        14/14   
+unicode-general-obfuscated-fail-closed                        3/3    
+non-english:abstain-with-permissive-gate                     34/34   
+non-english:abstain-with-negative-gate                       12/12   
+non-english:abstain-without-gate                             12/12   
+multi-turn:blocked                                           24/24   
+multi-turn:general-resolves                                   3/3    
+multi-turn:explicit-general-answered                          1/1    
+combinatorial-general+personal                              800/800  
+scope:tags-never-enable-nonsendable                           4/4    
+scope:tag-can-narrow                                          1/1    
+scope:sendable-flag-alone-cannot-enable                       3/3    
+scope:selector-never-emits-nonsendable                        1/1    
+scope:selector-never-emits-nonsendable-free-tier              1/1    
+----
+TOTAL 1328/1328 pass, 0 fail
+CRITICAL ownership->product leaks (author cases): 0
+General controls: 79 asked | answered correctly 79 (without caller scope hint: 60) | false refusal(refuse 0, handoff 0, abstain 0) | wrong answer 0
+Must-stay-general gate permits: 13/13

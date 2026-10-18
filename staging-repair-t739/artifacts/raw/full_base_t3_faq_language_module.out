@@ -1,0 +1,44 @@
+== faq/language/module (baseline)
+  ok   F5 "please" is no longer a Roman Urdu cue (candidate) / was one at baseline
+  FAIL F5 languageGate tri-state
+       TypeError: sel.languageGate is not a function
+           at Object.fn (/workspace/staging-repair-t739/tests/t3_faq_language_module.js:36:26)
+           at run (/workspace/staging-repair-t739/tests/runner.js:13:15)
+  FAIL F5 model route is gated BEFORE the call: short catalog term with no English evidence never reaches the classifier
+       AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+       
+       1 !== 0
+       
+  ok   F5 model route runs when prior customer messages are English
+  FAIL F5 model route is gated AFTER the classifier: evidence that disappears during the call drops the model pick (any sendable id)
+       AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+       
+       false !== true
+       
+  ok   F5 language never establishes intent: English evidence alone selects nothing
+  FAIL F5 deterministic cue routes ARE gated (initial-candidate cycle 2): "free trial?" with no English evidence abstains, with English prior evidence it selects
+       AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+       
+       false !== true
+       
+  ok   F5 V12 keeps exactly 12 sendable answers and every one is still selected by its question
+  FAIL F5 differential: English asks still match baseline; non-English asks abstain and never return an English row (F5-7)
+       TypeError: sel.languageGate is not a function
+           at Object.fn (/workspace/staging-repair-t739/tests/t3_faq_language_module.js:99:23)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL F5-7 gated FAQ abstains on non-English before the classifier; the English row is not a fallback
+       AssertionError [ERR_ASSERTION]: cuál es el tiempo para pedir el pago
+       
+       1 !== 0
+       
+OBS|v12-unowned-offer|{"out":null,"pub":0}
+  ok   preserved: V12 answer is selected and sent through the real send path, once, for an unowned English ask
+OBS|v12-owned-offer|{"out":{"handled":true,"reason":"confirmed","result":{"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"The 2-Step Lite daily loss limit is 4%.","created_at":1792348017,"author":{"type":"admin","id":"10118526"}}},"backend":{"status":"not-needed"}},"pub":1,"reason":["oss.en\"],\"receiptIds\":[\"9001\"],\"backendStatus\":\"not-needed\"}"]}
+  ok   preserved: V12 approved answer is sent once, byte-equal to the approved body, when a human owns the ticket (Option B)
+OBS|stop-history|{"reason":"ownership-ambiguous-fail-closed","terminal":true}
+  ok   preserved: STOP in history, Risk/Escalations team, aiOff -> silence reasons unchanged
+  ok   preserved: duplicate prevention - the second offer for the same turn does not send again
+  ok   preserved: concurrent offers serialize and send at most once (locks)
+  ok   preserved: ownership write lock serialises concurrent public sends for one conversation
+  ok   no egress attempt was made in this process
+RESULT faq/language/module (baseline): 11 passed, 6 failed, 17 total

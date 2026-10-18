@@ -86,3 +86,11 @@ Copied byte-for-byte into `atom/` and `candidate/atom/` (no edits):
 Delivery stays BLOCKED. `resolveExtraPath` was not added. `candidate/faqApprovedAnswers.js` has no extra-catalog loader and was not modified. Packs files were not copied. The freeze manifest still describes content commit `76e1c9ee` and is not rewritten.
 
 After the copy, under `unshare -rn`: `t6` 35/35, `t7` 6/6 (Atom general+controls equal 206/206; catalog bodies 474, holds 0). Author r1 suite from `b9af481` with these bytes overlaid: `node --test` 21 pass, 0 fail; `TOTAL 5798 pass 5798 fail 0`. The in-repo `atom/tests` tree is still the initial import; its older `report_counts` expectations mark GN35 and GN40 as fails because the r1 suite now expects `atom.overview.en` and `atom.bundles.en`. Detail: `artifacts/ATOM_R1_IMPORT.md`.
+
+## Step 9 — Packs r1 module copy, freeze t739-integrated-r1-full
+
+Source: `cursor/t739-packs-3f28` `af30a483a90437093ee7e8e6bae9863b24f89916`, on top of `716cd404`. Copied byte-for-byte into `packs/` and `candidate/packs/`: `packsAnswerSelect.js` `21e179351578906ddf725c4874f3474468655955817cbdafb7cab514e66ab58c`, `packsOwnershipPregate.js` `c8eab2121bf675128729ddf716346a004859b8435928a5da72857f5454a7516b`, `packsApprovedAnswers.js` `10dd4ef8f5fb9fd1e3a10de0bfce41ec81dde8c8119b987b0b054cbe91847a3d`, `faq-approved-answers-packs-v1.json` `bed88e6ab45c74a378273f301a197ee56b8276c312bb4bca081c7c9efb6b2318`. Guard `2158c43f` and the Atom r1 selector hashes are unchanged. Packs stays OFF by default.
+
+No shared adapter change. `faqAssistance` already passes `{lang, language, confident, allowsAnswer, basis}`. `packsOptions` hands Packs `{language, confident, allowsAnswer}`. English is `{language:'en', confident:true, allowsAnswer:true}`. Other gates fail closed.
+
+Sequential `unshare -rn` rerun: candidate t1 53/53, t2 51/51, t3 29/29, t4 6/6, t5 10/10, t6 35/35, t7 6/6, t8 6/6. Baseline t2 15/36/51, t3 11/6/17, t4 2/4/6, t6 2/2, t7 1/1, t8 6/6 observations. Packs author suite on these bytes: 1328/1328, 0 critical leaks. Paraphrase: general 266/266, state 51/51 safe. Atom author suite still 5798/5798. Manifest self-sha256 `e9eab1e10e1187027a7b4a5204bd749684a231a5f197519a1be2bb4ddb13bcd9`.
