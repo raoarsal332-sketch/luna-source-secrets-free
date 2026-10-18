@@ -1,7 +1,7 @@
 {
   "totals": {
-    "pass": 1322,
-    "total": 1322,
+    "pass": 1328,
+    "total": 1328,
     "fail": 0
   },
   "generalControls": {
@@ -155,6 +155,16 @@
       "fail": 0
     },
     "missing-report-routes-to-missing-reward": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "safety-r1:no-product-assertion": {
+      "total": 2,
+      "pass": 2,
+      "fail": 0
+    },
+    "rule-fact-r1:answered": {
       "total": 4,
       "pass": 4,
       "fail": 0

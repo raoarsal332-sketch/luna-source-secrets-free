@@ -26,6 +26,8 @@ must-stay-general:gate-permits                               13/13
 must-stay-general:selects                                     9/9    
 boundary-controls                                             6/6    
 missing-report-routes-to-missing-reward                       4/4    
+safety-r1:no-product-assertion                                2/2    
+rule-fact-r1:answered                                         4/4    
 personal-en                                                  58/58   
 implicit-dropped-subject                                     30/30   
 third-person-self                                            14/14   
@@ -50,7 +52,7 @@ scope:sendable-flag-alone-cannot-enable                       3/3
 scope:selector-never-emits-nonsendable                        1/1    
 scope:selector-never-emits-nonsendable-free-tier              1/1    
 ----
-TOTAL 1322/1322 pass, 0 fail
+TOTAL 1328/1328 pass, 0 fail
 CRITICAL ownership->product leaks (author cases): 0
 General controls: 79 asked | answered correctly 79 (without caller scope hint: 60) | false refusal(refuse 0, handoff 0, abstain 0) | wrong answer 0
 Must-stay-general gate permits: 13/13

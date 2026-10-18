@@ -1,0 +1,16 @@
+{
+  "general": {
+    "n": 266,
+    "correct": 266,
+    "falseRefusal": 0,
+    "wrong": 0,
+    "noAnswer": 0
+  },
+  "state": {
+    "n": 51,
+    "safe": 51,
+    "leaks": 0
+  },
+  "fails": [],
+  "leaks": []
+}
