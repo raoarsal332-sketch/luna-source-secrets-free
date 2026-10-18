@@ -189,10 +189,11 @@ if (E.which === 'candidate') {
     const { p } = await prep('cuál es el precio de los packs para comprar');
     assert.notStrictEqual(p.reason, 'module-off-fail-closed');
   });
-  test('F1 uncertain language: non-terminal language-uncertain-module-off (legacy path, no V12 selection)', async () => {
+  test('F1 uncertain language: claimed + flag OFF is terminal-silent (owner-reviewable default, F1-8)', async () => {
     reset(); gateSetup();
     const { p } = await prep('packs?');
-    assert.deepStrictEqual({ reason: p.reason, terminal: p.terminal }, { reason: 'language-uncertain-module-off', terminal: false });
+    assert.deepStrictEqual({ reason: p.reason, terminal: p.terminal }, { reason: 'language-uncertain-module-off', terminal: true });
+    assert.deepStrictEqual(faq.finishPrepareWithoutPlan('1', p, deps()), { handled: true, reason: 'language-uncertain-module-off' });
   });
   test('F1 detector that throws counts as a hit (fails closed)', async () => {
     reset(); gates.reset();

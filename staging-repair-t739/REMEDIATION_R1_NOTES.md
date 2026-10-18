@@ -37,4 +37,18 @@ Changes:
 - Detector regressions are in `tests/t1_detector.js`. `node tests/t1_detector.js` 53/53. `node tests/t2_transport.js` 51/51.
 - False-hold probe on 22 safe bodies (12 V12 English answers, Packs refuse row, `SAFE_SPREAD_REPLY`, general spread sentences, es/pt), each posted with `admin_id: 10118526`: 0 holds.
 
-Not done yet: F5-7, F1-8, remaining regressions, full suite rerun, freeze.
+## Step 3 — F5-7
+
+Root cause: `selectApprovedAnswer` abstained only when `lang === 'uncertain'`. A positive `non-en` gate still ran the deterministic cues, and `preferLocale` returned the `.en` id when no locale row existed. V12 has only English rows, so a Roman Urdu, Arabic, or Spanish turn that contained English rule words (`2-Step Lite daily loss`, `stop loss mandatory`) was sent the English answer.
+
+Change: the gated FAQ route returns before selection unless `lang === 'en'`. `non-en` abstains with `language-non-en` and does not call the classifier. `preferLocale` returns null instead of the English id. `language-non-en` is on the FAQ abstain-fallthrough list, so the non-English main model route in `index.js` is unchanged.
+
+`node tests/t3_faq_language_module.js`: 29/29.
+
+## Step 4 — F1-8
+
+OWNER-REVIEWABLE DEFAULT. When a module detector claims the turn and that module's flag is OFF, `lang === 'uncertain'` is now terminal-silent (`language-uncertain-module-off`, `terminal: true`). Short English module asks do not carry two English function words, so they were uncertain and fell through to the main LLM. `Are Elite Packs refundable?` and `Atom funded profitable days requirement?` are in that class. A positive `non-en` verdict is still not claimed, so the non-English main route is unchanged. Module ON + uncertain stays non-terminal.
+
+`node tests/t3_faq_language_module.js` 29/29. `node tests/t6_modules.js` 35/35.
+
+Not done yet: transport regressions, full suite rerun, freeze. Atom r1 copy waits until after the freeze. Packs r1 is not copied.

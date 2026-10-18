@@ -264,12 +264,19 @@ test('F1 mixed language: an English module clause inside a turn that also contai
     assert.notStrictEqual(c.reason, 'module-off-fail-closed');
   });
 });
-test('F1 uncertain language: "Elite Packs?" alone is NOT terminal (documented gap) and reaches no V12 selection', async () => {
+test('F1-8 uncertain + claimed + flag OFF is terminal-silent (owner-reviewable default), including short English module asks', async () => {
   await withFlags({}, async () => {
-    const p = await prep('Elite Packs?');
-    assert.deepStrictEqual({ r: p.reason, t: p.terminal }, { r: 'language-uncertain-module-off', t: false });
+    for (const t of ['Elite Packs?', 'Are Elite Packs refundable?', 'Atom funded profitable days requirement?']) {
+      const p = await prep(t);
+      assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'language-uncertain-module-off', t: true, m: /\batom\b/i.test(t) ? 'atom' : 'packs' }, t);
+      reset();
+      const { id, user } = newConv(t);
+      lm.state.queue.push('ACTION: REPLY\nBODY: Elite Packs are refundable and Atom needs ten days.');
+      await index.handleWebhook(webhookReq(id, user), res);
+      noWrites(t);
+    }
     const p2 = await prep('thanks', {});
-    assert.notStrictEqual(p2.reason, 'module-off-fail-closed');
+    assert.notStrictEqual(p2.reason, 'language-uncertain-module-off');
   });
 });
 test('F1 runs before intent classification: a module ask that classifies as small talk / support-meta still cannot reach the main path', async () => {
@@ -350,7 +357,7 @@ test('ON4 ON path with a non-English or uncertain gate does not call the module 
     const non = await prep('¿Qué son los Elite Packs? ¿Cuál es el límite diario?');
     assert.notStrictEqual(non.reason, 'module-on-delivery-not-wired');
     const unc = await prep('Elite Packs?');
-    assert.strictEqual(unc.reason, 'language-uncertain-module-off');
+    assert.deepStrictEqual({ r: unc.reason, t: unc.terminal }, { r: 'language-uncertain-module-off', t: false });
   });
 });
 test('ON5 default config afterwards: flags unset in this process, both OFF', async () => {

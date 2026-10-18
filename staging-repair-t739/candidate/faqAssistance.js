@@ -422,7 +422,13 @@ function safeBool(fn, onThrow) {
  *                        ON module (isolated test config only): the module's own selector is
  *                        consulted with the shared gate; delivery of a module answer is not wired
  *                        (extra-catalog loading is blocked), so the turn is terminal silent as well.
- *   - clause uncertain-> non-terminal 'language-uncertain-module-off' (legacy path, no V12 selection)
+ *   - clause uncertain + module OFF -> terminal silent 'language-uncertain-module-off'.
+ *     OWNER-REVIEWABLE DEFAULT (t739 r1, F1-8): when a detector claims the turn and its flag is
+ *     OFF, missing English evidence must not fall through to the main LLM. Short English module
+ *     asks ("Are Elite Packs refundable?", "Atom funded profitable days requirement?") are in
+ *     this class because they do not carry two English function words.
+ *   - clause uncertain + module ON -> non-terminal 'language-uncertain-module-off' (the flag is
+ *     on; this default does not apply).
  *   - clause non-English -> not claimed (non-English main route unchanged).
  */
 async function moduleScope(text, parts, d) {
@@ -440,6 +446,8 @@ async function moduleScope(text, parts, d) {
       const gate = own.lang === 'uncertain' ? selectMod.languageGateForTurn(c, text, priors) : own;
       if (gate.lang === 'non-en') continue;
       if (gate.lang === 'uncertain') {
+        // OWNER-REVIEWABLE DEFAULT (F1-8): claimed + flag OFF + uncertain is terminal-silent.
+        if (!on) return { reason: 'language-uncertain-module-off', terminal: true, module: g.id };
         uncertain = true;
         continue;
       }
