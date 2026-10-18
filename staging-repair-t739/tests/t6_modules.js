@@ -393,12 +393,12 @@ test('F5b the gate is re-evaluated before the result: English evidence that vani
   assert.strictEqual(r.abstain, true);
   assert.strictEqual(r.reason, 'language-uncertain');
 });
-test('F5b non-English main route unchanged: ES / Roman Urdu / Urdu-script deterministic asks still select with no English evidence', async () => {
-  for (const t of ['cuál es el límite de pérdida diaria para 2 step lite', 'kitna daily loss limit hai 2 step lite mein', 'ڈیلی لوس لمٹ کیا ہے 2 step lite']) {
+test('F5-7 gated FAQ abstains unless lang is en: ES / Roman Urdu / Urdu-script deterministic asks do not receive an English V12 row', async () => {
+  for (const t of ['cuál es el límite de pérdida diaria para 2 step lite', 'kitna daily loss limit hai 2 step lite mein', 'ڈیلی لوس لمٹ کیا ہے 2 step lite', '2-Step Lite daily loss kitna hai', 'stop loss mandatory يا بطل']) {
     const r = await sel.selectApprovedAnswer(t, { priorClientTexts: [] });
-    const b = await require(path.join(E.root, 'base', 'faqAnswerSelect')).selectApprovedAnswer(t, { priorClientTexts: [] });
-    assert.deepStrictEqual({ a: r.abstain, id: r.answerId, why: r.reason }, { a: b.abstain, id: b.answerId, why: b.reason }, t);
-    if (!/ڈیلی/.test(t)) assert.strictEqual(r.abstain, false, t);
+    assert.strictEqual(r.abstain, true, t);
+    assert.strictEqual(r.reason, 'language-non-en', t);
+    assert.ok(!r.answerId, t);
   }
 });
 test('F5b prepare passes the whole turn as language evidence: "Do you have a free trial? Are you a broker?" is selected clause by clause', async () => {

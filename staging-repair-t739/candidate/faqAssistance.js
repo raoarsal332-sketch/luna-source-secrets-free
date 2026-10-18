@@ -37,7 +37,7 @@ function shouldDeferToMainPath(reason) {
 
 /** Approved-answer abstain: no plan, but legacy/KB path may still answer (pending catalog rows). */
 function approvedSelectAbstainFallthrough(reason) {
-  return /^(?:no-confident-match|needs-owner-approval|below-threshold|unknown-answer-id|classifier-empty|classifier-unknown-or-nonsendable|classifier-low-confidence|classifier-timeout|classifier-error|language-uncertain)$/.test(
+  return /^(?:no-confident-match|needs-owner-approval|below-threshold|unknown-answer-id|classifier-empty|classifier-unknown-or-nonsendable|classifier-low-confidence|classifier-timeout|classifier-error|language-uncertain|language-non-en)$/.test(
     String(reason || '')
   );
 }

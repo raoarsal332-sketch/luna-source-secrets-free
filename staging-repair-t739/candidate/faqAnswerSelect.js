@@ -229,8 +229,9 @@ function preferLocale(answerId, lang) {
     ar: base + '.ar',
   }[lang];
   // approved.get only returns sendable (owner-approved) rows.
+  // F5-7: no English-row fallback. A non-English turn must not be sent the .en answer.
   if (mapped && approved.get(mapped)) return mapped;
-  return answerId;
+  return null;
 }
 
 function sendableOrNull(answerId) {
@@ -253,10 +254,12 @@ async function selectApprovedAnswer(text, opts) {
   if (opts.humanOwns && payoutConsistencyAsk(raw)) return { abstain: true, reason: 'backend-adjacent-payout' };
 
   // One gate, evaluated for every route (deterministic cue, contextual follow-up, model classifier)
-  // and re-evaluated before the result is built. Uncertain language never selects anything, and an
-  // English verdict is never re-rendered into another locale by a hint.
+  // and re-evaluated before the result is built. The gated FAQ route runs only for lang 'en'.
+  // 'uncertain' abstains as language-uncertain. 'non-en' abstains as language-non-en and does not
+  // fall back to an English row (F5-7). The non-English main model route is outside this function.
   const gateNow = () => languageGateForTurn(raw, opts.turnText, opts.priorClientTexts);
-  if (gateNow().lang === 'uncertain') return { abstain: true, reason: 'language-uncertain' };
+  const gateAbstainReason = (gate) => (gate && gate.lang === 'non-en' ? 'language-non-en' : 'language-uncertain');
+  if (gateNow().lang !== 'en') return { abstain: true, reason: gateAbstainReason(gateNow()) };
 
   let lang = opts.langHint || detectLangHint(raw);
   if (gateNow().lang === 'en') lang = 'en';
@@ -290,9 +293,9 @@ async function selectApprovedAnswer(text, opts) {
   let languageDropped = false;
   if (typeof opts.modelClassify === 'function') {
     let modelOutcome = null;
-    if (gateNow().lang === 'uncertain') {
+    if (gateNow().lang !== 'en') {
       languageDropped = true;
-      modelOutcome = { abstain: true, reason: 'language-uncertain' };
+      modelOutcome = { abstain: true, reason: gateAbstainReason(gateNow()) };
     } else
     try {
       const ms = Math.max(50, Number(opts.classifyTimeoutMs) || 1200);
@@ -324,9 +327,9 @@ async function selectApprovedAnswer(text, opts) {
         reason: String(e && e.message) === 'select-timeout' ? 'classifier-timeout' : 'classifier-error',
       };
     }
-    if (modelOutcome && !modelOutcome.abstain && gateNow().lang === 'uncertain') {
+    if (modelOutcome && !modelOutcome.abstain && gateNow().lang !== 'en') {
       languageDropped = true;
-      modelOutcome = { abstain: true, reason: 'language-uncertain' };
+      modelOutcome = { abstain: true, reason: gateAbstainReason(gateNow()) };
     }
     if (modelOutcome && !modelOutcome.abstain) {
       if (!best || modelOutcome.confidence >= best.confidence) {
@@ -339,8 +342,8 @@ async function selectApprovedAnswer(text, opts) {
     }
   }
 
-  if (best && gateNow().lang === 'uncertain') {
-    return { abstain: true, reason: 'language-uncertain', lang };
+  if (best && gateNow().lang !== 'en') {
+    return { abstain: true, reason: gateAbstainReason(gateNow()), lang: gateNow().lang };
   }
   if (best && gateNow().lang === 'en') lang = 'en';
   if (!best) return { abstain: true, reason: languageDropped ? 'language-uncertain' : 'no-confident-match', lang };

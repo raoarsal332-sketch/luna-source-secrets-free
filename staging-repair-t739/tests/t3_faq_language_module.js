@@ -87,7 +87,7 @@ test('F5 V12 keeps exactly 12 sendable answers and every one is still selected b
     assert.strictEqual(r.answerId, id, QUESTIONS[id]);
   }
 });
-test('F5 differential: with no model, candidate selection equals baseline on a mixed corpus (non-English main route unchanged)', async () => {
+test('F5 differential: English asks still match baseline; non-English asks abstain and never return an English row (F5-7)', async () => {
   const corpus = Object.values(QUESTIONS).concat([
     'cuál es el límite de pérdida diaria para 2 step lite', 'kitna daily loss limit hai 2 step lite mein', 'ڈیلی لوس لمٹ کیا ہے 2 step lite', 'what is the profit split',
     'Is stop loss compulsory bhai', 'kya stop loss zoruri hai', 'hello', 'payout?', 'my kyc status?', 'And the daily loss for that?', 'leverage?', 'broker?',
@@ -96,15 +96,35 @@ test('F5 differential: with no model, candidate selection equals baseline on a m
   for (const q of corpus) {
     const priors = ['What is the 2 step lite account about?'];
     const a = await sel.selectApprovedAnswer(q, { priorClientTexts: priors });
-    const b = await baseSel.selectApprovedAnswer(q, { priorClientTexts: priors });
-    assert.deepStrictEqual({ abstain: a.abstain, id: a.answerId, reason: a.reason }, { abstain: b.abstain, id: b.answerId, reason: b.reason }, q);
+    const nonEn = sel.languageGate(q, []).lang === 'non-en';
+    if (nonEn) {
+      assert.strictEqual(a.abstain, true, q);
+      assert.strictEqual(a.reason, 'language-non-en', q);
+      assert.ok(!a.answerId, q);
+    } else {
+      const b = await baseSel.selectApprovedAnswer(q, { priorClientTexts: priors });
+      assert.deepStrictEqual({ abstain: a.abstain, id: a.answerId, reason: a.reason }, { abstain: b.abstain, id: b.answerId, reason: b.reason }, q);
+    }
   }
 });
-test('F5 non-English text with a model: unchanged route (model still consulted, gate says non-en)', async () => {
+test('F5-7 gated FAQ abstains on non-English before the classifier; the English row is not a fallback', async () => {
   let calls = 0;
-  const r = await sel.selectApprovedAnswer('cuál es el tiempo para pedir el pago', { priorClientTexts: [], modelClassify: async () => { calls += 1; return { answerId: 'faq.payout-request-timing.en', confidence: 0.95 }; } });
-  assert.strictEqual(calls, 1);
-  assert.strictEqual(r.abstain, false);
+  const samples = [
+    'cuál es el tiempo para pedir el pago',
+    '2-Step Lite daily loss kitna hai',
+    'ما هو حد الخسارة اليومية لـ 2-Step Lite',
+    'Is stop loss mandatory bhai',
+  ];
+  for (const q of samples) {
+    calls = 0;
+    const r = await sel.selectApprovedAnswer(q, { priorClientTexts: [], modelClassify: async () => { calls += 1; return { answerId: 'faq.payout-request-timing.en', confidence: 0.95 }; } });
+    assert.strictEqual(calls, 0, q);
+    assert.strictEqual(r.abstain, true, q);
+    assert.strictEqual(r.reason, 'language-non-en', q);
+    assert.strictEqual(sel.preferLocale('faq.2step-lite.daily-loss.en', 'es'), null);
+    assert.strictEqual(sel.preferLocale('faq.2step-lite.daily-loss.en', 'ur-latn'), null);
+    assert.strictEqual(sel.preferLocale('faq.2step-lite.daily-loss.en', 'ar'), null);
+  }
 });
 
 // ---------------- F1: module-off fail closed ----------------
