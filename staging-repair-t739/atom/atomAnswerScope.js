@@ -27,12 +27,12 @@ function row(frame, product, relationships, allowedQualifiers, extra) {
 }
 
 const SCOPE = Object.freeze({
-  'atom.overview.en': row('rule', 'any', ['overview'], ['size']),
+  'atom.overview.en': row('rule', 'any', ['overview'], ['size', 'num']),
   'atom.2step.phases.en': row('rule', '2step', ['rule'], Q_RULE),
   'atom.2step.daily-loss.en': row('rule', '2step', ['rule'], Q_RULE),
   'atom.2step.max-loss.en': row('rule', '2step', ['rule'], Q_RULE),
   'atom.2step.min-days.en': row('rule', '2step', ['rule'], Q_RULE),
-  'atom.2step.consistency.en': row('rule', '2step', ['rule'], Q_RULE_PAYOUT),
+  'atom.2step.consistency.en': row('rule', '2step', ['rule'], [...Q_RULE_PAYOUT, 'calc']),
   'atom.2step.news.en': row('rule', '2step', ['rule'], Q_RULE),
   'atom.2step.leverage.en': row('rule', '2step', ['rule'], [...Q_RULE, 'options']),
   'atom.2step.reward.en': row('split', '2step', ['split'], ['ordinal', 'amount', 'pct', 'ratio', 'size', 'num', 'options']),
@@ -40,7 +40,7 @@ const SCOPE = Object.freeze({
   'atom.1step.daily-loss.en': row('rule', '1step', ['rule'], Q_RULE),
   'atom.1step.max-loss.en': row('rule', '1step', ['rule'], Q_RULE),
   'atom.1step.min-days.en': row('rule', '1step', ['rule'], Q_RULE),
-  'atom.1step.consistency.en': row('rule', '1step', ['rule'], Q_RULE_PAYOUT),
+  'atom.1step.consistency.en': row('rule', '1step', ['rule'], [...Q_RULE_PAYOUT, 'calc']),
   'atom.1step.news.en': row('rule', '1step', ['rule'], Q_RULE),
   'atom.1step.leverage.en': row('rule', '1step', ['rule'], Q_RULE),
   'atom.1step.reward.en': row('split', '1step', ['split'], ['ordinal', 'amount', 'pct', 'ratio', 'size', 'num', 'options']),

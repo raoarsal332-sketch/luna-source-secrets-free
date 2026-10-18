@@ -67,4 +67,22 @@ Catalog scan after the fix: 474 bodies, 0 holds. `t1` 53/53, `t2` 51/51, `t7` 6/
 
 ## Step 7 — freeze
 
-Frozen content commit is `76e1c9ee8be6aa522818a8905a6d98af21621ac8`. The following commit adds `artifacts/FROZEN_CANDIDATE.md`, `artifacts/MANIFEST.sha256` (self-sha256 `66322f8011a73a39b3f468c542ecbceef44f1613930171cac079a526fcd266bf`, 99 paths, 0 mismatches), `artifacts/REMEDIATION_R1_REPORT.md`, and the raw suite outputs. Candidate id `t739-integrated-r1`. Atom r1 selector copy is a later commit, after this freeze. Packs r1 is not copied.
+Frozen content commit is `76e1c9ee8be6aa522818a8905a6d98af21621ac8`. The following commit adds `artifacts/FROZEN_CANDIDATE.md`, `artifacts/MANIFEST.sha256` (self-sha256 `66322f8011a73a39b3f468c542ecbceef44f1613930171cac079a526fcd266bf`, 99 paths, 0 mismatches), `artifacts/REMEDIATION_R1_REPORT.md`, and the raw suite outputs. Candidate id `t739-integrated-r1`. Freeze marker commit `90eef487ad1c88d199936082989bbf063ddb2a77`, pushed to `origin/t739-mt5-shared`. Packs r1 is not copied.
+
+## Step 8 — Atom r1 selector copy (after the freeze)
+
+Source: `origin/t739-atom` `b9af481b91fb0188d0b322bb5801cf55ce30ffa0` (commits `2e4051d`, `29e76f7`, `b9af481`). `MANIFEST.json` sha256 `1b92b4885fd08baff188d326b20762dda46917b1680f625e9585b57978dda9c9`.
+
+Copied byte-for-byte into `atom/` and `candidate/atom/` (no edits):
+
+| file | sha256 |
+|---|---|
+| atomAnswerScope.js | `8f2d3672680e33978f17532ebd11edda926ee2337c24821dfcd95839ceafde63` |
+| atomAnswerSelect.js | `b204fc2871b1536d3c15fde123f37e2cfeb0e3105cea8f1d3085fb3dbb5883e1` |
+| atomApprovedAnswers.js | `5008e3343dad76eb77cc0a4cd595b07a79ba134904c018e3320a8d85d5ccdbd8` (unchanged) |
+| atomMoneyFrame.js | `cf40e0fceca039a96066915ffc05e8a2a36eaf56f824a0ff9bc5265d2c32f721` |
+| faq-approved-answers-atom-v1.json | `df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6` (unchanged) |
+
+Delivery stays BLOCKED. `resolveExtraPath` was not added. `candidate/faqApprovedAnswers.js` has no extra-catalog loader and was not modified. Packs files were not copied. The freeze manifest still describes content commit `76e1c9ee` and is not rewritten.
+
+After the copy, under `unshare -rn`: `t6` 35/35, `t7` 6/6 (Atom general+controls equal 206/206; catalog bodies 474, holds 0). Author r1 suite from `b9af481` with these bytes overlaid: `node --test` 21 pass, 0 fail; `TOTAL 5798 pass 5798 fail 0`. The in-repo `atom/tests` tree is still the initial import; its older `report_counts` expectations mark GN35 and GN40 as fails because the r1 suite now expects `atom.overview.en` and `atom.bundles.en`. Detail: `artifacts/ATOM_R1_IMPORT.md`.

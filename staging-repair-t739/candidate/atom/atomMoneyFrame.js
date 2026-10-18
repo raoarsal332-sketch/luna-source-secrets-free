@@ -267,15 +267,15 @@ const RX = {
   cap: /\b(?:cap|capped|caps|maximum|max|limit|limits|ceiling|biggest|largest|highest)\b|\bup\s+to\b/,
   rules: /\b(?:rules?|policy|policies|work|works|working|process|structure|terms|explain|details)\b/,
   change: /\b(?:increase|increases|increased|decrease|change|changes|changed|changing|goes?\s+up|go\s+up|improve|improves|raise|raised|lower|lowered|reduce|reduced|scale|scales|scaling|grow|grows|upgrade|upgraded|bump|boost|higher|bigger)\b/,
-  calc: /\b(?:calculate|calculation|compute|total|sum|exact\s+date|what\s+date|which\s+date|by\s+when|worked\s+out|work\s+out|math|equals?|equal\s+to)\b/,
+  calc: /\b(?:calculate|calculation|compute|computed|sum|exact\s+date|what\s+date|which\s+date|by\s+when|worked\s+out|work\s+out|math|equals?|equal\s+to)\b/,
   howMuch: /\b(?:how\s+much|what\s+amount|how\s+many\s+dollars)\b/,
   couponStack: /\b(?:coupons?|codes?|voucher|vouchers|stack|stacks|stacked|stacking|combine|combined|combining)\b/,
   selection:
-    /\b(?:should\s+(?:i|we)|recommend\w*|suggest\w*|advice|advise|best|better|worth|ideal|cheapest|most\s+popular|sku)\b|\bwhich\s+(?:one|size|plan|account|option|package)s?\b.{0,20}\b(?:buy|get|pick|choose|take|go|better|best|right)\b/,
+    /\b(?:should\s+(?:i|we)|(?:i|we)\s+should|recommend\w*|suggest\w*|advice|advise|best|better|worth|ideal|cheapest|most\s+popular|sku)\b|\bwhich\s+(?:one|size|plan|account|option|package)s?\b.{0,20}\b(?:buy|get|pick|choose|take|go|better|best|right)\b/,
   translation: /\btranslat|\b(?:in|into)\s+(?:urdu|hindi|spanish|arabic|portuguese|french|german|chinese|russian|turkish|bengali|farsi|persian|italian|roman\s+urdu)\b/,
   equality: /\b(?:exact(?:ly)?|equal(?:s|ity|led)?|boundary|edge|borderline|right\s+at|precisely|hits?)\b/,
   minutes: /\b(?:minutes?|mins?|window|windows|instruments?|before\s*\/?\s*after|seconds?|hours?)\b/,
-  addon: /\b(?:add\s*-?\s*ons?|addons?|weekend|scalping|holding|hold)\b/,
+  addon: /\b(?:add\s*-?\s*ons?|addons?|scalping)\b|\bweekend\s+hold(?:ing)?\b/,
   checkoutCue: /\b(?:checkout|check\s*-?\s*out|customi[sz]e|customi[sz]ation|configure|configuration|configurations|add\s*-?\s*ons?|addons?|options?)\b/,
   bundleCue: /\b(?:bundles?|multiple|several|second\s+account|market\s+maker|packs?|ORD\s+account|accounts\s+at\s+once|same\s+order)\b/,
   otherProduct: /\b(?:elite\s+packs?|packs\b|mt5|spread\s+test|elite\s+pro|instant\s+funding|stellar)\b/,
@@ -330,8 +330,8 @@ function evidenceFrom(c, slots, n) {
   e.timingStrong = has(RX.timingStrong);
   e.splitEv =
     (splitCore && e.profitRef) ||
-    (/\bpercentage\b/.test(c) && e.profit && !targetCtx) ||
-    (e.rewardWord && !targetCtx && (has(RX.optionWord) || /\bPCT\b/.test(c) || /\bpercent\b/.test(c))) ||
+    (/\bpercentages?\b/.test(c) && (e.profit || e.rewardWord) && !targetCtx) ||
+    (e.rewardWord && !targetCtx && (has(RX.optionWord) || /\bPCT\b/.test(c) || /\bpercentages?\b/.test(c) || /\bpick\b/.test(c))) ||
     /\bsplits?\b/.test(c);
   return e;
 }
