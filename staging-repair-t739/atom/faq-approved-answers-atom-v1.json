@@ -1,0 +1,3917 @@
+{
+  "version": "elite_atom.v1.20261017",
+  "createdUTC": "2026-10-17T18:03:24Z",
+  "notes": "PROVISIONAL staging KB. Marketing brief Oct 9 2026 is outdated and must never auto-promote. Published Atom FAQ is working reference. Non-English rows are unverified translations pending owner sign-off. Sendable rows require status=confirmed and approval=source-verified (EN FAQ-backed). needs_owner_decision and provisional rows are never sendable. owner-approved is reserved for actual owner sign-off (none yet — D8).",
+  "answers": [
+    {
+      "id": "atom.overview.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "overview"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Elite Atom is FundedElite's low-cost challenge, available as Atom 2-Step and Atom 1-Step. There are no minimum trading days, no minimum profitable days in the challenge, and no time limit: you pass as soon as you hit the profit target. All Elite Atom accounts, including funded accounts, are simulated trading accounts. Terms apply.",
+      "contentHash": "d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"
+    },
+    {
+      "id": "atom.2step.phases.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 2-Step has 2 phases, then a simulated funded account. Phase 1 profit target is 8% and Phase 2 profit target is 5%.",
+      "contentHash": "3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"
+    },
+    {
+      "id": "atom.2step.daily-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "dailyLoss"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Atom 2-Step, the daily loss limit is 3% in Phase 1, Phase 2, and funded. Your daily limit is measured from the higher of your balance and equity at the previous daily close. If your equity drops by the daily loss amount below that level, the account is breached. Open trades count.",
+      "contentHash": "bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"
+    },
+    {
+      "id": "atom.2step.max-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "maxLoss",
+        "static"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Atom 2-Step, max loss is 10% static. The floor is your starting balance minus 10% and never moves. On a 100K account the floor is always $90,000. Example (Atom 2-Step 100K): Phase 1 target $8,000, Phase 2 target $5,000, daily loss $3,000, max loss floor $90,000.",
+      "contentHash": "e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"
+    },
+    {
+      "id": "atom.2step.min-days.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "minTradingDays"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 2-Step has no minimum trading days and no minimum profitable days in Phase 1, Phase 2, or funded. There is no time limit, and funded accounts do not expire. Normal inactivity rules still apply.",
+      "contentHash": "de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"
+    },
+    {
+      "id": "atom.2step.consistency.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "consistency"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 2-Step has no consistency rule in the challenge phases. Once funded, a 50% consistency rule applies: your best single day must be less than 50% of your profit since the last payout. This is not a breach by itself — keep trading until total profit is at least twice your best day.",
+      "contentHash": "9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"
+    },
+    {
+      "id": "atom.2step.news.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "news"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Atom 2-Step, news trading is allowed in Phase 1 and Phase 2. On funded Atom accounts, trading high-impact news is not allowed.",
+      "contentHash": "06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"
+    },
+    {
+      "id": "atom.2step.leverage.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "leverage"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom leverage defaults to 1:30. On Atom 2-Step you can pick higher leverage (1:50 or 1:100) at checkout. Never assume a specific customer's account uses the defaults.",
+      "contentHash": "9359b2fb2ce639351a49f157e876df5d3645c51188bf1f6a47f9ed1b303d65da"
+    },
+    {
+      "id": "atom.2step.reward.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "rewardShare"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On funded Atom accounts the default reward share is 80%, unless a different share was chosen at checkout (Atom 2-Step options include 60%, 70%, 80%, or 95%).",
+      "contentHash": "07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"
+    },
+    {
+      "id": "atom.1step.phases.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 1-Step has 1 evaluation phase, then a simulated funded account. The evaluation profit target is 8% (not 10%).",
+      "contentHash": "2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"
+    },
+    {
+      "id": "atom.1step.daily-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "dailyLoss"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Atom 1-Step, the daily loss limit is 4% in evaluation and funded. Your daily limit is measured from the higher of your balance and equity at the previous daily close. If your equity drops by the daily loss amount below that level, the account is breached. Open trades count.",
+      "contentHash": "a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"
+    },
+    {
+      "id": "atom.1step.max-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "maxLoss",
+        "trailing"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Atom 1-Step, max loss is 6% trailing equity, including open profit. The floor follows the highest equity you reach and never moves down. On a 100K account the floor starts at $94,000; if equity reaches $103,000, the floor moves to $97,000.",
+      "contentHash": "78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"
+    },
+    {
+      "id": "atom.1step.min-days.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "minTradingDays",
+        "fundedProfitableDays"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 1-Step has no minimum trading days and no minimum profitable days in evaluation, and no time limit. Funded accounts do not expire. Only on funded Atom 1-Step you need 5 profitable days of at least 0.5% of the starting balance before each payout. Example (100K): a day counts as profitable when you close it at least $500 up. Normal inactivity rules still apply.",
+      "contentHash": "4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"
+    },
+    {
+      "id": "atom.1step.consistency.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "consistency"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 1-Step has a 50% consistency rule in both evaluation and funded. Your best single day must be less than 50% of your total profit (once funded, the profit since your last payout). This is not a breach by itself — keep trading until total profit is at least twice your best day. Example: best day $3,000 → you need $6,000 total before you can pass (evaluation) or request a payout.",
+      "contentHash": "56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"
+    },
+    {
+      "id": "atom.1step.news.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "news"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Atom 1-Step, news trading is allowed during evaluation. On funded Atom accounts, trading high-impact news is not allowed.",
+      "contentHash": "8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"
+    },
+    {
+      "id": "atom.1step.leverage.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "leverage"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 1-Step leverage is fixed at the published default of 1:30. Never assume a specific customer's account differs unless their dashboard shows another configuration.",
+      "contentHash": "2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"
+    },
+    {
+      "id": "atom.1step.reward.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "rewardShare"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On funded Atom accounts the default reward share is 80%, unless a different share was chosen at checkout (Atom 1-Step options include 70%, 80%, or 100%).",
+      "contentHash": "5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"
+    },
+    {
+      "id": "atom.1step.funded-profitable-days.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "fundedProfitableDays"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On funded Atom 1-Step, before each payout you need 5 profitable days since the last payout, each at least 0.5% of the starting account size. Evaluation has no minimum profitable days.",
+      "contentHash": "3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"
+    },
+    {
+      "id": "atom.payouts.general.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "payouts"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "For funded Atom accounts: first payout is 21 days after the funded account is created; later payouts are every 14 days by default, or the payout interval purchased at checkout (3, 7, 14, or 21 days). Default reward share is 80% unless the purchased configuration differs. Each payout is capped at 3% of the starting balance; any eligible profit above the cap stays on the account for the next cycle. Risk per instrument is max 1.5% of the starting balance per instrument per day. This is general policy only — Luna cannot confirm an individual's eligibility, compliance, KYC, balance, or payout status.",
+      "contentHash": "290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"
+    },
+    {
+      "id": "atom.prices.list.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "prices",
+        "freshness:price"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Elite Atom list prices in USD before coupons (2-Step / 1-Step): 7K $19/$29; 25K $59/$70; 50K $114/$145; 100K $215/$289; 200K $409/$519. Active codes are applied at checkout, and the final price is the one shown in your cart. Promotional figures such as a permanent $161 100K price are not list prices. Do not treat 5K or 10K Atom sizes as available unless the live catalog shows them.",
+      "contentHash": "202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"
+    },
+    {
+      "id": "atom.checkout.options.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "checkout"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom checkout options (defaults in bold on the published FAQ): Atom 2-Step — max loss 6%/8%/10% (default 10%); Phase 1 target 6%/7%/8%/10%/12% (default 8%); reward 60%/70%/80%/95% (default 80%); payout interval 3/7/14/21 days (default 14); leverage 1:30/1:50/1:100 (default 1:30); weekend holding optional add-on; partial-scalping add-on. Atom 1-Step — max loss, target, leverage and scalping fixed; reward 70%/80%/100% (default 80%); interval 3/7/14/21 days (default 14); weekend holding included. Never assume a specific customer's account has the defaults — check their dashboard configuration.",
+      "contentHash": "903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"
+    },
+    {
+      "id": "atom.bundles.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "bundles",
+        "credits",
+        "freshness:promo"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "When buying several Atom accounts in the same order: 2nd account 25% off, 3rd 30% off, 4th 35% off. Buy 3 Atom accounts in one order and you also get a free Market Maker Pack plus 6,000 credits. Those pack credits open Elite Packs only; they are not withdrawable and cannot buy challenges. Do not confuse Pack credits with reward / Payout Credits. Verify current eligibility and stacking on the live checkout; older marketing-brief bundle tables are outdated.",
+      "contentHash": "c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"
+    },
+    {
+      "id": "atom.house.eas-copy.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "eas",
+        "copyTrading",
+        "houseRules"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "On Elite Atom, Expert Advisors are allowed as support tools, and trade copiers only between the trader's own accounts. All FundedElite house rules still apply, including the 3-minute minimum hold (or the purchased scalping add-on threshold), no hedging across accounts, and no account sharing.",
+      "contentHash": "2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"
+    },
+    {
+      "id": "atom.house.simulated.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "simulated"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "All Elite Atom accounts, including funded accounts, are simulated trading accounts. Rewards are calculated from simulated profit. FundedElite does not promise real trading capital or guaranteed rewards.",
+      "contentHash": "41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"
+    },
+    {
+      "id": "atom.consistency.boundary.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "consistency",
+        "boundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Under the published Atom 50% consistency rule, your best single day must be less than 50% of the relevant profit total, and the FAQ also states you need total profit at least twice your best day. Equality at exactly 50% is a documented wording edge — Luna will not invent a pass/fail for a customer's numbers; general policy only, with human handoff for account-specific borderline cases.",
+      "contentHash": "7c776ccba51d191951297a13f5c4719fa4c13feb1ae51284ced87a18c97a42f2"
+    },
+    {
+      "id": "atom.handoff.unverified.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "handoff"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "I can share the published Elite Atom general rules, but this specific point is not covered by an approved Atom answer or needs human review. A teammate can help with the exact details.",
+      "contentHash": "ff7878e016e0c5d7286afd81ca5e7c80a1d90c89e858ef32edfb635c0fedbbc6"
+    },
+    {
+      "id": "atom.account-status.refuse.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "accountStatusBoundary"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "I can explain Elite Atom's published general rules, but I cannot confirm whether your individual account is eligible, compliant, breached, KYC-approved, or ready for a payout. A human teammate must review your account records.",
+      "contentHash": "c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"
+    },
+    {
+      "id": "atom.obsolete.10pct-1step.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "profitTarget"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom 1-Step evaluation profit target is 8%, not 10%. Older drafts that said 10% are outdated.",
+      "contentHash": "71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"
+    },
+    {
+      "id": "atom.obsolete.first-payout-14.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "payouts"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "For funded Atom accounts, the first payout wait is 21 days after funded account creation, not 14 days. Later payouts follow the purchased interval (default 14 days).",
+      "contentHash": "74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"
+    },
+    {
+      "id": "atom.obsolete.leverage-150-default.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "leverage"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "Atom default leverage is 1:30. Higher leverage such as 1:50 or 1:100 is an Atom 2-Step checkout option, not the universal default.",
+      "contentHash": "45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"
+    },
+    {
+      "id": "atom.obsolete.price-161-permanent.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "prices",
+        "freshness:promo"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "The Atom 100K list prices are $215 (2-Step) and $289 (1-Step) before coupons. A $161 figure from older marketing is promotional, not a permanent list price. Check the live checkout for the final price after any active code.",
+      "contentHash": "b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"
+    },
+    {
+      "id": "atom.obsolete.sizes-5k-10k.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "catalog"
+      ],
+      "approval": "source-verified",
+      "sendable": true,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "confirmed",
+        "sendable": true
+      },
+      "body": "The published Elite Atom catalog lists 7K, 25K, 50K, 100K, and 200K. 5K and 10K Atom sizes from older marketing materials are not advertised unless the live catalog confirms them.",
+      "contentHash": "dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"
+    },
+    {
+      "id": "atom.news.minutes.unverified.en",
+      "locale": "en",
+      "intentTags": [
+        "atom",
+        "news",
+        "unverified"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Published Atom FAQ states high-impact news trading is not allowed on funded Atom accounts, but the exact restricted minutes and instrument list need authoritative verification. I will not invent a minute window — a teammate can confirm the current funded news policy.",
+      "contentHash": "e3becf7e2fcfcae2be50c382daa30d8bea135228cd5974de76f8ae8472ae2abf"
+    },
+    {
+      "id": "atom.overview.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "overview"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Elite Atom FundedElite ka low-cost challenge hai — Atom 2-Step aur Atom 1-Step. Challenge mein minimum trading days ya minimum profitable days nahi, aur time limit bhi nahi: target hit hote hi pass. Tamam Elite Atom accounts (funded shamil) simulated hain. Terms apply.",
+      "contentHash": "69a2619398b44f08b922703d93f093760e62dee0d0f823437f157da29bb3bca9",
+      "translationOf": "atom.overview.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.phases.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step mein 2 phases hain, phir simulated funded account. Phase 1 target 8%, Phase 2 target 5%.",
+      "contentHash": "86e8a378b30b8b91479f93dda19b1231d371ce75a1d9cb9dcde236385cb5f84c",
+      "translationOf": "atom.2step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.daily-loss.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step daily loss 3% hai (Phase 1, Phase 2, funded). Limit previous daily close ke higher balance/equity se measure hoti hai; open trades count.",
+      "contentHash": "8176c8412101ad75bb26a94e4c79b5c2b4e9c96b4d5d2073344edc122054d009",
+      "translationOf": "atom.2step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.max-loss.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "maxLoss",
+        "static"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step max loss 10% static hai. 100K par floor hamesha $90,000 rehta hai aur move nahi hota.",
+      "contentHash": "efe88c5c5a7006aca94ed08d0222fb4b9810b3ab0129446a31c2a7730878b56c",
+      "translationOf": "atom.2step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.min-days.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "minTradingDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step mein challenge ya funded par minimum trading/profitable days nahi, time limit nahi. Normal inactivity rules apply.",
+      "contentHash": "9097d1b5794bd0ecf56504565e650a2096a3e3548ece4753d6cb52b83e5a6ac0",
+      "translationOf": "atom.2step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.consistency.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step challenge mein consistency nahi; funded par 50% consistency. Yeh breach nahi — trade karte raho jab tak total profit best day ka kam az kam double na ho.",
+      "contentHash": "8a04efcbb5f341eed6b0aefdc568bfaf78b5c7c1cb53024749c3a5b26cc9bebc",
+      "translationOf": "atom.2step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.news.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step challenge phases mein news allowed; funded Atom par high-impact news allowed nahi.",
+      "contentHash": "e0c0326525169843564206f2182c30d0a57a592347f775913badca269674d508",
+      "translationOf": "atom.2step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.leverage.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom default leverage 1:30. Atom 2-Step checkout par 1:50 ya 1:100 choose ho sakta hai. Customer ke defaults assume mat karo.",
+      "contentHash": "a112efcd8ff770a8ecf55fa98f81f0f98e4814fb788d72fb1db484cd20e3711a",
+      "translationOf": "atom.2step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.reward.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Funded Atom default reward share 80% hai, jab tak checkout par aur option na liya ho (2-Step: 60/70/80/95%).",
+      "contentHash": "c035633ca6ba4c9eaf361fb918e2dfe0dd70e014065c7d6d1fab5b76c286553e",
+      "translationOf": "atom.2step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.phases.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step ek evaluation phase ke baad funded. Evaluation target 8% hai (10% nahi).",
+      "contentHash": "bca309b8d003116151fbc450daf435e187070b3a8a2bb53b4cd02fd629520095",
+      "translationOf": "atom.1step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.daily-loss.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step daily loss 4% hai (evaluation aur funded). Previous daily close ke higher balance/equity se measure; open trades count.",
+      "contentHash": "f8bb99a2206b86a256d20b5831577f1a193f6c3db60f302dd8cebddc125d1a2d",
+      "translationOf": "atom.1step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.max-loss.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "maxLoss",
+        "trailing"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step max loss 6% trailing equity (open profit shamil). 100K floor $94,000 se start; equity $103,000 ho to floor $97,000.",
+      "contentHash": "61d127a0a4350701a9709d4e2c7edbceb1060287ff2957e5b326d77fc1729b7e",
+      "translationOf": "atom.1step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.min-days.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "minTradingDays",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step evaluation mein minimum days nahi. Funded 1-Step payout se pehle 5 profitable days chahiye, har ek kam az kam starting size ka 0.5%.",
+      "contentHash": "1ef5d5c07a68e9f4b6f5ff8ae174a06352019f8c9cbfcee6535327f93dbc51d9",
+      "translationOf": "atom.1step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.consistency.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step evaluation aur funded dono par 50% consistency. Yeh breach nahi — total profit best day ka double hone tak trade karo.",
+      "contentHash": "39562029fd47f0f5107865ce4a6d8b9372eeff4dae73bbd1e92d06730a563df1",
+      "translationOf": "atom.1step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.news.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step evaluation mein news allowed; funded par high-impact news allowed nahi.",
+      "contentHash": "bfcd7da55ccccabfd0cd2ea201b040e50bec20d3d372a81350de6f5804c73c9f",
+      "translationOf": "atom.1step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.leverage.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step leverage fixed 1:30 default per published rules.",
+      "contentHash": "53ba0864b96cdae765581aced2b2f352a17301c585a78999450874f23c1bd56f",
+      "translationOf": "atom.1step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.reward.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Funded Atom default reward 80%; 1-Step checkout options 70/80/100%.",
+      "contentHash": "9c05157c10c091606eb9951bbbf26024051c862722c6772fcd706c835ced9bfc",
+      "translationOf": "atom.1step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.funded-profitable-days.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Funded Atom 1-Step: last payout ke baad 5 profitable days, har ek ≥ 0.5% of starting size. Evaluation mein yeh minimum nahi.",
+      "contentHash": "2b0b7d965d4b4c97d4fecacf1cedf2d63a761521ff774219807bbf54d8336696",
+      "translationOf": "atom.1step.funded-profitable-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.payouts.general.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Funded Atom: pehla payout funded create hone ke 21 din baad; baad mein default har 14 din (ya purchased interval). Default reward 80%. Har payout cap starting balance ka 3%. Instrument risk max 1.5%/day. Yeh general policy hai — individual eligibility/KYC/payout status confirm nahi kiya jata.",
+      "contentHash": "d5d130279286f4d3796f5d49e79b02c409c5a7568bb190460420ffb65b6c8973",
+      "translationOf": "atom.payouts.general.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.prices.list.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "prices",
+        "freshness:price"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom list prices (USD, coupons se pehle, 2-Step/1-Step): 7K $19/$29; 25K $59/$70; 50K $114/$145; 100K $215/$289; 200K $409/$519. Final price live checkout par. $161 permanent list price nahi. 5K/10K tabhi jab live catalog confirm kare.",
+      "contentHash": "154d9de40399fc573f6760958036cba2e128b09022c0384ba58d7e2662f9302c",
+      "translationOf": "atom.prices.list.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.checkout.options.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "checkout"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step: max loss 6/8/10% (default 10); Phase 1 target 6/7/8/10/12% (default 8); reward 60/70/80/95%; interval 3/7/14/21; leverage 1:30/1:50/1:100; weekend optional; scalping add-on. Atom 1-Step: max loss/target/leverage/scalping fixed; reward 70/80/100%; weekend included. Defaults assume mat karo.",
+      "contentHash": "a518ac6ae98667fee9a31e326e064074c35574fd50b5eb5a05c23e0d3a0fbf37",
+      "translationOf": "atom.checkout.options.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.bundles.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "bundles",
+        "credits",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Same order: 2nd 25% off, 3rd 30%, 4th 35%. 3 accounts = free Market Maker Pack + 6,000 credits. Pack credits only Elite Packs ke liye; withdrawable nahi aur challenges nahi khareed sakte.",
+      "contentHash": "3aea1e90a69136cc8b1b85fcae26e16f0965187bda568315a1af9c42f50e1a8c",
+      "translationOf": "atom.bundles.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.eas-copy.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "eas",
+        "copyTrading",
+        "houseRules"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "EAs support tools ke tor par allowed; copy trading sirf apne accounts ke beech. 3-minute hold, no hedging across accounts, no account sharing.",
+      "contentHash": "6475d6a339d6872cc82d4d235c0391bdfadb6b667a7be7706a67899775ddd570",
+      "translationOf": "atom.house.eas-copy.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.simulated.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "simulated"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Tamam Elite Atom accounts simulated hain. Real capital ya guaranteed rewards ka promise nahi.",
+      "contentHash": "69acaa89bc6e4f396d371ea3d8871ea360c94d96d709b2a70e89df866c3c6b1d",
+      "translationOf": "atom.house.simulated.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.consistency.boundary.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "consistency",
+        "boundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "50% consistency: best day relevant profit se less than 50% hona chahiye; exactly 50% edge case human review ke liye.",
+      "contentHash": "9e57dcb96ab210410f01175935e28e80329bbb0d7d802fdd788744ec7a00f002",
+      "translationOf": "atom.consistency.boundary.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.handoff.unverified.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "handoff"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "General Atom rules bata sakta hoon, lekin yeh point approved answer mein cover nahi / human review chahiye.",
+      "contentHash": "99999f87a9a6d281b79d4f9fdf81bf0b03f73109a9d22845a85baebe34dbac8f",
+      "translationOf": "atom.handoff.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.account-status.refuse.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "accountStatusBoundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "General Atom rules explain kar sakta hoon, lekin aapke individual account ki eligibility, breach, KYC ya payout status confirm nahi kar sakta.",
+      "contentHash": "b145297cc70725cefbc34b015398544e95f167258820515745767c00b3825e4d",
+      "translationOf": "atom.account-status.refuse.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.10pct-1step.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step target 8% hai, 10% nahi. Purani 10% draft outdated hai.",
+      "contentHash": "f2c7f0100d8b6fecc094ce71244ca83686bc2e7718cf6f7783183029d0129672",
+      "translationOf": "atom.obsolete.10pct-1step.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.first-payout-14.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Pehla funded Atom payout 21 din baad hai, 14 din nahi.",
+      "contentHash": "7b5a82dc69e92eae9ed70267de267ae29fcf17a511cb13933e2d32a15fea925d",
+      "translationOf": "atom.obsolete.first-payout-14.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.leverage-150-default.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Default leverage 1:30 hai; 1:50 sirf 2-Step checkout option ho sakta hai.",
+      "contentHash": "4d81973d188f62a8937fe806a6972240e089a649bc03f31af9fabf0ab8999d36",
+      "translationOf": "atom.obsolete.leverage-150-default.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.price-161-permanent.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "prices",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "100K list $215/$289 hai. $161 promotional tha, permanent list nahi.",
+      "contentHash": "03407edefba8af5275ae318d94f7b62fc61a12b7014225903f20612570249bb3",
+      "translationOf": "atom.obsolete.price-161-permanent.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.sizes-5k-10k.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "catalog"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Published Atom sizes: 7K, 25K, 50K, 100K, 200K. 5K/10K tabhi jab live catalog confirm kare.",
+      "contentHash": "ffdb76885af9e6bc2f7df725b1c13c055d615e4b6e50ecb40385feaa52786750",
+      "translationOf": "atom.obsolete.sizes-5k-10k.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.news.minutes.unverified.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "atom",
+        "news",
+        "unverified"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Funded Atom par high-impact news restricted hai; exact minutes/instruments verify karne hain — invent nahi kiye jayenge.",
+      "contentHash": "7d2b2df31c69cad76f3c12147b6ebb48334139e9821bb54ce4e613780e2d9f4e",
+      "translationOf": "atom.news.minutes.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.overview.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "overview"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Elite Atom فنڈڈ ایلیٹ کا کم لاگت چیلنج ہے (2-Step اور 1-Step)۔ چیلنج میں کم از کم ٹریڈنگ دن یا منافع والے دن نہیں، اور وقت کی حد نہیں۔ تمام اکاؤنٹس سمولیٹڈ ہیں۔",
+      "contentHash": "7eed1e9c110e80d3d0fe13b89d2fc12b09f0b632191fbf01d1ffd2bd712fa883",
+      "translationOf": "atom.overview.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.phases.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step میں دو فاز ہیں، پھر سمولیٹڈ فنڈڈ اکاؤنٹ۔ فیز 1 ہدف 8٪، فیز 2 ہدف 5٪۔",
+      "contentHash": "972baeeebb7a5d13e60347201e59ac9eddd5eef96978c3a2ad844ea19be2bf38",
+      "translationOf": "atom.2step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.daily-loss.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step روزانہ نقصان کی حد 3٪ ہے۔",
+      "contentHash": "26ac074f30c7f14f9d9d7495b3c6affb1eccfd11b070be3ff29c9be1ca73529a",
+      "translationOf": "atom.2step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.max-loss.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "maxLoss",
+        "static"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step زیادہ سے زیادہ نقصان 10٪ سٹیٹک ہے۔ 100K پر فلور ہمیشہ $90,000۔",
+      "contentHash": "89b1dc9e3e3cf7908ededf17d04e63468d2d93fc5037315e52eceec04557e952",
+      "translationOf": "atom.2step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.min-days.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "minTradingDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step میں کم از کم دن نہیں اور وقت کی حد نہیں۔",
+      "contentHash": "c41a3d6cfd2dac6a3644d17ae792faddc57d28274004aba0610c75525b015792",
+      "translationOf": "atom.2step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.consistency.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "چیلنج میں consistency نہیں؛ فنڈڈ پر 50٪ consistency (خود بخود breach نہیں)۔",
+      "contentHash": "a077caa5b9f88f6926f2ef732726a058f5f16430918f531d3201ed4960cc8210",
+      "translationOf": "atom.2step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.news.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "چیلنج میں خبریں اجازت؛ فنڈڈ پر ہائی امپیکٹ خبریں منع۔",
+      "contentHash": "69bd5c45307c1ba90be04f7e61bc9d476f61bdc267f4d084678f6be61889ac60",
+      "translationOf": "atom.2step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.leverage.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ڈیفالٹ لیوریج 1:30۔ 2-Step چیک آؤٹ پر زیادہ لیوریج ممکن۔",
+      "contentHash": "151dc2dd2a3f35885f8e0e7977a0ba8fa6a3f93c2073197e4633a15e348bd379",
+      "translationOf": "atom.2step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.reward.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ڈیفالٹ انعام شیئر 80٪، جب تک چیک آؤٹ پر مختلف نہ ہو۔",
+      "contentHash": "e79ce0f288a8e0b2963267cebc9d5b0cea2e2586fe0d5a78f635c0df88eca3f5",
+      "translationOf": "atom.2step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.phases.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step ایک فیز پھر فنڈڈ۔ ہدف 8٪ ہے (10٪ نہیں)۔",
+      "contentHash": "9703a639e5a28c1eedcd7f7283c9075a057208aa017e577f77687453571d0f32",
+      "translationOf": "atom.1step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.daily-loss.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step روزانہ نقصان 4٪۔",
+      "contentHash": "f7c8a522ca1d6e56347448ae94fab4c5851bd53b470ab1630f4f60dd91ca6504",
+      "translationOf": "atom.1step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.max-loss.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "maxLoss",
+        "trailing"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step زیادہ سے زیادہ نقصان 6٪ ٹریلنگ ایکویٹی (اوپن منافع شامل)۔ 100K فلور $94,000 سے شروع؛ equity $103,000 ہو تو floor $97,000۔",
+      "contentHash": "b7686ac1f47196c68bcac9126f94a8d9b37b3cd8ebfcfb6150a4fd2e097f867c",
+      "translationOf": "atom.1step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.min-days.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "minTradingDays",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ایویلیوایشن میں کم از کم دن نہیں۔ فنڈڈ 1-Step ادائیگی سے پہلے 5 منافع والے دن ≥0.5٪۔",
+      "contentHash": "6a168680d49e2c9500dc454f6f6f0d49ab0b2cf6c463bdd57b6a7a06b71cacda",
+      "translationOf": "atom.1step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.consistency.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ایویلیوایشن اور فنڈڈ دونوں پر 50٪ consistency؛ یہ خود breach نہیں۔",
+      "contentHash": "5f7f2ae8d5a5326931d7a489b15ca0ed0d8c4129caa50031b8b56ff9ac564641",
+      "translationOf": "atom.1step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.news.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ایویلیوایشن میں خبریں اجازت؛ فنڈڈ پر ہائی امپیکٹ منع۔",
+      "contentHash": "d385b0a4fb83ea15fed190fda6edacd15b8cf5d4db865dad9ab635a53dd07915",
+      "translationOf": "atom.1step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.leverage.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step لیوریج فکسڈ 1:30۔",
+      "contentHash": "708424a3fd1af22c9802d4fffe8f1419e3285179be1f5a7794824dbc0f33fc5c",
+      "translationOf": "atom.1step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.reward.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ڈیفالٹ 80٪؛ آپشنز 70/80/100٪۔",
+      "contentHash": "dbb2d93e2f2c74662046d48dc1dd7efd921bb925b032da03658b9fdfffb9456e",
+      "translationOf": "atom.1step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.funded-profitable-days.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "فنڈڈ Atom 1-Step: آخری ادائیگی کے بعد 5 منافع والے دن، ہر ایک کم از کم شروع سائز کا 0.5٪۔",
+      "contentHash": "049c9ccaf04a3e0937170c6398422f8e5bfe0bdb9d330ec80b437eb13dcfaeed",
+      "translationOf": "atom.1step.funded-profitable-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.payouts.general.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "پہلی ادائیگی فنڈڈ بننے کے 21 دن بعد؛ بعد میں ڈیفالٹ ہر 14 دن۔ کیپ 3٪۔ انفرادی حیثیت تصدیق نہیں۔",
+      "contentHash": "eff7e5bb3267553958d1b54a75df7c5ce2b7ea783182c634ee42419e1193344e",
+      "translationOf": "atom.payouts.general.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.prices.list.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "prices",
+        "freshness:price"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "فہرست قیمتیں: 7K $19/$29؛ 25K $59/$70؛ 50K $114/$145؛ 100K $215/$289؛ 200K $409/$519۔ حتمی قیمت چیک آؤٹ پر۔ $161 مستقل فہرست قیمت نہیں۔ 5K/10K صرف اگر لائیو کیٹلاگ تصدیق کرے۔",
+      "contentHash": "07f6a440876892ae97b21bb478701c236fd2da9204dc86d17f81c66c6d4b9d89",
+      "translationOf": "atom.prices.list.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.checkout.options.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "checkout"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step: max loss 6/8/10٪ (ڈیفالٹ 10)؛ Phase 1 target 6/7/8/10/12٪ (ڈیفالٹ 8)؛ reward 60/70/80/95٪؛ interval 3/7/14/21؛ leverage 1:30/1:50/1:100؛ weekend optional؛ scalping add-on۔ Atom 1-Step: max loss/target/leverage/scalping فکسڈ؛ reward 70/80/100٪؛ weekend شامل۔ ڈیفالٹ فرض نہ کریں۔",
+      "contentHash": "83bc7e468791ad82a91182f050165cc5c8dbb76e94f953ecc3c50e26525a4d66",
+      "translationOf": "atom.checkout.options.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.bundles.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "bundles",
+        "credits",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ایک آرڈر میں دوسرا 25٪، تیسرا 30٪، چوتھا 35٪۔ تین اکاؤنٹس = مفت Market Maker Pack + 6,000 کریڈٹس۔ Pack credits صرف Elite Packs کے لیے؛ غیر قابلِ رقم (not withdrawable) اور challenges نہیں خرید سکتے۔",
+      "contentHash": "b5a75a3c69808d7f065dfd20943cc830692f1463f1a4d30d931002e34d36f5dc",
+      "translationOf": "atom.bundles.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.eas-copy.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "eas",
+        "copyTrading",
+        "houseRules"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "EAs سپورٹ ٹولز؛ کاپی صرف اپنے اکاؤنٹس۔ 3 منٹ ہولڈ، اکاؤنٹ شیئرنگ/کراس ہیجنگ منع۔",
+      "contentHash": "6773a0090cb613873c74bc536dd8ec1c82eeec6b131cdfa54c3f151571193d3c",
+      "translationOf": "atom.house.eas-copy.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.simulated.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "simulated"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "تمام Atom اکاؤنٹس سمولیٹڈ ہیں۔ حقیقی سرمایہ یا ضمانت شدہ انعامات کا وعدہ نہیں۔",
+      "contentHash": "a70a9938d19541797f84d7f28aca112d7fd1f1f97c785a0d44ab6ebfd17945d1",
+      "translationOf": "atom.house.simulated.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.consistency.boundary.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "consistency",
+        "boundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "50٪ consistency؛ بالکل 50٪ کنارے کی صورت انسانی جائزہ۔",
+      "contentHash": "1af1c6c6f8043b41e23fb70140a3475785f7adb502ff370edfcf0db957f9036d",
+      "translationOf": "atom.consistency.boundary.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.handoff.unverified.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "handoff"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "عام قواعد بتا سکتا ہوں؛ اس نکتے کے لیے انسانی مدد درکار۔",
+      "contentHash": "5bafed49a0514c087f2fcc3d288b1062c41d1a7131ee762f2c81a80b6bd296d9",
+      "translationOf": "atom.handoff.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.account-status.refuse.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "accountStatusBoundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "انفرادی اکاؤنٹ کی اہلیت، KYC یا ادائیگی کی حیثیت تصدیق نہیں کر سکتا۔",
+      "contentHash": "11f5faced5818d92a15bb34605ed0112394f07ef70f9cf4c05a1d80879793b99",
+      "translationOf": "atom.account-status.refuse.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.10pct-1step.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step ہدف 8٪ ہے، 10٪ نہیں۔",
+      "contentHash": "d921c9ccd0e77b0dae633fbd1d8bb4064551caec9bae1197930c6e04ea9dadb3",
+      "translationOf": "atom.obsolete.10pct-1step.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.first-payout-14.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "پہلی ادائیگی 21 دن بعد ہے، 14 نہیں۔",
+      "contentHash": "0d1c86e91ae32e271bf0a32de23993c9086267655968af3d782744ef31f4590a",
+      "translationOf": "atom.obsolete.first-payout-14.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.leverage-150-default.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "ڈیفالٹ 1:30 ہے؛ 1:50 عالمی ڈیفالٹ نہیں۔",
+      "contentHash": "f625ca05c50838e25bac6010cc7d9d0f7822c9516bb22526f300c2f3959e3331",
+      "translationOf": "atom.obsolete.leverage-150-default.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.price-161-permanent.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "prices",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "100K فہرست $215/$289؛ $161 پرومو تھا۔",
+      "contentHash": "2ae09754fc440f018a4da721f938f9bbec10652be894f0ac1a04315296f2e178",
+      "translationOf": "atom.obsolete.price-161-permanent.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.sizes-5k-10k.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "catalog"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "شائع شدہ سائز میں 7K شامل؛ 5K/10K صرف اگر لائیو کیٹلاگ تصدیق کرے۔",
+      "contentHash": "d41b57270e1b1b421bd49cebf77579feaf277ad3ed6f04fb6a183b9dbbc402c4",
+      "translationOf": "atom.obsolete.sizes-5k-10k.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.news.minutes.unverified.ur",
+      "locale": "ur",
+      "intentTags": [
+        "atom",
+        "news",
+        "unverified"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "فنڈڈ ہائی امپیکٹ خبریں محدود؛ درست منٹ تصدیق درکار۔",
+      "contentHash": "30f423f6f33d7334b184800e9f4c630a9e9618630e1015fb52f9c7b2a5705e5c",
+      "translationOf": "atom.news.minutes.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.overview.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "overview"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Elite Atom FundedElite का लो-कॉस्ट चैलेंज है (2-Step और 1-Step)। चैलेंज में न्यूनतम ट्रेडिंग/मुनाफे वाले दिन नहीं, समय सीमा नहीं। सभी खाते सिम्युलेटेड हैं।",
+      "contentHash": "3227e28bede630565accc02e08edf93d92272c0a3b6e1f63080bcbb6292a3675",
+      "translationOf": "atom.overview.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.phases.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step में 2 चरण, फिर सिम्युलेटेड फंडेड खाता। Phase 1 लक्ष्य 8%, Phase 2 लक्ष्य 5%.",
+      "contentHash": "9586f47b3fad53215227f41c6ac517bd69224ed4d6f685efca2f3d79ec1f33ac",
+      "translationOf": "atom.2step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.daily-loss.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step दैनिक हानि सीमा 3% है।",
+      "contentHash": "b15f9f0181a7d7c223d935f6d40640dba4c96b9ae8abbb5a674e52bcc5d4106f",
+      "translationOf": "atom.2step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.max-loss.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "maxLoss",
+        "static"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step अधिकतम हानि 10% स्टैटिक। 100K पर फ्लोर हमेशा $90,000।",
+      "contentHash": "b46eaf5ccfad28a085d786b9a3d4a6a548ccdf4c212b8904e9d5f7ba6cc8c924",
+      "translationOf": "atom.2step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.min-days.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "minTradingDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step में न्यूनतम दिन या समय सीमा नहीं।",
+      "contentHash": "b5ec455d8e07c1c5eb9232e069841e44e6d55b13274738c53c365adb8a8b39c9",
+      "translationOf": "atom.2step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.consistency.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "चैलेंज में consistency नहीं; फंडेड पर 50% — यह खुद breach नहीं।",
+      "contentHash": "8a91b8732a0ef2ec34868d13ccd0e4acf1f06b945f1f22b08d1138ca5ed9a512",
+      "translationOf": "atom.2step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.news.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "चैलेंज में न्यूज़ अनुमति; फंडेड पर हाई-इम्पैक्ट न्यूज़ नहीं।",
+      "contentHash": "062e629204b2e85e71a464f64f94ff48828be43b9a0bfe2c2dee3f9cd4ce1100",
+      "translationOf": "atom.2step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.leverage.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "डिफ़ॉल्ट लेवरेज 1:30। 2-Step चेकआउट पर उच्च विकल्प संभव।",
+      "contentHash": "cac0adb2c86324ea8b98d7d0e92360f31be057a636aaf547961963c2b861578a",
+      "translationOf": "atom.2step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.reward.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "डिफ़ॉल्ट रिवॉर्ड शेयर 80%, जब तक चेकआउट अलग न हो।",
+      "contentHash": "2c6978e6fe31aa46d3fd2aa6ad926f2aec61d981cf3c14f051cb22375673c28d",
+      "translationOf": "atom.2step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.phases.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step एक चरण फिर फंडेड। लक्ष्य 8% है (10% नहीं)।",
+      "contentHash": "c8323835fcac851fbc0444b2bde1e7cea123031671da2dcc199e5cf7572778de",
+      "translationOf": "atom.1step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.daily-loss.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step दैनिक हानि 4%.",
+      "contentHash": "a4247f3b7399ac270743a7180be1f1bbf3238b8dec895e35a0c42009b752c2e8",
+      "translationOf": "atom.1step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.max-loss.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "maxLoss",
+        "trailing"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step अधिकतम हानि 6% ट्रेलिंग इक्विटी (ओपन प्रॉफिट सहित)। 100K फ्लोर $94,000 से; equity $103,000 हो तो floor $97,000।",
+      "contentHash": "2e8fa0f7b273bccb68ce946f39d81697f958f4a0696d5b6cd5fad10464a1b2b6",
+      "translationOf": "atom.1step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.min-days.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "minTradingDays",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "मूल्यांकन में न्यूनतम दिन नहीं। फंडेड 1-Step पेआउट से पहले 5 लाभ वाले दिन ≥0.5%.",
+      "contentHash": "0ec9e758b16e38d97d627fb30f648b3fc231c3afcd18cb5b477d1a8cb85b882e",
+      "translationOf": "atom.1step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.consistency.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "मूल्यांकन और फंडेड दोनों पर 50% consistency; यह खुद breach नहीं।",
+      "contentHash": "492ab9996092a4871ba4dfec1bbd2d85bd86f7cb2a90c8dd5c9164df6a70e9eb",
+      "translationOf": "atom.1step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.news.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "मूल्यांकन में न्यूज़ अनुमति; फंडेड पर हाई-इम्पैक्ट नहीं।",
+      "contentHash": "d7b79171cf272e93bed08db26b4018254ae4043872c66af1c6d7d03a5465249d",
+      "translationOf": "atom.1step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.leverage.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step लेवरेज फिक्स्ड 1:30।",
+      "contentHash": "d1849ef6582f4fcb024fc3f7fe5e7d1fa4833e7c2e4795efed24137c636dd15d",
+      "translationOf": "atom.1step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.reward.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "डिफ़ॉल्ट 80%; विकल्प 70/80/100%.",
+      "contentHash": "e10430d8e4673743d269c906aa2305caca84333c36f3205289c34e69da5e1641",
+      "translationOf": "atom.1step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.funded-profitable-days.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "फंडेड Atom 1-Step: अंतिम पेआउट के बाद 5 लाभ वाले दिन, प्रत्येक ≥ शुरुआती साइज़ का 0.5%.",
+      "contentHash": "48bcd2d43edc46ce9df3595fc6264e8dcff085817e7a26c135107f7a941f90d2",
+      "translationOf": "atom.1step.funded-profitable-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.payouts.general.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "पहला पेआउट फंडेड बनने के 21 दिन बाद; बाद में डिफ़ॉल्ट हर 14 दिन। कैप 3%। व्यक्तिगत स्थिति पुष्टि नहीं।",
+      "contentHash": "43d45fd2ab878e27f1c9b02522e7b2b1edab038c25f16944cbd726372f5e0a21",
+      "translationOf": "atom.payouts.general.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.prices.list.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "prices",
+        "freshness:price"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "लिस्ट कीमतें: 7K $19/$29; 25K $59/$70; 50K $114/$145; 100K $215/$289; 200K $409/$519। अंतिम कीमत चेकआउट पर। $161 स्थायी लिस्ट कीमत नहीं। 5K/10K केवल यदि लाइव कैटलॉग पुष्टि करे।",
+      "contentHash": "ed5ad34e0b4705b6cb29de07fe728f06a8f850b2ee877dc002343a795a31fb81",
+      "translationOf": "atom.prices.list.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.checkout.options.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "checkout"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step: max loss 6/8/10% (डिफ़ॉल्ट 10); Phase 1 target 6/7/8/10/12% (डिफ़ॉल्ट 8); reward 60/70/80/95%; interval 3/7/14/21; leverage 1:30/1:50/1:100; weekend optional; scalping add-on. Atom 1-Step: max loss/target/leverage/scalping फिक्स्ड; reward 70/80/100%; weekend शामिल। डिफ़ॉल्ट न मानें।",
+      "contentHash": "711410d9e42dac8aa6b956fc1dcc09b9dbdf713970a059b42bd1db21a44ebb7a",
+      "translationOf": "atom.checkout.options.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.bundles.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "bundles",
+        "credits",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "एक ऑर्डर में दूसरा 25%, तीसरा 30%, चौथा 35%। तीन खाते = मुफ्त Market Maker Pack + 6,000 क्रेडिट। Pack credits केवल Elite Packs के लिए; वापस नहीं (not withdrawable) और challenges नहीं खरीद सकते।",
+      "contentHash": "54368acd615a11a2d0ac5b1ad17fcc926885125e60cbf6f2df3d96eeb6900e69",
+      "translationOf": "atom.bundles.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.eas-copy.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "eas",
+        "copyTrading",
+        "houseRules"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "EA सपोर्ट टूल; कॉपी केवल अपने खातों के बीच। 3-मिनट होल्ड; अकाउंट शेयरिंग/क्रॉस हेजिंग नहीं।",
+      "contentHash": "80b4a7674057c8149a28d28f00dd43d183094f5dc82f2620b8b82f636446f07f",
+      "translationOf": "atom.house.eas-copy.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.simulated.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "simulated"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "सभी Atom खाते सिम्युलेटेड हैं। वास्तविक पूंजी या गारंटीड रिवॉर्ड का वादा नहीं।",
+      "contentHash": "c29e83b6f68cca91fd003ffb319bcd4bfaabb062ac255009d2f923466373be30",
+      "translationOf": "atom.house.simulated.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.consistency.boundary.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "consistency",
+        "boundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "50% consistency; ठीक 50% किनारा मानव समीक्षा के लिए।",
+      "contentHash": "c4707aa21570aaf6010b882a93c45aad6e97b5dfc9ae41aa74323cf03c8dc787",
+      "translationOf": "atom.consistency.boundary.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.handoff.unverified.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "handoff"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "सामान्य नियम बता सकता हूँ; इस बिंदु के लिए मानव सहायता चाहिए।",
+      "contentHash": "2fe9618349fdaa6bd10fec337d5d62720f014e4809c8a4fad8b4402208bf3450",
+      "translationOf": "atom.handoff.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.account-status.refuse.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "accountStatusBoundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "व्यक्तिगत पात्रता, KYC या पेआउट स्थिति पुष्टि नहीं कर सकता।",
+      "contentHash": "83adfddaf0efbb8fe5161a66d8db72ff6525116fd148857f4bef1151d5ae0963",
+      "translationOf": "atom.account-status.refuse.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.10pct-1step.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step लक्ष्य 8% है, 10% नहीं।",
+      "contentHash": "6d4a030a5c2c0073f178581a8ed4dce64064b5a375595a29271b795eff401b94",
+      "translationOf": "atom.obsolete.10pct-1step.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.first-payout-14.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "पहला पेआउट 21 दिन बाद है, 14 नहीं।",
+      "contentHash": "08514aab1640c1466232269ec3fc9bd7ac6bf94f760d76ef8969d2a8e9f19640",
+      "translationOf": "atom.obsolete.first-payout-14.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.leverage-150-default.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "डिफ़ॉल्ट 1:30; 1:50 सार्वभौमिक डिफ़ॉल्ट नहीं।",
+      "contentHash": "c40f819a2799c51ad796dc1f664c5e43e5f369e942e6e9f343cb5feb987f11fb",
+      "translationOf": "atom.obsolete.leverage-150-default.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.price-161-permanent.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "prices",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "100K लिस्ट $215/$289; $161 प्रमोशनल था।",
+      "contentHash": "b921330e1da427be8696ca87d7c213cc97cfc8879b0e18e3a3cf61858121ca33",
+      "translationOf": "atom.obsolete.price-161-permanent.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.sizes-5k-10k.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "catalog"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "प्रकाशित साइज़: 7K–200K; 5K/10K केवल यदि लाइव कैटलॉग पुष्टि करे।",
+      "contentHash": "783e0d4589f0b66d45aa824eb5467de535d78f79c2cb2ef48c7fd20c677ca661",
+      "translationOf": "atom.obsolete.sizes-5k-10k.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.news.minutes.unverified.hi",
+      "locale": "hi",
+      "intentTags": [
+        "atom",
+        "news",
+        "unverified"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "फंडेड हाई-इम्पैक्ट न्यूज़ प्रतिबंधित; सटीक मिनट सत्यापन आवश्यक।",
+      "contentHash": "b0153b14ef72a11425e1c56285a027c314ee799237a3240f2e0578b4698699eb",
+      "translationOf": "atom.news.minutes.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.overview.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "overview"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Elite Atom es el challenge de bajo coste de FundedElite, disponible como Atom 2-Step y Atom 1-Step. Sin días mínimos de trading ni días rentables mínimos en el challenge, y sin límite de tiempo. Todas las cuentas Elite Atom, incluidas las funded, son simuladas. Aplican términos.",
+      "contentHash": "6e0948cb29b288b4554b8c8c80d961d9c53ae5c77a1c366945d970ec40a1485a",
+      "translationOf": "atom.overview.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.phases.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step tiene 2 fases y luego una cuenta funded simulada. Objetivo: 8% en Fase 1 y 5% en Fase 2.",
+      "contentHash": "2e63f260bd1751cb4b8bbab6d99b8be95d6c3d46a6abaaedd2099b21dcfc7ef0",
+      "translationOf": "atom.2step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.daily-loss.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "En Atom 2-Step el límite de pérdida diaria es 3% (Fase 1, Fase 2 y funded). Cuentan las operaciones abiertas.",
+      "contentHash": "7385de44b67306db1be67c78ced5e29b22d1230465683f3b69e79fa93918f3ff",
+      "translationOf": "atom.2step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.max-loss.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "maxLoss",
+        "static"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "En Atom 2-Step la pérdida máxima es 10% estática. En 100K el suelo es siempre $90,000.",
+      "contentHash": "72fb75714b8b8c4fdd31767a566da91531b0ea9fa2126af62497219b6d156633",
+      "translationOf": "atom.2step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.min-days.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "minTradingDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step no tiene días mínimos ni límite de tiempo. Siguen las reglas normales de inactividad.",
+      "contentHash": "879b69c3eee015d63d87d5e9ddb204c5bc6dad303380c5fa22df2876ede0f5c3",
+      "translationOf": "atom.2step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.consistency.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Sin consistencia en el challenge; 50% en funded. No es un breach por sí solo: sigue operando hasta duplicar tu mejor día.",
+      "contentHash": "280475d6ad3b88f1f9c71260937134f538548510ac973c2f230a9ad2ecae4284",
+      "translationOf": "atom.2step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.news.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Noticias permitidas en las fases del challenge. En funded Atom no se permite operar noticias de alto impacto.",
+      "contentHash": "d746cbea4fd50987e21292e5ffc15144a2e862ac70b3132816a23f8766a969c2",
+      "translationOf": "atom.2step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.leverage.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Apalancamiento por defecto 1:30. En Atom 2-Step puedes elegir 1:50 o 1:100 en el checkout.",
+      "contentHash": "dd262cbaa513910e74bac18c1fe8e6e8610525be7428bbb7e921de210d808e91",
+      "translationOf": "atom.2step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.reward.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "La recompensa por defecto es 80%, salvo otra opción en el checkout (60/70/80/95% en 2-Step).",
+      "contentHash": "ba3b9b99e7fde7b09ee55a156192b3e425803ab50baf62db5aa11e0399294fdf",
+      "translationOf": "atom.2step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.phases.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step tiene 1 fase y luego funded. El objetivo de evaluación es 8% (no 10%).",
+      "contentHash": "1d30af7c474a6ab1ca2a8da7b09694eaf4bbfbe477fae3d885d8599a58f4458b",
+      "translationOf": "atom.1step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.daily-loss.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "En Atom 1-Step la pérdida diaria es 4% en evaluación y funded.",
+      "contentHash": "3f2236fc7a07d33c55a1988ad8fd3cd0d7740d8a8267d3f5a53db5fcf07a0ab0",
+      "translationOf": "atom.1step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.max-loss.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "maxLoss",
+        "trailing"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "En Atom 1-Step la pérdida máxima es 6% trailing sobre equity (incluye beneficio abierto). En 100K el suelo empieza en $94,000; si la equity llega a $103,000, el suelo pasa a $97,000.",
+      "contentHash": "6f24d602ff34cbc78de16eeae852f3a51820a2c1f4e6302a8acc3f51beb3d36d",
+      "translationOf": "atom.1step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.min-days.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "minTradingDays",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Sin días mínimos en evaluación. En funded 1-Step: 5 días rentables ≥0.5% del tamaño inicial antes de cada payout.",
+      "contentHash": "faee6404b830a19b76b7718c91cd32aa123867745796a1a1ba85a77c592b5437",
+      "translationOf": "atom.1step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.consistency.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Consistencia 50% en evaluación y funded; no es un breach por sí sola.",
+      "contentHash": "85944a6bf949e2cc918169359a2c33f6f110eff715393c46cb3857cf629a52bc",
+      "translationOf": "atom.1step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.news.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Noticias permitidas en evaluación; restringidas de alto impacto en funded.",
+      "contentHash": "237682184e3bc2b6745120a04095452f7207a2e1edeab397edddc466b4a1702c",
+      "translationOf": "atom.1step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.leverage.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "El apalancamiento de Atom 1-Step está fijo en 1:30 según las reglas publicadas.",
+      "contentHash": "2866da65bfc00dafc4210bda5ead5628449d27fb137f146f163245e430b19b5d",
+      "translationOf": "atom.1step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.reward.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Recompensa por defecto 80%; opciones 70/80/100%.",
+      "contentHash": "ec6c887a07c7533ca77507678aac83aa0b18b71a1fe27ff0e65e58a17d88bfb4",
+      "translationOf": "atom.1step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.funded-profitable-days.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "En funded Atom 1-Step necesitas 5 días rentables desde el último payout, cada uno ≥0.5% del tamaño inicial.",
+      "contentHash": "80967c8a3a59282a1b94a45c4905c8aad3a201d923bd1cf6914cdf0b3ebda253",
+      "translationOf": "atom.1step.funded-profitable-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.payouts.general.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Primer payout: 21 días tras crear la cuenta funded; luego cada 14 días por defecto (o el intervalo comprado). Tope 3% del saldo inicial. Riesgo por instrumento máx. 1.5%/día. Solo política general; sin confirmar elegibilidad individual.",
+      "contentHash": "228d410c2479a563b501fcacc8b6080f902f71509523f8a7aa7d5f67f0c034b5",
+      "translationOf": "atom.payouts.general.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.prices.list.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "prices",
+        "freshness:price"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Precios de lista USD antes de cupones (2-Step/1-Step): 7K $19/$29; 25K $59/$70; 50K $114/$145; 100K $215/$289; 200K $409/$519. El precio final es el del checkout. $161 no es precio de lista permanente. 5K/10K solo si el catálogo en vivo lo confirma.",
+      "contentHash": "8cf2a44da068de8e696381106e7f4cfa412c7c3d95672c99f2d918bdfbbf52cf",
+      "translationOf": "atom.prices.list.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.checkout.options.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "checkout"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step: max loss 6/8/10% (default 10); objetivo Fase 1 6/7/8/10/12% (default 8); reward 60/70/80/95%; intervalo 3/7/14/21; leverage 1:30/1:50/1:100; weekend opcional; scalping add-on. Atom 1-Step: max loss/target/leverage/scalping fijos; reward 70/80/100%; weekend incluido. No asumas defaults.",
+      "contentHash": "d63fab2e94e0d5271e162b1b19565415c8782788f1d75d0bb1290cf47a7f129a",
+      "translationOf": "atom.checkout.options.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.bundles.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "bundles",
+        "credits",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "En el mismo pedido: 2ª 25%, 3ª 30%, 4ª 35%. 3 cuentas = Market Maker Pack gratis + 6,000 créditos. Los pack credits solo abren Elite Packs; no se pueden retirar (not withdrawable) y cannot buy challenges.",
+      "contentHash": "be5d3c2d5b02fb8ef439dcf314317b9915d03898d70a9b4c3ea65235a75b9498",
+      "translationOf": "atom.bundles.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.eas-copy.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "eas",
+        "copyTrading",
+        "houseRules"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Los EA se permiten como herramientas de apoyo; copy solo entre tus cuentas. Hold mínimo 3 minutos; sin compartir cuenta ni hedging cruzado.",
+      "contentHash": "950e491c87aac495f0308e616b8b657caa02e02d066da12cff072b6b9755b300",
+      "translationOf": "atom.house.eas-copy.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.simulated.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "simulated"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Todas las cuentas Atom son simuladas. No hay promesa de capital real ni recompensas garantizadas.",
+      "contentHash": "cdeded91c4bfa7c68e79b0c13a91ae2e4c998ad6582344a165946ab8f72de683",
+      "translationOf": "atom.house.simulated.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.consistency.boundary.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "consistency",
+        "boundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Regla 50%: el mejor día debe ser menos del 50% del beneficio relevante; el empate exacto en 50% requiere revisión humana.",
+      "contentHash": "0f432c57ef181783c79231fb74eb3509dccff2a8cf36f4a0d447c94f2e3b4142",
+      "translationOf": "atom.consistency.boundary.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.handoff.unverified.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "handoff"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Puedo dar la regla general publicada; este punto necesita revisión humana.",
+      "contentHash": "f44b66db7e73dcd864d6236a2c3a7fd744095cefc1cee3e918ac9e318bac8b60",
+      "translationOf": "atom.handoff.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.account-status.refuse.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "accountStatusBoundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Puedo explicar reglas generales, pero no confirmar elegibilidad, KYC, breach o payout de una cuenta individual.",
+      "contentHash": "4590bfac86eb035938e1ed50582345f36984b35b10bc9a3bff7c4c18695e9efa",
+      "translationOf": "atom.account-status.refuse.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.10pct-1step.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "El objetivo de Atom 1-Step es 8%, no 10%.",
+      "contentHash": "54c1dcd436497bfc9bf8a7b4fae4253a4ac8456487a4fe6c8b7d8b2d1dac5272",
+      "translationOf": "atom.obsolete.10pct-1step.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.first-payout-14.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "El primer payout es a los 21 días, no a los 14.",
+      "contentHash": "df57bdf1a1dd69200bb06b08aac978fd183d6a6ff54043a03d90e55d795168f0",
+      "translationOf": "atom.obsolete.first-payout-14.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.leverage-150-default.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "El apalancamiento por defecto es 1:30; 1:50 no es el valor universal.",
+      "contentHash": "2a16d83cd03ded3380c1ef765d024c73ff41430e0b5d49e4166e2c81772325f8",
+      "translationOf": "atom.obsolete.leverage-150-default.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.price-161-permanent.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "prices",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Lista 100K: $215/$289. $161 fue promocional.",
+      "contentHash": "ba505758a8897cae701101c9d498ebed10973865cf889cb444c913a5c9179452",
+      "translationOf": "atom.obsolete.price-161-permanent.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.sizes-5k-10k.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "catalog"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Catálogo publicado: 7K–200K. 5K/10K solo si el catálogo en vivo lo confirma.",
+      "contentHash": "a8b44f9e8fb193abb732a908534668e7ba50be0af630dfdb864e69429983d622",
+      "translationOf": "atom.obsolete.sizes-5k-10k.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.news.minutes.unverified.es",
+      "locale": "es",
+      "intentTags": [
+        "atom",
+        "news",
+        "unverified"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Noticias de alto impacto restringidas en funded; los minutos exactos requieren verificación.",
+      "contentHash": "4c2b39730db370ffaeef195938b075429310be079347487f9bb342b5d28a3f05",
+      "translationOf": "atom.news.minutes.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.overview.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "overview"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Elite Atom é o challenge de baixo custo da FundedElite (Atom 2-Step e Atom 1-Step). Sem dias mínimos de trading nem dias lucrativos mínimos no challenge, e sem prazo. Todas as contas Elite Atom, incluindo funded, são simuladas. Aplicam-se os termos.",
+      "contentHash": "e648f4f0023d02aa118a6ad2e15dfe39c9ed1b70b52522716b505e9670d7e035",
+      "translationOf": "atom.overview.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.phases.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step tem 2 fases e depois uma conta funded simulada. Alvos: 8% na Fase 1 e 5% na Fase 2.",
+      "contentHash": "5b2c111d0df894b2ad90d7ff6b994e2507abfbc6ed4d7d67b8b6126163c5bfeb",
+      "translationOf": "atom.2step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.daily-loss.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "No Atom 2-Step o limite de perda diária é 3% (Fase 1, Fase 2 e funded).",
+      "contentHash": "e2122acea8b6ec382d2716dd9fda8f58afe2848e09ef988ef01de88dde747503",
+      "translationOf": "atom.2step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.max-loss.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "maxLoss",
+        "static"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "No Atom 2-Step a perda máxima é 10% estática. Em 100K o piso é sempre $90,000.",
+      "contentHash": "d8556ce3d573808b9b9b899629ab8517ebc0afa44deb18b1f6ef859f21814f78",
+      "translationOf": "atom.2step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.min-days.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "minTradingDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step não tem dias mínimos nem prazo. Regras normais de inatividade continuam a aplicar-se.",
+      "contentHash": "00f69ace03f18fccc0c60e59f1cf485d2db5ad90b71791d7fe4b88329575ccf2",
+      "translationOf": "atom.2step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.consistency.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Sem consistência no challenge; 50% em funded. Não é breach por si — continue a operar até duplicar o melhor dia.",
+      "contentHash": "81324f437d7cd475a74849804617f6e2f232a0f19e388cf780b6d7f5dcf146a7",
+      "translationOf": "atom.2step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.news.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Notícias permitidas nas fases do challenge. Em funded Atom, notícias de alto impacto não são permitidas.",
+      "contentHash": "96e40d515e71405b041af265a983df05a10e3a813b0380184b117d4d94915c62",
+      "translationOf": "atom.2step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.leverage.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Alavancagem padrão 1:30. No Atom 2-Step pode escolher 1:50 ou 1:100 no checkout.",
+      "contentHash": "9096ebc1037b668326134cd881398823df1ff477c06aa84a654c8aae0fab5328",
+      "translationOf": "atom.2step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.2step.reward.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-2step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Partilha de recompensa padrão 80%, salvo outra opção no checkout (60/70/80/95% no 2-Step).",
+      "contentHash": "7c595476548608bba5bf1574f90feda309f5ed91b662a32f3d33a39714de9e68",
+      "translationOf": "atom.2step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.phases.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "phases",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 1-Step tem 1 fase e depois funded. O alvo de avaliação é 8% (não 10%).",
+      "contentHash": "7e54445ef3214e2ae92337583d292b5352536b8d4a580e768476c337edd100b9",
+      "translationOf": "atom.1step.phases.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.daily-loss.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "dailyLoss"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "No Atom 1-Step a perda diária é 4% na avaliação e funded.",
+      "contentHash": "d13dc1f63d23f47f56271064f603eefdaf44c80ca7bbf6abe2a8b3e7f4d028a1",
+      "translationOf": "atom.1step.daily-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.max-loss.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "maxLoss",
+        "trailing"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "No Atom 1-Step a perda máxima é 6% trailing sobre equity (inclui lucro aberto). Em 100K o piso começa em $94,000; se a equity chegar a $103,000, o piso passa a $97,000.",
+      "contentHash": "c12e25f7082917d02de5eaf6b73b1b423683f2dc33e2abdeba0852840d6f735a",
+      "translationOf": "atom.1step.max-loss.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.min-days.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "minTradingDays",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Sem dias mínimos na avaliação. Em funded 1-Step: 5 dias lucrativos ≥0.5% do tamanho inicial antes de cada payout.",
+      "contentHash": "3e37b9869e1dbc744cae93b00c1acdd2548d21e1492f70788441692b2210fd2d",
+      "translationOf": "atom.1step.min-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.consistency.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "consistency"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Consistência 50% na avaliação e funded; não é breach por si só.",
+      "contentHash": "2d69b5d0142616b09f8cf8518fb1f1dacc4caee85e22569f2a4b00165565541d",
+      "translationOf": "atom.1step.consistency.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.news.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "news"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Notícias permitidas na avaliação; alto impacto restringido em funded.",
+      "contentHash": "90a9c439d1e35d0177d910ce54407a6a3dec4f1eb161ab33c7db9788aa1c9b0a",
+      "translationOf": "atom.1step.news.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.leverage.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "A alavancagem do Atom 1-Step é fixa em 1:30 nas regras publicadas.",
+      "contentHash": "2c2e9470a678b1215fa17e2d61a47ee503413fab3d88f21267af9fd1e39bf226",
+      "translationOf": "atom.1step.leverage.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.reward.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "rewardShare"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Recompensa padrão 80%; opções 70/80/100%.",
+      "contentHash": "e2b66ba086f8644aaf23ce629e067236c11bb00bae1d380ecda3ee2ef3fbe1a0",
+      "translationOf": "atom.1step.reward.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.1step.funded-profitable-days.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "product:atom-1step",
+        "fundedProfitableDays"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Em funded Atom 1-Step: 5 dias lucrativos desde o último payout, cada um ≥0.5% do tamanho inicial.",
+      "contentHash": "dc5c469a282d4bcb2358e79d936c714df7212920b2bae7994e5b54b25fb3f05e",
+      "translationOf": "atom.1step.funded-profitable-days.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.payouts.general.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Primeiro payout: 21 dias após criar a conta funded; depois a cada 14 dias por defeito (ou o intervalo comprado). Teto 3% do saldo inicial. Risco por instrumento máx. 1.5%/dia. Apenas política geral.",
+      "contentHash": "effef9055e03f16ddae884ff054fa0986c3e1c1a0470b6a6ed14ef166d382bc0",
+      "translationOf": "atom.payouts.general.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.prices.list.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "prices",
+        "freshness:price"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Preços de lista USD antes de cupões (2-Step/1-Step): 7K $19/$29; 25K $59/$70; 50K $114/$145; 100K $215/$289; 200K $409/$519. O preço final é o do checkout. $161 não é preço de lista permanente. 5K/10K só se o catálogo ao vivo confirmar.",
+      "contentHash": "3c744648785249b2bbb48533864ad67364b960b2a6ceb64b32e1d66b726b3ea3",
+      "translationOf": "atom.prices.list.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.checkout.options.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "checkout"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Atom 2-Step: max loss 6/8/10% (default 10); alvo Fase 1 6/7/8/10/12% (default 8); reward 60/70/80/95%; intervalo 3/7/14/21; leverage 1:30/1:50/1:100; weekend opcional; scalping add-on. Atom 1-Step: max loss/target/leverage/scalping fixos; reward 70/80/100%; weekend incluído. Não assuma defaults.",
+      "contentHash": "0116afe81690ae67ce047dca165e0a11bcac2fde340061a4d71c9450d508ef85",
+      "translationOf": "atom.checkout.options.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.bundles.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "bundles",
+        "credits",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "No mesmo pedido: 2ª 25%, 3ª 30%, 4ª 35%. 3 contas = Market Maker Pack grátis + 6,000 créditos. Pack credits só abrem Elite Packs; não são levantáveis (not withdrawable) e cannot buy challenges.",
+      "contentHash": "7c433e547a0dd67ffa76ccf9c735b3d5add3aa4ec1a39a28513dc62723ceeea6",
+      "translationOf": "atom.bundles.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.eas-copy.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "eas",
+        "copyTrading",
+        "houseRules"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "EAs permitidos como ferramentas de apoio; copy só entre as suas contas. Hold mínimo 3 minutos; sem partilha de conta nem hedging cruzado.",
+      "contentHash": "26ec26a72b093c31052268f5364d65643074745c81728120b38153575684abfe",
+      "translationOf": "atom.house.eas-copy.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.house.simulated.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "simulated"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Todas as contas Atom são simuladas. Sem promessa de capital real ou recompensas garantidas.",
+      "contentHash": "46a91476ae00db238441d94b426c31df91b8cb3c302dec9bdfba5cf12195a2f0",
+      "translationOf": "atom.house.simulated.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.consistency.boundary.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "consistency",
+        "boundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Regra de 50%: o melhor dia deve ser inferior a 50% do lucro relevante; exatamente 50% exige revisão humana.",
+      "contentHash": "512ab9c33990b41662c0c413aa372f0de6b727b4d5a03cf23460e6849aaf6c9c",
+      "translationOf": "atom.consistency.boundary.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.handoff.unverified.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "handoff"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Posso partilhar a regra geral publicada; este ponto precisa de revisão humana.",
+      "contentHash": "02009fdf352a8e68b1240f61a253d1eaa723a1b60e75243819401d04270aa036",
+      "translationOf": "atom.handoff.unverified.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.account-status.refuse.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "accountStatusBoundary"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Posso explicar regras gerais, mas não confirmar elegibilidade, KYC, breach ou payout de uma conta individual.",
+      "contentHash": "55bf596b2285760f38bc3eb0cfd4c7ed928deb1dfcef9e36d9652922fa3f5cb1",
+      "translationOf": "atom.account-status.refuse.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.10pct-1step.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "profitTarget"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "O alvo do Atom 1-Step é 8%, não 10%.",
+      "contentHash": "d70d116e7b1e2c5685b003f44fa29dad6deed9b9cbd06364f1c43a14377199b4",
+      "translationOf": "atom.obsolete.10pct-1step.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.first-payout-14.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "payouts"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "O primeiro payout é aos 21 dias, não aos 14.",
+      "contentHash": "5a817054cf8dc20c5d6c448b60e478ddf5e8d6e193b74692b1a060129b7e7ddc",
+      "translationOf": "atom.obsolete.first-payout-14.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.leverage-150-default.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "leverage"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "A alavancagem padrão é 1:30; 1:50 não é o default universal.",
+      "contentHash": "8b0a17ba5f79dac6abd0671fac19eb1a868e1df2d1fb5e87881fe83278bf2886",
+      "translationOf": "atom.obsolete.leverage-150-default.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.price-161-permanent.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "prices",
+        "freshness:promo"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Lista 100K: $215/$289. $161 foi promocional.",
+      "contentHash": "a746e9341c75a3f06727b007e0bafe7eea8f9e3eea816233e2bf7f57f907cc9c",
+      "translationOf": "atom.obsolete.price-161-permanent.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.obsolete.sizes-5k-10k.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "obsoleteCorrection",
+        "catalog"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "provisional",
+        "sendable": false
+      },
+      "body": "Catálogo publicado: 7K–200K. 5K/10K só se o catálogo ao vivo confirmar.",
+      "contentHash": "88b72585f5730dfc54a93beb6f3c7cf9fb62dfcd431b07341b4f04a5a07a8974",
+      "translationOf": "atom.obsolete.sizes-5k-10k.en",
+      "translationStatus": "unverified"
+    },
+    {
+      "id": "atom.news.minutes.unverified.pt",
+      "locale": "pt",
+      "intentTags": [
+        "atom",
+        "news",
+        "unverified"
+      ],
+      "approval": "pending",
+      "sendable": false,
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/17638456-elite-atom-challenge-faq",
+        "atomStatus": "needs_owner_decision",
+        "sendable": false
+      },
+      "body": "Notícias de alto impacto restringidas em funded; os minutos exatos precisam de verificação.",
+      "contentHash": "66fa7da6c7d8a31fe15c7727c3d062e7d12ce7cfa1dc16e348b5c5196ad3655b",
+      "translationOf": "atom.news.minutes.unverified.en",
+      "translationStatus": "unverified"
+    }
+  ],
+  "templates": {
+    "backendCaveatExistingHuman": "The account-specific portion requires internal records; your current human teammate remains responsible for that review.",
+    "assuranceNoPersonalBreach": "I can explain the published rules, but cannot confirm whether an individual account will incur a breach or profit forfeiture."
+  }
+}
