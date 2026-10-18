@@ -397,23 +397,65 @@ function hasNonLatin(text) {
   return /[^\u0000-\u007f]/.test(String(text || ''));
 }
 
-function disabledModuleHit(text, d) {
-  const gates = typeof d.moduleGates === 'function' ? d.moduleGates() : d.moduleGates || [];
+function moduleGateList(d) {
+  const g = typeof d.moduleGates === 'function' ? d.moduleGates() : d.moduleGates;
+  return Array.isArray(g) ? g : [];
+}
+
+function safeBool(fn, onThrow) {
+  try {
+    return !!fn();
+  } catch (_) {
+    return onThrow;
+  }
+}
+
+/**
+ * Module scope (Packs / Atom). Runs for an unowned conversation, after the ownership, control,
+ * fin-wait and human-request checks and BEFORE intent classification, the selection probe, the
+ * mixed-turn route and every later fallback, so none of them can answer a module-specific ask.
+ *
+ * A turn is module-specific when the whole text or any clause is claimed by a module detector
+ * (a detector that throws counts as a claim). The claiming clause must itself be English:
+ *   - clause English  -> OFF module: terminal silent 'module-off-fail-closed' (also for a mixed turn:
+ *                        a general or backend clause in the same turn is not answered separately);
+ *                        ON module (isolated test config only): the module's own selector is
+ *                        consulted with the shared gate; delivery of a module answer is not wired
+ *                        (extra-catalog loading is blocked), so the turn is terminal silent as well.
+ *   - clause uncertain-> non-terminal 'language-uncertain-module-off' (legacy path, no V12 selection)
+ *   - clause non-English -> not claimed (non-English main route unchanged).
+ */
+async function moduleScope(text, parts, d) {
+  const gates = moduleGateList(d);
+  if (!gates.length) return null;
+  const priors = priorClientTexts(parts);
+  const ctx = { priorClientTexts: priors };
+  const clauses = [...new Set([text, ...splitCandidateAsks(text)])];
+  let uncertain = false;
   for (const g of gates) {
-    let on;
-    try {
-      on = !!g.enabled();
-    } catch (_) {
-      on = false;
-    }
-    if (on) continue;
-    try {
-      if (g.detect(text)) return g.id;
-    } catch (_) {
-      return g.id;
+    const on = safeBool(() => g.enabled(), false);
+    for (const c of clauses) {
+      if (!safeBool(() => g.detect(c, ctx), true)) continue;
+      const own = selectMod.languageGate(c, []);
+      const gate = own.lang === 'uncertain' ? selectMod.languageGateForTurn(c, text, priors) : own;
+      if (gate.lang === 'non-en') continue;
+      if (gate.lang === 'uncertain') {
+        uncertain = true;
+        continue;
+      }
+      if (!on) return { reason: 'module-off-fail-closed', terminal: true, module: g.id };
+      let moduleResult = { abstain: true, reason: 'module-select-unavailable' };
+      if (typeof g.select === 'function') {
+        try {
+          moduleResult = await g.select(text, selectMod.languageGateForTurn(text, text, priors), ctx);
+        } catch (_) {
+          moduleResult = { abstain: true, reason: 'module-select-error' };
+        }
+      }
+      return { reason: 'module-on-delivery-not-wired', terminal: true, module: g.id, moduleResult };
     }
   }
-  return null;
+  return uncertain ? { reason: 'language-uncertain-module-off', terminal: false } : null;
 }
 
 async function prepare(full, parts, topic, d) {
@@ -427,6 +469,13 @@ async function prepare(full, parts, topic, d) {
   if (!text) return { reason: 'no-current-customer-text', terminal: true };
   if (d.finWait(full, text, topic)) return { reason: 'fin-wait' };
   if (d.humanRequest(text)) return { reason: 'customer-human-request' };
+
+  const ownedNow = d.ownership(full, parts);
+  const humanOwns = !!(ownedNow.blocked || (full.team_assignee_id && String(full.team_assignee_id) !== '0'));
+  if (!humanOwns) {
+    const scoped = await moduleScope(text, parts, d);
+    if (scoped) return scoped;
+  }
 
   const decision = d.intent(text, parts);
   if (!decision) return { reason: 'intent-unavailable' };
@@ -444,8 +493,6 @@ async function prepare(full, parts, topic, d) {
     ...new Set([...explicit, ...(!explicit.length ? clauses.filter(isQuestionLike) : []), ...(!explicit.length && !hasNonLatin(text) ? decision.asks || [] : [])]),
   ];
 
-  const ownedNow = d.ownership(full, parts);
-  const humanOwns = !!(ownedNow.blocked || (full.team_assignee_id && String(full.team_assignee_id) !== '0'));
   const payoutThread = payoutBackendThreadActive(parts);
   const isBackendAsk = (q) => d.backend(q) || (humanOwns && selectMod.payoutConsistencyAsk(q)) || selectMod.accountStatusAsk(q);
 
@@ -459,22 +506,11 @@ async function prepare(full, parts, topic, d) {
     return { reason: 'mixed-unowned-escalation', terminal: false };
   }
 
-  // Module-off fail-closed: an unowned English turn that a disabled module (Packs/Atom) claims
-  // must not be answered from the generic V12 selection or the model path. The reason is
-  // terminal, is not in DEFER_TO_MAIN_PATH, and posts no reply, note or assignment.
-  if (!humanOwns) {
-    const moduleHit = disabledModuleHit(text, d);
-    if (moduleHit) {
-      const gate = selectMod.languageGate(text, priorClientTexts(parts));
-      if (gate.lang === 'en') return { reason: 'module-off-fail-closed', terminal: true };
-      if (gate.lang === 'uncertain') return { reason: 'language-uncertain-module-off', terminal: false };
-    }
-  }
-
   const requireOwnerApproved = d.requireOwnerApprovedAnswers !== false;
   const selectOptsBase = {
     humanOwns,
     priorClientTexts: priorClientTexts(parts),
+    turnText: text,
     requireOwnerApproved,
     modelClassify: d.selectAnswer || d.modelClassifyAnswer,
     classifyTimeoutMs: d.selectAnswerTimeoutMs,

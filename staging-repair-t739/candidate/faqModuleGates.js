@@ -2,11 +2,12 @@
 /**
  * Hook for module-specific detectors (Packs, Atom).
  *
- * A gate is { id, detect(text) -> boolean, enabled() -> boolean }.
+ * A gate is { id, detect(text, ctx) -> boolean, enabled() -> boolean, select?(text, gate, ctx) }.
+ * ctx = { priorClientTexts }. select is used only when the module is enabled (isolated test config).
  * faqAssistance.prepare asks every gate that is NOT enabled whether the customer text belongs
  * to that module; a hit on a disabled module is a terminal fail-closed (no public reply).
- * This file implements NO Packs/Atom detection. Other authors supply detectors either by
- * calling register() or by dropping ./faqModuleDetectors.js next to this file.
+ * This file implements NO Packs/Atom detection. ./faqModuleDetectors.js (shipped next to this file)
+ * registers the Packs and Atom detectors built from the two modules' own scope logic.
  *
  * Flags default OFF. Only 1/true/on/yes (case-insensitive) turn a module on.
  */
@@ -22,7 +23,8 @@ function register(gate) {
   if (typeof gate.detect !== 'function') throw new Error('module gate needs detect(text)');
   const enabled = typeof gate.enabled === 'function' ? gate.enabled : () => flagOn(gate.flag || '');
   const at = gates.findIndex((g) => g.id === gate.id);
-  const entry = Object.freeze({ id: gate.id, detect: gate.detect, enabled });
+  const select = typeof gate.select === 'function' ? gate.select : null;
+  const entry = Object.freeze({ id: gate.id, detect: gate.detect, enabled, select });
   if (at >= 0) gates[at] = entry;
   else gates.push(entry);
   return entry;

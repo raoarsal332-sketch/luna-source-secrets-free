@@ -55,19 +55,46 @@ function nonEnglishEvidence(text) {
 }
 
 /**
+ * The single language-gate result shape shared by this selector, the Packs module and the
+ * Atom module (see faqModuleAdapter.normalizeGate). `lang` is the tri-state; `language`,
+ * `confident` and `allowsAnswer` are the Packs-required fields; Atom reads `lang`/`language`.
+ */
+function mkGate(lang, basis) {
+  const en = lang === 'en';
+  return {
+    lang,
+    language: en ? 'en' : lang === 'non-en' ? 'non-en' : 'unknown',
+    confident: lang !== 'uncertain',
+    allowsAnswer: en,
+    basis,
+  };
+}
+
+/**
  * Tri-state language gate. A short catalog term ("payout?") is not English evidence: English
  * needs function-word evidence in the current text or in prior customer messages. Language
- * never establishes intent; this only decides whether the model-classifier route may run.
+ * never establishes intent; this only decides whether a route may run at all.
  * 'non-en' is returned unchanged for the existing non-English route.
  */
 function languageGate(text, priorTexts) {
   const cur = String(text || '');
-  if (nonEnglishEvidence(cur)) return { lang: 'non-en', basis: 'current-non-english' };
-  if (englishEvidence(cur)) return { lang: 'en', basis: 'current-english' };
+  if (nonEnglishEvidence(cur)) return mkGate('non-en', 'current-non-english');
+  if (englishEvidence(cur)) return mkGate('en', 'current-english');
   const prior = (Array.isArray(priorTexts) ? priorTexts : []).map((x) => String(x || '')).filter(Boolean);
-  if (prior.some(nonEnglishEvidence)) return { lang: 'non-en', basis: 'prior-non-english' };
-  if (prior.some(englishEvidence)) return { lang: 'en', basis: 'prior-english' };
-  return { lang: 'uncertain', basis: 'no-reliable-evidence' };
+  if (prior.some(nonEnglishEvidence)) return mkGate('non-en', 'prior-non-english');
+  if (prior.some(englishEvidence)) return mkGate('en', 'prior-english');
+  return mkGate('uncertain', 'no-reliable-evidence');
+}
+
+/** Gate for one clause evaluated inside a longer customer turn: any non-English evidence wins, then any English evidence. */
+function languageGateForTurn(clause, turnText, priorTexts) {
+  const a = languageGate(clause, priorTexts);
+  if (!turnText || turnText === clause) return a;
+  const b = languageGate(turnText, priorTexts);
+  if (a.lang === 'non-en' || b.lang === 'non-en') return a.lang === 'non-en' ? a : b;
+  if (a.lang === 'en') return a;
+  if (b.lang === 'en') return b;
+  return a;
 }
 
 function productHint(text) {
@@ -225,7 +252,14 @@ async function selectApprovedAnswer(text, opts) {
   if (accountStatusAsk(raw)) return { abstain: true, reason: 'account-status-boundary' };
   if (opts.humanOwns && payoutConsistencyAsk(raw)) return { abstain: true, reason: 'backend-adjacent-payout' };
 
-  const lang = opts.langHint || detectLangHint(raw);
+  // One gate, evaluated for every route (deterministic cue, contextual follow-up, model classifier)
+  // and re-evaluated before the result is built. Uncertain language never selects anything, and an
+  // English verdict is never re-rendered into another locale by a hint.
+  const gateNow = () => languageGateForTurn(raw, opts.turnText, opts.priorClientTexts);
+  if (gateNow().lang === 'uncertain') return { abstain: true, reason: 'language-uncertain' };
+
+  let lang = opts.langHint || detectLangHint(raw);
+  if (gateNow().lang === 'en') lang = 'en';
   const prod = productHint(raw);
   const surface = raw
     .normalize('NFKD')
@@ -253,11 +287,10 @@ async function selectApprovedAnswer(text, opts) {
     }
   }
 
-  const gateInputs = [raw, opts.priorClientTexts];
   let languageDropped = false;
   if (typeof opts.modelClassify === 'function') {
     let modelOutcome = null;
-    if (languageGate(...gateInputs).lang === 'uncertain') {
+    if (gateNow().lang === 'uncertain') {
       languageDropped = true;
       modelOutcome = { abstain: true, reason: 'language-uncertain' };
     } else
@@ -291,7 +324,7 @@ async function selectApprovedAnswer(text, opts) {
         reason: String(e && e.message) === 'select-timeout' ? 'classifier-timeout' : 'classifier-error',
       };
     }
-    if (modelOutcome && !modelOutcome.abstain && languageGate(...gateInputs).lang === 'uncertain') {
+    if (modelOutcome && !modelOutcome.abstain && gateNow().lang === 'uncertain') {
       languageDropped = true;
       modelOutcome = { abstain: true, reason: 'language-uncertain' };
     }
@@ -306,9 +339,10 @@ async function selectApprovedAnswer(text, opts) {
     }
   }
 
-  if (best && best.reason === 'model-classify' && languageGate(...gateInputs).lang === 'uncertain') {
+  if (best && gateNow().lang === 'uncertain') {
     return { abstain: true, reason: 'language-uncertain', lang };
   }
+  if (best && gateNow().lang === 'en') lang = 'en';
   if (!best) return { abstain: true, reason: languageDropped ? 'language-uncertain' : 'no-confident-match', lang };
   if (best.confidence < CONFIDENCE_THRESHOLD) {
     return { abstain: true, reason: 'below-threshold', lang, confidence: best.confidence, answerId: best.answerId };
@@ -342,6 +376,7 @@ module.exports = {
   CONFIDENCE_THRESHOLD,
   detectLangHint,
   languageGate,
+  languageGateForTurn,
   productHint,
   accountStatusAsk,
   payoutConsistencyAsk,
