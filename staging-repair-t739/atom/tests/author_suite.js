@@ -8,6 +8,7 @@ const controls = require('./cases/controls');
 const A = require('./cases/adversarial');
 const GEN = require('./cases/general');
 const PROBES = require('./cases/probes');
+const VARIED = require('./cases/varied');
 const approved = require('../atomApprovedAnswers');
 
 const HANDOFF = 'atom.handoff.unverified.en';
@@ -66,6 +67,40 @@ async function runGeneral() {
       pass = r.abstain === true;
     }
     rows.push({ set: 'general', id: cid, text, kind, pass, falseRefusal, clarifyInstead, why: r.abstain ? r.action + ':' + r.reason : 'answered:' + r.answerId });
+  }
+  return rows;
+}
+
+async function runVaried() {
+  const rows = [];
+  for (const [id, qs] of Object.entries(VARIED.SUPPORTED)) {
+    for (let i = 0; i < qs.length; i++) {
+      const text = qs[i];
+      const r = await run(text);
+      const pass = r.abstain !== true && r.answerId === id;
+      rows.push({
+        set: 'varied-supported',
+        id: id + '#' + (i + 1),
+        text,
+        pass,
+        why: r.abstain ? r.action + ':' + r.reason : 'answered:' + r.answerId,
+        falseRefusal: r.abstain === true,
+        leak: false,
+      });
+    }
+  }
+  for (const [cid, text, kind] of VARIED.MUST_NOT_ANSWER) {
+    const r = await run(text);
+    const leaked = r.abstain !== true;
+    const pass = !leaked && r.answerId === undefined && (kind !== 'handoff' || r.action === 'handoff');
+    rows.push({
+      set: 'varied-deny',
+      id: cid,
+      text,
+      pass,
+      why: r.abstain ? r.action + ':' + r.reason : 'LEAK:answered:' + r.answerId,
+      leak: leaked,
+    });
   }
   return rows;
 }
@@ -310,6 +345,7 @@ async function runAll() {
   out.push(...(await runGating()));
   out.push(...(await runRobustness()));
   out.push(...(await runGeneral()));
+  out.push(...(await runVaried()));
   out.push(...(await runCases('probes-novel', PROBES.map((t, i) => ['PR' + String(i + 1).padStart(2, '0'), t, { noAnswer: true }]))));
   out.push(...(await runFeeSweep()));
   out.push(...(await runMixedSweep()));

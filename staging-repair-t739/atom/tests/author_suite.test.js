@@ -9,6 +9,7 @@ const rows = () => (rowsP = rowsP || runAll());
 const GATING_SETS = [
   'kb', 'controls', 'money-confusion', 'unresolved', 'discriminate', 'account-specific', 'multi-turn',
   'unicode', 'non-english', 'gating', 'robustness', 'probes-novel', 'fee-sweep', 'mixed-sweep',
+  'varied-supported', 'varied-deny',
 ];
 
 for (const set of GATING_SETS) {

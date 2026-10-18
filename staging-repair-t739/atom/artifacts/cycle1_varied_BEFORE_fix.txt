@@ -1,0 +1,91 @@
+LEAK VN39 Can you explain Elite Packs credits on Atom atom.bundles.en
+{
+  tot: 290,
+  ok: 215,
+  falseRefusals: 73,
+  wrongId: 2,
+  leaks: 1,
+  reasons: {
+    'no-exact-approved-answer': 31,
+    'unrecognized-qualifier': 35,
+    'unresolved:news-minutes': 2,
+    'qualifier-not-covered:addon': 2,
+    'multi-intent-not-covered': 2,
+    'qualifier-not-covered:calc': 1
+  }
+}
+atom.overview.en | Can you give me an overview of Elite Atom? | abstain:no-exact-approved-answer
+atom.overview.en | I am new here, could you explain what Atom actually is? | abstain:no-exact-approved-answer
+atom.overview.en | Please walk me through what the Atom challenge is about | abstain:no-exact-approved-answer
+atom.overview.en | Help me understand the Elite Atom program | abstain:no-exact-approved-answer
+atom.overview.en | What exactly is Atom and how does it work in general? | abstain:no-exact-approved-answer
+atom.overview.en | Could you describe Elite Atom for me in simple terms? | abstain:no-exact-approved-answer
+atom.overview.en | Give me the basics of the Atom challenge please | abstain:no-exact-approved-answer
+atom.overview.en | Atom: what is it? | abstain:no-exact-approved-answer
+atom.overview.en | I would like some details about the Elite Atom challenge | abstain:no-exact-approved-answer
+atom.overview.en | Briefly, what does the Atom program involve? | abstain:no-exact-approved-answer
+atom.2step.phases.en | Walk me through the Atom 2-Step evaluation stages | abstain:no-exact-approved-answer
+atom.2step.phases.en | How many stages are there before funded on Atom 2 Step? | abstain:no-exact-approved-answer
+atom.2step.max-loss.en | Does the Atom 2-Step overall loss limit ever move? | abstain:no-exact-approved-answer
+atom.2step.max-loss.en | How far can my account fall overall on Atom 2-Step before it is breached? | abstain:no-exact-approved-answer
+atom.2step.min-days.en | Do I have to trade a certain number of days on Atom 2-Step? | abstain:no-exact-approved-answer
+atom.2step.min-days.en | Tell me the details on trading day requirements for Atom 2-Step | abstain:no-exact-approved-answer
+atom.2step.min-days.en | Am I allowed to pass Atom 2-Step in a single day? | clarify:unrecognized-qualifier
+atom.2step.consistency.en | Does Atom 2-Step have a best day rule? | abstain:no-exact-approved-answer
+atom.2step.consistency.en | What happens if one day is more than half of my profit on Atom 2-Step funded? | clarify:unrecognized-qualifier
+atom.2step.news.en | Am I allowed to trade high impact news on Atom 2-Step? | handoff:unresolved:news-minutes
+atom.2step.news.en | Atom 2-Step: can I hold trades through news releases in the challenge? | abstain:qualifier-not-covered:addon
+atom.2step.leverage.en | Specifically, can I get 1:100 on Atom 2-Step? | abstain:no-exact-approved-answer
+atom.2step.leverage.en | I want to understand how leverage works on Atom 2-Step at checkout | abstain:multi-intent-not-covered
+atom.2step.reward.en | Specifically, what reward percentages can I pick on Atom 2-Step? | abstain:no-exact-approved-answer
+atom.2step.reward.en | Do I get to choose my reward split on Atom 2 Step? | clarify:unrecognized-qualifier
+atom.2step.reward.en | Walk me through the Atom 2-Step reward share | clarify:unrecognized-qualifier
+atom.1step.phases.en | Specifically, how much do I need to make to pass the Atom 1-Step? | clarify:unrecognized-qualifier
+atom.1step.phases.en | Walk me through the Atom 1-Step evaluation | abstain:no-exact-approved-answer
+atom.1step.phases.en | For Atom 1-Step what do I need to reach to get funded? | abstain:no-exact-approved-answer
+atom.1step.phases.en | Atom 1-Step: what is the goal I have to achieve to pass? | abstain:no-exact-approved-answer
+atom.1step.min-days.en | Do I have to trade a certain number of days on Atom 1-Step? | abstain:no-exact-approved-answer
+atom.1step.min-days.en | Specifically, are minimum profitable days required during Atom 1-Step evaluation? | answered:atom.1step.funded-profitable-days.en
+atom.1step.min-days.en | Tell me the details on trading day requirements for Atom 1-Step | abstain:no-exact-approved-answer
+atom.1step.consistency.en | Does Atom 1-Step have a best day rule? | abstain:no-exact-approved-answer
+atom.1step.consistency.en | What happens if one day is more than half of my profit on Atom 1-Step? | clarify:unrecognized-qualifier
+atom.1step.consistency.en | Atom 1-Step consistency: how much total profit do I need with a 3000 best day? | abstain:qualifier-not-covered:calc
+atom.1step.news.en | Am I allowed to trade high impact news on Atom 1-Step? | handoff:unresolved:news-minutes
+atom.1step.news.en | Atom 1-Step: can I hold trades through news releases in evaluation? | abstain:qualifier-not-covered:addon
+atom.1step.reward.en | Specifically, what reward percentages can I pick on Atom 1-Step? | abstain:no-exact-approved-answer
+atom.1step.reward.en | Do I get to choose my reward split on Atom 1 Step? | clarify:unrecognized-qualifier
+atom.1step.reward.en | Walk me through the Atom 1-Step reward share | clarify:unrecognized-qualifier
+atom.1step.funded-profitable-days.en | Atom 1-Step funded: do I need 0.5% days before each payout? | abstain:multi-intent-not-covered
+atom.payouts.general.en | Can you explain how Atom payouts work in general? | clarify:unrecognized-qualifier
+atom.payouts.general.en | When can I get my first payout on a funded Atom account? | answered:atom.account-status.refuse.en
+atom.payouts.general.en | Specifically, what is the maximum I can withdraw per payout on Atom? | clarify:unrecognized-qualifier
+atom.payouts.general.en | What are the payout intervals I can pick on Atom? | clarify:unrecognized-qualifier
+atom.payouts.general.en | Walk me through the Atom payout rules | clarify:unrecognized-qualifier
+atom.payouts.general.en | What is the risk per instrument limit that applies to Atom payouts? | clarify:unrecognized-qualifier
+atom.prices.list.en | Specifically, what is the price of a 50K Atom 1-Step? | clarify:unrecognized-qualifier
+atom.prices.list.en | Give me the details on Atom pricing | clarify:unrecognized-qualifier
+atom.checkout.options.en | Specifically, what options can I choose at checkout on Atom? | clarify:unrecognized-qualifier
+atom.checkout.options.en | Which payout intervals can I pick at checkout for Atom? | clarify:unrecognized-qualifier
+atom.checkout.options.en | Walk me through what is customisable at checkout on Atom | clarify:unrecognized-qualifier
+atom.bundles.en | What discount do I get if I buy several Atom accounts at once? | clarify:unrecognized-qualifier
+atom.bundles.en | I want to understand the multi-account discount on Atom | clarify:unrecognized-qualifier
+atom.bundles.en | Specifically, how much off is the third Atom account in an order? | clarify:unrecognized-qualifier
+atom.bundles.en | What are the Atom bundle offers when buying multiple accounts? | clarify:unrecognized-qualifier
+atom.bundles.en | Tell me the details of the Atom multi-purchase discounts | abstain:no-exact-approved-answer
+atom.bundles.en | Walk me through the Atom bundle deal | clarify:unrecognized-qualifier
+atom.house.eas-copy.en | Atom: are automated trading robots okay? | abstain:no-exact-approved-answer
+atom.house.simulated.en | Are Atom accounts live trading accounts? | abstain:no-exact-approved-answer
+atom.obsolete.first-payout-14.en | Can you confirm that my first payout on Atom comes after two weeks? | clarify:unrecognized-qualifier
+atom.obsolete.first-payout-14.en | I read the first Atom payout is 14 days after funding, is that correct? | clarify:unrecognized-qualifier
+atom.obsolete.first-payout-14.en | Specifically, is the first Atom withdrawal 14 days or 21? | clarify:unrecognized-qualifier
+atom.obsolete.first-payout-14.en | Someone said the first payout on Atom is at 14 days. Is that right? | clarify:unrecognized-qualifier
+atom.obsolete.first-payout-14.en | Please verify whether the first Atom payout is two weeks | clarify:unrecognized-qualifier
+atom.obsolete.leverage-150-default.en | Someone told me Atom has 1:50 default. Is that right? | abstain:no-exact-approved-answer
+atom.obsolete.price-161-permanent.en | I saw Atom 100K for $161, is that the regular price? | clarify:unrecognized-qualifier
+atom.obsolete.price-161-permanent.en | Specifically, is $161 a list price for Atom 100K? | clarify:unrecognized-qualifier
+atom.obsolete.price-161-permanent.en | Someone told me Atom 100K is $161 forever. Is that right? | clarify:unrecognized-qualifier
+atom.obsolete.price-161-permanent.en | Please verify whether Atom 100K is permanently $161 | clarify:unrecognized-qualifier
+atom.obsolete.sizes-5k-10k.en | I saw an Atom 5K size in a brochure, is that still offered? | clarify:unrecognized-qualifier
+atom.obsolete.sizes-5k-10k.en | Specifically, do you sell Atom 10K accounts? | clarify:unrecognized-qualifier
+atom.obsolete.sizes-5k-10k.en | Someone told me there is an Atom 5K. Is that right? | abstain:no-exact-approved-answer
+atom.obsolete.sizes-5k-10k.en | Please verify whether Atom has 5K or 10K sizes | clarify:unrecognized-qualifier
