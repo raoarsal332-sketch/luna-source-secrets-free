@@ -1,0 +1,258 @@
+{
+  "version": "v12",
+  "createdUTC": "2026-10-17T16:50:00Z",
+  "notes": "Bodies are general policy text from FundedElite Intercom KB / fundedelite-faqs.md. approval=owner-approved means near-verbatim published KB; needs-owner-approval means shortened or translated for staging.",
+  "answers": [
+    {
+      "id": "faq.stop-loss-mandatory.en",
+      "locale": "en",
+      "intentTags": [
+        "stopLossMandatory",
+        "stopLoss"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12682106-strategy-risk-limits",
+        "markdown": "fundedelite-faqs.md#Strategy Risk Limits"
+      },
+      "body": "Stop Loss is not mandatory. If no Stop Loss is set, the risk is calculated based on the maximum adverse price movement that occurred while the trade was open.",
+      "contentHash": "01788f3a81026d6ace756140efb69c86043ae7a56ad2bb44ea44b73da3db67f5"
+    },
+    {
+      "id": "faq.2step-lite.daily-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "dailyLoss",
+        "product:2step-lite"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12683733-lite-2-step-challenge",
+        "markdown": "fundedelite-faqs.md#LITE 2-Step CHALLENGE"
+      },
+      "body": "The 2-Step Lite daily loss limit is 4%.",
+      "contentHash": "ca84c046e8d7eeb4c20d01ec55c161d855b5333b54aa1a9f7cb3612039809e47"
+    },
+    {
+      "id": "faq.2step.daily-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "dailyLoss",
+        "product:2step"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12683732-2-step-challenge-free-retry",
+        "markdown": "fundedelite-faqs.md#2-Step Challenge"
+      },
+      "body": "The 2-Step Challenge + FREE RETRY has a fixed daily loss limit of 5%.",
+      "contentHash": "a25964ae5db606fded8a23ea9f88b7eb6d26dc4a4b8ae0bd43ec4bb4323aa5f3"
+    },
+    {
+      "id": "faq.1step.daily-loss.en",
+      "locale": "en",
+      "intentTags": [
+        "dailyLoss",
+        "product:1step"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "markdown": "fundedelite-faqs.md#1-Step Challenge"
+      },
+      "body": "The 1-Step Challenge + FREE RETRY has a fixed daily loss limit of 3%.",
+      "contentHash": "7095e110306dbe11187d0c95d6ede786e8bda0b14706c551eb3aac3b205193dc"
+    },
+    {
+      "id": "faq.daily-loss.generic.en",
+      "locale": "en",
+      "intentTags": [
+        "dailyLoss"
+      ],
+      "approval": "needs-owner-approval",
+      "source": {
+        "markdown": "fundedelite-faqs.md (product-specific daily loss sections)"
+      },
+      "body": "Daily loss limits depend on the challenge type. For example, 2-Step Lite is 4%, the standard 2-Step + FREE RETRY is 5%, and several 1-Step / Instant products use 3%.",
+      "contentHash": "29d9c9a1bd89cdc78a5cf1ac2e5462c7e7c69945d5b2469dd2087f84a0f87ee3"
+    },
+    {
+      "id": "faq.2step-lite.min-trading-days.en",
+      "locale": "en",
+      "intentTags": [
+        "minTradingDays",
+        "product:2step-lite"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "markdown": "fundedelite-faqs.md#LITE 2-Step CHALLENGE"
+      },
+      "body": "For the LITE 2-Step Challenge, Phase 1 and Phase 2 each require a minimum of 3 trading days with a required positive P&L of at least 0.5% of the account size. The live phase requires only 3 days of trading with no specific P&L target.",
+      "contentHash": "701b60b67f360d08d2b7aacaa6c931f23a00093fec29eae08d467a8ecaf2cecb"
+    },
+    {
+      "id": "faq.min-holding-time.en",
+      "locale": "en",
+      "intentTags": [
+        "holdingTime",
+        "minHolding"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12675184-minimum-holding-time-for-the-trades",
+        "canonical": "luna-knowledge approved-internal scalping threshold"
+      },
+      "body": "The standard minimum holding time is 3 minutes, or 30 seconds with the Scalping add-on.",
+      "contentHash": "b9fb747fbdcc7561b4182a40f2c6049aa44bd71cff97bef3aba83e44a9300df3"
+    },
+    {
+      "id": "faq.soft-breach.en",
+      "locale": "en",
+      "intentTags": [
+        "softBreach"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/13868489-what-is-considered-a-soft-breach"
+      },
+      "body": "A soft breach is a rule violation that may occur during the Funded Stage. Unlike a hard breach, a soft breach does not result in immediate account closure, but it does require corrective action from the trader.",
+      "contentHash": "6fc604b1e3af6eb59c5177127e73dc90a8e86eeb766c7f291be161472a7152d4"
+    },
+    {
+      "id": "faq.travel-trade.en",
+      "locale": "en",
+      "intentTags": [
+        "travel",
+        "ip"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/",
+        "markdown": "fundedelite-faqs.md#What happens if I travel"
+      },
+      "body": "Yes, traders may travel and continue trading. Valid travel proof (such as a flight ticket, reservation, or booking receipt) is required, and the team must receive notice of planned travel before departure; otherwise clients expose themselves to a soft breach of the rules.",
+      "contentHash": "d21601ae0974d299a88efca42542207e452e75a66d72abeb30e815be62567cc4"
+    },
+    {
+      "id": "faq.2step-lite.leverage.en",
+      "locale": "en",
+      "intentTags": [
+        "leverage",
+        "product:2step-lite"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "markdown": "fundedelite-faqs.md#LITE 2-Step CHALLENGE"
+      },
+      "body": "On the LITE 2-Step Challenge, FX leverage can be selected at 1:30, 1:50, or 1:100.",
+      "contentHash": "39350ad409478ecf047a6cf75caac6cfb015e086b7e370c62113c7b3fc82de81"
+    },
+    {
+      "id": "faq.profit-split.en",
+      "locale": "en",
+      "intentTags": [
+        "profitSplit"
+      ],
+      "approval": "needs-owner-approval",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12675058-payouts-process-and-profit-split"
+      },
+      "body": "Profit split terms depend on the account stage and any applicable risk adjustments. Once your Elite account meets payout requirements, a payout button appears in your dashboard.",
+      "contentHash": "a1c472d65236066a021a9ef4d0adef198f440feb3bdf14f6b57ccf74c29843e8"
+    },
+    {
+      "id": "faq.payout-request-timing.en",
+      "locale": "en",
+      "intentTags": [
+        "payout",
+        "payoutTiming"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12675058-payouts-process-and-profit-split"
+      },
+      "body": "A payout can be requested from your dashboard once your Elite account meets payout requirements and the payout button is available for that cycle.",
+      "contentHash": "b33f0576ac025654f96f26ad64ec0fc45c5d227dd74ccfdb90965ae2a13a61f4"
+    },
+    {
+      "id": "faq.is-broker.en",
+      "locale": "en",
+      "intentTags": [
+        "broker"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/10526004-is-funded-elite-a-broker"
+      },
+      "body": "No, Funded Elite, operated by Quantum Srls is not a broker and does not accept deposits. We provide credentials to join a third-party platform for traders to showcase their skills.",
+      "contentHash": "87fe98bc1e3517212a6330aa501eccbfb4ddf7b42c5d1eb9d1e183246d9dc2bf"
+    },
+    {
+      "id": "faq.free-trial.en",
+      "locale": "en",
+      "intentTags": [
+        "freeTrial"
+      ],
+      "approval": "owner-approved",
+      "source": {
+        "kbUrl": "https://faq.fundedelite.com/en/articles/12673681-can-i-access-a-free-trial-of-funded-elite"
+      },
+      "body": "Currently, Funded Elite does not offer a free trial.",
+      "contentHash": "196458b1c6defefdbbc1bdfec6b05de3eea055bf7c918f5d1185e503f19819db"
+    },
+    {
+      "id": "faq.stop-loss-mandatory.ur-latn",
+      "locale": "ur-latn",
+      "intentTags": [
+        "stopLossMandatory",
+        "stopLoss"
+      ],
+      "approval": "needs-owner-approval",
+      "translationOf": "faq.stop-loss-mandatory.en",
+      "translationStatus": "unverified",
+      "source": {
+        "derivedFrom": "faq.stop-loss-mandatory.en"
+      },
+      "body": "Stop Loss mandatory nahi hai. Agar Stop Loss set na ho to risk trade ke dauran maximum adverse price movement ki bunyad par calculate hota hai.",
+      "contentHash": "69427c68795c6d3beff40142d768244ccb267aa825af94e242e77dfed01e3c4c"
+    },
+    {
+      "id": "faq.2step-lite.daily-loss.es",
+      "locale": "es",
+      "intentTags": [
+        "dailyLoss",
+        "product:2step-lite"
+      ],
+      "approval": "needs-owner-approval",
+      "translationOf": "faq.2step-lite.daily-loss.en",
+      "translationStatus": "unverified",
+      "source": {
+        "derivedFrom": "faq.2step-lite.daily-loss.en"
+      },
+      "body": "El límite de pérdida diaria del 2-Step Lite es del 4%.",
+      "contentHash": "cce6d6bd48ed8fb7015843d5e2244f10af44c380626e390a1daec520734707af"
+    },
+    {
+      "id": "faq.2step-lite.daily-loss.ar",
+      "locale": "ar",
+      "intentTags": [
+        "dailyLoss",
+        "product:2step-lite"
+      ],
+      "approval": "needs-owner-approval",
+      "translationOf": "faq.2step-lite.daily-loss.en",
+      "translationStatus": "unverified",
+      "source": {
+        "derivedFrom": "faq.2step-lite.daily-loss.en"
+      },
+      "body": "حد الخسارة اليومية لـ 2-Step Lite هو 4٪.",
+      "contentHash": "2fbcb2ca316b5b8dca4bea6240364e05678ea4de91422ab867e02bba95e863a9"
+    }
+  ],
+  "templates": {
+    "backendCaveatExistingHuman": "The account-specific portion requires internal records; your current human teammate remains responsible for that review.",
+    "backendCaveatConfirmed": "The account-specific portion requires internal records and has been referred to a support teammate.",
+    "backendCaveatIdentity": "For the account-specific check, please provide the account number so a support teammate can investigate.",
+    "backendCaveatDefault": "The account-specific portion requires human review. I could not confirm a completed handoff for that part.",
+    "assuranceNoPersonalBreach": "I can explain the published rules, but cannot confirm whether an individual account will incur a breach or profit forfeiture."
+  }
+}
