@@ -10,7 +10,7 @@
  *   1. resolve monetary referent -> requested relationship -> conditions
  *   2. deny classes that have NO approved row (fee recovery, fee x payout, ...)
  *   3. account-specific boundary
- *   4. choose exactly one frame; money frames must match a closed vocabulary
+ *   4. choose exactly one frame by proposition (topic + product + condition)
  *   5. only then pick the row, narrowed by atomAnswerScope, checked against the KB
  *
  * Does NOT touch index.js / faqAssistance.js / faqAnswerSelect.js. The load-path
@@ -252,6 +252,50 @@ function accountSpecific(t) {
   return false;
 }
 
+/** Personal state, not the published rule. "for a friend" and "my own accounts" (copier) are not this. */
+function personalState(c) {
+  if (/\b(?:my|our)\s+(?:own\s+)?(?:situation|case)\b/.test(c)) return true;
+  if (/\b(?:my|our)\s+(?:current|personal|live|actual)\s+(?:drawdown|loss|floor|phase|target|balance|equity|status|account)\b/.test(c)) return true;
+  if (/\b(?:my|our)\s+trailing\s+drawdown\b/.test(c)) return true;
+  if (/\boverview\s+of\s+me\b|\babout\s+me\b/.test(c)) return true;
+  return false;
+}
+
+const OVERVIEW_SHELL = new Set(
+  'challenge challenges program programs product products account accounts plan plans overview platform service firm company intro introduction summary basics'.split(
+    ' '
+  )
+);
+
+function leverage150(A) {
+  const ratios = (A.slots.ratios || []).map((r) => String(r).replace(/\s+/g, ''));
+  if (ratios.some((r) => r === '1:150' || r === '150:1')) return true;
+  if ((A.slots.nums || []).includes(150)) return true;
+  return /\b150\b/.test(A.n.t);
+}
+
+function isPureOverview(A, c) {
+  if (/\b(?:everything|all\s+rules|every\s+rule)\b/.test(c)) return false;
+  if (personalState(c)) return false;
+  // "I am new" names the speaker, not a product condition.
+  const speaker = new Set();
+  for (const m of c.matchAll(/\b(?:i am|im|we are)\s+([a-z]+)\b/g)) speaker.add(m[1]);
+  const cw = [];
+  for (const tk of A.tokens) {
+    if (/^(?:PAYOUT|AMT|PCT|RATIO|ORD|SIZE|PRELIST|REALCAPITAL)$/.test(tk)) {
+      cw.push(tk);
+      continue;
+    }
+    if (/^[A-Z]+$/.test(tk)) continue;
+    if (speaker.has(tk)) continue;
+    if (BASE.has(tk) || stemCandidates(tk).some((s) => BASE.has(s))) continue;
+    cw.push(tk);
+  }
+  const shellish = (w) => OVERVIEW_SHELL.has(w) || stemCandidates(w).some((s) => OVERVIEW_SHELL.has(s));
+  if (cw.some((w) => !shellish(w))) return false;
+  return /\bATOM\b/.test(c);
+}
+
 // ---------------------------------------------------------------------------
 // Rule (non-money) topics
 // ---------------------------------------------------------------------------
@@ -286,18 +330,7 @@ function ruleTopics(A) {
   const eas = /\b(?:eas?|expert\s+advisors?|copiers?|copy\s*trad\w*|trade\s+copier|bots?|robots?|automated|automation|algo\w*)\b/.test(c);
   const simulated = /\b(?:simulated|simulation|demo|guarantee\w*)\b|\bREALCAPITAL\b|\blive\s+(?:trading\s+)?accounts?\b/.test(c);
   const obsolete10 = A.product === P1 && pcts.includes(10) && /\b(?:target|profit|pass|phase|still|need|require|evaluation)\b/.test(c);
-  const specificNoun =
-    /\b(?:payouts?|PAYOUT|withdrawals?|prices?|pricing|costs?|fees?|splits?|rewards?|shares?|losses?|loss|drawdowns?|phases?|targets?|news|leverage|consist\w*|bundles?|checkout|refunds?|daily|profits?|sizes?|addons?|discounts?|credits?|packs?)\b/;
-  const overview =
-    /\bATOM\b/.test(c) &&
-    !e.payout &&
-    !e.priceWord &&
-    !e.splitEv &&
-    !e.cap &&
-    !specificNoun.test(c) &&
-    !/\b(?:everything|all\s+rules|every\s+rule)\b/.test(c) &&
-    (/\b(?:overview|basics)\b|\b(?:what\s+is|what\s+exactly\s+is|whats)\b|\b(?:explain|describe|understand)\b|\btell\s+me\s+about\b|\bwhat\s+does\b|\bwalk\s+me\s+through\s+what\b|\bdetails\s+about\b|\bhow\s+does\b.{0,24}\bwork\b|\bATOM\b.{0,16}\bwhat\s+is\s+it\b/.test(c) ||
-      /^(?:ATOM)(?:\s+overview)?$/.test(c.replace(/\b(?:please|pls|hi|hello|hey|thanks|thank|you)\b/g, ' ').replace(/\s+/g, ' ').trim()));
+  const overview = isPureOverview(A, c);
 
   if (consistency) out.push('consistency');
   if (daily) out.push('daily-loss');
@@ -312,7 +345,7 @@ function ruleTopics(A) {
   if (targetWeak && !targetStrong && !out.length) out.push('phases');
   if (!out.length && A.product === P1 && /\bevaluation\b/.test(c)) out.push('phases');
   if (overview && !out.length) out.push('overview');
-  return { topics: out, profitableDays, daily, fundedMention, evaluationMention };
+  return { topics: out, profitableDays, daily, fundedMention, evaluationMention, c };
 }
 
 function ruleRow(topic, product, info) {
@@ -332,10 +365,11 @@ function ruleRow(topic, product, info) {
         return { id: 'atom.overview.en', relationship: 'overview' };
       }
       if (p === '1step') {
-        if (info.profitableDays && info.fundedMention) return { id: 'atom.1step.funded-profitable-days.en' };
-        if (info.profitableDays && info.evaluationMention) return { id: 'atom.1step.min-days.en' };
-        if (info.profitableDays) return { id: 'atom.1step.funded-profitable-days.en' };
-        return { id: 'atom.1step.min-days.en' };
+        // Profitable-day / 0.5% asks use the funded-prerequisite row.
+        // Minimum trading days and time limits stay on the min-days row even if "funded" is mentioned.
+        if (!info.profitableDays) return { id: 'atom.1step.min-days.en' };
+        if (info.evaluationMention && !info.fundedMention) return { id: 'atom.1step.min-days.en' };
+        return { id: 'atom.1step.funded-profitable-days.en' };
       }
       return { id: per('min-days') };
     case 'news': return { id: per('news') };
@@ -392,14 +426,24 @@ function resolveAsk(A, ctx) {
   if (e.priceAmount && (e.payout || e.ord)) {
     return abstain('atom-fee-policy-owner-decision', { handoff: true, diagnostics: summarize(A, { cls: 'price-amount-x-payout-stage' }) });
   }
+  if (/\bfree\b/.test(A.c) && (e.payout || e.ord)) {
+    return abstain('atom-fee-policy-owner-decision', { handoff: true, diagnostics: summarize(A, { cls: 'fee-becomes-free' }) });
+  }
+  if (/\bpay\s+for\b/.test(A.c) && e.firstPerson && (e.payout || e.ord)) {
+    return abstain('atom-fee-policy-owner-decision', { handoff: true, diagnostics: summarize(A, { cls: 'pay-for-account' }) });
+  }
+  if (
+    /\b(?:waived|waive|handed\s+over|thrown\s+in|made\s+up\s+to\s+me|come\s+to\s+me|given\s+(?:back|to\s+me|again)|be\s+covered)\b/.test(A.c) &&
+    (e.priceWord || e.moneyGeneric || e.priceAmount || e.payout)
+  ) {
+    return abstain('atom-fee-policy-owner-decision', { handoff: true, diagnostics: summarize(A, { cls: 'fee-given-back' }) });
+  }
   if (e.moneyGeneric && e.transfer && !e.realCapital) {
     return clarify('monetary-referent', 'monetary-referent-unresolved', { diagnostics: summarize(A) });
   }
 
   // --- account-specific boundary -------------------------------------------
-  if (accountSpecific(t)) {
-    const resB = residualTokens(A.tokens, 'boundary');
-    if (resB.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: resB, cls: 'account-specific-with-extra-words' }) });
+  if (accountSpecific(t) || personalState(A.c)) {
     const qs = qualifiersOf(A);
     return answerResult(
       REFUSE_ID,
@@ -467,8 +511,6 @@ function resolveAsk(A, ctx) {
     /\b(?:gmt|utc|windows?)\b/.test(A.c) ||
     /\binstruments?\b/.test(A.c) ||
     A.slots.ratios.length > 0 ||
-    /\b(?:before|after|around|within|prior|ahead|following)\b.{0,24}\b(?:news|releases?|events?|minutes?|mins?)\b/.test(A.c) ||
-    /\b(?:news|releases?|events?)\b.{0,24}\b(?:before|after|around|within|minutes?|mins?)\b/.test(A.c) ||
     /\bNUM\s*(?:am|pm)\b|\b(?:am|pm)\s*NUM\b/.test(A.c);
   if (F.R && rt.topics.includes('news') && newsWindow) {
     return handoff('unresolved:news-minutes', { diagnostics: summarize(A) });
@@ -480,7 +522,7 @@ function resolveAsk(A, ctx) {
   else if (names.length === 2 && F.C && F.T) win = 'C';
   else if (names.length === 2 && F.B && F.P && /\b(?:discount|off|PCT)\b/.test(A.c) && !e.priceWord) win = 'B';
   else if (names.length === 2 && F.R && F.C && rt.topics.length === 1 && rt.topics[0] === 'leverage' && !e.addon) win = 'R';
-  else if (names.length === 2 && F.R && F.T && rt.profitableDays && rt.topics.length === 1 && rt.topics[0] === 'min-days') win = 'R';
+  else if (names.length === 2 && F.R && F.T && rt.topics.length === 1 && !e.cap && !e.timingStrong) win = 'R';
   else {
     return abstain('multi-intent-not-covered', { diagnostics: summarize(A, { frames: names }) });
   }
@@ -492,18 +534,34 @@ function resolveAsk(A, ctx) {
     if (e.priceWord || (e.moneyGeneric && !e.realCapital) || e.feePaidStrong || e.priceAmount) {
       return abstain('money-referent-in-rule-ask', { diagnostics: summarize(A) });
     }
-    if (rt.topics.length > 1) return abstain('multi-intent-not-covered', { diagnostics: summarize(A, { topics: rt.topics }) });
-    const topic = rt.topics[0];
+    let topic = rt.topics[0];
     if (e.otherProduct) return abstain('not-atom-scope', { diagnostics: summarize(A) });
     if (product === 'both' && topic !== 'eas-copy' && topic !== 'simulated' && topic !== 'overview') {
       return abstain('multi-product-not-covered', { diagnostics: summarize(A) });
     }
     let productForRow = product === 'both' ? null : product;
-    if (!productForRow && topic === 'max-loss') {
+    if (!productForRow && (topic === 'max-loss' || rt.topics.includes('max-loss'))) {
       const trailing = /\btrailing\b/.test(A.c);
       const staticW = /\bstatic\b/.test(A.c);
       if (trailing && !staticW) productForRow = P1;
       else if (staticW && !trailing) productForRow = P2;
+    }
+    if (rt.topics.length > 1) {
+      const ids = rt.topics.map((tp) => ruleRow(tp, productForRow, rt).id);
+      const uniq = [...new Set(ids)];
+      if (!(uniq.length === 1 && uniq[0])) {
+        return abstain('multi-intent-not-covered', { diagnostics: summarize(A, { topics: rt.topics }) });
+      }
+    }
+    if ((topic === 'leverage' || rt.topics.includes('leverage')) && leverage150(A)) {
+      return answerResult(
+        'atom.obsolete.leverage-150-default.en',
+        0.95,
+        'frame:rule/leverage-150',
+        { name: 'rule', scopeFrame: 'rule', relationship: 'correction', product: productForRow },
+        A,
+        qs
+      );
     }
     const r = ruleRow(topic, productForRow, rt);
     if (!r.id) return clarify('product', 'product-required', { diagnostics: summarize(A, { topic }) });
@@ -527,8 +585,6 @@ function resolveAsk(A, ctx) {
 
   // --- money frames: closed vocabulary --------------------------------------
   if (win === 'S') {
-    const res = residualTokens(A.tokens, 'split');
-    if (res.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: res }) });
     if (e.priceAmount) return clarify('amount', 'amount-ambiguous-with-price', { diagnostics: summarize(A) });
     if (product === 'both') return abstain('multi-product-not-covered', { diagnostics: summarize(A) });
     if (product === P1 || product === P2) {
@@ -551,8 +607,6 @@ function resolveAsk(A, ctx) {
   }
 
   if (win === 'T') {
-    const res = residualTokens(A.tokens, 'payout');
-    if (res.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: res }) });
     const fourteen = /\b(?:14|fourteen)\b/.test(t) || /\b(?:two|2)\s+weeks\b/.test(t);
     if (fourteen && /\bfirst\b/.test(t)) {
       return answerResult('atom.obsolete.first-payout-14.en', 0.96, 'frame:payout/obsolete-14', mkFrame('payout', 'payout', 'correction'), A, qs);
@@ -565,8 +619,6 @@ function resolveAsk(A, ctx) {
     if (e.selection) return handoff('unresolved:checkout-sku-selection', { diagnostics: summarize(A) });
     if (e.couponStack && !e.preList) return handoff('unresolved:coupon-stacking', { diagnostics: summarize(A) });
     if (e.addon) return abstain('qualifier-not-covered:addon-price', { diagnostics: summarize(A) });
-    const res = residualTokens(A.tokens, 'price');
-    if (res.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: res }) });
     if (obsolete161) {
       return answerResult('atom.obsolete.price-161-permanent.en', 0.97, 'frame:price/obsolete-161', mkFrame('price', 'price', 'correction'), A, qs);
     }
@@ -581,8 +633,6 @@ function resolveAsk(A, ctx) {
     if (e.selection) return handoff('unresolved:checkout-sku-selection', { diagnostics: summarize(A) });
     if (e.priceWord || e.howMuch || e.amountAny) return abstain('qualifier-not-covered:addon-price', { diagnostics: summarize(A) });
     if (e.couponStack && !e.preList) return handoff('unresolved:coupon-stacking', { diagnostics: summarize(A) });
-    const res = residualTokens(A.tokens, 'checkout');
-    if (res.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: res }) });
     return answerResult('atom.checkout.options.en', 0.9, 'frame:checkout', mkFrame('checkout', 'checkout', 'options'), A, qs);
   }
 
@@ -591,8 +641,6 @@ function resolveAsk(A, ctx) {
       return abstain('not-atom-scope', { diagnostics: summarize(A, { cls: 'other-product' }) });
     }
     if (e.couponStack && !e.preList) return handoff('unresolved:coupon-stacking', { diagnostics: summarize(A) });
-    const res = residualTokens(A.tokens, 'bundle');
-    if (res.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: res }) });
     return answerResult('atom.bundles.en', 0.93, 'frame:bundle', mkFrame('bundle', 'bundle', 'discount'), A, qs);
   }
 

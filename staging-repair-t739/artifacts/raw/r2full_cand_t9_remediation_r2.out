@@ -1,0 +1,8 @@
+== remediation r2
+  ok   r2 language: Portuguese or Spanish with English rule terms is not current-english; payout? stays uncertain; short English is English
+  ok   r2 F1 detector: unicode obfuscation and entity terms are claimed; non-module probes are not
+  ok   r2 spread: eligible credential asks, follow-ups, and mixed appends deliver SAFE_SPREAD_REPLY and never a credential
+  ok   r2 S09 authorized REPLY: a credential that exists only in an href or attachment is held with a code
+  ok   r2 false holds: envelope-heavy legitimate replies are not CRED_SECRET_LABELLED, and a credential drop has a hold code
+  ok   r2 unlabelled model-plan follow-up is held before send and before the ledger
+RESULT remediation r2: 6 passed, 0 failed, 6 total

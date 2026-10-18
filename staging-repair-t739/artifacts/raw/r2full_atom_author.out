@@ -1,0 +1,94 @@
+v22.14.0
+  ...
+# Subtest: author set: varied-supported
+ok 15 - author set: varied-supported
+  ---
+  duration_ms: 0.06653
+  ...
+# Subtest: author set: varied-deny
+ok 16 - author set: varied-deny
+  ---
+  duration_ms: 0.061968
+  ...
+# Subtest: zero sendable leaks on every deny-class set
+ok 17 - zero sendable leaks on every deny-class set
+  ---
+  duration_ms: 0.175853
+  ...
+# Subtest: no abstain/clarify/handoff result ever carries an answerId
+ok 18 - no abstain/clarify/handoff result ever carries an answerId
+  ---
+  duration_ms: 0.38261
+  ...
+# Subtest: false refusals on general questions are reported, not gated
+ok 19 - false refusals on general questions are reported, not gated
+  ---
+  duration_ms: 0.446952
+  ...
+# Subtest: wrapper stability is informational
+ok 20 - wrapper stability is informational
+  ---
+  duration_ms: 0.253015
+  ...
+# Subtest: summary
+ok 21 - summary
+  ---
+  duration_ms: 0.652347
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 486.093064
+--- raw counts per set
+set                total  pass  fail  leaks  falseRefusals
+kb                    16    16     0      0        0
+controls             248   248     0      0        0
+money-confusion       50    50     0      0        0
+unresolved            12    12     0      0        0
+discriminate          31    31     0      0        0
+account-specific       6     6     0      0        0
+multi-turn            20    20     0      0        0
+unicode               16    16     0      0        0
+non-english           15    15     0      0        0
+gating                27    27     0      0        0
+robustness            13    13     0      0        0
+general               45    45     0      0        0
+varied-supported     295   295     0      0        0
+varied-deny           38    38     0      0        0
+probes-novel          30    30     0      0        0
+fee-sweep           3200  3200     0      0        0
+mixed-sweep          992   992     0      0        0
+wrapper-stability(info)   744   744     0      0        0
+TOTAL 5798 pass 5798 fail 0
+--- baseline (dd3b9f79) vs corrected
+{
+  "denyCases": 80,
+  "baselineSendableLeaks": 16,
+  "baselineLeakIds": [
+    "MC01->atom.prices.list.en",
+    "MC02->atom.prices.list.en",
+    "MC03->atom.prices.list.en",
+    "MC04->atom.prices.list.en",
+    "MC05->atom.prices.list.en",
+    "MC06->atom.prices.list.en",
+    "MC07->atom.account-status.refuse.en",
+    "MC16->atom.account-status.refuse.en",
+    "MC36->atom.account-status.refuse.en",
+    "MC37->atom.account-status.refuse.en",
+    "MC38->atom.account-status.refuse.en",
+    "MC39->atom.account-status.refuse.en",
+    "MC40->atom.prices.list.en",
+    "PR13->atom.account-status.refuse.en",
+    "PR17->atom.account-status.refuse.en",
+    "PR27->atom.prices.list.en"
+  ],
+  "correctedSendableLeaks": 0,
+  "generalAnswerExpected": 36,
+  "baselineFalseRefusals": 13,
+  "correctedFalseRefusals": 0
+}

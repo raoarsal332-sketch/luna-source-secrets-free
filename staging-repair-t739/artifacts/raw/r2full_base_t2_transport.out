@@ -1,0 +1,182 @@
+== transport (baseline)
+  ok   sanity: harness is isolated (egress attempts so far = 0) and tree identity verified
+  ok   control: a clean public reply is sent exactly once, unchanged, and recorded as confirmed
+  FAIL postReply comment holds: labelled
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Here you go. Login: 99999001 Password: Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:44:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL postReply comment holds: unlabelled slash
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Here you go. 99999001 / Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:44:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL postReply comment holds: html wrapped
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Here you go. <b>Login:</b> 99999001&lt;br&gt;<b>Password:</b> Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:44:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL postReply comment holds: worded digits + weak label
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Here you go. nine nine nine nine nine zero zero one pw: Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:44:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL postReply comment holds: zero-width label
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Here you go. Pa​ssword: Fake#Pass1 login 99999001","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:44:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  ok   postClientCommentOnce holds (welcome intro etc. added after early check): labelled
+  FAIL postClientCommentOnce holds (welcome intro etc. added after early check): unlabelled slash
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (unlabelled slash): ["Hello Test,<br><br>Sure. 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL postClientCommentOnce holds (welcome intro etc. added after early check): html wrapped
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (html wrapped): ["Hello Test,<br><br>Sure. <b>Login:</b> 99999001&lt;br&gt;<b>Password:</b> Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL postClientCommentOnce holds (welcome intro etc. added after early check): worded digits + weak label
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (worded digits + weak label): ["Hello Test,<br><br>Sure. nine nine nine nine nine zero zero one pw: Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL postClientCommentOnce holds (welcome intro etc. added after early check): zero-width label
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (zero-width label): ["Hello Test,<br><br>Sure. Pa​ssword: Fake#Pass1 login 99999001"]
+       
+       1 !== 0
+       
+  FAIL postClientCommentOnce mixed assembly: a clean answer plus a pair is held whole, nothing partial is sent
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (mixed): ["Hello Test,<br><br>The daily loss limit is 5%.<br><br>Also, 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL F2 automated hold is silent: no note, no assignment, one body-free log line with code+len+conversation id
+       AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+       
+       1 !== 0
+       
+  FAIL postDeterministicFlowReply holds: labelled
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Noted. Login: 99999001 Password: Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:89:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL postDeterministicFlowReply holds: unlabelled slash
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Noted. 99999001 / Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:89:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL postDeterministicFlowReply holds: html wrapped
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Noted. <b>Login:</b> 99999001&lt;br&gt;<b>Password:</b> Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:89:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL FAQ deps.send is the same boundary: a pair is held, a clean body is sent
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Take this: 99999001 / Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:101:10)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL icRequest layer B: nothing credential-bearing reaches webhookFastAck.prepareCustomerWrite or the transport: labelled
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"<p>Login: 99999001 Password: Fake#Pass1</p>","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:116:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL icRequestUnguarded layer C: no write-op record and no transport call: labelled
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"Login: 99999001 Password: Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:126:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL icRequest layer B: nothing credential-bearing reaches webhookFastAck.prepareCustomerWrite or the transport: unlabelled slash
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"<p>99999001 / Fake#Pass1</p>","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:116:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL icRequestUnguarded layer C: no write-op record and no transport call: unlabelled slash
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"99999001 / Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:126:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL icRequest layer B: nothing credential-bearing reaches webhookFastAck.prepareCustomerWrite or the transport: html wrapped
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"<p><b>Login:</b> 99999001<br><b>Password:</b> Fake#Pass1</p>","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:116:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL icRequestUnguarded layer C: no write-op record and no transport call: html wrapped
+       AssertionError [ERR_ASSERTION]: {"ok":true,"status":200,"data":{"type":"conversation_part","id":"9001","part_type":"comment","body":"<b>Login:</b> 99999001<br><b>Password:</b> Fake#Pass1","created_at":1792351710,"author":{"type":"admin","id":"10118526"}}}
+           at Object.fn (/workspace/staging-repair-t739/tests/t2_transport.js:126:12)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  ok   icRequest does not touch non-public writes: an internal note carrying the same text is not held (design: notes are staff-only)
+  ok   icRequest GET with a pair-like query is never held
+  ok   retry (429): the retried POST carries byte-identical content to the first attempt; no content change between attempts
+  FAIL a held send is not retried and not queued: zero transport calls, zero op records, repeat call is held again
+       AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+       
+         assert.ok(heldResult(r))
+       
+  ok   retry permission is re-checked: a teammate public reply that appears between attempts stops the retry (existing behaviour preserved)
+  FAIL owner REPLY: (direct exact send) held; fixed body-free staff note; ledger never holds the body: labelled
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (labelled): ["Login: 99999001 Password: Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL owner REPLY: (direct exact send) held; fixed body-free staff note; ledger never holds the body: unlabelled slash
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (unlabelled slash): ["99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL owner REPLY: (direct exact send) held; fixed body-free staff note; ledger never holds the body: html wrapped
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (html wrapped): ["Login: 99999001<br>Password: Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL owner REPLY: (direct exact send) held; fixed body-free staff note; ledger never holds the body: worded digits + weak label
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (worded digits + weak label): ["nine nine nine nine nine zero zero one pw: Fake#Pass1"]
+       
+       1 !== 0
+       
+  ok   owner REPLY: a clean exact send still goes out and posts "Sent to client." (preserved)
+  FAIL owner FOLLOW exact "send this message to client [..]": held, ledger body-free: labelled
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (labelled): ["Login: 99999001 Password: Fake#Pass1."]
+       
+       1 !== 0
+       
+  FAIL owner FOLLOW exact "send this message to client [..]": held, ledger body-free: unlabelled slash
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (unlabelled slash): ["99999001 / Fake#Pass1."]
+       
+       1 !== 0
+       
+  FAIL owner FOLLOW exact "send this message to client [..]": held, ledger body-free: html wrapped
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (html wrapped): ["Login: 99999001 Password: Fake#Pass1."]
+       
+       1 !== 0
+       
+  FAIL owner FOLLOW via model plan (fixed model stub): plan with a pair is never persisted or executed; staff note only: labelled
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (labelled): ["Of course. Login: 99999001 Password: Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL owner FOLLOW via model plan (fixed model stub): plan with a pair is never persisted or executed; staff note only: unlabelled slash
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (unlabelled slash): ["Of course. 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL owner FOLLOW via model plan (fixed model stub): plan with a pair is never persisted or executed; staff note only: html wrapped
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (html wrapped): ["Of course. <b>Login:</b> 99999001&lt;br&gt;<b>Password:</b> Fake#Pass1"]
+       
+       1 !== 0
+       
+  ok   owner FOLLOW via model plan: a clean plan is persisted with its body for retry, executed once, and deleted after completion (preserved)
+  FAIL persisted/retryable plan written by an older version (body with a pair, phase pending) is held on retry and the body is removed at completion
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (seeded): ["Sure. 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL handleWebhook (generated text, FAST route): model output with a pair is held; no public write; silent
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (webhook): ["Hello Test,<br><br>Yes, we offer a student discount on the challenge fee. 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  ok   handleWebhook control: a clean generated answer on the same route is sent
+  FAIL auth replay re-enters handleWebhook: pair is held on replay too
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (auth replay): ["Hello Test,<br><br>Yes, we offer a student discount on the challenge fee. 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  FAIL burst rerun re-enters handleWebhook: pair is held on the re-run too
+       AssertionError [ERR_ASSERTION]: public write reached the transport recorder (burst rerun): ["Hello Test,<br><br>Yes, we offer a student discount on the challenge fee. 99999001 / Fake#Pass1"]
+       
+       1 !== 0
+       
+  ok   ownership change: human teammate reply before send blocks with the ownership reason (hold does not mask or replace it)
+  ok   aiOff and paused still block (preserved)
+  ok   failed check: a detector exception holds (never passes)
+  ok   no generic stub other than the inert startup ones was called during the run
+  ok   no egress attempt was made in this process
+RESULT transport (baseline): 15 passed, 36 failed, 51 total

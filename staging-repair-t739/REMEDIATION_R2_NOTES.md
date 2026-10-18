@@ -120,3 +120,69 @@ The English count rose against r1-full (Packs en 205, Atom en 219 was 206) becau
 Cross-message context older than 8 bodies or 4000 characters, or an id half with no login cue. Spaced or worded password characters. A purely alphabetic labelled secret with no internal capital (`password: swordfish`). A weak-label secret with no id and no strong shape (`pw: hunter2`). Encodings beyond rot13 and one-level base64/hex. Image pixels. A login id alone in a URL is not a hold.
 
 Packs and Atom author suites are rerun after the cycle-2 byte copy, not on these r1 module bytes.
+
+## Cycle-2 module copy (t739-integrated-r2-full)
+
+Copied after the r2 freeze, byte-for-byte, into both the top-level directory and `candidate/`. No selector edits. No other product file changed. `faqModuleAdapter.js` was not changed: `packsOptions` still passes `{language, confident, allowsAnswer}`, and the cycle-2 Packs `languageGateDecision` accepts `{language:'en', confident:true, allowsAnswer:true}` (`language-gate-english`) and fail-closes non-English and uncertain gates.
+
+Packs source `cursor/t739-packs-cycle2-3f28` @ `9a828c80b406be2790bea213a52971e8bfa1fc3e`:
+
+| file | bytes | sha256 |
+|---|---|---|
+| packsOwnershipPregate.js | 75702 | `ca7bb1ea54493bb67c0aa24b0bb81d2e059adbc20590807726ff019f53e3d30e` |
+| packsAnswerSelect.js | 34788 | `75bcf653044a67598a2d73ea6690e6e4a9a863f498b16128dd7a5142c0e8a013` |
+| packsApprovedAnswers.js | 7028 | `10dd4ef8f5fb9fd1e3a10de0bfce41ec81dde8c8119b987b0b054cbe91847a3d` (unchanged) |
+| faq-approved-answers-packs-v1.json | 313681 | `bed88e6ab45c74a378273f301a197ee56b8276c312bb4bca081c7c9efb6b2318` (unchanged) |
+
+Atom source `t739-atom` @ `fa77b0fa0d30346a8d0f447209bfe1fe1353a400`. Author `MANIFEST.json` sha256 `febbf7291bb48d152e0c5b1f4d8dbe0a86cd1a328673cb8955451d1026d39687`:
+
+| file | bytes | sha256 |
+|---|---|---|
+| atomAnswerScope.js | 5772 | `8f2d3672680e33978f17532ebd11edda926ee2337c24821dfcd95839ceafde63` (unchanged) |
+| atomAnswerSelect.js | 40486 | `fc5ab9052107140658e6b5414085fcdfaf44e43cb10d0893af08876172b7a51c` |
+| atomApprovedAnswers.js | 4729 | `5008e3343dad76eb77cc0a4cd595b07a79ba134904c018e3320a8d85d5ccdbd8` (unchanged) |
+| atomMoneyFrame.js | 19623 | `b672fc3e43cd46bd5d210bc9e1c49250865a5d0bb8d19f4058bb62a6d2940398` |
+| faq-approved-answers-atom-v1.json | 148077 | `df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6` (unchanged) |
+
+Guard still `2158c43f3fbb4c6470983065613864f477d8959e46b79c7bed2a520788bdca8c`. Delivery stays BLOCKED.
+
+### What the copy changed in the shared detector
+
+`faqModuleDetectors.packsDetect` treats `packsProductHint` as a Packs claim, and Packs is registered before Atom. Cycle-2 `packsProductHint` returns `elite-packs` for `\batom\b`, `\bdiscount\b`, `\bsubscription\b`, and `\brefund`. Those words are not Packs-only in the integrated routes.
+
+Observed:
+
+- `Do you offer a student discount for the challenge?` is now a Packs claim. With the flag OFF the webhook stops at `module-off-fail-closed` and never reaches the model. That is why t2's FAST-route pair hold and its clean-answer control do not run, and why t4 never reaches `SKIP model`.
+- `Was my subscription charged this month?` is now a Packs claim (t6 D6).
+- `What is Elite Atom?` and `Atom funded profitable days requirement?` are Packs claims as well as Atom claims. Packs runs first, so an Atom-ON turn is silenced as Packs-OFF, and a Packs-ON turn takes the Packs ON path for an Atom question (t6 F1-8, ON2, ON3).
+
+No selector byte was edited to change this. No shared file was edited after the r2 freeze. The next step for this interaction is an architecture reassessment, not another phrase patch.
+
+### Suites after the copy
+
+Sequential `unshare -rn`. Raw files: `artifacts/raw/r2full_*`. Author suites ran from the source commits' tests with these candidate bytes overlaid (`/tmp/int/packs` from `9a828c8`, `/tmp/int/atom` from `fa77b0f`).
+
+| suite | result |
+|---|---|
+| t1 detector | 57 passed, 0 failed |
+| t2 transport | 49 passed, 2 failed, 51 total |
+| t3 faq/language/module | 29 passed, 0 failed |
+| t4 logs | 5 passed, 1 failed, 6 total |
+| t5 isolation | 10 passed, 0 failed |
+| t6 modules | 30 passed, 5 failed, 35 total |
+| t7 corpus | 6 passed, 0 failed |
+| t8 remediation r1 | 6 passed, 0 failed |
+| t9 remediation r2 | 6 passed, 0 failed |
+| baseline t2 | 15 passed, 36 failed, 51 (exit 1) |
+| baseline t3 | 11 passed, 6 failed, 17 (exit 1) |
+| baseline t4 | 2 passed, 4 failed, 6 (exit 1) |
+| baseline t6 | 2/2 |
+| baseline t7 | 1/1 |
+| baseline t8 | 6/6 observations |
+| Packs author | 1328/1328, 0 critical leaks. General controls 79/79 correct, false refusal 0 |
+| Packs paraphrase | general 266/266 correct, false refusal 0. State 51/51 safe, product leaks 0 |
+| Atom author | `node --test` 21 pass, 0 fail. TOTAL 5798 pass, 5798 fail 0. Corrected sendable leaks 0. Corrected false refusals 0 |
+
+t7 after the copy: Packs corpus total 316, en 212, equal 212, withheld 54, nonEn 50. Atom total 293, en 219, equal 219, withheld 74, nonEn 0. F1 exposure 609: `T:module-off-fail-closed` 427, `N:existing-unowned-faq-path` 36, `T:language-uncertain-module-off` 128, `N:no-isolatable-faq` 18. Catalog bodies 474, holds 0. t8 false-hold probe 0/17.
+
+This is not a PASS.

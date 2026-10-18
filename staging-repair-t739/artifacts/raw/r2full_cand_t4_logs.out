@@ -1,0 +1,13 @@
+== log redaction (candidate)
+  ok   F4 IC_REQ_FAIL: a rejected write that echoes customer text logs codes and length only
+  ok   F4 OWNER_CMD_LLM_RAW: raw model output is not logged, only its length
+  FAIL F4 SKIP model: a model SKIP body is not logged
+       AssertionError [ERR_ASSERTION]: SKIP model log line not reached on this route: IN conversation.user.replied 7003|FAQ_ASSIST {"cid":"7003","utc":"2026-10-18T19:28:27.922Z","action":"public-informational-faq","reason":"module-off-fail-closed"}
+           at Object.fn (/workspace/staging-repair-t739/tests/t4_logs.js:41:10)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  ok   F4 none of the nine redacted tags carries the sentinel on any exercised route
+  ok   F4 static: the nine historical sites no longer interpolate raw text (diff against base)
+RESIDUAL_LOG_LINES 0
+
+  ok   F4 residual: log lines (all routes in this process) that still contain the customer sentinel are listed for the report
+RESULT log redaction (candidate): 5 passed, 1 failed, 6 total

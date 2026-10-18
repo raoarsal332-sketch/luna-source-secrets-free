@@ -38,12 +38,18 @@ function isPacksEnabled(opts) {
 function languageGateDecision(gate) {
   if (gate === undefined || gate === null) return { ok: false, reason: 'language-gate-absent-fail-closed' };
   if (typeof gate !== 'object' || Array.isArray(gate)) return { ok: false, reason: 'language-gate-malformed-fail-closed' };
-  if (gate.allowsAnswer !== true) return { ok: false, reason: 'language-gate-not-allowed' };
-  if (typeof gate.language !== 'string' || gate.language.toLowerCase() !== 'en') {
-    return { ok: false, reason: 'language-gate-not-english' };
+  const lang = typeof gate.language === 'string' ? gate.language.toLowerCase() : '';
+  const english = lang === 'en' || lang.startsWith('en-') || lang.startsWith('en_');
+  // Explicit rejection still fails closed. A missing allowsAnswer on confident English does not.
+  if (gate.allowsAnswer === false || (gate.allowsAnswer != null && gate.allowsAnswer !== true)) {
+    return { ok: false, reason: 'language-gate-not-allowed' };
   }
+  if (!english) return { ok: false, reason: 'language-gate-not-english' };
   if (gate.confident === false || gate.uncertain === true || gate.mixed === true) {
     return { ok: false, reason: 'language-gate-uncertain' };
+  }
+  if (gate.allowsAnswer !== true && gate.confident !== true) {
+    return { ok: false, reason: 'language-gate-not-allowed' };
   }
   return { ok: true, reason: 'language-gate-english' };
 }
@@ -62,7 +68,7 @@ function gatedTest(fn) {
 function packsProductHint(text) {
   const t = String(text || '').toLowerCase();
   if (
-    /\belite\s*packs?\b|\bpack\s*credits?\b|\bmy\s*packs\b|\bopen(?:ing)?\s+(?:a\s+)?pack\b|\bpack\s*pass\b|\blucky\s*streak\b|\bthe\s*million\b|\bignition\b|\bbreakout\b|\bmarket\s*maker\b|\bwhale\s*pack\b|\boracle\s*pack\b|\bfounder'?s?\s*key\b|\binstant\s*override\b|\bopen\s*season\b|\blifetime\s*split\b|\bpayout\s*boost\s*100\b|\b100\s*%\s*payout\s*card\b|\bdrop\s*rates?\b|\bredeem\s*key\b|\bfree\s*packs?\b|\bexotic\b|\bprimordial\b|\bpurple\s*card\b|\bpink\s*card\b|\bpack\s*credits?\b|\bmythic\b|\blegendary\b/.test(
+    /\belite\s*packs?\b|\bpacks?\b|\bcards?\b|\bcredits?\b|\bkeys?\b|\brarit(?:y|ies)\b|\bodds\b|\binventory\b|\bcollection\b|\bmy\s*packs\b|\bopen(?:ing)?\s+(?:a\s+)?pack\b|\bpack\s*pass\b|\blucky\s*streak\b|\bthe\s*million\b|\bignition\b|\bbreakout\b|\bmarket\s*maker\b|\bwhale\b|\boracle\b|\bfounder'?s?\s*key\b|\binstant\s*override\b|\bopen\s*season\b|\blifetime\s*split\b|\bpayout\s*boost\b|\b100\s*%\s*payout\b|\bdrop\s*rates?\b|\bredeem\b|\bfree\s*packs?\b|\bexotic\b|\bprimordial\b|\bpurple\b|\bpink\b|\bmythic\b|\blegendary\b|\bsubscription\b|\bcrypto\b|\brefund|\bdiscount\b|\bcheckout\b|\bseal\b|\breveal\b|\bmultiplier\b|\bx[235]\b|\batom\b|\bsimulated\b|\bdashboard\b|\bgiveaway\b|\bepic\b/.test(
       t
     )
   ) {
@@ -501,7 +507,61 @@ const SELECTORS = Object.freeze(
   )
 );
 
-function bestProductMatch(t, prod, gate) {
+function topicScores(t) {
+  const rows = [];
+  const add = (id, score) => {
+    if (score >= 4) rows.push({ id, score });
+  };
+  const costQ = /how\s+much|how\s+many\s+credits|\bprice\b|\bcost\b|sell\s+for|credit\s+amount/.test(t);
+  const oddsQ = /drop\s*rates?|\bodds\b|how\s+likely|probability|how\s+often/.test(t);
+  const floorQ = /rarity\s+floor|minimum\s+rarity|lowest\s+rarity|common\s+card/.test(t);
+  if (oddsQ && !/collection\s+tab/.test(t)) add('packs.drop-rates', 5 + (/\bwhale\b|\boracle\b|\bignition\b/.test(t) ? 2 : 0));
+  if (floorQ) add('packs.rarity-floor', 6);
+  if (costQ && /pack|oracle|whale|ignition|breakout|tier/.test(t) && !floorQ) add('packs.pack-costs-floors', 6);
+  if (/\bwhale\b/.test(t) && !oddsQ && !costQ && !floorQ) add('packs.followup.whale-pack', 6);
+  if (/\boracle\b/.test(t) && !oddsQ && !costQ && !floorQ && !/upgrade\s+offer|chain/.test(t)) add('packs.followup.oracle-pack', 6);
+  if (/withdraw|cash\s*out|cashable|cashed/.test(t) && /credit/.test(t)) add('packs.withdraw-credits', 6);
+  const convertQ = /convert|turned\s+into|turn\b[^.]{0,40}\binto\b|conversion/.test(t);
+  if (/payout\s+credits?/.test(t) && /pack\s+credits?|differ|difference|versus|\bvs\b|separat|convert|turned\s+into|turn\b|conversion/.test(t) && !/withdraw|cash\s*out|cashable/.test(t)) {
+    add(convertQ ? 'packs.convert-payout-credits' : 'packs.credits-vs-payout-credits', 6);
+  }
+  if (/two\s+credit\s+balances|balances\s+expire|pack\s+credits?\s+differ/.test(t)) add('packs.credits-vs-payout-credits', 6);
+  if (/automatically|on\s+their\s+own|by\s+itself|on\s+its\s+own|sitting\s+unused|rewrite\s+rules|apply\s+automatically/.test(t)) add('packs.card-auto-apply', 6);
+  if (/pack\s+pass/.test(t)) add('packs.pack-pass', 6);
+  if (/three[-\s]card|three\s+(?:separate\s+)?card|cards?\s+per\s+pack/.test(t) || (/how\s+many\s+cards/.test(t) && /pack/.test(t) && !/collect|catalogue|catalog|in\s+total|distinct/.test(t))) {
+    add('packs.cards-per-pack', 5);
+  }
+  if (/distinct\s+cards|catalogue|catalog|in\s+total|to\s+collect|different\s+cards/.test(t)) add('packs.card-count', 5);
+  if (/top(?:\s|-)?up|purchase\s+additional|buy\s+(?:more\s+)?(?:pack\s+)?credits?/.test(t)) add('packs.buy-credits', 5);
+  if (/monthly|subscription/.test(t) && /cancel/.test(t)) add('packs.cancel-subscription', 6);
+  else if (/monthly|subscription/.test(t) && /credit|plan|renew|bill/.test(t)) add('packs.monthly-subscription', 5);
+  if (/crypto/.test(t) && /discount|cheaper|percent|%|off/.test(t)) add('packs.crypto-discount', 6);
+  if (/seal|reveal|deduct|charged|fast\s*open|open(?:ing)?\s+(?:a\s+)?pack|when\s+would\s+credits/.test(t) && !/refund/.test(t)) add('packs.opening-and-charges', 5);
+  if (/chain|upgrade\s+offer|next\s+pack|second\s+pack/.test(t) && /discount|offer|%|after/.test(t)) add('packs.chain-upgrade-discounts', 5);
+  if (/inventory|saved\s+card|apply\s+(?:a|one|the|my)/.test(t) && /apply|use|checkout|redeem/.test(t) && !/automatically|on\s+its\s+own|by\s+itself/.test(t)) add('packs.inventory-use-card', 5);
+  if (/\bx3\b|\bx2\b|\bx5\b|times[-\s]three|multiplier|how\s+many\s+times/.test(t)) add('packs.uses-multiplier', 5);
+  if (/stack|combin/.test(t) && /discount|offer|founder|checkout/.test(t)) add('packs.discount-stacking', 5);
+  if (/eligible\s+label|skip\s+a\s+step|which\s+account\s+sizes/.test(t)) add('packs.eligibility-labels', 5);
+  if (/exotic|instant\s+override|lifetime\s+split|open\s+season/.test(t) && !/showing|mine|do\s+i\s+own|in\s+my/.test(t)) add('packs.exotic-cards', 4);
+  if (/primordial|the\s+million/.test(t)) add('packs.the-million', 5);
+  if (/lucky\s+streak/.test(t)) add('packs.lucky-streak', 6);
+  if (/special\s+pack/.test(t)) add('packs.special-packs', 5);
+  if (/giveaway|redeem\s+key|my\s+packs\s+tab/.test(t)) add('packs.my-packs-keys', 5);
+  if (/collection\s+tab/.test(t)) add('packs.collection', 6);
+  if (/free\s+pack|complimentary\s+pack/.test(t) && !/pack\s+pass/.test(t)) add('packs.free-packs-general', 5);
+  if (/purple|pink/.test(t) && /card/.test(t)) add('packs.followup.purple-card-ambiguous', 6);
+  if (/payout\s+boost|100\s*%\s+payout/.test(t)) add('packs.followup.payout-boost-100', 6);
+  if (/atom/.test(t) && /bundle|promo|pack/.test(t)) add('packs.atom-bundle-distinct', 5);
+  if (/simulated/.test(t) || (/real\s+money/.test(t) && /account/.test(t))) add('packs.simulated', 6);
+  if (/real\s+money/.test(t) && /pack\s+credits?/.test(t) && !/account/.test(t)) add('packs.credits-vs-payout-credits', 6);
+  if (/which\s+tier|worth\s+opening|sensible\s+one\s+to\s+buy|which\s+pack|best\s+pack/.test(t)) add('packs.which-pack-best', 5);
+  if (/\btabs?\b|\bmenu\b|\bdashboard\b/.test(t) && /inventory|collection|credits|packs/.test(t)) add('packs.dashboard-tabs', 5);
+  if (/reward\s+packs?|three-card\s+reward|what\s+are\s+(?:these\s+)?(?:elite\s+)?packs|how\s+do\s+(?:elite\s+)?packs\s+work|big\s+picture/.test(t) && !oddsQ && !costQ) add('packs.overview', 4);
+  rows.sort((a, b) => b.score - a.score);
+  return rows;
+}
+
+function regexBest(t, prod, gate) {
   const matches = [];
   for (const sel of SELECTORS) {
     try {
@@ -517,6 +577,22 @@ function bestProductMatch(t, prod, gate) {
     if (id) return { id, baseId: sel.id, conf: sel.conf, top: matches[0] };
   }
   return { id: null, top: matches[0] || null };
+}
+
+function bestProductMatch(t, prod, gate) {
+  const regex = regexBest(t, prod, gate);
+  const ranked = topicScores(t);
+  const top = ranked[0];
+  const second = ranked[1];
+  const margin = top ? top.score - (second ? second.score : 0) : 0;
+  if (top && margin >= 2) {
+    const id = deliverableId(top.id, 'product');
+    const beatsRegex = !regex.id || regex.baseId === top.id || top.score >= 6;
+    if (id && beatsRegex) {
+      return { id, baseId: top.id, conf: Math.min(0.97, 0.75 + top.score / 40), top: { id: top.id, conf: 0.9 } };
+    }
+  }
+  return regex;
 }
 
 function abstainResult(reason, extra) {

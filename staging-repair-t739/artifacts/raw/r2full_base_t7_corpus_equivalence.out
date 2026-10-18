@@ -1,0 +1,3 @@
+== corpus equivalence (baseline)
+  ok   baseline has no Packs/Atom modules
+RESULT corpus equivalence (baseline): 1 passed, 0 failed, 1 total

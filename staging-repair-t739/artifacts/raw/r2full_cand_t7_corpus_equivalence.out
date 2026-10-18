@@ -1,0 +1,13 @@
+== corpus equivalence (candidate)
+OBS|corpus|packs|{"total":316,"en":212,"withheld":54,"nonEn":50,"equal":212}
+  ok   Packs author corpus (all single-turn categories): identical to the author-gate result whenever the shared gate says English; abstain otherwise
+OBS|corpus|atom|{"total":293,"en":219,"withheld":74,"nonEn":0,"equal":219}
+  ok   Atom author corpus (general + control questions): identical whenever the shared gate says English; abstain otherwise
+  ok   Packs/Atom copies in candidate/ are byte-identical to the author branches (no selector edits)
+OBS|f1-exposure|total=609|{"T:module-off-fail-closed":427,"N:existing-unowned-faq-path":36,"T:language-uncertain-module-off":128,"N:no-isolatable-faq":18}
+OBS|f1-exposure-examples|{"T:module-off-fail-closed":["What are Elite Packs?","How do Elite Packs work?","Hi! What are Elite Packs? Thanks"],"N:existing-unowned-faq-path":["What does ×3 mean on an Elite Pack card?","Pulled Instant Override last night — showing?","m​y Instant Override still there?"],"T:language-uncertain-module-off":["Instant Override","packs.opening-and-charges.en","packs.exotic-cards.en"],"N:no-isolatable-faq":["What makes a trader eligible?","What do I own?","How do I check my balance?"]}
+  ok   F1 exposure over the authors' own questions (flags OFF, unowned, single turn): how many are terminal-silent, how many are left to the legacy path and why
+OBS|catalog-bodies-scanned|474
+  ok   credential detector over every catalog body (V12, Packs, Atom): no approved body is held, so a catalog-sourced FAQ send cannot carry a pair
+  ok   no egress attempt was made
+RESULT corpus equivalence (candidate): 6 passed, 0 failed, 6 total
