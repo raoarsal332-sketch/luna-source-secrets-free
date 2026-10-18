@@ -26,7 +26,7 @@ When `r.abstain === true`, send nothing from Packs (fall through to the caller's
 
 ## 3. Routing (the ownership gate runs first, before any selector)
 
-`evaluateOwnershipPregate(text, opts)` interprets the message clause by clause (proposition, subject, requested fact, context, uncertainty). A clause is GENERAL only if it is positively a rule-type question with a generic subject. Everything else is blocked.
+`evaluateOwnershipPregate(text, opts)` interprets the message clause by clause (proposition, subject, requested fact, context, uncertainty). A clause is GENERAL only when the requested fact is the rule (what happens if I, can I still, are my credits withdrawable, does this feature change the outcome). It is PERSONAL when the requested fact is the value of this customer's account (do I have, was it added, is mine in the collection, how many credits do I have). A generic actor (I/me) does not by itself make a rule question personal, and a remaining possessive on the customer's container does not become a generic actor. Everything else is blocked.
 
 | gate kind | result |
 | --- | --- |
@@ -35,7 +35,7 @@ When `r.abstain === true`, send nothing from Packs (fall through to the caller's
 | `ambiguous-account-status` | `packs.handoff.unverified.en` |
 | `refund` | `packs.refunds-legal.en` |
 | `missing-item` | `packs.missing-reward.en` |
-| `not-personal` | product selector, then clause-coverage check (each general clause must select the same answer id as the whole text, otherwise handoff) |
+| `not-personal` | product selector, then clause-coverage check. A condition clause is not a second intent. A general clause that selects nothing is kept when it names no Packs item, when the chosen selector also matches that clause, or when a condition clause selects the same row. A clause that selects a different id is a handoff. No partial answer. |
 
 Obfuscation (invisible characters, homoglyphs, leet, spaced letters), over-long input (>1500 chars), more than 10 clauses, non-string input or any thrown error fails closed (ambiguous, never product).
 The product selectors are only reachable when `productSelectPermitted(gate) === true`. An allow-list or catalog tag can never override a non-general stance.

@@ -269,7 +269,7 @@ const GENERIC_PERSON_RE =
 // "one" is anaphoric at the end of a clause ("the whale one", "get one") or after
 // which/that/this. "one Elite Pack" / "one per pack" is a determiner, not anaphora.
 const ANAPHORA_RE = new RegExp(
-  '\\b(?:it|its|this|that|these|those|them|the\\s+same|the\\s+other|the\\s+first|the\\s+second|the\\s+last)\\b|(?:\\b(?:which|that|this|another|other)\\s+ones?\\b|(?<!\\b(?:whale|oracle|ignition|breakout|maker|pack|card|exotic|purple|pink|blue|special|free|monthly|upgrade|higher|bigger|smaller|next)\\s)\\bones?\\b(?!\\s+[a-z]))'
+  '\\b(?:it|its|this|that|these|those|them|the\\s+same(?!\\s+(?:number|amount|way|price|rate|size|type|kind|pack|card|tier|offer|purchase|account|discount))|the\\s+other|the\\s+first|the\\s+second|the\\s+last)\\b|(?:\\b(?:which|that|this|another|other)\\s+ones?\\b|(?<!\\b(?:whale|oracle|ignition|breakout|maker|pack|card|exotic|purple|pink|blue|special|free|monthly|upgrade|higher|bigger|smaller|next)\\s)\\bone\\b(?!-|\\s*off\\b|\\s+[a-z]))'
 );
 const COLOR_CARD_RE = /\b(?:this|that|these|those|the)\s+(?:\w+\s+)?(?:purple|pink|blue|green|red|gold|golden|silver|orange|yellow|black|white)\s+cards?\b/;
 
@@ -305,7 +305,7 @@ const HEDGE_RE =
 
 const AUX_RULE_PREDICATE_RE = new RegExp(
   [
-    '\\b(?:stack|combine|apply|applies|work|works|expire|expires|last|lasts|cost|costs|charge|charges|count|counts|include|includes|contain|contains|carry|carries|change|changes|convert|converts|transfer|transfers|cancel|cancels|renew|renews|open|opens|close|closes|give|gives|drop|drops|appear|appears|require|requires|need|needs|replace|replaces|reset|resets|start|starts|end|ends|stop|stops|qualify|qualifies|get|gets|receive|receives|come|comes|hold|holds|have|has|mean|means|differ|differs|affect|affects|reduce|reduces|increase|increases|remove|removes|add|adds|guarantee|guarantees|unlock|unlocks|use|uses|own|keep|be|pay|lose)\\b',
+    '\\b(?:stack|combine|apply|applies|work|works|expire|expires|last|lasts|cost|costs|charge|charges|count|counts|include|includes|contain|contains|carry|carries|change|changes|convert|converts|transfer|transfers|cancel|cancels|renew|renews|open|opens|close|closes|give|gives|drop|drops|appear|appears|require|requires|need|needs|replace|replaces|reset|resets|start|starts|end|ends|stop|stops|qualify|qualifies|get|gets|receive|receives|come|comes|hold|holds|have|has|mean|means|differ|differs|affect|affects|reduce|reduces|increase|increases|remove|removes|add|adds|guarantee|guarantees|unlock|unlocks|use|uses|own|keep|be|pay|lose|track|tracks|show|shows|display|displays|make|makes|save|saves|cheaper|disappear|disappears)\\b',
     '\\b(?:is|are)\\s+(?:\\w+\\s+){0,4}?(?:a|an|the|per|once|only|always|never|more|less|cheaper|higher|lower|different|separate|distinct|included|allowed|possible|required|needed|limited|permitted|supported|refundable|transferable|cashable|withdrawable|stackable|simulated|real|worth|valid|legal|final|rare|rarer|common|uncommon|epic|legendary|mythic|exotic|better|worse|guaranteed|free)\\b',
     '\\b(?:is|are)\\s+there\\b',
   ].join('|')
@@ -453,6 +453,7 @@ const CARRIER_PHRASES = [
   'could you please', 'can you please', 'would you please', 'could you kindly', 'could you', 'can you',
   'would you', 'will you', 'please tell me', 'please explain', 'please let me know',
   'please help me understand', 'help me understand', 'explain to me', 'let me know', 'tell me',
+  'walk me through', 'talk me through',
   'show me', 'help me', 'give me', 'just wondering', 'quick question', 'question', 'check', 'confirm',
   'verify',
 ].sort((a, b) => b.length - a.length);
@@ -484,14 +485,14 @@ function stripCarriers(s0) {
       if (s.startsWith(phrase + ' ')) {
         const rest = s.slice(phrase.length + 1).trim();
         const whFollow = CARRIER_FOLLOW_WH_RE.test(rest);
-        const aboutFollow = CARRIER_FOLLOW_ABOUT_RE.test(rest);
+        const aboutFollow = /^(?:more\s+)?about\b/.test(rest);
         const infoFollow = /^(?:an?\s+|the\s+|some\s+)?(?:quick\s+|brief\s+|short\s+)?(?:overview|rundown|explanation|summary|breakdown|guide|introduction|intro|details|info|information)\b/.test(rest);
-        const askFollow = /^(?:can|could|would|will)\s+you$/.test(phrase) && /^(?:please\s+|kindly\s+)?(?:tell|explain|show|describe|give|walk)\b/.test(rest);
+        const askFollow = /^(?:can|could|would|will)\s+you$/.test(phrase) && /^(?:please\s+|kindly\s+)?(?:tell|explain|show|describe|give|walk|share)\b/.test(rest);
         if (LOOKUP_CARRIERS.has(phrase) ? whFollow : whFollow || aboutFollow || infoFollow || askFollow) {
           if (askFollow) {
-            s = rest.replace(/^(?:please\s+|kindly\s+)?(?:tell|explain|show|describe|give|walk)\s+(?:me\s+)?(?:through\s+|about\s+)?/, '').trim();
+            s = rest.replace(/^(?:please\s+|kindly\s+)?(?:tell|explain|show|describe|give|walk|share)\s+(?:me\s+)?(?:through\s+|about\s+)?/, '').trim();
           } else {
-            s = aboutFollow ? rest.replace(/^about\s+(?:more\s+)?/, '') : rest;
+            s = aboutFollow ? rest.replace(/^(?:more\s+)?about\s+(?:more\s+)?/, '') : rest;
           }
           if (aboutFollow || infoFollow) topicMode = true;
           stripped = true;
@@ -612,6 +613,8 @@ function maskGenericActorFrames(s) {
 function isStateFact(s) {
   // "how do I know if I own ..." is an indirect question, not a how-to with a condition.
   if (/\b(?:know|wonder)\s+if\b/.test(s)) return true;
+  if (/\b(?:credits?|cards?|packs?|balance)\s+(?:i|we)\s+have\b/.test(s)) return true;
+  if (/\bwith\s+(?:what\s+)?(?:i|we)\s+have\b/.test(s)) return true;
   if (/\b(?:check|confirm|verify|validate)\b/.test(s) && !/\bcheckout\b/.test(s)) {
     if (/\b(?:if|whether|my|our|status|balance)\b/.test(s)) return true;
     if (/^(?:please\s+|kindly\s+)?(?:can\s+you\s+|could\s+you\s+|would\s+you\s+|will\s+you\s+)?(?:please\s+|kindly\s+)?(?:check|confirm|verify|validate)\b/.test(s)) return true;
@@ -642,7 +645,10 @@ function isStateFact(s) {
   if (/\b(?:is|are|was|were)\s+(?:the\s+|my\s+|our\s+)?(?:instant\s+override|lifetime\s+split|open\s+season|founder'?s?\s+key|the\s+million|primordial|it|mine|this|that)\b(?:\s+\w+){0,6}\s+in\s+(?:the\s+|my\s+|our\s+)?(?:collection|inventory|account|my\s*packs)\b/.test(s)) {
     return true;
   }
-  if (/\b(?:in|on)\s+my\s+(?:inventory|account|collection|dashboard)\b/.test(s) && !/\bhow\s+(?:do|can|to)\b/.test(s) && !/\bwhat\s+(?:happens|is|are)\b/.test(s)) return true;
+  // "My Packs" is a product name. Rewrite it before testing a possessive container,
+  // so "in my My Packs tab" (customer's tab) is state and "in My Packs" (the tab) is not.
+  const loc = s.replace(/\bmy\s+packs\b/g, 'mypacks');
+  if (/\bin\s+my\s+(?:inventory|account|collection|dashboard|packs|mypacks)\b/.test(loc) && !/\bhow\s+(?:do|can|to)\b/.test(loc)) return true;
   return false;
 }
 
@@ -656,6 +662,20 @@ function isRuleFact(s) {
   if (/\b(?:how|when|where|why|who|whom)\s+(?:do|can|could|should|would|will|to|am|are|does)\s+(?:i|we)\b/.test(s)) return true;
   if (/\bif\s+(?:i|we)\s+(?:still\s+|also\s+|even\s+)?(?:open|buy|purchase|use|apply|close|cancel|convert|pay|spend|stack|combine|get|receive|keep|withdraw|redeem|save)\b/.test(s)) return true;
   if (/\bhow\s+(?:many|much|long|often)\b/.test(s) && /\b(?:per|each|every|single|when)\b/.test(s)) return true;
+  if (/\b(?:recommend|suggest)\s+(?:that\s+)?(?:i|we)\b/.test(s)) return true;
+  if (/\bshould\s+(?:i|we)\s+go\s+(?:for|with)\b/.test(s)) return true;
+  if (/\bwhere\s+(?:do|does|will)\s+(?:my|our|the|a|an)?\s*(?:cards?|packs?|credits?)\s+go\b/.test(s)) return true;
+  if (/\b(?:will|would|does|do|can)\s+(?:a|an|the|my|our)\s+(?:\w+\s+){0,5}?(?:change|apply|affect)\b/.test(s)) return true;
+  // "does fast open change what I can pull" asks what the feature does, not what this customer pulled.
+  if (/\b(?:will|would|does|do|can|could)\s+(?!my\b|our\b|i\b|we\b)(?:\w+\s+){0,4}?(?:change|affect)\b/.test(s)) return true;
+  // "can each use go to a different account" asks whether the rule allows it, not whose account it is.
+  if (/\bcan\s+(?:each|every|a|an|the|one)\b/.test(s) && /\b(?:different|another|other)\s+account\b/.test(s)) return true;
+  if (/\b(?:itself|themselves|by\s+itself|on\s+its\s+own|automatically)\b/.test(s)) return true;
+  if (/\bwill\s+(?:my|our)\b(?:\s+\S+){0,8}\s+(?:apply|stack|combine|count|work|expire|be)\b/.test(s)) return true;
+  if (/\bhow\s+many\b/.test(s) && /\b(?:different|collect|exist|in\s+total)\b/.test(s) && !/\bhave\b/.test(s)) return true;
+  if (/\b(?:can|could|will|would)\s+(?:i|we)\s+(?:still\s+|also\s+)?turn\b/.test(s)) return true;
+  if (/\b(?:can|could)\s+(?:i|we)\s+see\b/.test(s) && !/\b(?:my|our|balance|status)\b/.test(s)) return true;
+  if (/^(?:is|are)\s+this\s+real\b/.test(s)) return true;
   return false;
 }
 
@@ -685,7 +705,7 @@ function interpretClause(clauseText, intro, ctx) {
 
   // ---- refund / missing-report intents (dedicated approved answers) ----
   const refundCue = REFUND_CUE_RE.test(s);
-  const missingCue = MISSING_CUE_RE.test(s) && hasItem;
+  const missingCue = MISSING_CUE_RE.test(s) && (hasItem || /\b(?:rewards?|prizes?)\b/.test(s));
   if (refundCue || missingCue) {
     const refs = FIRST_PERSON_RE.test(s) || DEF_THIRD_RE.test(s);
     const auxLed = /^(?:is|are|was|were|did|has|have|had|do|does)\b/.test(s);
@@ -732,6 +752,11 @@ function interpretClause(clauseText, intro, ctx) {
     reasons.push('requested-fact-account-state');
     return done(VERDICT.PERSONAL, { hasItem });
   }
+  // "If I am short on credits, can I convert ..." is the published shortfall rule, not a balance lookup.
+  if (intro === 'if' && /\b(?:short|low|not\s+enough|run(?:ning)?\s+out)\b/.test(s)) {
+    reasons.push('general:hypothetical-shortage');
+    return done(VERDICT.GENERAL, { hasItem, frame: 'cond-procedure', anaphoric: false });
+  }
 
   // ---- positive general interpretation ----
   const { m: masked, info } = maskGenericActorFrames(s);
@@ -755,8 +780,15 @@ function interpretClause(clauseText, intro, ctx) {
   const blockers = [];
   const note = (r) => blockers.push(r);
 
-  if (FIRST_PERSON_RE.test(wNoMarks)) note('first-person');
-  if (DEF_THIRD_RE.test(wNoMarks) && !COLOR_CARD_RE.test(wNoMarks)) note('definite-third-person');
+  const personHay = wNoMarks.replace(/\bmy\s+packs\b/g, 'mypacks');
+  if (FIRST_PERSON_RE.test(personHay)) note('first-person');
+  if (DEF_THIRD_RE.test(wNoMarks) && !COLOR_CARD_RE.test(wNoMarks)) {
+    const genericAccount =
+      /\bthe\s+(?:\w+\s+)?account\b/.test(wNoMarks) &&
+      !/\b(?:he|she|him|user|customer|client|trader|holder|owner|login|friend|this|that|your)\b/.test(wNoMarks) &&
+      !/\b(?:eligible|qualify|own|owns|unlocked|received|balance|status)\b/.test(wNoMarks);
+    if (!genericAccount) note('definite-third-person');
+  }
   if (/\b(?:they|them|themselves)\b/.test(wNoMarks) && !GENERIC_PERSON_RE.test(wNoMarks)) note('unresolved-third-person-plural');
   if (/\b(?:their|theirs)\b/.test(wNoMarks) && !GENERIC_PERSON_RE.test(wNoMarks) && !/\b(?:packs?|cards?|credits?|tiers?|rates?|accounts?|offers?|discounts?|bundles?|keys?|tabs?|plans?)\b/.test(wNoMarks)) {
     note('unresolved-third-person-plural');
@@ -779,6 +811,8 @@ function interpretClause(clauseText, intro, ctx) {
     if (ctx.personalContextBlocks) note('anaphora-in-personal-context');
     else if (onlyIt && localAnte) {
       /* antecedent is in this clause */
+    } else if (fact === 'rule' && /^is\s+this\s+real\b/.test(wNoMarks)) {
+      /* "is this real money" asks the published rule, not about a dropped subject */
     } else if (!(ctx.priorGeneralItem || ctx.sameMessageGeneralItem)) note('unresolved-anaphora');
     else if (!/\b(?:it|them|ones?|this|that|these|those)\b/.test(wNoMarks)) note('unresolved-anaphora');
   }
@@ -801,13 +835,22 @@ function interpretClause(clauseText, intro, ctx) {
   st = st.replace(/\b(?:is|are)\s+there\b/g, ' ');
   // "paid period" / "paid plan" is the billing noun, not a past-tense event.
   st = st.replace(/\bpaid\s+(?:period|plan|month|subscription|for)\b/g, ' ');
+  st = st.replace(/\bused[\s-]up\b/g, ' ');
+  st = st.replace(/\blive\s+(?:account|accounts|trading|money|market)\b/g, ' ');
   if (fact === 'rule' && !/\b(?:was|were|did|been|already)\b/.test(wNoMarks)) {
-    st = st.replace(/\b(?:charged|deducted|billed|refunded|cancelled|canceled|applied|stacked|combined|converted|renewed|used|opened|closed)\b/g, ' ');
+    st = st.replace(/\b(?:charged|deducted|billed|refunded|cancelled|canceled|applied|stacked|combined|converted|renewed|used|opened|closed|taken)\b/g, ' ');
   }
+  if (/\b(?:when|at\s+what\s+point|at\s+what\s+time)\b/.test(wNoMarks) && !/\b(?:was|were|did|my|our)\b/.test(personHay)) {
+    st = st.replace(/\b(?:charged|deducted|billed|taken)\b/g, ' ');
+  }
+  if (/\b(?:what|which|how\s+many|are)\b/.test(wNoMarks) && !/\b(?:my|our|mine)\b/.test(personHay) && !NAMED_CARD_RE.test(wNoMarks)) {
+    st = st.replace(/\bavailable\b/g, ' ');
+  }
+  st = st.replace(/\b[\w]+-bought\b/g, ' ');
   if (PARTICIPLES_STATE_RE.test(st)) note('account-state-participle');
   if (THERE_STATE_RE.test(st)) note('presence-state');
   if (STATE_NOUN_RE.test(st)) note('account-state-noun');
-  if (DEIXIS_RE.test(st)) note('time-deixis');
+  if (DEIXIS_RE.test(st) && !(/\brecent\s+pulls\b/.test(st) && fact === 'rule' && !/\b(?:my|yesterday|ago|last)\b/.test(st))) note('time-deixis');
   if (LOOKUP_RE.test(st) || BOT_LOOKUP_RE.test(st)) note('lookup-request');
   if (PAST_EVENT_RE.test(st)) note('past-tense-event');
   if (CONTAINER_CONTENTS_RE.test(st) && !CONTAINER_EXEMPT_RE.test(st)) note('contents-of-account-container');
@@ -848,11 +891,13 @@ function interpretClause(clauseText, intro, ctx) {
   const AUX_PRES = /^(?:do|does|can|could|will|would|should|shall|may|must|is|are|am)$/;
   let frame = null;
   if (WH_HEAD.test(head) || hasMask && /^~/.test(w.trim())) frame = 'wh';
+  else if (/^(?:on|in|for|at|with|about|from)\s+(?:what|which|whom|whose)\b/.test(wNoMarks)) frame = 'wh';
   else if (AUX_PRES.test(head)) frame = 'aux';
   else if (/^(?:explain|describe|define|clarify|summarize|summarise|outline|overview\s+of|details?\s+(?:on|about|of)|info(?:rmation)?\s+(?:on|about|of)|list|compare)\b/.test(wNoMarks) && fact !== 'state') frame = 'topic';
   else if (sc.topicMode) frame = 'topic';
   else if (/^(?:the\s+)?[a-z' ]{1,40}\s+(?:overview|explained|explanation|basics|rules|info|information|details|faq|guide)$/.test(wNoMarks)) frame = 'topic';
   else if (/^(?:number|amount|price|cost|difference|meaning|definition|overview|total)\s+of\b/.test(wNoMarks)) frame = 'topic';
+  else if (/^(?:the|a|an)\s+(?:rarity\s+)?(?:odds|rates|prices|costs|floors)\b/.test(wNoMarks)) frame = 'topic';
   else if (/\b(?:vs|versus)\b/.test(wNoMarks) && ITEM_RE.test(wNoMarks)) frame = 'topic';
   else if (intro && /^(?:if|unless|because|since|while|although|though|whereas)$/.test(intro) && !blockers.length) {
     if (hasItem || GENERIC_PERSON_RE.test(wNoMarks) || hasMask) frame = 'cond';
@@ -896,7 +941,8 @@ function interpretClause(clauseText, intro, ctx) {
     }
     if (!AUX_RULE_PREDICATE_RE.test(wNoMarks)) note('aux-question-without-rule-predicate');
   }
-  if (DANGLING_RE.test(wNoMarks) && !STRANDED_OK_RE.test(wNoMarks) && !/\b(?:\d+\s*%|percent)\s+off\s*$/.test(wNoMarks)) note('dangling-state-particle');
+  const strandedRule = /\b(?:\d+\s*%|percent)\s+off\s*$|\b(?:are|is)\s+there\s*$|\b(?:cash|cashed)\s+out\s*$|\bone\s+off\s*$|\bshow\s+up\s*$/;
+  if (DANGLING_RE.test(wNoMarks) && !STRANDED_OK_RE.test(wNoMarks) && !strandedRule.test(wNoMarks)) note('dangling-state-particle');
   if (
     info.masked.includes('policy-can-i') &&
     info.howVerbs.some((v) => CAPABILITY_VERBS.has(v)) &&
@@ -910,6 +956,23 @@ function interpretClause(clauseText, intro, ctx) {
 
   const anaphoric =
     (anaphoraPresent || demonstrativeItem) && !hasItem && !!(ctx.priorGeneralItem || ctx.sameMessageGeneralItem);
+
+  // A wh/aux/topic question whose only problem is a generic actor ("bill me",
+  // "something I can cash out") is still a rule. A possessive on a named card
+  // or a capability question about that card stays blocked.
+  const protectedPossessive = /\b(?:my|our)\s+(?:instant\s+override|lifetime\s+split|open\s+season|founder'?s?\s+key|the\s+million|primordial|balance|meter|status|inventory|account|collection|dashboard)\b/.test(wNoMarks);
+  // Clear only a generic actor (I/me/we). A remaining "my"/"our" still points at the customer's container.
+  const leftoverPossessive = /\b(?:my|our)\b/.test(personHay);
+  if (
+    frame &&
+    (frame === 'wh' || frame === 'aux' || frame === 'topic' || frame === 'rule') &&
+    !protectedPossessive &&
+    !leftoverPossessive &&
+    blockers.length &&
+    blockers.every((b) => b === 'first-person' || b === 'aux-question-without-rule-predicate' || b === 'no-positive-rule-frame')
+  ) {
+    blockers.length = 0;
+  }
 
   if (!blockers.length) {
     reasons.push('general:' + frame + (mc ? ':masked-actor' : ''));

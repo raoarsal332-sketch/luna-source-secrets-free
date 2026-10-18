@@ -179,7 +179,7 @@ const RAW_SELECTORS = [
     conf: 0.98,
     test: (t) =>
       !/oracle\s*pack\s*upgrade/.test(t) &&
-      (/chain\s*discount|upgrade\s*offer|90\s*seconds/.test(t) ||
+      (/chain\s*discount|upgrade\s*offer|90\s*seconds|same\s+pack\s+again|next\s+pack\s+after|15\s*%\s*off/.test(t) ||
         (/special\s*pack/.test(t) && /(?:chain|stack|better\s*offer)/.test(t)) ||
         (/15\s*%/.test(t) && /20\s*%/.test(t) && /pack/.test(t))),
   },
@@ -187,19 +187,24 @@ const RAW_SELECTORS = [
     id: 'packs.discount-stacking',
     conf: 0.97,
     test: (t) =>
-      ((/stack/.test(t) && /discount|founder|checkout/.test(t)) ||
+      ((/stack|combine|together\s+with/.test(t) && /discount|founder|checkout|offer|60\s*%/.test(t)) ||
+        /two\s+discount\s+cards/.test(t) ||
         (/founder'?s?\s*key/.test(t) && /(?:stack|combine|other\s*discount|exception)/.test(t))) &&
-      !/chain\s*discount|special\s*pack/.test(t),
+      !/chain\s*discount|special\s*pack|atom/.test(t),
   },
   {
     id: 'packs.convert-payout-credits',
     conf: 0.97,
-    test: (t) => /convert/.test(t) && /(?:payout\s*credits?|pack\s*credits?|credits?)/.test(t),
+    test: (t) =>
+      (/convert/.test(t) && /credits?/.test(t)) ||
+      (/payout\s*credits?/.test(t) && /(?:buy\s+packs?|into\s+pack|pay\s+for|turn)/.test(t)) ||
+      /convert\s+and\s+buy|short\s+on\s+credits/.test(t),
   },
   {
     id: 'packs.my-packs-keys',
     conf: 0.99,
-    test: (t) => /redeem\s*key|redemption\s*key|giveaway\s*key|pack\s*key|where\s*do\s*free\s*packs\s*appear/.test(t),
+    test: (t) =>
+      /redeem\s+(?:a\s+|the\s+|my\s+)?key|redemption\s*key|giveaway\s*key|pack\s*key|my\s*packs\s*tab|what\s+is\s+(?:the\s+)?my\s*packs|where\s+do\s+free\s+packs\s+(?:show|appear|go)|unopened\s+free\s+packs/.test(t),
   },
   {
     id: 'packs.free-packs-general',
@@ -210,7 +215,7 @@ const RAW_SELECTORS = [
       if (/redeem\s*key|where\s*do\s*free\s*packs\s*appear|\batom\b/.test(t)) return false;
       // New-account / launch free-tier (incl. HC size+credits confirmations) — not pack list prices.
       if (
-        /free\s*pack|new\s*account|launch\s*week|which\s*(?:account|size).{0,40}(?:bonus|free|oracle|whale|market\s*maker)/.test(
+        /free\s*(?:elite\s*)?pack|new\s*account|launch\s*week|which\s*(?:account|size).{0,40}(?:bonus|free|oracle|whale|market\s*maker)/.test(
           t
         )
       ) {
@@ -236,8 +241,9 @@ const RAW_SELECTORS = [
     test: (t) => {
       // Primordial / The Million "ordinary odds" asks belong to the-million, not the rate table.
       if (/(?:the\s*million|primordial)/.test(t) && /(?:ordinary|normales?|normal)/.test(t)) return false;
+      if (/\bcollection\b/.test(t) && !/drop\s*rate|per\s*card|whale|oracle|ignition|breakout|market\s*maker/.test(t)) return false;
       const rateCue =
-        /drop\s*rate|odds|probability|per\s*card|\bchance\b|exotic\s*rates?|(?:whale|oracle|ignition).{0,80}exotic\s*rates?|can\s+\w+\s+drop\s+exotic/.test(
+        /drop\s*rate|odds|probability|per\s*card|\bchance\b|how\s+likely|rarity\s+odds|exotic\s*rates?|(?:whale|oracle|ignition).{0,80}exotic\s*rates?|can\s+\w+\s+drop\s+exotic/.test(
           t
         );
       return rateCue && !/fast\s*open|charg|deduct|when\s*are\s*credits|how\s*many\s*credits/.test(t);
@@ -246,13 +252,19 @@ const RAW_SELECTORS = [
   {
     id: 'packs.card-count',
     conf: 0.96,
-    test: (t) =>
-      (/how\s*many\s*cards|cards?\s*(?:exist|in\s*total|to\s*collect|in\s*the\s*collection)|76|80\s*cards|card\s*reference|all\s*(?:the\s*)?cards|collection\s*size|total\s*cards/.test(
-        t
-      ) ||
-        (/how\s*many/.test(t) && /(?:regular|exotic|primordial|mythic|legendary)/.test(t) && /card/.test(t))) &&
-      !/in\s*(?:an?\s*)?(?:elite\s*)?pack\b/.test(t) &&
-      !/credits?\s*(?:do i|have|left|balance)/.test(t),
+    test: (t) => {
+      const perPack = /(?:\bper\b|\beach\b|\bevery\b|\ba\b|\ban\b|\bone\b|\bsingle\b)\s+packs?\b|cards?\s+in\s+(?:a|an|each|every|one|single)\s+pack\b|when\s+(?:\w+\s+){0,4}?open(?:ing)?\s+a\s+pack|same\s+number\s+of\s+cards|number\s+of\s+cards\s+inside/.test(t);
+      if (perPack && !/in\s+total|exist|different|collection\s+size|size\s+of/.test(t)) return false;
+      return (
+        (/how\s*many\s*cards|how\s*many\s*different\s*cards|cards?\s*(?:exist|in\s*total|to\s*collect)|76|80\s*cards|card\s*reference|collection\s*size|size\s+of\s+the\s+(?:full\s+)?(?:card\s+)?collection|total\s+(?:number\s+of\s+)?cards/.test(
+          t
+        ) ||
+          (/how\s*many/.test(t) && /(?:regular|exotic|primordial|mythic|legendary)/.test(t) && /card/.test(t))) &&
+        !/in\s+(?:a|an|one|each|every|single)\s+pack\b/.test(t) &&
+        !/\bper\s+pack\b/.test(t) &&
+        !/credits?\s*(?:do i|have|left|balance)/.test(t)
+      );
+    },
   },
   {
     id: 'packs.cards-per-pack',
@@ -260,9 +272,9 @@ const RAW_SELECTORS = [
     // Keep "how many cards in an Exotic pack" → cards-per-pack; block definition paraphrases without how-many.
     test: (t) => {
       // "how many cards in a pack" / "cards in an Exotic pack" — not "how many cards to collect in Elite Packs".
-      if (/to\s*collect|in\s*total|exist|collection\s*size|76|80\s*cards/.test(t)) return false;
+      if (/to\s*collect|in\s*total|total\s+number|exist|collection\s*size|size\s+of\s+the|76|80\s*cards|how\s+many\s+different|\bodds\b|\bcollection\b/.test(t)) return false;
       const countInPack =
-        /how\s*many\s*cards.{0,25}\bin\b.{0,20}pack|cards?\s*in\s*(?:an?\s*)?(?:elite\s*|exotic\s*)?pack|three\s*cards|exactly\s*three/.test(
+        /how\s*many\s*cards.{0,40}pack|cards?\s+per\s+pack|number\s+of\s+cards|three\s*cards|exactly\s*three|same\s+number\s+of\s+cards|cards?\s+(?:come|inside|in)\s+(?:a|an|each|every|one|single)\s+pack/.test(
           t
         );
       if (!countInPack) return false;
@@ -274,8 +286,8 @@ const RAW_SELECTORS = [
     id: 'packs.opening-and-charges',
     conf: 0.96,
     test: (t) =>
-      !/missing|didn'?t|did\s*not|refund/.test(t) &&
-      /(?:open(?:ing)?\s+(?:a\s+)?pack|fast\s*open|cut(?:ting)?\s*(?:the\s*)?seal|when.{0,20}charg|why.{0,20}charg|deduct|credits?\s*charg)/.test(
+      !/missing|didn'?t|did\s*not|refund|by\s+itself|on\s+its\s+own|automatically/.test(t) &&
+      /(?:open(?:ing)?\s+(?:a\s+)?pack|fast\s*open|cut(?:ting)?\s*(?:the\s*)?seal|when.{0,30}charg|why.{0,20}charg|deduct|credits?\s*charg|close\s+the\s+pack|before\s+the\s+reveal|\breveal\b)/.test(
         t
       ),
   },
@@ -289,7 +301,7 @@ const RAW_SELECTORS = [
   {
     id: 'packs.uses-multiplier',
     conf: 0.96,
-    test: (t) => /[×x]\s*[235]\b|\bx2\b|\bx3\b|\bx5\b|multipl|how\s*many\s*uses|uses\s*left|mean\s*on\s*an?\s*elite\s*pack\s*card/.test(t),
+    test: (t) => /[×x]\s*[235]\b|\bx2\b|\bx3\b|\bx5\b|multipl|how\s*many\s*uses|uses\s*left|duplicates|used[\s-]up|five\s+times|mean\s*on\s*an?\s*elite\s*pack\s*card/.test(t),
   },
   {
     id: 'packs.the-million',
@@ -324,53 +336,66 @@ const RAW_SELECTORS = [
     id: 'packs.eligibility-labels',
     conf: 0.96,
     test: (t) =>
-      /(?:skip\s*a\s*(?:trading\s*)?day|drawdown\s*buffer|drawdown\s*ceiling|skip\s*a\s*step|funded\s*reset|consistency\s*\+?\s*\d|leverage\s*boost|weekend\s*trading|funded\s*scalping|split\s*(?:70|80|90))/.test(
-        t
-      ) && /(?:what\s*does|how\s*does|which\s*accounts?|works?\s*on|card)/.test(t),
+      (/eligibility\s+labels|any\s+account\s+mean|card\s+label/.test(t) ||
+        (/skip\s*a\s*(?:trading\s*)?day|drawdown\s*buffer|drawdown\s*ceiling|skip\s*a\s*step|funded\s*reset|consistency\s*\+?\s*\d|leverage\s*boost|weekend\s*trading|funded\s*scalping|split\s*(?:70|80|90)/.test(
+          t
+        ) &&
+          /(?:what\s*does|how\s*does|which\s*accounts?|works?\s*on|card)/.test(t))),
   },
   {
     id: 'packs.buy-credits',
     conf: 0.96,
     test: (t) =>
-      (/((?:buy|add|top\s*up|purchase|get\s*more|kharid(?:u|na|o)?|comprar)\s+(?:more\s+)?(?:pack\s*)?credits?)|((?:pack\s*)?credits?.{0,40}(?:buy|purchase|bundle|kharid|comprar))|(where.{0,20}(?:buy|purchase).{0,20}credits?)|(credits?\s*kaise\s*kharid)/.test(
-        t
-      ) &&
+      (/(?:buy|add|top\s*up|purchase|get\s*more|kharid(?:u|na|o)?|comprar)\s+(?:more\s+|some\s+)?(?:pack\s*)?credits?/.test(t) ||
+        /where.{0,40}(?:buy|purchase|top\s*up).{0,20}credits?/.test(t) ||
+        /top\s*up\s+.{0,20}credits?/.test(t) ||
+        /credits?\s*kaise\s*kharid/.test(t)) &&
         !/payout\s*credits?/.test(t) &&
-        !/crypto|discount\s*on|monthly|subscription|cancel|quantos|cuántos|کیتنے|कितने|tenho|بचे/.test(t)),
+        !/challenge/.test(t) &&
+        !/crypto|discount\s*on|monthly|subscription|cancel|quantos|cuántos|کیتنے|कितने|tenho|بचे/.test(t),
   },
   {
     id: 'packs.crypto-discount',
     conf: 0.97,
-    test: (t) => /crypto/.test(t) && /(?:discount|5\s*%|percent|off|bundle)/.test(t),
+    test: (t) => /crypto/.test(t) && /(?:discount|5\s*%|percent|off|bundle|save|cheaper|pay)/.test(t),
   },
   {
     id: 'packs.pack-costs-floors',
     conf: 0.93,
     test: (t) =>
       !/free\s*pack|new\s*account|launch\s*week|35\s*%\s*off|50\s*%\s*off/.test(t) &&
-      /(?:how\s*much|cost|price|credits?).{0,40}(?:ignition|breakout|market\s*maker|whale|oracle|pack)|(?:ignition|breakout|market\s*maker|whale|oracle).{0,30}(?:cost|credit|floor|price)/.test(
+      /(?:how\s*much|how\s*many\s*credits|cost|price|floors?).{0,50}(?:ignition|breakout|market\s*maker|whale|oracle|pack)|(?:ignition|breakout|market\s*maker|whale|oracle).{0,40}(?:cost|price|how\s*many\s*credits|floor)|pack\s+tiers?.{0,40}(?:cost|credit|price)|credit\s+costs?/.test(
         t
       ) &&
       !/tell\s*me\s*about\s*the\s*(?:whale|oracle)/.test(t) &&
+      !/rarity\s*floor/.test(t) &&
+      !/credits?\s+tab|buy\s+a\s+challenge|two\s+(?:kinds|types)|payout\s*credits?/.test(t) &&
       !/free/.test(t),
   },
   {
     id: 'packs.rarity-floor',
     conf: 0.9,
-    test: (t) => /\bfloor\b/.test(t) && /(?:whale|oracle|common|rare|uncommon|pack)/.test(t) && !/tell\s*me\s*about|free\s*pack/.test(t),
+    test: (t) =>
+      /rarity\s*floor|lowest\s+rarity|rare\s+or\s+better|common\s+card|\bfloor\b/.test(t) &&
+      /(?:whale|oracle|common|rare|uncommon|rarity|pack)/.test(t) &&
+      !/tell\s*me\s*about|free\s*pack/.test(t),
   },
   {
     id: 'packs.credits-vs-payout-credits',
     conf: 0.94,
     test: (t) =>
-      !/convert|buy\s*credits|how\s*many\s*credits\s*do\s*i/.test(t) &&
-      ((/pack\s*credits?/.test(t) && /payout\s*credits?/.test(t)) ||
-        /difference.{0,20}credits?|credits?\s*vs|what\s*(?:is|are)\s*(?:the\s*)?(?:pack\s*)?credits?/.test(t)),
+      !/convert|buy\s*credits|how\s*many\s*credits\s*do\s*i|turn\s+my\s+payout/.test(t) &&
+      ((/pack\s*credits?/.test(t) && /payout\s*credits?/.test(t) && !/buy\s+packs?|into\s+pack/.test(t)) ||
+        /difference.{0,30}credits?|credits?\s*vs|what\s*(?:is|are)\s*(?:the\s*)?(?:pack\s*)?credits?|two\s+(?:kinds|types|balances)\s+of\s+credits?|buy\s+a\s+challenge|account\s+expires|cash\s+value|monetary\s+value/.test(t) ||
+        (/pack\s*credits?/.test(t) && /real\s+money|expire|cash\s+value|monetary/.test(t))),
   },
   {
     id: 'packs.withdraw-credits',
     conf: 0.93,
-    test: (t) => /withdraw|cash\s*out|transfer.{0,20}credits?|sell\s*credits?/.test(t) && /credit/.test(t) && !/refund/.test(t),
+    test: (t) =>
+      /withdraw|cash(?:ed)?\s*out|transferable|withdrawable|\btransfer\b|sell\s+(?:my\s+|the\s+|your\s+)?credits?/.test(t) &&
+      /credit/.test(t) &&
+      !/refund/.test(t),
   },
   {
     id: 'packs.cancel-subscription',
@@ -380,7 +405,10 @@ const RAW_SELECTORS = [
   {
     id: 'packs.monthly-subscription',
     conf: 0.93,
-    test: (t) => /monthly|subscription|renew/.test(t) && /(?:credit|pack|bundle)/.test(t) && !/cancel/.test(t),
+    test: (t) =>
+      /monthly|subscription|billing|billed|one[\s-]off|renew/.test(t) &&
+      /(?:credit|pack|bundle|plan|option)/.test(t) &&
+      !/cancel/.test(t),
   },
   {
     id: 'packs.card-auto-apply',
@@ -388,18 +416,19 @@ const RAW_SELECTORS = [
     // Below refunds (0.99). Pure auto-apply questions only.
     test: (t) =>
       !/refund|missing|didn'?t|eligible|qualify/.test(t) &&
-      /(?:auto(?:matic(?:ally)?)?|by\s*itself|without\s*(?:me|my)|change\s*(?:my\s*)?(?:challenge|account)\s*rules)/.test(t) &&
+      /(?:auto(?:matic(?:ally)?)?|by\s*itself|on\s+its\s+own|itself|manually|without\s*(?:me|my)|change\s*(?:my\s*)?(?:challenge|account)\s*rules)/.test(t) &&
       /card|pack|apply/.test(t),
   },
   {
     id: 'packs.inventory-use-card',
     conf: 0.9,
     test: (t) =>
-      !/missing|didn'?t|did\s*not|refund|eligible/.test(t) &&
-      /(?:inventory|use\s*(?:a\s*)?card|apply\s*(?:a\s*)?card|save\s*for\s*checkout|where\s*are\s*(?:my\s*)?(?:elite\s*pack\s*)?cards)/.test(
+      !/missing|didn'?t|did\s*not|refund|eligible|where\s+(?:is|are|can\s+i\s+(?:see|find))|tabs?\b|\bmenu\b/.test(t) &&
+      /(?:inventory|use\s*(?:a\s*)?cards?|apply\s+(?:a\s+|the\s+|my\s+)?cards?|save\s+(?:\w+\s+){0,4}?for\s*checkout|where\s*are\s*(?:my\s*)?(?:elite\s*pack\s*)?cards|redeem\s+(?:a\s+|the\s+)?cards?)/.test(
         t
       ) &&
-      !/\b(?:did i|check my|confirm my)\b/.test(t),
+      !/\b(?:did i|check my|confirm my)\b/.test(t) &&
+      !/manually|by\s+itself|on\s+its\s+own|automatically/.test(t),
   },
   {
     id: 'packs.eligibility-labels',
@@ -423,24 +452,29 @@ const RAW_SELECTORS = [
     conf: 0.88,
     // Below card-count. Only when asking about Collection tab / discovery, not total card count.
     test: (t) =>
-      /\bcollection\b/.test(t) &&
-      /(?:tab|discover|discovered|track|recent\s*pulls|odds\s*for)/.test(t) &&
-      !/how\s*many\s*cards|76|80\s*cards|in\s*total|to\s*collect/.test(t),
+      (/recent\s+pulls/.test(t) ||
+        (/\bcollection\b/.test(t) && /(?:tab|discover|discovered|track|recent\s*pulls|odds|show|\bfor\b)/.test(t))) &&
+      !/how\s*many\s*cards|76|80\s*cards|in\s*total|to\s*collect|size\s+of\s+the|collection\s+size/.test(t),
   },
   {
     id: 'packs.which-pack-best',
     conf: 0.9,
-    test: (t) => /which\s*pack\s*(?:is\s*)?best|best\s*pack|should\s*i\s*buy/.test(t),
+    test: (t) =>
+      /which\s*pack\s*(?:is\s*)?(?:the\s*)?best|best\s*(?:elite\s*)?pack|should\s*i\s*(?:buy|go\s*for)|worth\s*buying|recommend\s+i\s+open|which\s+tier\s+of\s+pack|what\s+pack\s+should\s+i\s+go/.test(t),
   },
   {
     id: 'packs.simulated',
     conf: 0.9,
-    test: (t) => /simulated|real\s*money\s*account|are\s*(?:the\s*)?accounts?\s*real/.test(t) && /pack|card|elite/.test(t),
+    test: (t) => /simulated|real\s*money|live\s+account/.test(t) && /pack|card|elite|account|trading/.test(t),
   },
   {
     id: 'packs.dashboard-tabs',
     conf: 0.9,
-    test: (t) => /dashboard|tabs?|where\s*(?:do\s*i\s*)?find/.test(t) && /elite\s*packs?|packs?\s*tab|inventory|credits\s*tab/.test(t),
+    test: (t) =>
+      /dashboard|\btabs?\b|\bmenu\b|\bsection\b|where\s*(?:do\s*i\s*|can\s+i\s*)?(?:find|is|see)|how\s+do\s+i\s+get\s+to/.test(t) &&
+      /elite\s*packs?|packs?\s*tab|inventory|credits?\s*tab|collection/.test(t) &&
+      !/how\s+many\s+cards|drop\s*rate|cost|price/.test(t) &&
+      !/\bcollection\s+tab\b|\bthe\s+collection\b/.test(t),
   },
   {
     id: 'packs.overview',
@@ -449,8 +483,9 @@ const RAW_SELECTORS = [
       /^(?:what\s*are\s*elite\s*packs?\??|elite\s*packs?\s*(?:overview|explained)\??|how\s*do\s*elite\s*packs?\s*work\??)\s*$/.test(
         t.trim()
       ) ||
-      (/what\s*are\s*elite\s*packs?/.test(t) &&
-        !/drop|odds|credit|free\s*pack|million|exotic|inventory|whale|oracle|ignition|subscription|refund|card|primordial|chance|pack\s*pass/.test(
+      (/elite\s*packs?/.test(t) &&
+        /what\s+(?:is|are)|how\s+(?:do|does)|overview|all\s+about|explained|\bwork\b|thing\s+is/.test(t) &&
+        !/drop|odds|credit|free\s*pack|million|exotic|inventory|whale|oracle|ignition|breakout|subscription|refund|card|primordial|chance|pack\s*pass|\bmenu\b|\btab\b/.test(
           t
         )),
   },
@@ -607,7 +642,18 @@ async function selectPacksAnswer(text, opts) {
     if (!w.id) {
       const clauseHasItem = pregate.PACKS_ITEM_RE.test(c.text) || pregate.NAMED_CARD_RE.test(c.text);
       const covered = clauseHasItem && SELECTORS.some((sel) => sel.id + '.en' === overall.id && sel.test(c.text, prod, gate));
-      if (clauseHasItem && !covered) {
+      // The topic verb may sit in the condition ("credits taken if I open a pack").
+      // A condition that selects the same row is one intent, not a second topic.
+      const siblingCovers = (gate.clauses || []).some((x) => {
+        if (x === c || x.verdict !== pregate.VERDICT.GENERAL) return false;
+        const isCond =
+          x.frame === 'cond' ||
+          x.frame === 'cond-procedure' ||
+          (x.intro && /^(?:if|unless|because|since|although|though|whereas)$/.test(x.intro));
+        if (!isCond) return false;
+        return SELECTORS.some((sel) => sel.id + '.en' === overall.id && sel.test(x.text, prod, gate));
+      });
+      if (clauseHasItem && !covered && !siblingCovers) {
         return tag(selectId('packs.handoff.unverified', 'handoff', 0.99, 'clause-unresolved-no-partial-answer', prod));
       }
       continue;
