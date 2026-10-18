@@ -67,12 +67,17 @@ Not-an-answer (never carries `answerId`):
 3. **Deny classes with no approved row** abstain: fee recovery (explicit or disguised), a fee/price word or price-point
    amount combined with a payout stage, a customer's own spend plus any money relation, money + transfer verb with no
    resolved referent.
-4. **Account-specific** asks -> `atom.account-status.refuse.en`, only if every word is inside the boundary vocabulary.
+4. **Account-specific** asks -> `atom.account-status.refuse.en`, only if every substantive word is inside the boundary vocabulary.
+   A published payout schedule (first wait, interval, cap, how often) is not an account lookup. Personal status
+   (KYC, breach, approval, "did I pass", "when will my payout arrive") still refuses.
 5. Exactly one **frame** must match (`split`, `payout`, `price`, `checkout`, `bundle`, or a non-money `rule` topic).
-   Overlaps are only resolved by three explicit pairs (split+checkout->split, checkout+payout->checkout, bundle+price->bundle);
-   anything else is `multi-intent-not-covered`.
-6. Money frames must match a **closed vocabulary**: any unaccounted word -> `unrecognized-qualifier`. Absence of
-   risk tokens is never treated as safety.
+   Overlaps resolved on purpose: split+checkout->split, checkout+payout->checkout, bundle+price->bundle when the
+   ask is the discount, leverage+the word checkout->the leverage row (that row states the checkout choice),
+   funded profitable-days+a payout mention->the profitable-days row. Anything else is `multi-intent-not-covered`.
+6. Money frames must match a **closed vocabulary**. Neutral discourse and request words (explain, tell me, details,
+   understand, specifically, allowed, happen, and the same stems) do not change the proposition and are not
+   `unrecognized-qualifier`. A substantive unknown word is: an amount or condition the row does not cover, another
+   product, or an unsupported policy. Absence of risk tokens is never treated as safety.
 7. The row is picked, then **narrowed** by `atomAnswerScope.js` (frame, product, qualifiers the row actually covers),
    then re-verified against the KB (`sendable`, `contentHash`). The KB JSON is the only source of bodies, ids,
    approval and sendability.
@@ -84,7 +89,14 @@ Not-an-answer (never carries `answerId`):
 | split, product named | `atom.1step.reward.en` / `atom.2step.reward.en` |
 | split, no product, **"default"** asked | `atom.payouts.general.en` (body states default 80% unless purchased config differs; same default in both reward rows) |
 | split, no product, anything else | clarify `product` |
-| payout timing / cap / rules | `atom.payouts.general.en` (`atom.obsolete.first-payout-14.en` for "first payout ... 14 days") |
+| payout timing / cap / first-withdrawal cap / rules | `atom.payouts.general.en` (there is no separate payout-cap id; `atom.obsolete.first-payout-14.en` for "first payout ... 14 days") |
+| trailing drawdown, including how it locks, even with no product named | `atom.1step.max-loss.en` (only trailing row; a reviewer label `atom.trailing-drawdown.en` is not a catalog id) |
+| static max loss, no product named | `atom.2step.max-loss.en` |
+| max loss with neither trailing nor static, no product | clarify `product` |
+| consistency formula | `atom.1step.consistency.en` / `atom.2step.consistency.en` (no separate consistency-rule id). Equality at 50% still handoffs |
+| profit targets / phases | the product phases row (no separate scaling id). No product -> clarify `product` |
+| no-product time limit or minimum trading days | `atom.overview.en` (the body states both products: no minimum trading days, no time limit) |
+| funded profitable days, no product | clarify `product` (only Atom 1-Step has them) |
 | list price / sizes | `atom.prices.list.en` (`atom.obsolete.price-161-permanent.en`, `atom.obsolete.sizes-5k-10k.en` for those figures) |
 | checkout options / add-ons | `atom.checkout.options.en` |
 | multi-account discount / pack credits | `atom.bundles.en` |

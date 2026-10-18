@@ -49,7 +49,14 @@ const BASE = new Set(
       'currently current right now today again ever always never anymore anyway generally usually typically normally exactly ' +
       'approximately roughly basically ok okay yeah sure s t re ve ll d m ain won don doesn didn isn aren wasn weren ' +
       'whats hows thats theres ive im ill id youre theyre dont doesnt isnt cant wont didnt arent wasnt ' +
-      'one ones two three four five six seven eight nine ten fourteen twenty elite fundedelite funded challenge challenges account accounts plan plans step steps'
+      'one ones two three four five six seven eight nine ten fourteen twenty elite fundedelite funded challenge challenges account accounts plan plans step steps ' +
+      // neutral discourse / request framing words (cycle 1): these never change the proposition
+      'walk walks through give gives help helps would specifically briefly simple simply terms basics basic overview describe describes ' +
+      'involve involves involved general allowed permitted okay correct verify saw seen heard read told someone somebody said says say ' +
+      'mentioned brochure article video website site online regular normal standard actual happen happens happened once while during own ' +
+      'across within up down out my mine me exact exactly sure possible possibly let lets making made make makes goes go going ' +
+      'explained explaining explanation clarification clarifying understanding learn learning learned know knowing known about regarding ' +
+      'details detail specific mean means meaning meant work works worked working use used using start started'
   )
 );
 
@@ -59,7 +66,8 @@ const VOCAB = {
       'price prices pricing priced cost costs costing fee fees charge charges list listed lists published official total size ' +
         'sizes tier tiers available offered sell sold buy buying purchase purchasing pay get getting take order ordering ' +
         'usd dollar dollars before after without difference between compare available offered range ' +
-        'come comes offer offers legit real correct accurate permanent permanently forever always valid promo promotional deal offer offers'
+        'come comes offer offers legit real correct accurate permanent permanently forever always valid promo promotional deal offer offers ' +
+        'much amount starting ticket regular normal exact challenge challenges each every account accounts'
     )
   ),
   payout: new Set(
@@ -69,14 +77,17 @@ const VOCAB = {
         'limit limits ceiling instrument instruments risk request requests requesting default purchased option options ' +
         'checkout rules rule policy policies process terms conditions work works working structure start starting balance ' +
         'created creation allowed possible available biggest largest highest come comes arrive arrives happen happens get getting receive receiving make profit profits above over excess stays stay ' +
-        'carry carried after before between since until once pay pays eligible'
+        'carry carried after before between since until once pay pays eligible ' +
+        'withdraw withdrawal withdrawals withdrawn withdrawing pick picks choose chosen apply applies applying report cycle cycles period ' +
+        'payout payouts later rest remaining available allowance funding funded'
     )
   ),
   split: new Set(
     w(
       'profit profits split splits share shares sharing reward rewards keep kept cut percent percentage default standard ' +
         'options option chosen choose choice choices selected checkout apply applies applied applying work works get getting ' +
-        'receive go goes trader traders firm pay pays available possible offered offer offers'
+        'receive go goes trader traders firm pay pays available possible offered offer offers pick picks choose percentages ' +
+        'funded keeps keep customise customize customised customized option options reward bigger higher larger greater'
     )
   ),
   checkout: new Set(
@@ -84,7 +95,8 @@ const VOCAB = {
       'checkout check out customise customize customisation customization options option choose choices configure ' +
         'configuration configurations setting settings default defaults available add addon addons weekend holding hold ' +
         'scalping partial interval intervals reward rewards leverage loss target targets max maximum days include included allow allows allowed ' +
-        'optional offered get getting buy buying purchase purchasing'
+        'optional offered get getting buy buying purchase purchasing customisable customizable pick picks chosen choosable ' +
+        'payout payouts what can set sets changeable change changes configurable'
     )
   ),
   boundary: new Set(
@@ -100,7 +112,8 @@ const VOCAB = {
     w(
       'bundle bundles multiple several second third fourth discount discounts off percent pack packs market maker credit ' +
         'credits free order orders same together buy buying purchase purchasing get getting withdrawable work works apply ' +
-        'applies expire expires'
+        'applies expire expires multi purchase purchases deal deals offer offers once time at third second fourth fifth account accounts ' +
+        'multiaccount'
     )
   ),
 };
@@ -114,16 +127,29 @@ const FRAME_PLACEHOLDERS = {
   boundary: ['ATOM', 'PROD', 'SIZE', 'PAYOUT', 'ORD', 'NUM', 'AMT'],
 };
 
+function stemCandidates(tk) {
+  const out = [];
+  if (tk.length > 4 && /ies$/.test(tk)) out.push(tk.slice(0, -3) + 'y');
+  if (tk.length > 3 && /(?:ses|xes|ches|shes)$/.test(tk)) out.push(tk.slice(0, -2));
+  if (tk.length > 3 && /s$/.test(tk)) out.push(tk.slice(0, -1));
+  if (tk.length > 4 && /ed$/.test(tk)) out.push(tk.slice(0, -2), tk.slice(0, -1));
+  if (tk.length > 5 && /ing$/.test(tk)) out.push(tk.slice(0, -3), tk.slice(0, -3) + 'e');
+  if (tk.length > 5 && /ly$/.test(tk)) out.push(tk.slice(0, -2));
+  return out;
+}
+
 function residualTokens(tokens, frameName) {
   const vocab = VOCAB[frameName];
   const ph = new Set(FRAME_PLACEHOLDERS[frameName]);
+  const known = (tk) => BASE.has(tk) || vocab.has(tk);
   const out = [];
   for (const tk of tokens) {
     if (/^[A-Z]+$/.test(tk)) {
       if (!ph.has(tk)) out.push(tk);
       continue;
     }
-    if (BASE.has(tk) || vocab.has(tk)) continue;
+    if (known(tk)) continue;
+    if (stemCandidates(tk).some(known)) continue;
     out.push(tk);
   }
   return out;
@@ -206,9 +232,20 @@ function answerResult(id, confidence, reason, fr, A, qualifiers) {
 // Account-specific boundary (runs AFTER fee-policy deny classes).
 // ---------------------------------------------------------------------------
 function accountSpecific(t) {
-  if (/\b(?:my|our)\b.{0,40}\b(?:kyc|payouts?|withdrawals?|breach(?:ed)?|account\s+status|verification|approval|eligib\w*|status|request|profit|split|share|reward|rewards)\b/.test(t)) return true;
+  // A published payout schedule (first wait, interval, cap, how often) is not an account lookup,
+  // even when the wording is colloquial ("my first payout"). Personal status words still refuse.
+  const personalStatus =
+    /\b(?:kyc|eligib\w*|account\s+status|verif\w*|approv\w*|breach\w*|denied|rejected|declined|dashboard|reset|qualif\w*|arriv\w*|sent|processed|processing|pending|ready)\b/.test(t);
+  const publishedPayoutSchedule =
+    /\b(?:payouts?|withdrawals?|cash\s*-?\s*outs?)\b/.test(t) &&
+    /\b(?:first|next|later|subsequent|intervals?|caps?|capped|rules?|policy|policies|how\s+often|how\s+long|how\s+soon|every|schedule)\b/.test(t) &&
+    !personalStatus;
+  if (publishedPayoutSchedule) return false;
+  if (/\b(?:my|our)\b.{0,40}\b(?:kyc|payouts?|withdrawals?|breach(?:ed)?|account\s+status|verification|approval|eligib\w*|status|request)\b/.test(t)) return true;
   if (/\b(?:kyc|payouts?|withdrawals?|breach(?:ed)?|verification|approval|eligib\w*|split|share|reward|rewards)\b.{0,40}\b(?:my|our)\s+(?:[\w-]+\s+){0,3}(?:account|payout|withdrawal|challenge|request|order)\b/.test(t)) return true;
-  if (/\b(?:did|has|have|was|am|will|would|could|can)\s+(?:my|i|we)\b.{0,40}\b(?:breach\w*|pass(?:ed)?|fail(?:ed)?|approv\w*|verif\w*|eligible|qualif\w*|(?:get|got|become|been)\s+funded|reset)\b/.test(t)) return true;
+  if (/\b(?:did|have|has)\s+(?:i|we)\s+(?:breach\w*|pass(?:ed)?|fail(?:ed)?|qualif\w*|(?:get|become|been)\s+funded)\b/.test(t)) return true;
+  if (/\b(?:am|are)\s+(?:i|we)\s+(?:funded|eligible|approved|verified|breached|qualified)\b/.test(t)) return true;
+  if (/\b(?:can|could|will|would)\s+(?:i|we)\s+(?:get|become|be)\s+funded\b/.test(t)) return true;
   if (/\b(?:is|was|has)\s+my\b.{0,40}\b(?:approved|verified|closed|breached|paid|sent|eligible)\b/.test(t)) return true;
   if (/\bcheck\s+my\b.{0,40}\b(?:account|payout|kyc|status|breach)\b/.test(t)) return true;
   if (/\b(?:am i|can i get)\b.{0,40}\b(?:payout|paid|eligible)\b/.test(t) && /\b(?:my|account|now)\b/.test(t)) return true;
@@ -227,22 +264,40 @@ function ruleTopics(A) {
   const e = A.e;
   const pcts = A.slots.pcts;
   const out = [];
-  const consistency = /consisten/.test(c);
+  const consistency =
+    /consisten/.test(c) ||
+    /\bbest\s+(?:single\s+)?(?:trading\s+)?day\b/.test(c) ||
+    /\b(?:one|single|any)\s+day\b.{0,40}\b(?:more\s+than\s+)?half\b.{0,24}\b(?:profit|total)\b/.test(c) ||
+    /\bhalf\s+(?:of\s+)?(?:my\s+|the\s+|your\s+|total\s+)?profit\b/.test(c);
   const daily = /\b(?:daily|intraday)\b.{0,24}\b(?:loss|limit|drawdown)\b|\b(?:loss|losses|lose|limit)\b.{0,24}\b(?:daily|per day|a day|each day|one day)\b|\bdaily\s+(?:PCT|NUM)\b|\bdaily\s+(?:loss|limit)\b/.test(c) || /\bday\b.{0,12}\b(?:loss|limit)\b/.test(c);
-  const maxLoss = /\b(?:max|maximum)\s+(?:loss|drawdown)\b|\bstatic\b|\bfloor\b|\btrailing\b|\b(?:90|94),?000\b/.test(t) || (/\bdrawdown\b/.test(c) && !daily);
-  const targetStrong = /\btargets?\b/.test(c) || /\bhow\s+many\s+phases?\b/.test(c) || /\bprofit\b.{0,30}\bphase\b|\bphase\b.{0,30}\bprofit\b|\b(?:pass|hit|reach|complete|clear)\b.{0,20}\bphase\b/.test(c);
+  const maxLoss =
+    /\b(?:max|maximum)\s+(?:loss|drawdown)\b|\bstatic\b|\bfloor\b|\btrailing\b|\b(?:90|94),?000\b/.test(t) ||
+    (/\bdrawdown\b/.test(c) && !daily) ||
+    /\b(?:overall|total)\s+(?:loss|drawdown|limit)\b|\bhow\s+far\b.{0,30}\b(?:fall|drop|lose|go\s+down|decline)\b/.test(c);
+  const targetStrong = /\btargets?\b/.test(c) || /\bstages?\b|\bgoal\b/.test(c) ||
+    /\b(?:pass|passing)\b.{0,30}\b(?:need|make|reach|hit|achieve)\b|\b(?:need|have|must)\b.{0,12}\b(?:to\s+)?(?:make|reach|hit|achieve)\b.{0,30}\b(?:pass|funded)\b|\bhow\s+much\b.{0,24}\b(?:make|reach|hit|achieve)\b.{0,30}\b(?:pass|funded)\b/.test(c) || /\bhow\s+many\s+phases?\b/.test(c) || /\bprofit\b.{0,30}\bphase\b|\bphase\b.{0,30}\bprofit\b|\b(?:pass|hit|reach|complete|clear)\b.{0,20}\bphase\b/.test(c);
   const targetWeak = /\bphases\b|\bone\s+phase\b/.test(c);
   const profitableDays = /\bprofitable\s+days?\b/.test(c) || /\b0\.5\s*%/.test(t);
-  const days = /\bmin(?:imum)?\b.{0,24}\bdays\b|\btime\s+limit\b|\bdeadline\b|\bno\s+minimum\b|\binactiv\w*/.test(c) || (/\bexpir\w*/.test(c) && !/\b(?:credits?|packs?|bundles?|coupons?|codes?)\b/.test(c)) || profitableDays;
+  const days = /\bmin(?:imum)?\b.{0,24}\bdays\b|\b(?:number\s+of|certain|set)\s+(?:trading\s+)?days\b|\btrading\s+days?\b|\bday\s+requirements?\b|\bsingle\s+day\b|\btime\s+limit\b|\bdeadline\b|\bno\s+minimum\b|\binactiv\w*/.test(c) || (/\bexpir\w*/.test(c) && !/\b(?:credits?|packs?|bundles?|coupons?|codes?)\b/.test(c)) || profitableDays;
   const news = /\bnews\b/.test(c);
-  const leverage = /\bleverage\b|\bgearing\b/.test(c);
-  const eas = /\b(?:eas?|expert\s+advisors?|copiers?|copy\s*trad\w*|trade\s+copier|bots?|algo\w*)\b/.test(c);
-  const simulated = /\b(?:simulated|simulation|demo|guarantee\w*)\b|\bREALCAPITAL\b/.test(c);
+  const leverage = /\bleverage\b|\bgearing\b/.test(c) || (A.slots.ratios.some((r) => /^1:\d+$/.test(r)) && !/\b(?:news|minutes?|payout|win|risk|reward)\b/.test(c));
+  const fundedMention = /\bfunded\b/.test(c);
+  const evaluationMention = /\bevaluation\b|\bphases?\b/.test(c);
+  const eas = /\b(?:eas?|expert\s+advisors?|copiers?|copy\s*trad\w*|trade\s+copier|bots?|robots?|automated|automation|algo\w*)\b/.test(c);
+  const simulated = /\b(?:simulated|simulation|demo|guarantee\w*)\b|\bREALCAPITAL\b|\blive\s+(?:trading\s+)?accounts?\b/.test(c);
   const obsolete10 = A.product === P1 && pcts.includes(10) && /\b(?:target|profit|pass|phase|still|need|require|evaluation)\b/.test(c);
-  const co = c.replace(/^(?:(?:hi|hello|hey|please|pls|ok|okay)\s+)+/, '').replace(/(?:\s+(?:thanks|thank\s+you|please|pls))+$/, '');
+  const specificNoun =
+    /\b(?:payouts?|PAYOUT|withdrawals?|prices?|pricing|costs?|fees?|splits?|rewards?|shares?|losses?|loss|drawdowns?|phases?|targets?|news|leverage|consist\w*|bundles?|checkout|refunds?|daily|profits?|sizes?|addons?|discounts?|credits?|packs?)\b/;
   const overview =
-    /^(?:(?:can|could)\s+you\s+|please\s+)*(?:what\s+is|what|tell\s+me\s+about|explain|describe)\s+(?:the\s+)?ATOM(?:\s+(?:overview|challenge|program|product|account|accounts|plan))?$/.test(co) ||
-    /^ATOM(?:\s+overview)?$/.test(co);
+    /\bATOM\b/.test(c) &&
+    !e.payout &&
+    !e.priceWord &&
+    !e.splitEv &&
+    !e.cap &&
+    !specificNoun.test(c) &&
+    !/\b(?:everything|all\s+rules|every\s+rule)\b/.test(c) &&
+    (/\b(?:overview|basics)\b|\b(?:what\s+is|what\s+exactly\s+is|whats)\b|\b(?:explain|describe|understand)\b|\btell\s+me\s+about\b|\bwhat\s+does\b|\bwalk\s+me\s+through\s+what\b|\bdetails\s+about\b|\bhow\s+does\b.{0,24}\bwork\b|\bATOM\b.{0,16}\bwhat\s+is\s+it\b/.test(c) ||
+      /^(?:ATOM)(?:\s+overview)?$/.test(c.replace(/\b(?:please|pls|hi|hello|hey|thanks|thank|you)\b/g, ' ').replace(/\s+/g, ' ').trim()));
 
   if (consistency) out.push('consistency');
   if (daily) out.push('daily-loss');
@@ -255,8 +310,9 @@ function ruleTopics(A) {
   if (eas) out.push('eas-copy');
   if (simulated) out.push('simulated');
   if (targetWeak && !targetStrong && !out.length) out.push('phases');
+  if (!out.length && A.product === P1 && /\bevaluation\b/.test(c)) out.push('phases');
   if (overview && !out.length) out.push('overview');
-  return { topics: out, profitableDays, daily };
+  return { topics: out, profitableDays, daily, fundedMention, evaluationMention };
 }
 
 function ruleRow(topic, product, info) {
@@ -268,7 +324,19 @@ function ruleRow(topic, product, info) {
     case 'max-loss': return { id: per('max-loss') };
     case 'phases': return { id: per('phases') };
     case 'min-days':
-      if (p === '1step') return { id: info.profitableDays ? 'atom.1step.funded-profitable-days.en' : 'atom.1step.min-days.en' };
+      if (!p) {
+        // No minimum trading days and no time limit are the same on both products (overview body).
+        // Funded profitable-days are not: only Atom 1-Step has them.
+        if (info.profitableDays && info.fundedMention) return { id: null };
+        if (info.profitableDays && !info.evaluationMention) return { id: null };
+        return { id: 'atom.overview.en', relationship: 'overview' };
+      }
+      if (p === '1step') {
+        if (info.profitableDays && info.fundedMention) return { id: 'atom.1step.funded-profitable-days.en' };
+        if (info.profitableDays && info.evaluationMention) return { id: 'atom.1step.min-days.en' };
+        if (info.profitableDays) return { id: 'atom.1step.funded-profitable-days.en' };
+        return { id: 'atom.1step.min-days.en' };
+      }
       return { id: per('min-days') };
     case 'news': return { id: per('news') };
     case 'leverage': return { id: p ? per('leverage') : 'atom.obsolete.leverage-150-default.en', neutralOk: true };
@@ -348,7 +416,7 @@ function resolveAsk(A, ctx) {
   const qs = qualifiersOf(A);
   const obsolete161 = A.slots.amounts.some((a) => a.value === frame.OBSOLETE_PRICE_VALUE) && !e.payout;
   const oldSizes = A.slots.sizes.some((n) => n === 5 || n === 10);
-  const sizeCue = oldSizes && /\b(?:available|offered|exist|size|sizes|plan|plans|buy|option|options|still|sell|account|accounts)\b|\bprices?\b/.test(A.c);
+  const sizeCue = oldSizes && !e.payout && !e.splitEv && !e.strongRecovery;
   const cueC =
     /\b(?:checkout|check\s+out|customi[sz]\w*|configur\w*|add\s*-?\s*ons?|addons?)\b/.test(A.c) ||
     /\bweekend\s+hold(?:ing)?\b|\bpartial\s+scalping\b/.test(A.c) ||
@@ -357,7 +425,9 @@ function resolveAsk(A, ctx) {
     /\b(?:bundles?|multiple|several|market\s+maker|packs?)\b/.test(A.c) ||
     (/\b(?:NUM|ORD)\s+(?:ATOM\s+)?accounts?\b/.test(A.c) && /\b(?:discount|off|PCT|order)\b/.test(A.c)) ||
     (/\baccounts?\b/.test(A.c) && /\bdiscounts?\b/.test(A.c)) ||
-    (e.ord && /\baccounts?\b/.test(A.c) && /\b(?:discount|off|PCT)\b/.test(A.c));
+    (e.ord && /\baccounts?\b/.test(A.c) && /\b(?:discount|off|PCT)\b/.test(A.c)) ||
+    /\bmulti\s*-?\s*purchas/.test(A.c) ||
+    (/\bdiscounts?\b/.test(A.c) && /\b(?:purchas\w*|buy(?:ing)?|orders?)\b/.test(A.c));
   const sizeList = /\b(?:what|which)\b.{0,24}\bsizes?\b|\bsizes?\s+(?:available|offered)\b|\bavailable\s+sizes\b|\bhow\s+many\s+sizes\b/.test(A.c) && !e.payout;
   const priceIntent =
     (e.priceWord && !e.payout) || sizeList ||
@@ -391,7 +461,15 @@ function resolveAsk(A, ctx) {
       return handoff('unresolved:consistency-equality', { diagnostics: summarize(A) });
     }
   }
-  const newsWindow = e.minutes || A.slots.ratios.length > 0 || /\b(?:before|after|around|near|prior|ahead|following|within|window|gmt|utc|am|pm)\b/.test(A.c);
+  // Clock/window arithmetic only. Bare "am I" and "before" are not a minute calculation.
+  const newsWindow =
+    /\b(?:minutes?|mins?|seconds?|hours?)\b/.test(A.c) ||
+    /\b(?:gmt|utc|windows?)\b/.test(A.c) ||
+    /\binstruments?\b/.test(A.c) ||
+    A.slots.ratios.length > 0 ||
+    /\b(?:before|after|around|within|prior|ahead|following)\b.{0,24}\b(?:news|releases?|events?|minutes?|mins?)\b/.test(A.c) ||
+    /\b(?:news|releases?|events?)\b.{0,24}\b(?:before|after|around|within|minutes?|mins?)\b/.test(A.c) ||
+    /\bNUM\s*(?:am|pm)\b|\b(?:am|pm)\s*NUM\b/.test(A.c);
   if (F.R && rt.topics.includes('news') && newsWindow) {
     return handoff('unresolved:news-minutes', { diagnostics: summarize(A) });
   }
@@ -401,6 +479,8 @@ function resolveAsk(A, ctx) {
   else if (names.length === 2 && F.S && F.C) win = 'S';
   else if (names.length === 2 && F.C && F.T) win = 'C';
   else if (names.length === 2 && F.B && F.P && /\b(?:discount|off|PCT)\b/.test(A.c) && !e.priceWord) win = 'B';
+  else if (names.length === 2 && F.R && F.C && rt.topics.length === 1 && rt.topics[0] === 'leverage' && !e.addon) win = 'R';
+  else if (names.length === 2 && F.R && F.T && rt.profitableDays && rt.topics.length === 1 && rt.topics[0] === 'min-days') win = 'R';
   else {
     return abstain('multi-intent-not-covered', { diagnostics: summarize(A, { frames: names }) });
   }
@@ -418,11 +498,31 @@ function resolveAsk(A, ctx) {
     if (product === 'both' && topic !== 'eas-copy' && topic !== 'simulated' && topic !== 'overview') {
       return abstain('multi-product-not-covered', { diagnostics: summarize(A) });
     }
-    const r = ruleRow(topic, product === 'both' ? null : product, rt);
+    let productForRow = product === 'both' ? null : product;
+    if (!productForRow && topic === 'max-loss') {
+      const trailing = /\btrailing\b/.test(A.c);
+      const staticW = /\bstatic\b/.test(A.c);
+      if (trailing && !staticW) productForRow = P1;
+      else if (staticW && !trailing) productForRow = P2;
+    }
+    const r = ruleRow(topic, productForRow, rt);
     if (!r.id) return clarify('product', 'product-required', { diagnostics: summarize(A, { topic }) });
-    const rel = /correction|obsolete/.test(topic) || r.id.startsWith('atom.obsolete') ? 'correction' : topic === 'overview' ? 'overview' : 'rule';
+    const rel =
+      r.relationship ||
+      (/correction|obsolete/.test(topic) || r.id.startsWith('atom.obsolete')
+        ? 'correction'
+        : r.id === 'atom.overview.en'
+          ? 'overview'
+          : 'rule');
     const relationship = r.id === 'atom.obsolete.leverage-150-default.en' ? 'correction' : rel;
-    return answerResult(r.id, 0.94, 'frame:rule/' + topic, mkFrame('rule', 'rule', relationship), A, qs);
+    return answerResult(
+      r.id,
+      0.94,
+      'frame:rule/' + topic,
+      { name: 'rule', scopeFrame: 'rule', relationship, product: productForRow },
+      A,
+      qs
+    );
   }
 
   // --- money frames: closed vocabulary --------------------------------------
@@ -433,7 +533,14 @@ function resolveAsk(A, ctx) {
     if (product === 'both') return abstain('multi-product-not-covered', { diagnostics: summarize(A) });
     if (product === P1 || product === P2) {
       const id = product === P1 ? 'atom.1step.reward.en' : 'atom.2step.reward.en';
-      return answerResult(id, 0.96, 'frame:split', mkFrame('split', 'split', 'split'), A, qs);
+      const qS = new Set(qs);
+      // "bigger/higher share" is the published option list, not an uncovered policy change.
+      const comparativeShare =
+        /\b(?:bigger|higher|larger|greater)\b/.test(A.c) &&
+        !e.ord &&
+        !/\b(?:increase|decreas\w*|chang\w*|rais\w*|reduc\w*|upgrad\w*|scal\w*)\b/.test(A.c);
+      if (comparativeShare) qS.delete('change');
+      return answerResult(id, 0.96, 'frame:split', mkFrame('split', 'split', 'split'), A, qS);
     }
     const wantsDefault = /\b(?:default|standard|typical|usual|baseline|normally)\b/.test(A.c);
     if (wantsDefault) {
@@ -480,6 +587,9 @@ function resolveAsk(A, ctx) {
   }
 
   if (win === 'B') {
+    if (/\b(?:elite\s+packs?|elite\s+pro|\bmt5\b|spread\s+test|instant\s+funding|stellar)\b/.test(t)) {
+      return abstain('not-atom-scope', { diagnostics: summarize(A, { cls: 'other-product' }) });
+    }
     if (e.couponStack && !e.preList) return handoff('unresolved:coupon-stacking', { diagnostics: summarize(A) });
     const res = residualTokens(A.tokens, 'bundle');
     if (res.length) return clarify('qualifier', 'unrecognized-qualifier', { diagnostics: summarize(A, { residual: res }) });
