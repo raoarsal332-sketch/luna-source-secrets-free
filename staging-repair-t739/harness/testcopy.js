@@ -32,10 +32,18 @@ const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 
 function make(srcDir) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 't739-tree-'));
-  for (const f of fs.readdirSync(srcDir)) {
-    const p = path.join(srcDir, f);
-    if (fs.statSync(p).isFile()) fs.copyFileSync(p, path.join(dir, f));
-  }
+  const copyTree = (from, to) => {
+    for (const f of fs.readdirSync(from)) {
+      const p = path.join(from, f);
+      const st = fs.statSync(p);
+      if (st.isFile()) fs.copyFileSync(p, path.join(to, f));
+      else if (st.isDirectory()) {
+        fs.mkdirSync(path.join(to, f), { recursive: true });
+        copyTree(p, path.join(to, f));
+      }
+    }
+  };
+  copyTree(srcDir, dir);
   const idx = path.join(dir, 'index.js');
   const orig = fs.readFileSync(idx);
   fs.appendFileSync(idx, MARK + EXPORT);

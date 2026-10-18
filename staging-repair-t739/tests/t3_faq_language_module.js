@@ -69,10 +69,13 @@ test('F5 language never establishes intent: English evidence alone selects nothi
   assert.strictEqual(r.abstain, true);
   assert.notStrictEqual(r.reason, 'language-uncertain');
 });
-test('F5 deterministic cue routes are not gated (documented owner decision): "free trial?" still selects', async () => {
-  const r = await sel.selectApprovedAnswer('free trial?', { priorClientTexts: [] });
-  assert.strictEqual(r.abstain, false);
-  assert.strictEqual(r.answerId, 'faq.free-trial.en');
+test('F5 deterministic cue routes ARE gated (initial-candidate cycle 2): "free trial?" with no English evidence abstains, with English prior evidence it selects', async () => {
+  const none = await sel.selectApprovedAnswer('free trial?', { priorClientTexts: [] });
+  assert.strictEqual(none.abstain, true);
+  assert.strictEqual(none.reason, 'language-uncertain');
+  const withPrior = await sel.selectApprovedAnswer('free trial?', { priorClientTexts: ['Hi, I have a question about your accounts.'] });
+  assert.strictEqual(withPrior.abstain, false);
+  assert.strictEqual(withPrior.answerId, 'faq.free-trial.en');
 });
 test('F5 V12 keeps exactly 12 sendable answers and every one is still selected by its question', async () => {
   const ids = approved.list().map((a) => a.id).sort();
@@ -91,8 +94,9 @@ test('F5 differential: with no model, candidate selection equals baseline on a m
     'what is the minimum trade duration', 'نسبة الربح ما هو', 'travel trade different ip', 'can i get a refund',
   ]);
   for (const q of corpus) {
-    const a = await sel.selectApprovedAnswer(q, { priorClientTexts: ['2 step lite'] });
-    const b = await baseSel.selectApprovedAnswer(q, { priorClientTexts: ['2 step lite'] });
+    const priors = ['What is the 2 step lite account about?'];
+    const a = await sel.selectApprovedAnswer(q, { priorClientTexts: priors });
+    const b = await baseSel.selectApprovedAnswer(q, { priorClientTexts: priors });
     assert.deepStrictEqual({ abstain: a.abstain, id: a.answerId, reason: a.reason }, { abstain: b.abstain, id: b.answerId, reason: b.reason }, q);
   }
 });
