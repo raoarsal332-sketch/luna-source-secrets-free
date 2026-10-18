@@ -1,0 +1,59 @@
+== detector
+  ok   guard 2158c43f copy is byte-identical to the approved file
+  ok   no guard with prefix 846c225f exists anywhere in the work tree
+  ok   HOLD  labelled login+password
+  ok   HOLD  labelled, html wrapped
+  ok   HOLD  labelled, html wrapped value tags
+  ok   HOLD  weak label "pass"
+  ok   HOLD  unlabelled slash pair
+  ok   HOLD  unlabelled colon pair
+  ok   HOLD  unlabelled two lines
+  ok   HOLD  worded digits login + labelled pw
+  ok   HOLD  spaced digits login
+  ok   HOLD  dashed digits login
+  ok   HOLD  Spanish labels
+  ok   HOLD  German labels
+  ok   HOLD  French labels
+  ok   HOLD  Italian labels
+  ok   HOLD  Roman Urdu labels
+  ok   HOLD  Arabic label, login first
+  ok   HOLD  URL query pair
+  ok   HOLD  URL userinfo
+  ok   HOLD  zero-width space inside label
+  ok   HOLD  ZWJ inside label
+  ok   HOLD  ZWNJ inside value digits
+  ok   HOLD  Arabic label, password first
+  ok   HOLD  Russian labels
+  ok   HOLD  Cyrillic homoglyph label
+  ok   HOLD  fullwidth digits
+  ok   HOLD  Arabic-Indic digits
+  ok   HOLD  HTML entity encoded colon
+  ok   HOLD  percent encoded text
+  ok   HOLD  rot13 label
+  ok   HOLD  split over lines with labels apart
+  ok   HOLD  lone labelled password with no login id (MT5-2)
+  ok   HOLD  cue-free strong-shaped secret with no login id (MT5-2)
+  ok   HOLD  password split from an earlier login (MT5-2 context)
+  ok   PASS  envelope admin_id is not a credential (MT5-1)
+  ok   PASS  FAQ-style answer
+  ok   PASS  reset-password instructions
+  ok   PASS  asking customer for account number
+  ok   PASS  mentions passwords generally
+  ok   PASS  account number alone
+  ok   PASS  price and percent text
+  ok   PASS  date and phone-like digits
+  ok   PASS  empty
+  ok   all 12 approved V12 answers pass the hold
+  ok   oversize input fails closed
+  ok   non-string input does not throw and is not a hold
+  ok   adversarial input finishes quickly (no catastrophic backtracking)
+  ok   detection never alters its input (hold-not-rewrite)
+  ok   holdPlanForPersistence flags a plan whose body has a pair, ignores a clean plan
+  ok   holdOutgoingPayload ignores GET and internal notes, holds comment
+  ok   holdOutgoingPayload scans nested payload strings (attachments / extra fields)
+  ok   hold result and log line are body-free
+  ok   HOLD  unlabelled letter-digit pair with no cue word (S01 shape)
+  ok   HOLD  credential in a nonstandard link, path, fragment, or attachment url
+  ok   PASS  login id alone in a url, password-reset link, and ordinary labelled prose
+  ok   PASS  a password word is not joined onto a following url token
+RESULT detector: 57 passed, 0 failed, 57 total

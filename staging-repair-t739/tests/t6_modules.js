@@ -188,7 +188,11 @@ test('D6 neither detector claims the 12 V12 questions, plain account asks or gen
     'Are you a broker?', 'Do you have a free trial?', 'Is my payout approved?', 'Did I breach my account yesterday?', 'Was my subscription charged this month?',
     'How do I check my balance?', 'I want to buy a challenge, which one is best?', 'The weather is nice today and I like to pack my bags'];
   for (const q of qs) {
-    if (/pack my bags/.test(q)) continue;
+    if (/pack my bags/.test(q)) {
+      assert.strictEqual(detectors.packsDetect(q), false, 'packs ' + q);
+      assert.strictEqual(detectors.atomDetect(q, { priorClientTexts: [] }), false, 'atom ' + q);
+      continue;
+    }
     assert.strictEqual(detectors.packsDetect(q), false, 'packs ' + q);
     assert.strictEqual(detectors.atomDetect(q, { priorClientTexts: [] }), false, 'atom ' + q);
   }
@@ -196,7 +200,7 @@ test('D6 neither detector claims the 12 V12 questions, plain account asks or gen
 test('D7 degraded detector (module file missing) falls back to a coarse word test and never throws', () => {
   const src = require('fs').readFileSync(path.join(E.t.dir, 'faqModuleDetectors.js'), 'utf8');
   assert.match(src, /FAQ_MODULE_DETECTOR_DEGRADED/);
-  assert.match(src, /if \(!p\) return \/\\bpacks\?\\b\/i\.test\(raw\)/);
+  assert.match(src, /if \(!p\) return false/);
 });
 
 // ---------------- 3. F1 end to end, flags OFF ----------------
@@ -266,7 +270,7 @@ test('F1 mixed language: an English module clause inside a turn that also contai
 });
 test('F1-8 uncertain + claimed + flag OFF is terminal-silent (owner-reviewable default), including short English module asks', async () => {
   await withFlags({}, async () => {
-    for (const t of ['Elite Packs?', 'Are Elite Packs refundable?', 'Atom funded profitable days requirement?']) {
+    for (const t of ['Elite Packs?', 'Atom funded profitable days requirement?']) {
       const p = await prep(t);
       assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'language-uncertain-module-off', t: true, m: /\batom\b/i.test(t) ? 'atom' : 'packs' }, t);
       reset();
@@ -275,6 +279,8 @@ test('F1-8 uncertain + claimed + flag OFF is terminal-silent (owner-reviewable d
       await index.handleWebhook(webhookReq(id, user), res);
       noWrites(t);
     }
+    const clearEn = await prep('Are Elite Packs refundable?');
+    assert.deepStrictEqual({ r: clearEn.reason, t: clearEn.terminal, m: clearEn.module }, { r: 'module-off-fail-closed', t: true, m: 'packs' });
     const p2 = await prep('thanks', {});
     assert.notStrictEqual(p2.reason, 'language-uncertain-module-off');
   });

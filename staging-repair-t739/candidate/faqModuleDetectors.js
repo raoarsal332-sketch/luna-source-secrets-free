@@ -57,28 +57,70 @@ function warnOnce(id, code) {
 }
 
 const PACKS_EXTRA_TERMS_RE =
-  /\b(?:ignition|oracle|whale|pack\s*credits?|the\s*million|pack\s*pass|lucky\s*streak|redeem\s*key|drop\s*rates?|purple\s*card|100\s*%\s*payout|skip\s*a\s*step|drawdown\s*buffer|primordial|mythic|free\s*pack|instant\s*override|founder'?s?\s*key)\b/;
+  /\b(?:ignition|oracle|whale|pack\s*credits?|the\s*million|pack\s*pass|lucky\s*streak|redeem\s*keys?|drop\s*rates?|purple\s*card|100\s*%\s*payout|skip\s*a\s*step|drawdown\s*buffer|primordial|mythic|free\s*packs?|instant\s*override|founder'?s?\s*keys?)\b/;
 
-function packsDetect(text) {
+const PACKS_ENTITY_RE =
+  /\b(?:elite\s*packs?|my\s*packs?|packs?|pack\s*credits?|pack\s*pass|pack\s*keys?|redeem\s*keys?|founder'?s?\s*keys?|(?:purple|pink|exotic|mythic|legendary|primordial)\s*cards?|pack\s*cards?|(?:card|pack)s?\s+rarit(?:y|ies)|rarit(?:y|ies)\s+(?:of\s+)?(?:the\s+)?(?:cards?|packs?))\b/;
+
+const PACKS_FOLLOW_RE =
+  /\b(?:open(?:ed|ing)?|redeem(?:ed|ing)?|rarit(?:y|ies)|pack\s*credits?|cards?|collection|inventory|streak)\b/;
+
+const CONFUSABLES = new Map(Object.entries({
+  '\u0430': 'a', '\u0435': 'e', '\u043e': 'o', '\u0440': 'p', '\u0441': 'c', '\u0443': 'y', '\u0445': 'x',
+  '\u0410': 'a', '\u0415': 'e', '\u041e': 'o', '\u0420': 'p', '\u0421': 'c', '\u0423': 'y', '\u0425': 'x',
+  '\u0456': 'i', '\u0406': 'i', '\u0455': 's', '\u0405': 's', '\u04bb': 'h', '\u043a': 'k', '\u041a': 'k',
+  '\u043c': 'm', '\u041c': 'm', '\u0442': 't', '\u0422': 't', '\u0432': 'b', '\u0412': 'b', '\u043d': 'h', '\u041d': 'h',
+  '\u03b1': 'a', '\u03b5': 'e', '\u03b9': 'i', '\u03bf': 'o', '\u03c1': 'p', '\u03c4': 't', '\u03ba': 'k',
+  '\u0391': 'a', '\u0395': 'e', '\u0399': 'i', '\u039f': 'o', '\u03a1': 'p', '\u03a4': 't', '\u039a': 'k',
+}));
+
+/** NFKC, strip zero-width/format characters, fold confusables per character (not gated on ASCII letter count), then join spaced single-letter runs. */
+function normalizeForDetect(raw) {
+  let s = String(raw == null ? '' : raw);
+  s = s.replace(/[\u00AD\u034F\u061C\u115F\u1160\u17B4\u17B5\u180B-\u180F\u200B-\u200F\u202A-\u202E\u2060-\u206F\u3164\uFE00-\uFE0F\uFEFF\uFFA0]|\p{Cf}/gu, '');
+  try { s = s.normalize('NFKC'); } catch (_) { /* keep */ }
+  let out = '';
+  for (const ch of s) out += CONFUSABLES.has(ch) ? CONFUSABLES.get(ch) : ch;
+  out = out.toLowerCase();
+  // "E l i t e P a c k s" / "a.t.o.m" — same join the Packs pregate uses, after confusables so a homoglyph letter still joins.
+  out = out.replace(/(?<![a-z0-9'])(?:[a-z][ .\-_*·]){2,}[a-z](?![a-z0-9'])/g, (m) => m.replace(/[ .\-_*·]/g, ''));
+  return out;
+}
+
+function scrubNonModule(norm) {
+  return String(norm || '')
+    .replace(/\bpack(?:ing)?\s+(?:my\s+|the\s+|a\s+)?bags?\b/g, ' ')
+    .replace(/\b(?:backpacks?|packages?|packets?)\b/g, ' ')
+    .replace(/\b(?:credit|debit)\s+cards?\b/g, ' ');
+}
+
+function packsEntity(norm) {
+  return PACKS_ENTITY_RE.test(norm) || PACKS_EXTRA_TERMS_RE.test(norm);
+}
+
+function packsDetect(text, ctx) {
   const p = loadPacks();
-  const raw = String(text == null ? '' : text);
-  if (!p) return /\bpacks?\b/i.test(raw);
+  const norm = scrubNonModule(normalizeForDetect(text));
+  if (packsEntity(norm)) return true;
+  if (!p) return false;
   const pg = p.pregate;
-  const n = pg.normalizeInput(raw);
-  const norm = String((n && n.text) || '').toLowerCase();
-  if (p.packsProductHint(norm) || PACKS_EXTRA_TERMS_RE.test(norm)) return true;
-  if (pg.NAMED_CARD_RE.test(norm)) return true;
-  return !!(p.missingItemIntent(norm) && pg.PACKS_ITEM_RE.test(norm));
+  if (p.packsProductHint(norm) || pg.NAMED_CARD_RE.test(norm)) return true;
+  if (p.missingItemIntent(norm) && pg.PACKS_ITEM_RE.test(norm)) return true;
+  const priors = Array.isArray(ctx && ctx.priorClientTexts) ? ctx.priorClientTexts : [];
+  const priorHit = priors.some((t) => packsEntity(scrubNonModule(normalizeForDetect(t))));
+  if (priorHit && PACKS_FOLLOW_RE.test(norm)) return true;
+  return false;
 }
 
 function atomDetect(text, ctx) {
   const a = loadAtom();
-  const raw = String(text == null ? '' : text);
-  if (!a) return /\batom\b/i.test(raw);
+  const norm = normalizeForDetect(text).replace(/\b(?:atomic|anatomy|anatomical|atomizer)\b/g, ' ');
+  if (/\belite\s*atom\b|\batom\b/.test(norm)) return true;
+  if (!a) return false;
   const priors = Array.isArray(ctx && ctx.priorClientTexts) ? ctx.priorClientTexts : [];
-  const c = a.buildContext(raw, priors);
-  if (/\batom\b/.test(c.cur.n.t)) return true;
-  return !!(c.scopeAtom && c.chain > 0);
+  const c = a.buildContext(norm, priors.map((t) => normalizeForDetect(t)));
+  if (c && c.cur && c.cur.n && /\batom\b/.test(c.cur.n.t)) return true;
+  return !!(c && c.scopeAtom && c.chain > 0);
 }
 
 function packsEnabled(flagOn) {

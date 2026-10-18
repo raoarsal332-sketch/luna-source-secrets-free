@@ -12,7 +12,9 @@ function hasNonLatin(text) {
   return /[^\u0000-\u007f]/.test(String(text || ''));
 }
 
-const ES_CUE_RE = /\b(?:el|la|los|las|qué|que|cuál|cual|límite|limite|pérdida|perdida|días|dias|apalancamiento)\b/i;
+const ES_CUE_RE = /\b(?:el|la|los|las|qué|que|cuál|cual|límite|limite|pérdida|perdida|días|dias|apalancamiento|para|una|unas|unos|como|cómo|donde|dónde|cuando|cuándo|pero|tiene|tienen|puede|pueden|hay|muy|tambien|también|cuenta|reglas|obligatorio|obligatoria|porque|este|esta|estos|estas|usted|ustedes|estan|están|ademas|además)\b/i;
+// Portuguese function words and morphology. English-ambiguous tokens (a, o, os, as, de, do, da, no, na, em, e) are not cues.
+const PT_CUE_RE = /\b(?:não|nao|você|voce|vocês|voces|estão|estao|são|sao|também|tambem|uma|pelo|pela|pelos|pelas|obrigatório|obrigatorio|obrigatória|obrigatoria|diária|diaria|diário|diario|então|entao|porque|onde|quais|nosso|nossa|nossos|nossas|dele|dela|esse|essa|isso|aquele|aquela|para|como|qual|quando|muito|mais|perdas?|limite|conta|regras|num|numa|aparecem|mostram|podem|devem|precisam|funciona|funcionam|possuem|existem)\b/i;
 // 'please' is ordinary English and is deliberately not a Roman Urdu cue.
 const UR_LATN_CUE_RE = /\b(?:hai|hain|mein|kitna|kya|nahi|nahin|bhai|ka|ki|ke|ho\s+gaya|aap|aapki|aap\s*ka)\b/i;
 
@@ -24,6 +26,7 @@ function detectLangHint(text) {
     return 'ur';
   }
   if (/[\u0900-\u097f]/.test(t)) return 'hi';
+  if (PT_CUE_RE.test(t)) return 'pt';
   if (ES_CUE_RE.test(t)) return 'es';
   if (UR_LATN_CUE_RE.test(t)) return 'ur-latn';
   return 'en';
@@ -49,9 +52,22 @@ function englishEvidence(text) {
   return seen.size >= 2;
 }
 
+/** A short but clearly English question. "payout?" (one token) stays uncertain. */
+function shortClearEnglish(text) {
+  const words = String(text || '')
+    .toLowerCase()
+    .match(/[a-z']+/g);
+  if (!words || words.length < 3) return false;
+  return /^(?:is|are|do|does|did|can|could|what|when|where|how|why|which|who|will|would|should)$/.test(words[0]);
+}
+
+function reliableEnglish(text) {
+  return englishEvidence(text) || shortClearEnglish(text);
+}
+
 function nonEnglishEvidence(text) {
   const t = String(text || '');
-  return hasNonLatin(t) || ES_CUE_RE.test(t) || UR_LATN_CUE_RE.test(t);
+  return hasNonLatin(t) || ES_CUE_RE.test(t) || PT_CUE_RE.test(t) || UR_LATN_CUE_RE.test(t);
 }
 
 /**
@@ -79,10 +95,10 @@ function mkGate(lang, basis) {
 function languageGate(text, priorTexts) {
   const cur = String(text || '');
   if (nonEnglishEvidence(cur)) return mkGate('non-en', 'current-non-english');
-  if (englishEvidence(cur)) return mkGate('en', 'current-english');
+  if (reliableEnglish(cur)) return mkGate('en', 'current-english');
   const prior = (Array.isArray(priorTexts) ? priorTexts : []).map((x) => String(x || '')).filter(Boolean);
   if (prior.some(nonEnglishEvidence)) return mkGate('non-en', 'prior-non-english');
-  if (prior.some(englishEvidence)) return mkGate('en', 'prior-english');
+  if (prior.some(reliableEnglish)) return mkGate('en', 'prior-english');
   return mkGate('uncertain', 'no-reliable-evidence');
 }
 

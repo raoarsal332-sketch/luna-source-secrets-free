@@ -1,0 +1,15 @@
+== isolation
+  ok   A1 OS level: only loopback interfaces exist (unshare -rn)
+       dns error code: EAI_AGAIN
+  ok   A2 OS level: DNS resolution of api.intercom.io fails
+       tcp error code: ENETUNREACH
+  ok   A3 OS level: raw TCP connect to a public IP fails
+  ok   B1 in-process block: fetch, https.request, net.connect, dns.lookup and child_process are refused and recorded
+  ok   B2 recorder sits BELOW axios: the real icRequest/axios stack runs, headers are built by the real code, the adapter records the request
+  ok   B3 a direct axios call to an external host goes to the recorder, not the network
+  ok   B4 credentials in this process are synthetic
+       temp files: control.json, system-prompt.txt, tickets.json.ownership.json, write-ops.json
+  ok   C1 init side effects: all state files are inside the temp dir; no production default path was created
+  ok   C2 the app exports an express app but nothing is listening (no server handle in this process)
+  ok   C3 module flags for Packs/Atom are OFF in the default config
+RESULT isolation: 10 passed, 0 failed, 10 total

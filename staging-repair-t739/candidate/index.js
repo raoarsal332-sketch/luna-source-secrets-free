@@ -339,6 +339,16 @@ async function icRequestUnguarded(method, url, data, tag, opScope, retryPermissi
       }
     }
     try {
+      // PUBLIC_CREDENTIAL_HOLD_V1: the non-bypassable stage. Every public write attempt,
+      // including retries, is judged on the exact payload about to be handed to axios.
+      if (isWrite) {
+        const __attemptHold = credentialHoldForWrite(method, url, data);
+        if (__attemptHold) {
+          credentialHoldLog(url, __attemptHold);
+          if (opId) writeOpStore.set(opId, { status: 'failed', reason: 'credential-hold', scoped: !!opScope });
+          return publicCredentialHold.holdResult(__attemptHold);
+        }
+      }
       const r = await axios({
         method,
         url,
@@ -4116,13 +4126,13 @@ function lastPublicBotBodyFromParts(parts) {
   }
   return '';
 }
-/** True only when the last public bot message was exactly the contained spread reply. */
+/** True when the last public bot message contains the contained spread reply (a greeting prefix still counts). */
 function priorBotWasContainedSpreadReply(parts) {
   const body = lastPublicBotBodyFromParts(parts);
   if (!body) return false;
   const a = __spreadSquash(body);
   const b = __spreadSquash(SPREAD_TEST_REPLY);
-  return a.length > 0 && a === b;
+  return b.length > 0 && a.includes(b);
 }
 /* MT5_CONTAINMENT_V1:END */
 
@@ -6150,9 +6160,41 @@ async function postReplyWithOwnershipLock(conversationId, messageType, body, opS
   const denied = await permission();
   if (denied) { console.error('OWNERSHIP_PRESEND_BLOCK', conversationId, denied.reason); return denied; }
   if (messageType === 'comment') {
-    const screen = publicReplyBoundary.screen(body);
-    if (!screen.ok) return { ok: false, skipped: true, reason: screen.reason };
-    body = screen.body;
+    // Mixed spread+other: deliver the contained template on this public write, whichever
+    // sender reached postReply (postClientCommentOnceInner also appends, idempotently).
+    try {
+      const __pendKey = String(conversationId);
+      if (pendingSpreadTemplateAppend.has(__pendKey)) {
+        pendingSpreadTemplateAppend.delete(__pendKey);
+        const __before = String(body || '');
+        body = appendSafeSpreadReply(body);
+        if (body !== __before) console.log('SPREAD_TEST_REPLY_MIXED_APPEND', conversationId);
+      }
+    } catch (_) { /* never block the hold on the append helper */ }
+    const original = String(body || '');
+    // Hold the text that was actually composed. Screening must not be able to drop a
+    // credential (or the legitimate answer) and send a different body with no hold code.
+    const __preHold = publicCredentialHold.holdFinalPublic({
+      screened: original,
+      rendered: toHtml(original),
+      conversationId,
+    });
+    if (__preHold) {
+      credentialHoldLog('conversations/' + conversationId, __preHold);
+      return publicCredentialHold.holdResult(__preHold);
+    }
+    const screen = publicReplyBoundary.screen(original);
+    if (!screen.ok) return { ok: false, skipped: true, reason: screen.reason || 'boundary-empty' };
+    const origLetters = (original.match(/[\p{L}\p{N}]/gu) || []).length;
+    const nextLetters = (String(screen.body || '').match(/[\p{L}\p{N}]/gu) || []).length;
+    const droppedMajority = origLetters >= 40 && nextLetters * 2 < origLetters;
+    const internalOnly = (screen.removed || []).every((r) => r === 'role-marker' || r === 'role-label');
+    if (droppedMajority && !internalOnly) {
+      console.error('BOUNDARY_REWRITE_KEPT_ORIGINAL', conversationId, screen.reason || '');
+      body = original;
+    } else {
+      body = screen.body;
+    }
   }
   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
@@ -6378,10 +6420,8 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
       if (body !== __before) console.log('SPREAD_TEST_REPLY_MIXED_APPEND', conversationId);
     }
   } catch (_) { /* never block send on append helper */ }
-  if (typeof spreadPublicGuard !== 'undefined' && spreadPublicGuard && typeof spreadPublicGuard.blocksPublicCredentialPair === 'function' && spreadPublicGuard.blocksPublicCredentialPair(body)) {
-    console.error('SPREAD_CREDENTIAL_HOLD', conversationId);
-    return null;
-  }
+  // A credential in this body is a transport hold with a reason code. Returning null here
+  // dropped the send with no hold code and no staff note.
   /* MT5_CONTAINMENT_V1:END */
   if (septemberPromos && typeof septemberPromos.stripCheckoutReportForCustomer === 'function') {
     const strippedReport = septemberPromos.stripCheckoutReportForCustomer(body);
@@ -6709,7 +6749,12 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
         if (String(a.id || '') !== ARSAL_ID && a.type !== 'bot') continue;
         const last = norm(stripHtml(p.body || ''));
         if (!last) continue;
-        if (last === want) {
+        // The contained spread reply is the same text on purpose. A bare follow-up
+        // ("send again", "the login", "investor password") must deliver it again.
+        const __resendSpread = __spreadSquash(finalBody).includes(__spreadSquash(SPREAD_TEST_REPLY))
+          && __spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
+          && __spreadAskGate.isBareSpreadFollowUpAsk(stripHtml((userPart && userPart.body) || ''));
+        if (last === want && !__resendSpread) {
           console.log('SKIP identical last public body', conversationId);
           return null;
         }
@@ -7417,6 +7462,19 @@ async function processAuthorizedNoteCommands(conversationId, full) {
     } else if (cmd === 'REPLY') {
       applyAuthorizedCommandControl('clearAiOff', conversationId);
       applyAuthorizedCommandControl('setReplyAllowed', conversationId, true);
+      // The command body is taken from tag-stripped text, which drops href targets.
+      // Judge the raw note (body HTML, href/src, attachments) with the same hold before send.
+      const __srcHold = publicCredentialHold.holdOutgoingPayload('post', {
+        message_type: 'comment',
+        body: String(part.body || ''),
+        attachments: part.attachments || part.attachment || undefined,
+      }, { conversationId });
+      if (__srcHold) {
+        credentialHoldLog('conversations/' + conversationId, __srcHold);
+        await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(__srcHold.code), 'command:' + partId);
+        console.log('AUTH_NOTE REPLY_HELD', conversationId, authorId, partId);
+        acted = 'REPLY';
+      } else {
       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
       let out = postProcessModelReply(cmdBody, conversationId);
       const r = await postReply(conversationId, 'comment', out);
@@ -7430,6 +7488,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       }
       console.log('AUTH_NOTE REPLY', conversationId, authorId, partId);
       acted = 'REPLY';
+      }
     } else if (cmd === 'NOTE') {
       const enBody = await ensureInternalNoteEnglish(cmdBody, 'AUTH_NOTE NOTE');
       const html = await enrichNoteMentionsHtml(enBody);
@@ -7700,7 +7759,18 @@ const handleWebhook = async (req, res) => {
         console.log('SKIP continuous-ownership-ended', conversationId, __endedMuteEarly.reason);
         return res.sendStatus(200);
       }
-      const __faqHandled = await faqAssistance.offer(__fetched, __ownParts, topic, faqAssistanceDeps(), {
+      const __earlyText = stripHtml((__latestEarly && __latestEarly.body) || '');
+      const __earlySpread = __spreadAskGate && typeof __spreadAskGate.isSpreadCheckAsk === 'function' && __spreadAskGate.isSpreadCheckAsk(__earlyText);
+      const __earlyMixed = __earlySpread && typeof __spreadAskGate.hasAdditionalNonSpreadAsk === 'function' && __spreadAskGate.hasAdditionalNonSpreadAsk(__earlyText);
+      const __earlyFollow = __spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
+        && __spreadAskGate.isBareSpreadFollowUpAsk(__earlyText)
+        && priorBotWasContainedSpreadReply(__ownParts);
+      // Mixed spread+other must arm the append before any earlier sender (FAQ) posts.
+      if (__earlyMixed) pendingSpreadTemplateAppend.set(String(conversationId), { customerText: __earlyText, userPart: __latestEarly, clientName: '' });
+      // A pure spread ask or a bare follow-up is the contained template, not an FAQ answer.
+      const __faqHandled = (__earlySpread && !__earlyMixed) || __earlyFollow
+        ? null
+        : await faqAssistance.offer(__fetched, __ownParts, topic, faqAssistanceDeps(), {
         deferExecuteIfHumanOwned: true,
       });
       if (__faqHandled && __faqHandled.allowPastOwnershipForLegacyFaq) {
@@ -8295,7 +8365,7 @@ const handleWebhook = async (req, res) => {
           console.log(__bareFollow ? 'SPREAD_TEST_REPLY_FOLLOWUP' : 'SPREAD_TEST_REPLY', conversationId);
           return res.sendStatus(200);
         }
-        pendingSpreadTemplateAppend.set(String(conversationId), { customerText: text });
+        pendingSpreadTemplateAppend.set(String(conversationId), { customerText: text, userPart: latestUser, clientName });
         console.log('SPREAD_TEST_REPLY_MIXED_DEFER', conversationId);
       }
     }
@@ -11304,7 +11374,17 @@ const handleWebhook = async (req, res) => {
     return res.sendStatus(200);
     } finally {
       clientReplyInflight.delete(inflightKey);
+      // A mixed spread ask arms this map before the other answer is composed. If that
+      // answer is held or never posted, the contained template still has to go out.
+      const __unsentSpread = pendingSpreadTemplateAppend.get(inflightKey);
       pendingSpreadTemplateAppend.delete(inflightKey);
+      if (__unsentSpread) {
+        try {
+          const __spreadBody = postProcessModelReply(buildSpreadTestReply(), inflightKey);
+          await postClientCommentOnce(inflightKey, __spreadBody, __unsentSpread.userPart || null, __unsentSpread.clientName || '');
+          console.log('SPREAD_TEST_REPLY_MIXED_FLUSH', inflightKey);
+        } catch (e) { console.error('SPREAD_TEST_REPLY_MIXED_FLUSH_ERR', inflightKey, e && e.message); }
+      }
       scheduleBurstRerun(inflightKey);
       /* LUNA_RESPONSES_V1: close the episode on EVERY exit path from the AI section (reply
        * sent, hold, escalate, early return or throw) and emit its LUNA_EPISODE summary. A

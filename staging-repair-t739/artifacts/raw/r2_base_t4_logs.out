@@ -1,0 +1,24 @@
+== log redaction (baseline)
+  FAIL F4 IC_REQ_FAIL: a rejected write that echoes customer text logs codes and length only
+       AssertionError [ERR_ASSERTION]: IC_REQ_FAIL OUT https://api.intercom.io/conversations/7001/reply 400 {"type":"error.list","errors":[{"code":"parameter_invalid","message":"bad body ZQSENTINELCUSTOMERTEXTQZ"}]}
+           at Object.fn (/workspace/staging-repair-t739/tests/t4_logs.js:21:10)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL F4 OWNER_CMD_LLM_RAW: raw model output is not logged, only its length
+       AssertionError [ERR_ASSERTION]: OWNER_CMD_LLM_RAW 7002 ACTION: NOTE
+       BODY: ZQSENTINELCUSTOMERTEXTQZ
+           at Object.fn (/workspace/staging-repair-t739/tests/t4_logs.js:32:10)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL F4 SKIP model: a model SKIP body is not logged
+       AssertionError [ERR_ASSERTION]: SKIP model 7003 ZQSENTINELCUSTOMERTEXTQZ
+           at Object.fn (/workspace/staging-repair-t739/tests/t4_logs.js:42:10)
+           at async run (/workspace/staging-repair-t739/tests/runner.js:13:7)
+  FAIL F4 none of the nine redacted tags carries the sentinel on any exercised route
+       AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+       + actual - expected
+       
+       + [
+  ok   F4 static: the nine historical sites no longer interpolate raw text (diff against base)
+RESIDUAL_LOG_LINES 1
+  SKIP model 7003 ZQSENTINELCUSTOMERTEXTQZ
+  ok   F4 residual: log lines (all routes in this process) that still contain the customer sentinel are listed for the report
+RESULT log redaction (baseline): 2 passed, 4 failed, 6 total

@@ -1,0 +1,5 @@
+== modules (baseline)
+  ok   baseline tree has no Packs/Atom integration (module files absent)
+OBS|baseline-f1|[{"q":"How do Elite Packs work?","publicWrites":1,"modelCalls":1,"writes":1},{"q":"What is Elite Atom and how does the profit split work?","publicWrites":0,"modelCalls":1,"writes":0},{"q":"How do Elite Packs work? Also, what is the daily loss limit for 2 step lite?","publicWrites":0,"modelCalls":1,"writes":0},{"q":"What is Elite Atom? Also, did my payout get approved?","publicWrites":0,"modelCalls":1,"writes":0}]
+  ok   baseline differential for F1: the same Packs/Atom asks (flags are not a concept at baseline) reach the model path and get a public reply
+RESULT modules (baseline): 2 passed, 0 failed, 2 total

@@ -163,4 +163,51 @@ test('hold result and log line are body-free', () => {
   assert.ok(!res.includes(L) && !res.includes(P));
   assert.strictEqual(d.staffHoldNote('X_1'), 'Reply held by safety check (reason: X_1). Nothing was sent to the customer.');
 });
+test('HOLD  unlabelled letter-digit pair with no cue word (S01 shape)', () => {
+  const r = d.inspect('99999001 / Passw0rd');
+  assert.strictEqual(r.hold, true, r.code);
+  assert.strictEqual(r.code, 'CRED_PAIR_UNLABELLED');
+});
+test('HOLD  credential in a nonstandard link, path, fragment, or attachment url', () => {
+  const samples = [
+    'open https://example.test/go?u=99999001&p=Passw0rd',
+    'https://example.test/99999001/Passw0rd',
+    'https://example.test/reset#99999001:Fake%23Pass1',
+    '<a href="https://example.test/go?u=99999001&p=Passw0rd">here</a>',
+  ];
+  for (const s of samples) assert.strictEqual(d.inspect(s).hold, true, s);
+  const attached = d.holdOutgoingPayload('post', {
+    message_type: 'comment', type: 'admin', admin_id: '10118526', body: 'see attached',
+    attachment_urls: ['https://files.example.test/a?p=Passw0rd'],
+  });
+  assert.ok(attached && attached.hold, 'attachment url');
+  assert.strictEqual(attached.code, 'CRED_PAIR_URL');
+});
+test('PASS  login id alone in a url, password-reset link, and ordinary labelled prose', () => {
+  const samples = [
+    'https://example.test/account/99999001',
+    'To reset your password, open https://help.example.test/password/reset',
+    'Your password is case-sensitive and must include a symbol. The access code is read-only.',
+    'Your password is never shared in this chat. Server build v2.0.1-beta is current.',
+    'https://files.example.test/attachments/report-2024.pdf',
+  ];
+  for (const s of samples) {
+    const r = d.inspect(s);
+    assert.strictEqual(r.hold, false, s + ' ' + r.code);
+  }
+  const envelope = d.holdOutgoingPayload('post', {
+    message_type: 'comment', type: 'admin', admin_id: '10118526',
+    body: '<p>Your password is never shared. The access code is read-only. See <a href="https://help.example.test/password/reset">reset</a>.</p>',
+    attachment_urls: ['https://files.example.test/attachments/report-2024.pdf'],
+  });
+  assert.strictEqual(envelope, null, envelope && envelope.code);
+});
+test('PASS  a password word is not joined onto a following url token', () => {
+  const r = d.holdOutgoingPayload('post', {
+    message_type: 'comment', body: 'Use the password reset page.',
+    attachment_urls: ['https://cdn.example.test/files/AbC12xYz.pdf'],
+  });
+  assert.strictEqual(r, null, r && r.code);
+});
+
 run('detector');

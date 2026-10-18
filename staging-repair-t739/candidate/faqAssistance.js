@@ -424,9 +424,10 @@ function safeBool(fn, onThrow) {
  *                        (extra-catalog loading is blocked), so the turn is terminal silent as well.
  *   - clause uncertain + module OFF -> terminal silent 'language-uncertain-module-off'.
  *     OWNER-REVIEWABLE DEFAULT (t739 r1, F1-8): when a detector claims the turn and its flag is
- *     OFF, missing English evidence must not fall through to the main LLM. Short English module
- *     asks ("Are Elite Packs refundable?", "Atom funded profitable days requirement?") are in
- *     this class because they do not carry two English function words.
+ *     OFF, missing English evidence must not fall through to the main LLM. A bare module term
+ *     ("Elite Packs?", "Atom funded profitable days requirement?") stays uncertain. A short
+ *     question that is clearly English ("Are Elite Packs refundable?") is English and takes
+ *     the module-off path instead.
  *   - clause uncertain + module ON -> non-terminal 'language-uncertain-module-off' (the flag is
  *     on; this default does not apply).
  *   - clause non-English -> not claimed (non-English main route unchanged).

@@ -17,7 +17,7 @@
  * Dependency-free. Deterministic. Safe to require from the engine.
  */
 
-const SPREAD_GATE_VERSION = 'spread-image-fixes-v1+t739-r1-routing';
+const SPREAD_GATE_VERSION = 'spread-image-fixes-v1+t739-r2-routing';
 
 // The one necessary signal: the word "spread" or "spreads" as a whole word.
 // \b prevents matching "spreadsheet". Soft typos: spreds / spreadt (staging 2026-10-17).
@@ -118,11 +118,18 @@ function explain(text) {
   const credCue = CRED_CUE_RE.test(f);
   const problem = PROBLEM_RE.test(f);
   const hasId = ACCOUNT_ID_NEAR_RE.test(f);
-  if (PASSWORD_SEEK_RE.test(f)) {
-    return { result: false, reason: 'password-ask-not-spread-template', hasTerm: true, strong };
-  }
-  if (hasId || OWN_CRED_RE.test(f) || (OWN_REF_RE.test(f) && problem) || (credCue && problem)) {
+  const ownCred = OWN_CRED_RE.test(f);
+  const ownRef = OWN_REF_RE.test(f);
+  // Personal account/login problems stay off this route even when they also mention spreads.
+  if (hasId || ownCred || (ownRef && problem) || (credCue && problem) || (/\bmy\b/.test(f) && credCue)) {
     return { result: false, reason: 'personal-account-not-spread', hasTerm: true, strong };
+  }
+  // A spread-term ask for the test/investor/demo login or password is the contained template,
+  // not a refusal. The password word alone is not disqualifying.
+  const wantsCredential = PASSWORD_SEEK_RE.test(f) || /\b(?:log[\s._-]?ins?|credentials?|creds?)\b/.test(f);
+  const wantsTestAccess = /\b(?:test|demo|investor|check|see|view|show|send|share|give)\b/.test(f);
+  if (wantsCredential && wantsTestAccess && !problem && !ownRef) {
+    return { result: true, reason: 'spread-test-credential', hasTerm: true, strong: true };
   }
   if (PAYOUT_KYC_RE.test(f)) {
     return { result: false, reason: 'payout-kyc-not-spread', hasTerm: true, strong };
@@ -184,7 +191,13 @@ function hasAdditionalNonSpreadAsk(text) {
 function isBareSpreadFollowUpAsk(text) {
   const t = normalize(text);
   if (!t || SPREAD_TERM_RE.test(t)) return false;
-  return /^(?:send\s+again|again\s+please|please\s+send\s+again|resend(?:\s+it)?|what'?s\s+the\s+server|what\s+is\s+the\s+server|the\s+server\??|server\??)\s*[.?!]?\s*$/i.test(t);
+  if (t.length > 180) return false;
+  const f = foldForCues(t);
+  if (PROBLEM_RE.test(f) || OWN_CRED_RE.test(f) || ACCOUNT_ID_NEAR_RE.test(f) || PAYOUT_KYC_RE.test(f)) return false;
+  if (/\bmy\b/.test(f) && CRED_CUE_RE.test(f)) return false;
+  const asksAccess = /\b(?:servers?|log[\s._-]?ins?|pass(?:word|wd|code|phrase)|passwd|pwd|credentials?|creds?|investors?)\b/.test(f);
+  const asksAgain = /\b(?:again|resend|re-?send)\b/.test(f);
+  return asksAccess || asksAgain;
 }
 
 /**
@@ -213,10 +226,10 @@ let warnedNoText = false;
  * Wrapper used by the patched engine.
  *
  * Mode (env LUNA_SPREAD_GATE_MODE):
- *   strict-and-legacy (default): strict gate must pass AND legacy detector must
- *     agree. This can only remove false positives; anything the legacy detector
- *     already caught as a true spread request still routes to the spread flow.
- *   strict-only: strict gate decides alone; legacy detector is ignored.
+ *   strict-and-legacy (default) and strict-only: the strict gate decides.
+ *     A strict-false ask is never widened by the legacy detector.
+ *     A strict-true ask is never dropped by the legacy detector. The contained
+ *     template is the strict decision; legacy keyword vetoes were swallowing it.
  *
  * If no text can be found in the arguments, the legacy result is returned
  * unchanged (behavior-preserving) and a single warning is logged.
@@ -235,8 +248,11 @@ function gateLegacy(args, legacyFn) {
   }
   const strict = isSpreadCheckAsk(text);
   if (!strict) return false;
-  if (mode === 'strict-only' || typeof legacyFn !== 'function') return true;
-  return !!legacyFn.apply(null, args);
+  // Legacy cannot veto a strict-true ask (t739 r2). Both modes follow the strict decision.
+  if (mode !== 'strict-only' && typeof legacyFn === 'function') {
+    /* legacy result is not consulted */
+  }
+  return true;
 }
 
 module.exports = {

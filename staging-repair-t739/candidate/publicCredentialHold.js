@@ -21,7 +21,7 @@
 
 const guard = require('./spreadPublicGuard');
 
-const VERSION = 'PUBLIC_CREDENTIAL_HOLD_V1+t739-r1';
+const VERSION = 'PUBLIC_CREDENTIAL_HOLD_V1+t739-r2';
 const MAX_SCAN_CHARS = 200000;
 
 const CODES = Object.freeze({
@@ -275,10 +275,36 @@ function looksLikeUrlOrMail(tok) {
   return /^(?:https?:|www\.|mailto:|ftp:)/i.test(tok) || /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(tok) || /^[\w.-]+\.(?:com|net|org|io|co|app)(?:\/|$)/i.test(tok);
 }
 
+function isVersionToken(t) {
+  return /^v?\d+(?:[._-]\d+)+(?:[._-][a-z0-9]+)?$/i.test(String(t || ''));
+}
+/** case-sensitive, read-only, self-service: ordinary words, not secret values. */
+function isOrdinaryHyphenWord(t) {
+  return /^[a-z]+(?:-[a-z]+)+$/i.test(String(t || ''));
+}
+/**
+ * Letters+digits token that can be a password half of an unlabelled pair or a URL value.
+ * Not a version, a filename, a short product code (MT5, v12), or a hyphenated English word.
+ */
+function isCredentialishMixed(tok) {
+  const t = trimToken(tok);
+  if (t.length < 8 || t.length > 64) return false;
+  if (looksLikeUrlOrMail(t) || /[\/\\]/.test(t) || /^[?#]/.test(t)) return false;
+  if (isVersionToken(t) || isOrdinaryHyphenWord(t)) return false;
+  if (SECRET_STOP.has(t.toLowerCase()) || FILLER.has(t.toLowerCase())) return false;
+  if (!/[A-Za-z]/.test(t) || !/\d/.test(t)) return false;
+  if (/^\d+[a-z]{1,4}$/i.test(t)) return false;
+  if (/^[a-z]{1,6}\d{1,3}$/i.test(t)) return false;
+  if (/^[a-z]+-\d{2,4}$/i.test(t)) return false;
+  if (/\.(?:html?|pdf|png|jpe?g|gif|webp|css|js|svg|txt|zip)$/i.test(t)) return false;
+  return true;
+}
+
 function acceptLabelledSecret(rawTok, strongLabel, explicit) {
   const tok = trimToken(rawTok);
   if (tok.length < 6 || tok.length > 128) return false;
   if (looksLikeUrlOrMail(tok)) return false;
+  if (isOrdinaryHyphenWord(tok) || isVersionToken(tok)) return false;
   if (/^[?\/#]/.test(tok)) return false;
   if (SECRET_STOP.has(tok.toLowerCase()) || FILLER.has(tok.toLowerCase())) return false;
   if (!/[\p{L}\p{N}]/u.test(tok)) return false;
@@ -303,34 +329,42 @@ function labelledSecrets(view) {
       const end = m.index + m[0].length;
       if (view[end] === '?' || view[end] === '/') continue;
       let i = end;
-      let explicit = false;
-      let contentBridges = 0;
+      // Assignment is only ":" or "=". A copula ("password is …") does not open an
+      // 8-token window: only the immediate next token can be the value, and only when
+      // that token itself is secret-shaped. "password is case-sensitive" is not a hold.
+      let assignment = false;
+      let bridges = 0;
+      let expectImmediate = false;
       for (let hops = 0; hops < 8; hops++) {
         const sepMatch = /^[\s:=\-\u2013\u2014>\[\]()"'\u201C\u201D\u2018\u2019*_`~|\\.,;]*/.exec(view.slice(i, i + 80));
         const sep = sepMatch ? sepMatch[0] : '';
-        if (/[:=]|[\u2013\u2014]|-/.test(sep)) explicit = true;
+        if (/[:=]/.test(sep)) assignment = true;
         i += sep.length;
         const tm = /^[^\s"'\u201C\u201D\u2018\u2019<>`]+/.exec(view.slice(i, i + 256));
         if (!tm) break;
         let tok = tm[0].split(/&(?=[a-z_]+=)/i)[0];
         if (/[:=]$/.test(tok)) {
-          explicit = true;
+          assignment = true;
           tok = tok.replace(/[:=]+$/, '');
         }
         const low = trimToken(tok).toLowerCase();
-        if (low === 'is' || low === 'are' || low === 'was' || low === 'es' || low === 'est' || low === 'ist') explicit = true;
-        // Words may sit between the label and the value ("password you requested: X").
-        // A later token counts only when a separator made the assignment explicit, or it is the
-        // first token. That keeps "password policy … v1.2.3-beta" from becoming a secret.
-        const bridge = (FILLER.has(low) || SECRET_STOP.has(low) || /^[a-z][a-z']{0,14}$/.test(low)) && !acceptLabelledSecret(tok, strong, explicit);
-        if (bridge) {
-          if (!FILLER.has(low)) contentBridges += 1;
-          if (contentBridges > 6) break;
+        if (/^(?:is|are|was|es|est|ist)$/.test(low)) {
+          if (!assignment) expectImmediate = true;
           i += tm[0].length;
           continue;
         }
-        if (acceptLabelledSecret(tok, strong, explicit) && (explicit || contentBridges === 0)) {
-          found.push({ start: i, end: i + tok.length, strong });
+        const immediate = expectImmediate && !assignment && (isStrongToken(tok) || isCredentialishMixed(tok));
+        const assigned = (assignment || bridges === 0) && acceptLabelledSecret(tok, strong, assignment || bridges === 0);
+        if (immediate || assigned) {
+          found.push({ start: i, end: i + tok.length, strong: !!(strong || immediate) });
+          break;
+        }
+        if (expectImmediate && !assignment) break;
+        const bridge = (FILLER.has(low) || SECRET_STOP.has(low) || /^[a-z][a-z']{0,14}$/.test(low));
+        if (bridge && bridges < 6) {
+          bridges += 1;
+          i += tm[0].length;
+          continue;
         }
         break;
       }
@@ -361,13 +395,13 @@ function adjacentSecret(view, id, cueAnywhere) {
   const after = /^[\s\/|:;,\u2013\u2014\-\u2192>=&+]{1,6}(?:(?:and|with|pass|pw|\u0627\u0648\u0631)\s+)?(\S{6,64})/i.exec(view.slice(id.end, id.end + 90));
   if (after) {
     const tok = after[1];
-    if (isStrongToken(tok) || (cueAnywhere && isMixedToken(tok))) return true;
+    if (isStrongToken(tok) || isCredentialishMixed(tok) || (cueAnywhere && isMixedToken(tok))) return true;
   }
   const head = view.slice(Math.max(0, id.start - 90), id.start);
   const before = /(\S{6,64})[\s\/|:;,\u2013\u2014\-\u2192>=&+]{1,6}$/.exec(head);
   if (before) {
     const tok = before[1];
-    if (isStrongToken(tok) || (cueAnywhere && isMixedToken(tok))) return true;
+    if (isStrongToken(tok) || isCredentialishMixed(tok) || (cueAnywhere && isMixedToken(tok))) return true;
   }
   return false;
 }
@@ -426,28 +460,88 @@ function detectContextSplit(view, contextViews) {
   return null;
 }
 
-function urlParamPair(decoded) {
-  const urls = decoded.match(/\/\/[^\s"'<>]{4,2000}|\?[^\s"'<>]{3,2000}/g) || [];
-  for (const u of urls) {
-    let login = false;
-    let pass = false;
-    const qi = u.indexOf('?');
-    const q = qi >= 0 ? u.slice(qi + 1) : '';
-    for (const pair of q.split(/[&;]/)) {
-      const eq = pair.indexOf('=');
-      if (eq < 0) continue;
-      const k = foldChars(safeDecode(pair.slice(0, eq)), false);
-      const v = safeDecode(pair.slice(eq + 1));
-      if (/^(?:login|account|acct|accountid|account_id|user|username|userid|user_id|investor|mt5|mt5login|id)$/.test(k) && /^\d{5,10}$/.test(foldChars(v, false))) login = true;
-      if (/^(?:pass|password|passwd|pwd|pw|passcode|secret|investorpassword|investor_password|key)$/.test(k) && acceptLabelledSecret(v, true, true)) pass = true;
-    }
-    const info = /^\/\/([^\/@\s]{1,200})@/.exec(u);
-    if (info) {
-      const [user, pw] = safeDecode(info[1]).split(':');
-      if (/^\d{5,10}$/.test(foldChars(user || '', false)) && pw && acceptLabelledSecret(pw, true, true)) return true;
-    }
-    if (login && pass) return true;
+const PASSWORD_QUERY_KEY = /^(?:p|pass|password|passwd|pwd|pw|passcode|secret|investorpassword|investor_password)$/;
+const LOGIN_QUERY_KEY = /^(?:login|account|acct|accountid|account_id|user|username|userid|user_id|investor|mt5|mt5login|id|u)$/;
+
+function componentSecret(value, passwordKey) {
+  const dec = safeDecode(value);
+  const folded = foldChars(dec, true);
+  if (isStrongToken(dec) || isStrongToken(folded)) return 'strong';
+  if (isCredentialishMixed(dec) || isCredentialishMixed(folded)) return 'mixed';
+  if (passwordKey && acceptLabelledSecret(dec, true, true)) return 'labelled';
+  return '';
+}
+
+/** One URL. A login id alone is not a hold. A secret in the query, userinfo, fragment, or beside an id in the path is. */
+function oneUrlHasCredential(raw) {
+  let u = safeDecode(String(raw || '')).replace(/[),.;]+$/g, '');
+  if (!u) return false;
+  const ids = [];
+  const secrets = [];
+  const noteId = (v) => {
+    const digits = foldChars(safeDecode(v), false).replace(/\D/g, '');
+    if (/^\d{5,10}$/.test(foldChars(safeDecode(v), false)) && digits.length >= 5 && digits.length <= 10) ids.push(digits);
+  };
+  const noteSecret = (v, passwordKey) => {
+    const kind = componentSecret(v, passwordKey);
+    if (kind) secrets.push(kind);
+  };
+  const info = /\/\/([^\/\s@]+)@/.exec(u);
+  if (info && info[1].includes(':')) {
+    const parts = safeDecode(info[1]).split(':');
+    const user = parts[0] || '';
+    const pw = parts.slice(1).join(':');
+    noteId(user);
+    if (pw) noteSecret(pw, true);
   }
+  let rest = u;
+  const hash = rest.indexOf('#');
+  const frag = hash >= 0 ? rest.slice(hash + 1) : '';
+  if (hash >= 0) rest = rest.slice(0, hash);
+  const qi = rest.indexOf('?');
+  const query = qi >= 0 ? rest.slice(qi + 1) : '';
+  const path = qi >= 0 ? rest.slice(0, qi) : rest;
+  if (query) {
+    for (const pair of query.split(/[&;]/)) {
+      if (!pair) continue;
+      const eq = pair.indexOf('=');
+      if (eq < 0) { noteId(pair); noteSecret(pair, false); continue; }
+      const k = foldChars(safeDecode(pair.slice(0, eq)), false);
+      const v = pair.slice(eq + 1);
+      if (LOGIN_QUERY_KEY.test(k)) noteId(v);
+      noteSecret(v, PASSWORD_QUERY_KEY.test(k));
+      if (!LOGIN_QUERY_KEY.test(k)) noteId(v);
+    }
+  }
+  if (frag) {
+    for (const bit of frag.split(/[:;&\/?=]/)) {
+      if (!bit) continue;
+      noteId(bit);
+      noteSecret(bit, false);
+    }
+  }
+  let pathId = false;
+  let pathSecret = false;
+  for (const seg of path.split('/')) {
+    if (!seg) continue;
+    const dec = safeDecode(seg);
+    if (/^\d{5,10}$/.test(foldChars(dec, false))) { pathId = true; ids.push(dec); }
+    if (isStrongToken(dec) || isCredentialishMixed(dec)) pathSecret = true;
+  }
+  if (pathId && pathSecret) return true;
+  if (ids.length && secrets.length) return true;
+  // A secret-shaped or password-like value in the query, fragment, or userinfo holds
+  // even without a login id. A path filename does not.
+  if (secrets.length && (query || frag || (info && info[1].includes(':')))) return true;
+  return false;
+}
+
+function urlParamPair(decoded) {
+  const text = String(decoded || '');
+  const found = text.match(/https?:\/\/[^\s"'<>]{4,2000}|www\.[^\s"'<>]{4,2000}/gi) || [];
+  const whole = text.trim();
+  if (/^(?:https?:\/\/|www\.)/i.test(whole) && !found.includes(whole)) found.push(whole);
+  for (const u of found) if (oneUrlHasCredential(u)) return true;
   return false;
 }
 function safeDecode(s) {
@@ -666,14 +760,36 @@ function holdOutgoingPayload(method, data, opts) {
   }
 }
 
+function isStandaloneUrl(s) {
+  const t = String(s || '').trim();
+  return !!t && !/\s/.test(t) && /^(?:https?:\/\/|www\.|mailto:)/i.test(t);
+}
+
+/** URL fields are judged by the URL rule only. They are not joined into prose, so a word like "password" cannot consume a later link token. */
 function holdStrings(all, stage, contextText) {
   const strings = all.filter((s) => s && s.length);
-  for (const s of strings) {
+  const prose = [];
+  const urls = [];
+  for (const s of strings) (isStandaloneUrl(s) ? urls : prose).push(s);
+  for (const s of prose) {
     const r = inspect(s, contextText);
     if (r.hold) return { ...r, stage };
   }
-  if (strings.length > 1) {
-    const r = inspect(strings.join('\n'), contextText);
+  for (const s of urls) {
+    try {
+      const decoded = decodeLayers(s);
+      if (guard.blocksPublicCredentialPair(s) || guard.blocksPublicCredentialPair(decoded)) {
+        return { hold: true, code: CODES.GUARD, tier: 'guard', view: 'url', len: s.length, stage: stage + '-url' };
+      }
+      if (urlParamPair(decoded) || urlParamPair(s)) {
+        return { hold: true, code: CODES.URL, tier: 'url', view: 'url', len: s.length, stage: stage + '-url' };
+      }
+    } catch (_) {
+      return ERROR_HOLD(stage + '-url');
+    }
+  }
+  if (prose.length > 1) {
+    const r = inspect(prose.join('\n'), contextText);
     if (r.hold) return { ...r, stage: stage + '-joined' };
   }
   return null;

@@ -31,8 +31,6 @@ test('MT5-4 spread-test route is only a generic spread or test-access ask', () =
     "I can't log in to my MT5, password not working, what are the spreads",
     'my account 99999001 is not logging in, check the spreads',
     'check spreads on my account 99999001',
-    'what is the p a s s w o r d for the spread test login',
-    'send me the passw0rd and login for spreads',
     'how do I get my payout, also what are the spreads',
     'KYC verification pending and what are the spreads?',
     'my spreads widened and my trade got stopped out',
@@ -45,6 +43,9 @@ test('MT5-4 spread-test route is only a generic spread or test-access ask', () =
     'give me a spread check account',
     'can I get a demo login to check spreads',
     'what is the spread on EURUSD',
+    'what is the p a s s w o r d for the spread test login',
+    'send me the passw0rd and login for spreads',
+    'what is the investor password to check spreads',
   ];
   if (E.which !== 'candidate') {
     h.say('OBS|baseline-spread-gate|' + JSON.stringify({
