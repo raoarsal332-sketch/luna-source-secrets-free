@@ -1,0 +1,393 @@
+'use strict';
+/**
+ * V12 answer selection — CLASSIFY / SELECT only.
+ * Returns an approved answer id + confidence, or abstain.
+ * Never returns customer-facing factual prose to send.
+ *
+ * Atom INTERFACE (staging): when LUNA_FAQ_APPROVED_ANSWERS_EXTRA is enabled,
+ * productHint recognizes Elite Atom before generic 1-Step/2-Step and Atom-scoped
+ * asks delegate to atomAnswerSelect (fail closed — no generic FAQ fallthrough).
+ * When EXTRA is unset/0/off, behavior matches live V12 (flag-off parity).
+ * Account-status / opts gates still run first.
+ */
+const approved = require('./faqApprovedAnswers');
+
+const CONFIDENCE_THRESHOLD = Number(process.env.LUNA_FAQ_SELECT_THRESHOLD || 0.72);
+
+/** EXTRA opt-in — same env gate as faqApprovedAnswers.resolveExtraPath. */
+function atomExtraEnabled() {
+  const raw = process.env.LUNA_FAQ_APPROVED_ANSWERS_EXTRA;
+  if (raw === undefined || raw === null || raw === '' || raw === '0' || raw === 'off') {
+    return false;
+  }
+  return true;
+}
+
+let atomSelectMod = null;
+function getAtomSelect() {
+  if (atomSelectMod !== null) return atomSelectMod;
+  if (process.env.LUNA_ATOM_SELECT === '0' || process.env.LUNA_ATOM_SELECT === 'off') {
+    atomSelectMod = false;
+    return atomSelectMod;
+  }
+  try {
+    atomSelectMod = require('./atomAnswerSelect');
+  } catch (_) {
+    atomSelectMod = false;
+  }
+  return atomSelectMod;
+}
+
+function isAtomScopedText(text, priorClientTexts) {
+  const raw = String(text || '');
+  if (/\batom\b|\belite\s*atom\b/i.test(raw)) return true;
+  return (priorClientTexts || []).some((x) => /\batom\b|\belite\s*atom\b/i.test(x));
+}
+
+function hasNonLatin(text) {
+  return /[^\u0000-\u007f]/.test(String(text || ''));
+}
+
+function detectLangHint(text) {
+  const t = String(text || '');
+  if (/[\u0600-\u06ff]/.test(t) && /[\u0600-\u06ff]{3,}/.test(t)) {
+    // Arabic vs Urdu script: Arabic FAQs use Arabic answers; Urdu script still maps via tags.
+    if (/(?:حد|الخسارة|اليومية|هل|ما\s+هو)/.test(t)) return 'ar';
+    return 'ur';
+  }
+  if (/[\u0900-\u097f]/.test(t)) return 'hi';
+  if (/\b(?:el|la|los|las|qué|que|cuál|cual|límite|limite|pérdida|perdida|días|dias|apalancamiento)\b/i.test(t)) {
+    return 'es';
+  }
+  if (/\b(?:hai|hain|mein|kitna|kya|nahi|nahin|bhai|please|ka|ki|ke|ho\s+gaya|aap|aapki|aap\s*ka)\b/i.test(t)) {
+    return 'ur-latn';
+  }
+  return 'en';
+}
+
+function productHint(text) {
+  const t = String(text || '').toLowerCase();
+  // Atom product hints only when EXTRA is on (flag-off parity with live V12).
+  if (atomExtraEnabled() && (/\belite\s*atom\b|\batom\b/.test(t))) {
+    if (/1\s*-?\s*step|one\s*-?\s*step|1step/.test(t)) return 'atom-1step';
+    if (/2\s*-?\s*step|two\s*-?\s*step|2step/.test(t)) return 'atom-2step';
+    return 'atom';
+  }
+  if (/2\s*-?\s*step\s*lite|lite\s*2\s*-?\s*step|2step\s*lite/.test(t)) return '2step-lite';
+  if (/1\s*-?\s*step\s*lite|lite\s*1\s*-?\s*step/.test(t)) return '1step-lite';
+  if (/2\s*-?\s*step/.test(t)) return '2step';
+  if (/1\s*-?\s*step/.test(t)) return '1step';
+  if (/\binstant\b/.test(t)) return 'instant';
+  return '';
+}
+
+function accountStatusAsk(text) {
+  const t = String(text || '');
+  // Customer-specific status / KYC / payout / breach / transaction — never FAQ-select.
+  if (/\b(?:my|our)\b.{0,40}\b(?:kyc|payout|withdrawal|refund|breach|account\s+status|verification|approval)\b/i.test(t)) return true;
+  if (/\b(?:did|has|have)\s+(?:my|i|we)\b.{0,40}\b(?:breach|pass(?:ed)?|fail(?:ed)?|approv|verif)/i.test(t)) return true;
+  if (/\b(?:is|was|has)\s+my\b.{0,40}\b(?:approved|verified|closed|breached|paid|sent)\b/i.test(t)) return true;
+  if (/\bcheck\s+my\b.{0,40}\b(?:account|payout|kyc|status)\b/i.test(t)) return true;
+  if (/\b(?:meri|mera|hamari|aap\s*ne\s*mera)\b.{0,40}\b(?:kyc|payout|breach|account)\b/i.test(t)) return true;
+  if (/\b(?:mi|su)\s+(?:cuenta|pago|verificaci[oó]n|retiro)\b.{0,40}\b(?:aprob|verific|envi|cerr)/i.test(t)) return true;
+  if (/\b(?:partial|partials)\b/i.test(t) && /\b(?:close|closed|count|profit|profitable|0\.5\s*%)/i.test(t)) return true;
+  if (/\b(?:my|i'?m|i am)\b.{0,48}\b(?:trade|position|account)\b/i.test(t) && /\b(?:partial|fully closed|count toward|dosent count|doesn'?t count)/i.test(t)) {
+    return true;
+  }
+  return false;
+}
+
+function payoutConsistencyAsk(q) {
+  const t = String(q || '');
+  return /\bpayouts?\b/i.test(t) && /\b(?:held|hold|holding|consistenc|review|normal|delay|pending|check|stuck|wait)/i.test(t);
+}
+
+const SELECTORS = [
+  {
+    id: 'faq.stop-loss-mandatory.en',
+    conf: 0.95,
+    test: (t, tok) =>
+      /stop\s*-?\s*loss/i.test(t) &&
+      /(?:mandatory|required|necessary|compulsory|need|optional|zoruri|lazim|obligator)/i.test(t),
+  },
+  {
+    id: 'faq.2step-lite.daily-loss.en',
+    conf: 0.93,
+    test: (t) =>
+      /(?:daily|day).{0,24}(?:loss|lim+it)|(?:loss|lim+it).{0,24}(?:daily|day)|perdida\s*diaria|خسار|الحد\s*ال?يوم|kitna.*loss|loss.*kitna/i.test(
+        t
+      ) &&
+      /2\s*-?\s*step\s*lite|lite\s*2\s*-?\s*step|2step\s*lite/i.test(t),
+  },
+  {
+    id: 'faq.2step.daily-loss.en',
+    conf: 0.9,
+    test: (t, _tok, prod) =>
+      /(?:daily|day).{0,24}(?:loss|lim+it)|(?:loss|lim+it).{0,24}(?:daily|day)/i.test(t) &&
+      prod === '2step',
+  },
+  {
+    id: 'faq.1step.daily-loss.en',
+    conf: 0.9,
+    test: (t, _tok, prod) =>
+      /(?:daily|day).{0,24}(?:loss|lim+it)/i.test(t) && prod === '1step',
+  },
+  {
+    id: 'faq.daily-loss.generic.en',
+    conf: 0.8,
+    test: (t) => /(?:daily|day).{0,24}(?:loss|lim+it)|perdida\s*diaria|خسار|الحد\s*ال?يوم|daily\s*loss|day\s*loss/i.test(t),
+  },
+  {
+    id: 'faq.2step-lite.min-trading-days.en',
+    conf: 0.9,
+    test: (t) =>
+      /min(?:imum)?\s*trad(?:e|ing)\s*days?|trading\s*days?\s*(?:required|minimum)|días\s*de\s*trading/i.test(t) &&
+      /lite|2\s*-?\s*step/i.test(t),
+  },
+  {
+    id: 'faq.min-holding-time.en',
+    conf: 0.9,
+    test: (t) =>
+      /min(?:imum)?\s+(?:trade\s+)?(?:hold(?:ing)?|duration)|holding\s*time|minimum\s*trade\s*duration|tiempo\s*m[ií]nimo/i.test(
+        t
+      ),
+  },
+  {
+    id: 'faq.soft-breach.en',
+    conf: 0.88,
+    test: (t) => /soft\s*-?\s*breach|ソフト.?ブリーチ/i.test(t),
+  },
+  {
+    id: 'faq.travel-trade.en',
+    conf: 0.88,
+    test: (t) =>
+      /(?:travel|viaj|سفر|safar).{0,40}(?:trade|trad|ip)|(?:ip).{0,40}(?:travel|chang|location)|different\s+ip/i.test(t),
+  },
+  {
+    id: 'faq.2step-lite.leverage.en',
+    conf: 0.88,
+    test: (t) => /leverage|apalancamiento|رافعة|レバレッジ/i.test(t) && /lite|2\s*-?\s*step/i.test(t),
+  },
+  {
+    id: 'faq.profit-split.en',
+    conf: 0.85,
+    test: (t) => /profit\s*split|reparto\s*de\s*beneficio|نسبة\s*الربح/i.test(t),
+  },
+  {
+    id: 'faq.payout-request-timing.en',
+    conf: 0.9,
+    test: (t) =>
+      /\b(?:when|how)\b.{0,32}\b(?:can|could|do)\b.{0,32}\b(?:request|withdraw|get)\b.{0,24}\b(?:the\s+)?payout\b/i.test(t) ||
+      /\bwhen\s+can\s+i\s+request\b.{0,24}\bpayout\b/i.test(t),
+  },
+  {
+    id: 'faq.is-broker.en',
+    conf: 0.9,
+    test: (t) => /\b(?:are\s+you|is\s+funded\s*elite)\s+a\s+broker\b|\bbroker\b/i.test(t) && /funded|elite|you/i.test(t),
+  },
+  {
+    id: 'faq.free-trial.en',
+    conf: 0.9,
+    test: (t) => /free\s*trial|trial\s*account/i.test(t),
+  },
+];
+
+function preferLocale(answerId, lang) {
+  if (!lang || lang === 'en') return answerId;
+  const base = String(answerId).replace(/\.en$/, '');
+  const mapped = {
+    'ur-latn': base + '.ur-latn',
+    ur: base + '.ur-latn',
+    hi: base + '.ur-latn',
+    es: base + '.es',
+    ar: base + '.ar',
+  }[lang];
+  // approved.get only returns sendable (owner-approved) rows.
+  if (mapped && approved.get(mapped)) return mapped;
+  return answerId;
+}
+
+function sendableOrNull(answerId) {
+  if (!answerId) return null;
+  return approved.get(answerId) || null;
+}
+
+/**
+ * Deterministic + optional modelClassify. Model may return {answerId,confidence} only.
+ * Timeout / error / low confidence / unknown or non-sendable id → fail closed for that
+ * path (never invent prose). Deterministic cues may still select a sendable id.
+ * requireOwnerApproved defaults true: pending/provisional ids abstain.
+ */
+async function selectApprovedAnswer(text, opts) {
+  opts = opts || {};
+  const requireOwner = opts.requireOwnerApproved !== false;
+  const raw = String(text || '').trim();
+  if (!raw) return { abstain: true, reason: 'empty' };
+  // Gates that must run before any Atom or V12 FAQ answer:
+  if (opts.aiOff) return { abstain: true, reason: 'aiOff' };
+  if (opts.stop) return { abstain: true, reason: 'STOP' };
+  if (opts.finWait) return { abstain: true, reason: 'fin-wait' };
+  if (opts.protectedTeam) return { abstain: true, reason: 'protected-team-silence' };
+  if (accountStatusAsk(raw)) return { abstain: true, reason: 'account-status-boundary' };
+  if (opts.humanOwns && payoutConsistencyAsk(raw)) return { abstain: true, reason: 'backend-adjacent-payout' };
+
+  const lang = opts.langHint || detectLangHint(raw);
+  const prod = productHint(raw);
+
+  // Atom intercept only when EXTRA is enabled. Flag-off → live V12 select path.
+  if (
+    atomExtraEnabled() &&
+    (isAtomScopedText(raw, opts.priorClientTexts) || String(prod).startsWith('atom'))
+  ) {
+    const atomSel = getAtomSelect();
+    if (atomSel && typeof atomSel.selectAtomAnswer === 'function') {
+      const atomRes = await atomSel.selectAtomAnswer(raw, {
+        ...opts,
+        langHint: lang,
+        requireOwnerApproved: requireOwner,
+      });
+      if (atomRes && !atomRes.abstain) {
+        // Delivery allowlist must already contain the Atom id via EXTRA merge.
+        if (!sendableOrNull(atomRes.answerId)) {
+          return {
+            abstain: true,
+            reason: 'atom-answer-not-in-sendable-allowlist',
+            answerId: atomRes.answerId,
+            failClosed: true,
+            handoff: true,
+          };
+        }
+        return {
+          abstain: false,
+          answerId: atomRes.answerId,
+          confidence: atomRes.confidence,
+          reason: atomRes.reason || 'atom-select',
+          lang: atomRes.lang || lang,
+          contentHash: atomRes.contentHash,
+          intentTags: atomRes.intentTags || [],
+          atom: true,
+        };
+      }
+      return {
+        abstain: true,
+        reason: (atomRes && atomRes.reason) || 'atom-no-exact-approved-answer',
+        failClosed: true,
+        handoff: !!(atomRes && atomRes.handoff),
+        answerId: atomRes && atomRes.answerId,
+        lang,
+        atom: true,
+      };
+    }
+    // Atom-scoped but adapter missing → fail closed (do not answer with generic FAQ).
+    return { abstain: true, reason: 'atom-adapter-unavailable', failClosed: true, handoff: true, lang };
+  }
+
+  const surface = raw
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  let best = null;
+  for (const s of SELECTORS) {
+    if (!s.test(raw, surface, prod) && !s.test(surface, surface, prod)) continue;
+    if (!sendableOrNull(s.id)) continue; // skip cues that only map to pending catalog rows
+    if (!best || s.conf > best.conf) best = { answerId: s.id, confidence: s.conf, reason: 'deterministic-cue' };
+  }
+
+  // Contextual follow-up: "and the daily loss for that?" with product in history.
+  if (!best && opts.priorClientTexts && /^(?:and|also)\b/i.test(raw) && /daily|loss|limit/i.test(raw)) {
+    const hist = (opts.priorClientTexts || []).join('\n');
+    const hp = productHint(hist) || productHint(raw);
+    if (/daily|loss|limit/i.test(raw)) {
+      let cid = null;
+      if (hp === '2step-lite') cid = 'faq.2step-lite.daily-loss.en';
+      else if (hp === '2step') cid = 'faq.2step.daily-loss.en';
+      else cid = 'faq.daily-loss.generic.en';
+      if (sendableOrNull(cid)) best = { answerId: cid, confidence: 0.84, reason: 'contextual-followup' };
+      // else leave best null → abstain (generic pending must not ship)
+    }
+  }
+
+  if (typeof opts.modelClassify === 'function') {
+    let modelOutcome = null;
+    try {
+      const ms = Math.max(50, Number(opts.classifyTimeoutMs) || 1200);
+      const classified = await Promise.race([
+        Promise.resolve(opts.modelClassify(raw, { lang, prod, sendableIds: approved.list().map((a) => a.id) })),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('select-timeout')), ms)),
+      ]);
+      if (!classified || !classified.answerId) {
+        modelOutcome = { abstain: true, reason: 'classifier-empty' };
+      } else if (!sendableOrNull(classified.answerId)) {
+        // Unknown id OR pending/non-sendable — fail closed for model path.
+        modelOutcome = { abstain: true, reason: 'classifier-unknown-or-nonsendable', answerId: classified.answerId };
+      } else {
+        const conf = Number(classified.confidence);
+        if (!Number.isFinite(conf) || conf < CONFIDENCE_THRESHOLD) {
+          modelOutcome = { abstain: true, reason: 'classifier-low-confidence', answerId: classified.answerId, confidence: conf };
+        } else {
+          modelOutcome = {
+            abstain: false,
+            answerId: classified.answerId,
+            confidence: conf,
+            reason: 'model-classify',
+          };
+        }
+      }
+    } catch (e) {
+      modelOutcome = {
+        abstain: true,
+        reason: String(e && e.message) === 'select-timeout' ? 'classifier-timeout' : 'classifier-error',
+      };
+    }
+    if (modelOutcome && !modelOutcome.abstain) {
+      if (!best || modelOutcome.confidence >= best.confidence) {
+        best = modelOutcome;
+      }
+    }
+    // Model fail-closed never invents prose; deterministic sendable cue may remain.
+    if (opts.modelRequired && modelOutcome && modelOutcome.abstain && !best) {
+      return { abstain: true, reason: modelOutcome.reason, lang };
+    }
+  }
+
+  if (!best) return { abstain: true, reason: 'no-confident-match', lang };
+  if (best.confidence < CONFIDENCE_THRESHOLD) {
+    return { abstain: true, reason: 'below-threshold', lang, confidence: best.confidence, answerId: best.answerId };
+  }
+
+  const answerId = preferLocale(best.answerId, lang);
+  const row = sendableOrNull(answerId);
+  if (!row) {
+    // Pending / provisional / unknown → abstain (handoff / silence).
+    const any = approved.getAny(answerId);
+    if (any && !approved.isSendableRow(any)) {
+      return { abstain: true, reason: 'needs-owner-approval', answerId };
+    }
+    return { abstain: true, reason: 'unknown-answer-id', answerId };
+  }
+  if (requireOwner && !approved.isSendableRow(row)) {
+    return { abstain: true, reason: 'needs-owner-approval', answerId };
+  }
+  return {
+    abstain: false,
+    answerId,
+    confidence: best.confidence,
+    reason: best.reason,
+    lang,
+    contentHash: row.contentHash,
+    intentTags: row.intentTags.slice(),
+  };
+}
+
+module.exports = {
+  CONFIDENCE_THRESHOLD,
+  detectLangHint,
+  productHint,
+  accountStatusAsk,
+  payoutConsistencyAsk,
+  selectApprovedAnswer,
+  preferLocale,
+  isAtomScopedText,
+  atomExtraEnabled,
+};

@@ -1,0 +1,281 @@
+{
+  "totals": {
+    "pass": 1322,
+    "total": 1322,
+    "fail": 0
+  },
+  "generalControls": {
+    "total": 79,
+    "answered": 79,
+    "refuse": 0,
+    "handoff": 0,
+    "abstain": 0,
+    "wrong": 0,
+    "noScopeAnswered": 60
+  },
+  "mustStayGeneral": {
+    "total": 13,
+    "answered": 0,
+    "miss": 0
+  },
+  "categories": {
+    "catalog:json-hash": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "catalog:matches-baseline": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "catalog:44-english-base-rows": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "catalog:40-sendable": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "catalog:all-sendable-are-english": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "catalog:non-sendable-rows": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "catalog:translations-non-sendable": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "controls:cover-all-40-sendable-ids": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "config:off-by-default": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "config:off-by-default-empty-opts": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "config:enabled-false-explicit": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "config:enabled-truthy-string-not-enough": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "config:default-config-frozen-off": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "control-gates": {
+      "total": 5,
+      "pass": 5,
+      "fail": 0
+    },
+    "language-gate:absent-fails-closed": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "language-gate:malformed-or-negative-fails-closed": {
+      "total": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    "language-gate:valid-allows": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "language-gate:en-subtag": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "pregate:non-string-input-blocked": {
+      "total": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "pregate:productSelectPermitted-fail-closed": {
+      "total": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "pregate:productSelectPermitted-true-only-for-real-permit": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "pregate:overlong-input-blocked": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "pregate:no-pathological-latency": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "general-controls": {
+      "total": 79,
+      "pass": 79,
+      "fail": 0
+    },
+    "must-stay-general:gate-permits": {
+      "total": 13,
+      "pass": 13,
+      "fail": 0
+    },
+    "must-stay-general:selects": {
+      "total": 9,
+      "pass": 9,
+      "fail": 0
+    },
+    "boundary-controls": {
+      "total": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "missing-report-routes-to-missing-reward": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "personal-en": {
+      "total": 58,
+      "pass": 58,
+      "fail": 0
+    },
+    "implicit-dropped-subject": {
+      "total": 30,
+      "pass": 30,
+      "fail": 0
+    },
+    "third-person-self": {
+      "total": 14,
+      "pass": 14,
+      "fail": 0
+    },
+    "confirm-without-possessive": {
+      "total": 8,
+      "pass": 8,
+      "fail": 0
+    },
+    "unicode-zwsp-homoglyph": {
+      "total": 20,
+      "pass": 20,
+      "fail": 0
+    },
+    "mixed": {
+      "total": 20,
+      "pass": 20,
+      "fail": 0
+    },
+    "allow-list-bait": {
+      "total": 18,
+      "pass": 18,
+      "fail": 0
+    },
+    "strict:personal-refuse-or-handoff": {
+      "total": 58,
+      "pass": 58,
+      "fail": 0
+    },
+    "strict:mixed-refuse-or-handoff": {
+      "total": 20,
+      "pass": 20,
+      "fail": 0
+    },
+    "strict:third-person-refuse-or-handoff": {
+      "total": 14,
+      "pass": 14,
+      "fail": 0
+    },
+    "unicode-general-obfuscated-fail-closed": {
+      "total": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "non-english:abstain-with-permissive-gate": {
+      "total": 34,
+      "pass": 34,
+      "fail": 0
+    },
+    "non-english:abstain-with-negative-gate": {
+      "total": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    "non-english:abstain-without-gate": {
+      "total": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    "multi-turn:blocked": {
+      "total": 24,
+      "pass": 24,
+      "fail": 0
+    },
+    "multi-turn:general-resolves": {
+      "total": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "multi-turn:explicit-general-answered": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "combinatorial-general+personal": {
+      "total": 800,
+      "pass": 800,
+      "fail": 0
+    },
+    "scope:tags-never-enable-nonsendable": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "scope:tag-can-narrow": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "scope:sendable-flag-alone-cannot-enable": {
+      "total": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "scope:selector-never-emits-nonsendable": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "scope:selector-never-emits-nonsendable-free-tier": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "criticalLeaks": [],
+  "falseRefusals": [],
+  "failures": []
+}

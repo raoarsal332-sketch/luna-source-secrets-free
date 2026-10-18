@@ -1,0 +1,127 @@
+{
+  "task": "t739",
+  "module": "atom",
+  "frozen": "2026-10-18T13:41:40.631Z",
+  "files": [
+    {
+      "path": "INTERFACE.md",
+      "bytes": 7755,
+      "sha256": "8251be00eb4883c8e9071317a2871f594b264f7d67ded938622555ccb9cb7de0"
+    },
+    {
+      "path": "REPORT_T739_ATOM.md",
+      "bytes": 12258,
+      "sha256": "4f6c1ce9cfb27ae6367431a8ea537d117d81960104ac87b78735312c8cc049fe"
+    },
+    {
+      "path": "artifacts/final_test_run.txt",
+      "bytes": 2924,
+      "sha256": "84c20b20b882d301bb2946de2d600256188f915b64b549299020021355fb11ea"
+    },
+    {
+      "path": "atomAnswerScope.js",
+      "bytes": 5739,
+      "sha256": "16a8d8b0ac11603a1ae2684b261921f838b302a30212b922938c012f0389f406"
+    },
+    {
+      "path": "atomAnswerSelect.js",
+      "bytes": 32223,
+      "sha256": "e410ee49bf713727346e9c3fc6913814852d3ed235d77cdc59c3532ecb5fb618"
+    },
+    {
+      "path": "atomApprovedAnswers.js",
+      "bytes": 4729,
+      "sha256": "5008e3343dad76eb77cc0a4cd595b07a79ba134904c018e3320a8d85d5ccdbd8"
+    },
+    {
+      "path": "atomMoneyFrame.js",
+      "bytes": 19052,
+      "sha256": "0e29e7c31826dccd08828ee6eae1efda56b0976976d7ebc2900b0579ed1de0be"
+    },
+    {
+      "path": "baseline/ATOM_FIX2_INDEPENDENT_REVIEW.md",
+      "bytes": 15682,
+      "sha256": "714d4bc0372cceb66a4a8dad434d0c1810f750c81cbba2ffb3186a54084a7f3e"
+    },
+    {
+      "path": "baseline/ATOM_V12_REBASE_FIX2_STAGING_REPORT.md",
+      "bytes": 7633,
+      "sha256": "c2d9f0129b506f99cf4185230bc85172ccdc8c573b5961ad31dfccef69e1df1f"
+    },
+    {
+      "path": "baseline/INTERFACE_REQUEST.orig.md",
+      "bytes": 1972,
+      "sha256": "c90c7dcea847ce531ed8340de6d277eb42e49e07c5d6f748e89a3ab987961710"
+    },
+    {
+      "path": "baseline/atomAnswerSelect.baseline.dd3b9f79.js",
+      "bytes": 21158,
+      "sha256": "dd3b9f79c002a8c04ba8298aab5eca3ba6f187c86a0e23dcf89fa60041d9473f"
+    },
+    {
+      "path": "baseline/faqAnswerSelect.atomwired.fc752a47.js",
+      "bytes": 14948,
+      "sha256": "fc752a472bd691713127b7fafdd40dba98eb669ae777a5578a1085484a070deb"
+    },
+    {
+      "path": "faq-approved-answers-atom-v1.json",
+      "bytes": 148077,
+      "sha256": "df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6"
+    },
+    {
+      "path": "tests/author_suite.js",
+      "bytes": 18176,
+      "sha256": "b0b1064bdfac085c5cd182b75cdfe34600744bdf2604aab904eedef049f935c4"
+    },
+    {
+      "path": "tests/author_suite.test.js",
+      "bytes": 1827,
+      "sha256": "f9abe58fa24fe86026e962334e40438429d3041399e812383f0fb90b5ccbecb0"
+    },
+    {
+      "path": "tests/baseline_compare.js",
+      "bytes": 1419,
+      "sha256": "fe338b565da794fb65d0a4c8c4ca9f3ee37c83d5428021fadecd4dacc9027ce2"
+    },
+    {
+      "path": "tests/baseline_loader.js",
+      "bytes": 708,
+      "sha256": "540bbb0845f548be0cd1947f565f2fcf6358a88e87c93555a6e117bf7397cd29"
+    },
+    {
+      "path": "tests/cases/adversarial.js",
+      "bytes": 15450,
+      "sha256": "d5178d1bbd18205d613c57b28d5922c8c456fe7495019c1507981cd05bfd1f58"
+    },
+    {
+      "path": "tests/cases/controls.js",
+      "bytes": 13005,
+      "sha256": "1e40ed595b73cd18a0779f8dd201975302d03659294182e57462cd64b17850f7"
+    },
+    {
+      "path": "tests/cases/general.js",
+      "bytes": 4372,
+      "sha256": "6ff5a1073614d1a3e846f1bf60383de9c966a41ad113f1be064e119064e2bc8e"
+    },
+    {
+      "path": "tests/cases/probes.js",
+      "bytes": 2224,
+      "sha256": "3f3d5d452c8679f7554ee0a397a1ee4cfb2122e35b61a3c2b7f5f1b43bacae90"
+    },
+    {
+      "path": "tests/harness.js",
+      "bytes": 1514,
+      "sha256": "22e78f2b66e0199b7bc82c63b84490e071b156d41518d4723b551db2f06e0f67"
+    },
+    {
+      "path": "tests/report_counts.js",
+      "bytes": 1041,
+      "sha256": "14477422c9682cc0b9f635ddab0472652078c95b172200d2fe22e025ce296f26"
+    },
+    {
+      "path": "tests/run_all.sh",
+      "bytes": 367,
+      "sha256": "2b2d692437d6b679de1f99b661f4d774cd4725eb3f3fb265b03d24a4835a6e95"
+    }
+  ]
+}
