@@ -1,5 +1,7 @@
 # T739 Elite Atom module: implementation author report
 
+Cycle 1 remediation (actual model Grok 4.7; requested Claude Sonnet 5.5) is in `REMEDIATION_R1_NOTES.md`. The counts below are the pre-cycle-1 freeze. Cycle 1 does not claim PASS.
+
 Status: CANDIDATE, FROZEN. This report does not claim PASS. My own tests were written by me and were iterated against, so they cannot show acceptance. The independent sealed cases are withheld and still have to run.
 
 Scope: NON-PRODUCTION staging only. I did not use SSH, a VPS, production, Intercom or any external API. I used no real customer data or credentials, and I did no deployment. Atom stays OFF by default and turns on only with `opts.enabled === true` or `LUNA_ATOM_SELECTOR_ENABLED=1` in an isolated test config.

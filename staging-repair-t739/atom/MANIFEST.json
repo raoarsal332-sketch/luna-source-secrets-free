@@ -1,17 +1,33 @@
 {
   "task": "t739",
   "module": "atom",
-  "frozen": "2026-10-18T13:41:40.631Z",
+  "cycle": 1,
+  "frozen": "2026-10-18T18:05:58.826Z",
   "files": [
     {
       "path": "INTERFACE.md",
-      "bytes": 7755,
-      "sha256": "8251be00eb4883c8e9071317a2871f594b264f7d67ded938622555ccb9cb7de0"
+      "bytes": 9276,
+      "sha256": "0dd390fde054aaa91a1933e7415d6f57dbdf801a0217f10369da608040df8776"
+    },
+    {
+      "path": "REMEDIATION_R1_NOTES.md",
+      "bytes": 7781,
+      "sha256": "6d90199742de90323a408d6fea8a4954c0fe00c656d3c8a4e8a1dc0c57fd7168"
     },
     {
       "path": "REPORT_T739_ATOM.md",
-      "bytes": 12258,
-      "sha256": "4f6c1ce9cfb27ae6367431a8ea537d117d81960104ac87b78735312c8cc049fe"
+      "bytes": 12439,
+      "sha256": "d1aa76b28833839700987ef13888daec2425b5668c9cbe3e0ef730e5dd360857"
+    },
+    {
+      "path": "artifacts/cycle1_final_test_run.txt",
+      "bytes": 2943,
+      "sha256": "a4c0415f9fb036982ac10c4a12ea5a7bd99c9ffa26a2c481160fdb050cbd0a2e"
+    },
+    {
+      "path": "artifacts/cycle1_varied_BEFORE_fix.txt",
+      "bytes": 9041,
+      "sha256": "f231c23408f7c55c7994233c1c978bf945425a2025ab1751f2208d481f4ac42b"
     },
     {
       "path": "artifacts/final_test_run.txt",
@@ -20,13 +36,13 @@
     },
     {
       "path": "atomAnswerScope.js",
-      "bytes": 5739,
-      "sha256": "16a8d8b0ac11603a1ae2684b261921f838b302a30212b922938c012f0389f406"
+      "bytes": 5772,
+      "sha256": "8f2d3672680e33978f17532ebd11edda926ee2337c24821dfcd95839ceafde63"
     },
     {
       "path": "atomAnswerSelect.js",
-      "bytes": 32223,
-      "sha256": "e410ee49bf713727346e9c3fc6913814852d3ed235d77cdc59c3532ecb5fb618"
+      "bytes": 39451,
+      "sha256": "b204fc2871b1536d3c15fde123f37e2cfeb0e3105cea8f1d3085fb3dbb5883e1"
     },
     {
       "path": "atomApprovedAnswers.js",
@@ -35,8 +51,8 @@
     },
     {
       "path": "atomMoneyFrame.js",
-      "bytes": 19052,
-      "sha256": "0e29e7c31826dccd08828ee6eae1efda56b0976976d7ebc2900b0579ed1de0be"
+      "bytes": 19126,
+      "sha256": "cf40e0fceca039a96066915ffc05e8a2a36eaf56f824a0ff9bc5265d2c32f721"
     },
     {
       "path": "baseline/ATOM_FIX2_INDEPENDENT_REVIEW.md",
@@ -70,13 +86,13 @@
     },
     {
       "path": "tests/author_suite.js",
-      "bytes": 18176,
-      "sha256": "b0b1064bdfac085c5cd182b75cdfe34600744bdf2604aab904eedef049f935c4"
+      "bytes": 19244,
+      "sha256": "a90d38132f3cd9876c67b4c1869ada192bdef5a2e599e5fda475426a118875c2"
     },
     {
       "path": "tests/author_suite.test.js",
-      "bytes": 1827,
-      "sha256": "f9abe58fa24fe86026e962334e40438429d3041399e812383f0fb90b5ccbecb0"
+      "bytes": 1864,
+      "sha256": "d2133ee2f187d1c50933b9bdaf80b7cb1297f3bd4f14271d8758a0f00b5a096a"
     },
     {
       "path": "tests/baseline_compare.js",
@@ -100,8 +116,8 @@
     },
     {
       "path": "tests/cases/general.js",
-      "bytes": 4372,
-      "sha256": "6ff5a1073614d1a3e846f1bf60383de9c966a41ad113f1be064e119064e2bc8e"
+      "bytes": 4409,
+      "sha256": "2c610ca3b23a6d2f1793e24b1326ca9f918e981e01150293ddddcc0bd435cfcc"
     },
     {
       "path": "tests/cases/probes.js",
@@ -109,9 +125,19 @@
       "sha256": "3f3d5d452c8679f7554ee0a397a1ee4cfb2122e35b61a3c2b7f5f1b43bacae90"
     },
     {
+      "path": "tests/cases/varied.js",
+      "bytes": 24031,
+      "sha256": "4906fb9e8716261f737c1931627fcdfc7ac500aaa17ca7b6bdd6c6b6b65a2df3"
+    },
+    {
       "path": "tests/harness.js",
       "bytes": 1514,
       "sha256": "22e78f2b66e0199b7bc82c63b84490e071b156d41518d4723b551db2f06e0f67"
+    },
+    {
+      "path": "tests/measure_varied.js",
+      "bytes": 877,
+      "sha256": "ef3fde22c122f58ddac95968b04164444f16b7d196839a890cfba7645f9b4af5"
     },
     {
       "path": "tests/report_counts.js",
