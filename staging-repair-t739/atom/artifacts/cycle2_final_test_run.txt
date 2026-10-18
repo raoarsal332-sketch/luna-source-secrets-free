@@ -1,0 +1,167 @@
+v22.14.0
+TAP version 13
+# \# general: total=45 falseRefusals=0 -> []
+# \# wrapper-stability: total=744 unchanged=744
+# \# {"kb":{"total":16,"pass":16,"fail":0,"leaks":0,"falseRefusals":0},"controls":{"total":248,"pass":248,"fail":0,"leaks":0,"falseRefusals":0},"money-confusion":{"total":50,"pass":50,"fail":0,"leaks":0,"falseRefusals":0},"unresolved":{"total":12,"pass":12,"fail":0,"leaks":0,"falseRefusals":0},"discriminate":{"total":31,"pass":31,"fail":0,"leaks":0,"falseRefusals":0},"account-specific":{"total":6,"pass":6,"fail":0,"leaks":0,"falseRefusals":0},"multi-turn":{"total":20,"pass":20,"fail":0,"leaks":0,"falseRefusals":0},"unicode":{"total":16,"pass":16,"fail":0,"leaks":0,"falseRefusals":0},"non-english":{"total":15,"pass":15,"fail":0,"leaks":0,"falseRefusals":0},"gating":{"total":27,"pass":27,"fail":0,"leaks":0,"falseRefusals":0},"robustness":{"total":13,"pass":13,"fail":0,"leaks":0,"falseRefusals":0},"general":{"total":45,"pass":45,"fail":0,"leaks":0,"falseRefusals":0},"varied-supported":{"total":295,"pass":295,"fail":0,"leaks":0,"falseRefusals":0},"varied-deny":{"total":38,"pass":38,"fail":0,"leaks":0,"falseRefusals":0},"probes-novel":{"total":30,"pass":30,"fail":0,"leaks":0,"falseRefusals":0},"fee-sweep":{"total":3200,"pass":3200,"fail":0,"leaks":0,"falseRefusals":0},"mixed-sweep":{"total":992,"pass":992,"fail":0,"leaks":0,"falseRefusals":0},"wrapper-stability(info)":{"total":744,"pass":744,"fail":0,"leaks":0,"falseRefusals":0}}
+# Subtest: author set: kb
+ok 1 - author set: kb
+  ---
+  duration_ms: 425.945818
+  ...
+# Subtest: author set: controls
+ok 2 - author set: controls
+  ---
+  duration_ms: 0.220105
+  ...
+# Subtest: author set: money-confusion
+ok 3 - author set: money-confusion
+  ---
+  duration_ms: 0.442216
+  ...
+# Subtest: author set: unresolved
+ok 4 - author set: unresolved
+  ---
+  duration_ms: 0.152746
+  ...
+# Subtest: author set: discriminate
+ok 5 - author set: discriminate
+  ---
+  duration_ms: 0.146609
+  ...
+# Subtest: author set: account-specific
+ok 6 - author set: account-specific
+  ---
+  duration_ms: 0.08157
+  ...
+# Subtest: author set: multi-turn
+ok 7 - author set: multi-turn
+  ---
+  duration_ms: 0.117671
+  ...
+# Subtest: author set: unicode
+ok 8 - author set: unicode
+  ---
+  duration_ms: 0.077948
+  ...
+# Subtest: author set: non-english
+ok 9 - author set: non-english
+  ---
+  duration_ms: 0.227959
+  ...
+# Subtest: author set: gating
+ok 10 - author set: gating
+  ---
+  duration_ms: 0.279103
+  ...
+# Subtest: author set: robustness
+ok 11 - author set: robustness
+  ---
+  duration_ms: 0.129417
+  ...
+# Subtest: author set: probes-novel
+ok 12 - author set: probes-novel
+  ---
+  duration_ms: 0.073757
+  ...
+# Subtest: author set: fee-sweep
+ok 13 - author set: fee-sweep
+  ---
+  duration_ms: 0.169802
+  ...
+# Subtest: author set: mixed-sweep
+ok 14 - author set: mixed-sweep
+  ---
+  duration_ms: 0.079311
+  ...
+# Subtest: author set: varied-supported
+ok 15 - author set: varied-supported
+  ---
+  duration_ms: 0.065744
+  ...
+# Subtest: author set: varied-deny
+ok 16 - author set: varied-deny
+  ---
+  duration_ms: 0.059473
+  ...
+# Subtest: zero sendable leaks on every deny-class set
+ok 17 - zero sendable leaks on every deny-class set
+  ---
+  duration_ms: 0.167743
+  ...
+# Subtest: no abstain/clarify/handoff result ever carries an answerId
+ok 18 - no abstain/clarify/handoff result ever carries an answerId
+  ---
+  duration_ms: 0.349356
+  ...
+# Subtest: false refusals on general questions are reported, not gated
+ok 19 - false refusals on general questions are reported, not gated
+  ---
+  duration_ms: 0.373961
+  ...
+# Subtest: wrapper stability is informational
+ok 20 - wrapper stability is informational
+  ---
+  duration_ms: 0.248802
+  ...
+# Subtest: summary
+ok 21 - summary
+  ---
+  duration_ms: 0.631874
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 480.742697
+--- raw counts per set
+set                total  pass  fail  leaks  falseRefusals
+kb                    16    16     0      0        0
+controls             248   248     0      0        0
+money-confusion       50    50     0      0        0
+unresolved            12    12     0      0        0
+discriminate          31    31     0      0        0
+account-specific       6     6     0      0        0
+multi-turn            20    20     0      0        0
+unicode               16    16     0      0        0
+non-english           15    15     0      0        0
+gating                27    27     0      0        0
+robustness            13    13     0      0        0
+general               45    45     0      0        0
+varied-supported     295   295     0      0        0
+varied-deny           38    38     0      0        0
+probes-novel          30    30     0      0        0
+fee-sweep           3200  3200     0      0        0
+mixed-sweep          992   992     0      0        0
+wrapper-stability(info)   744   744     0      0        0
+TOTAL 5798 pass 5798 fail 0
+--- baseline (dd3b9f79) vs corrected
+{
+  "denyCases": 80,
+  "baselineSendableLeaks": 16,
+  "baselineLeakIds": [
+    "MC01->atom.prices.list.en",
+    "MC02->atom.prices.list.en",
+    "MC03->atom.prices.list.en",
+    "MC04->atom.prices.list.en",
+    "MC05->atom.prices.list.en",
+    "MC06->atom.prices.list.en",
+    "MC07->atom.account-status.refuse.en",
+    "MC16->atom.account-status.refuse.en",
+    "MC36->atom.account-status.refuse.en",
+    "MC37->atom.account-status.refuse.en",
+    "MC38->atom.account-status.refuse.en",
+    "MC39->atom.account-status.refuse.en",
+    "MC40->atom.prices.list.en",
+    "PR13->atom.account-status.refuse.en",
+    "PR17->atom.account-status.refuse.en",
+    "PR27->atom.prices.list.en"
+  ],
+  "correctedSendableLeaks": 0,
+  "generalAnswerExpected": 36,
+  "baselineFalseRefusals": 13,
+  "correctedFalseRefusals": 0
+}

@@ -1,6 +1,6 @@
 # T739 Elite Atom module: implementation author report
 
-Cycle 1 remediation (actual model Grok 4.7; requested Claude Sonnet 5.5) is in `REMEDIATION_R1_NOTES.md`. The counts below are the pre-cycle-1 freeze. Cycle 1 does not claim PASS.
+Cycle 2 of 2 (final; actual model Grok 4.7) is in `REMEDIATION_R2_NOTES.md`. Cycle 1 (actual model Grok 4.7; requested Claude Sonnet 5.5) is in `REMEDIATION_R1_NOTES.md`. The counts below are the pre-cycle-1 freeze. Neither cycle claims PASS. The next step is an architecture reassessment, not more selector tuning.
 
 Status: CANDIDATE, FROZEN. This report does not claim PASS. My own tests were written by me and were iterated against, so they cannot show acceptance. The independent sealed cases are withheld and still have to run.
 
