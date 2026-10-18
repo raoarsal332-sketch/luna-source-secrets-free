@@ -359,7 +359,9 @@ function isIndirectQuestionComplement(left) {
     .replace(/^(?:(?:please|kindly|now|just|also)\s+)+/, '')
     .replace(/^(?:can|could|would|will)\s+you\s+(?:please\s+|kindly\s+)?/, '')
     .trim();
-  return /^(?:check|confirm|verify|validate|see|look)(?:\s+(?:for\s+me|please|up|into|at|now))?$/.test(t);
+  return /^(?:check|confirm|verify|validate|see|look)(?:\s+(?:for\s+me|please|up|into|at|now))?$/.test(t)
+    || /^(?:tell|ask)\s+me$/.test(t)
+    || /^(?:let\s+me\s+know|i\s+(?:want|need)\s+to\s+know|i\s+am\s+not\s+sure|know|wonder|not\s+sure)$/.test(t);
 }
 
 /**
@@ -686,6 +688,79 @@ function neutralizeRuleActor(s) {
   return w.replace(/\s+/g, ' ').trim();
 }
 
+function requestsOwnAccountState(s, intro) {
+  // A fronted "if I …" is a hypothetical, not a request to read the account,
+  // unless the clause is itself a lookup ("verify if … is in the collection").
+  if ((intro === 'if' || intro === 'unless') && !LOOKUP_RE.test(s) && !/\b(?:verify|confirm|check|validate)\b/.test(s)) {
+    const embeddedPossession = /\b(?:i|we)\s+(?:own|hold)\b/.test(s) || /\bmine\b/.test(s) || /\b(?:did|have|has)\s+(?:i|we)\s+(?:get|got|receive|own)\b/.test(s);
+    if (!embeddedPossession) return false;
+  }
+  if (/\b(?:know|wonder)\s+if\b/.test(s)) return true;
+  if (/\bnothing\s+on\s+my\b/.test(s)) return false;
+  if (/\b(?:credits?|cards?|packs?|balance)\s+(?:i|we)\s+have\b/.test(s)) return true;
+  if (/\bwith\s+(?:what\s+)?(?:i|we)\s+have\b/.test(s)) return true;
+  if (/\b(?:check|confirm|verify|validate)\b/.test(s) && !/\bcheckout\b/.test(s)) {
+    if (/\b(?:if|whether|my|our|status|balance|collection|inventory)\b/.test(s)) return true;
+    if (/^(?:please\s+|kindly\s+)?(?:can\s+you\s+|could\s+you\s+|would\s+you\s+|will\s+you\s+)?(?:please\s+|kindly\s+)?(?:check|confirm|verify|validate)\b/.test(s)) return true;
+  }
+  // Present "do I own/have" is possession. "how do I open/buy/get" is a procedure and must not match.
+  if (/(?<!how\s)(?<!what\s)\b(?:do|does)\s+(?:i|we)\s+(?:still\s+|already\s+|even\s+|not\s+)?(?:have|own|hold|possess|qualify)\b/.test(s) && !/\bhave\s+to\b/.test(s) && !/\bneed\s+to\b/.test(s)) return true;
+  if (/\b(?:did|have|has|had)\s+(?:i|we)\s+(?:just\s+|already\s+|ever\s+|not\s+)?(?:get|got|receive|received|pull|pulled|buy|bought|earn|earned|unlock|unlocked|open|opened)\b/.test(s)) return true;
+  if (/\bhow\s+(?:many|much)\b/.test(s) && /\b(?:do\s+(?:i|we)\s+have|have\s+(?:i|we)|left|remaining|balance)\b/.test(s) && /\b(?:i|we|my|our)\b/.test(s)) return true;
+  if (/\b(?:is|are|was|were)\s+(?:my|our)\b/.test(s) && !RULE_PROPERTY_RE.test(s)) return true;
+  if (/\b(?:is|are|was|were)\s+(?:mine|ours)\b/.test(s) || /\bbelongs?\s+to\s+me\b/.test(s)) return true;
+  if (/\bwhere\s+(?:is|are|did)\s+(?:my|our)\b/.test(s)) return true;
+  if (/^(?:please\s+|kindly\s+)?(?:show|list|display|pull\s+up)\b/.test(s) && /\b(?:my|i|we)\b/.test(s)) return true;
+  if (/\b(?:what|which)\b(?:\s+\w+){0,6}\s+(?:do|did|have|has)\s+(?:i|we)\s+(?:own|have|hold|got)\b/.test(s)) return true;
+  if (/\bwhat\s+(?:is|are)\s+my\b/.test(s) || /\bwhat\s+is\s+in\s+my\b/.test(s)) return true;
+  if (/\bstatus\s+of\s+(?:my|our)\b/.test(s) || (/\bstatus\b/.test(s) && /\b(?:my|our)\b/.test(s))) return true;
+  if (/\b(?:when\s+)?will\s+(?:i|we)\s+(?:get|receive)\s+my\b/.test(s)) return true;
+  if (/\b(?:am\s+i|are\s+we)\s+(?:eligible|able|qualified)\b/.test(s) || /\b(?:do|did)\s+(?:i|we)\s+qualify\b/.test(s)) return true;
+  if (/\bhow\s+(?:do|can|to)\s+(?:i|we)\s+(?:know|check|see|tell)\b/.test(s) && /\b(?:own|have|balance|status|if|whether)\b/.test(s)) return true;
+  if (/\bhow\s+(?:do|can|to)\s+(?:i|we)\s+(?:get|receive)\s+my\b/.test(s) && NAMED_CARD_RE.test(s)) return true;
+  if (/\b(?:can|could|will|would)\s+(?:i|we)\s+(?:get|receive|have)\b/.test(s) && NAMED_CARD_RE.test(s) && !/\bhow\b/.test(s)) return true;
+  if (/\bhow\s+(?:many|much)\b/.test(s) && /\bcan\s+(?:i|we)\s+(?:get|have|own|pull|receive)\b/.test(s) && !/\b(?:per|each|every|single)\b/.test(s) && !/\bin\s+(?:a|an|one|each|every)\b/.test(s)) return true;
+  if (/\bin\s+my\s+(?:inventory|account|collection|dashboard|packs)\b/.test(s) && !/\bhow\s+(?:do|can|to)\s+(?:i|we)\s+(?:use|apply|open|find|see|get\s+to|reach)\b/.test(s)) return true;
+  if (/\b(?:is|are|was|were)\b/.test(s) && NAMED_CARD_RE.test(s) && /\b(?:unlocked|showing|live|active|available|added|granted|received|enabled|on)\b/.test(s) && !/\bwhat\s+(?:is|are|does)\b/.test(s)) return true;
+  if (/\bwhy\s+(?:do|did)\s+(?:i|we)\s+not\s+have\b/.test(s)) return true;
+  if (/\b(?:i|we)\s+(?:own|have|got|hold)\b/.test(s) && (NAMED_CARD_RE.test(s) || /\bit\b/.test(s))) return true;
+  if (/\b(?:i|we)\s+(?:think|am\s+not\s+sure|are\s+not\s+sure)\b/.test(s) && /\b(?:got|own|have|received)\b/.test(s)) return true;
+  if (/\b(?:he|she|him|his|her)\b/.test(s) && /\b(?:own|owns|have|has|got|get|eligible|unlock|receive|received)\b/.test(s)) return true;
+  if (/\b(?:this|that|the|my)\s+(?:\w+\s+){0,3}?(?:user|customer|client|trader|account|friend|login|holder|owner)\b/.test(s) && /\b(?:own|owns|have|has|got|get|eligible|qualify|unlock|unlocked|receive|received|entitled)\b/.test(s)) return true;
+  if (/\b(?:did|has|have|was|were)\s+(?:my|our)\b/.test(s)) return true;
+  if (/\b(?:cards?|credits?)\s+(?:i|we)\s+(?:currently\s+)?(?:hold|own|have)\b/.test(s)) return true;
+  if (/\bfor\s+me\b/.test(s) && /\b(?:collection|inventory|account|enabled|unlocked|active|showing)\b/.test(s)) return true;
+  if (/\bmine\b/.test(s)) return true;
+  if (/\bshowing\s+yet\b/.test(s) || /\bnot\s+unlocked\s+yet\b/.test(s)) return true;
+  if (/\b(?:does|did)\s+(?!the\b|a\b|an\b|this\b|that\b|my\b|our\b|it\b|pack\b|packs\b|card\b|cards\b|oracle\b|whale\b|ignition\b|breakout\b|subscription\b|plan\b|key\b|account\b|credit\b|credits\b)[a-z]+\s+(?:have|own|get|got)\b/.test(s)) return true;
+  if (/^(?:eligible|qualified)\b/.test(s) || /\bcredits?\s+left\b/.test(s) || /\bwhich\s+cards\s+are\s+unlocked\b/.test(s)) return true;
+  if (NAMED_CARD_RE.test(s) && /\b(?:unlocked|showing|granted|received|added)\b/.test(s) && !/\bwhat\s+(?:is|are|does)|how\s+(?:do|does|to)|who\s+can\b/.test(s)) return true;
+  return false;
+}
+
+function isHowOrRuleQuestion(s) {
+  if (/\b(?:what|how|when|where|why|who|which|whose)\b/.test(s)) return true;
+  if (/^(?:can|could|do|does|did|is|are|will|would|should|may|shall)\b/.test(s)) return true;
+  if (/\b(?:explain|describe|sketch|outline|define|summarize|summarise|rundown|big\s+picture|in\s+short|overview)\b/.test(s)) return true;
+  if (/\bwhat\s+happens\b/.test(s)) return true;
+  if (RULE_PROPERTY_RE.test(s)) return true;
+  if (/\b(?:difference|versus|vs)\b/.test(s)) return true;
+  if (/\b(?:give|tell)\s+me\b/.test(s) && /\b(?:about|rundown|picture|overview)\b/.test(s)) return true;
+  return false;
+}
+
+function anaphoraBlocksRule(s, ctx) {
+  if (!ANAPHORA_RE.test(s)) return false;
+  const resolved = !!(ctx && (ctx.priorGeneralItem || ctx.sameMessageGeneralItem) && !ctx.personalContextBlocks);
+  return !resolved;
+}
+
+function isNarrativeAside(s) {
+  if (requestsOwnAccountState(s, null)) return false;
+  if (NAMED_CARD_RE.test(s) && /\b(?:own|have|got|unlocked|showing)\b/.test(s)) return false;
+  return /\b(?:just\s+curious|nothing\s+on\s+my|i\s+(?:was|am)\s+(?:just\s+)?(?:reading|wondering|curious|asking|looking))\b/.test(s);
+}
+
 function interpretClause(clauseText, intro, ctx) {
   const reasons = [];
   const base = { text: clauseText, intro: intro || null };
@@ -727,9 +802,11 @@ function interpretClause(clauseText, intro, ctx) {
       reasons.push('refund-and-missing-in-one-clause');
       return done(VERDICT.AMBIGUOUS, { hasItem });
     }
-    // "can I still get a refund" is the rule (still = the rule continues). A status
-    // word or a lookup asks for the value of this customer's refund/missing item.
-    if (!isRuleFact(s) && (LOOKUP_RE.test(s) || (refundCue && refundStateQ) || (missingCue && missingStateQ))) {
+    // "can I still get a refund" is the rule. A status word asks for this
+    // customer's refund only when the clause refers to them. "Are opened packs
+    // still refundable?" does not.
+    const refundAboutThem = refundCue && refs && (LOOKUP_RE.test(s) || refundStateQ);
+    if (!isRuleFact(s) && ((LOOKUP_RE.test(s) && refs && (refundCue || missingCue)) || refundAboutThem || (missingCue && missingStateQ && refs))) {
       reasons.push(refundCue ? 'refund-state-query' : 'missing-state-query');
       return done(VERDICT.PERSONAL, { hasItem });
     }
@@ -745,6 +822,30 @@ function interpretClause(clauseText, intro, ctx) {
   if ((intro === 'if' || intro === 'whether') && /\b(?:is|are|was|were)\b/.test(s) && /\bin\s+(?:the\s+|my\s+|our\s+)?(?:collection|inventory|account|my\s*packs)\b/.test(s)) {
     reasons.push('indirect-presence-question');
     return done(VERDICT.PERSONAL, { hasItem });
+  }
+
+  // PERSONAL only with positive evidence that the customer wants their own
+  // account value. A how-it-works / what-is-the-rule question is GENERAL even
+  // when it uses I/my as the generic actor.
+  if (isNarrativeAside(s) && !isHowOrRuleQuestion(s)) {
+    reasons.push('narrative-aside');
+    return done(VERDICT.NEUTRAL, { hasItem: false });
+  }
+  if (requestsOwnAccountState(s, intro) || isStateFact(s)) {
+    reasons.push('positive-account-state');
+    return done(VERDICT.PERSONAL, { hasItem });
+  }
+  if ((intro === 'if' || intro === 'unless') && !LOOKUP_RE.test(s)) {
+    reasons.push('hypothetical-condition');
+    return done(VERDICT.GENERAL, { hasItem, frame: 'cond', anaphoric: false });
+  }
+  if (ctx && ctx.personalContextBlocks && (anaphoraBlocksRule(s, ctx) || /\b(?:why\s+not|what\s+about|how\s+about|the\s+rest)\b/.test(s) || (/\bhow\s+many\b/.test(s) && /\bleft\b/.test(s) && !/\bper\b/.test(s)))) {
+    reasons.push('ellipsis-in-personal-context');
+    return done(VERDICT.PERSONAL, { hasItem });
+  }
+  if (isHowOrRuleQuestion(s) && !anaphoraBlocksRule(s, ctx)) {
+    reasons.push('rule-question-default-general');
+    return done(VERDICT.GENERAL, { hasItem, frame: 'rule', anaphoric: false });
   }
 
   const fact = isStateFact(s) ? 'state' : isRuleFact(s) ? 'rule' : 'unknown';

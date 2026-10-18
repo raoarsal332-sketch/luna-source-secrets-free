@@ -26,7 +26,7 @@ When `r.abstain === true`, send nothing from Packs (fall through to the caller's
 
 ## 3. Routing (the ownership gate runs first, before any selector)
 
-`evaluateOwnershipPregate(text, opts)` interprets the message clause by clause (proposition, subject, requested fact, context, uncertainty). A clause is GENERAL only when the requested fact is the rule (what happens if I, can I still, are my credits withdrawable, does this feature change the outcome). It is PERSONAL when the requested fact is the value of this customer's account (do I have, was it added, is mine in the collection, how many credits do I have). A generic actor (I/me) does not by itself make a rule question personal, and a remaining possessive on the customer's container does not become a generic actor. Everything else is blocked.
+`evaluateOwnershipPregate(text, opts)` interprets the message clause by clause. A question about how something works or what the rule is defaults to GENERAL. PERSONAL requires positive evidence that the customer is asking for their own account value (possession, status, balance, delivery, or a specific item of theirs). `I` / `my` in a rule question is not that evidence. A hypothetical `if I …` is a condition, not a lookup. When a real account-state request is joined to a general question, the message is mixed and the module refuses rather than answering only the general part. A narrative aside that does not ask for an account value is ignored.
 
 | gate kind | result |
 | --- | --- |
@@ -35,7 +35,7 @@ When `r.abstain === true`, send nothing from Packs (fall through to the caller's
 | `ambiguous-account-status` | `packs.handoff.unverified.en` |
 | `refund` | `packs.refunds-legal.en` |
 | `missing-item` | `packs.missing-reward.en` |
-| `not-personal` | product selector, then clause-coverage check. A condition clause is not a second intent. A general clause that selects nothing is kept when it names no Packs item, when the chosen selector also matches that clause, or when a condition clause selects the same row. A clause that selects a different id is a handoff. No partial answer. |
+| `not-personal` | topic/entity score, with the phrase selectors as a fallback. A condition clause is not a second intent. A clause that selects a different id is a handoff. No partial answer. Catalog words (pack, card, credit, key, rarity, My Packs, pack names) establish the module without the literal phrase "Elite Packs". |
 
 Obfuscation (invisible characters, homoglyphs, leet, spaced letters), over-long input (>1500 chars), more than 10 clauses, non-string input or any thrown error fails closed (ambiguous, never product).
 The product selectors are only reachable when `productSelectPermitted(gate) === true`. An allow-list or catalog tag can never override a non-general stance.
