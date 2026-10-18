@@ -65,12 +65,13 @@ test('MT5-1 safe replies are delivered through postClientCommentOnce -> icReques
   if (!guard) return;
   const approved = require(path.join(E.t.dir, 'faqApprovedAnswers'));
   const broker = approved.get('faq.is-broker.en').body;
-  const packs = require(path.join(E.t.dir, 'packs', 'packsApprovedAnswers'));
   let refuse = '';
-  try {
-    const row = packs.get ? packs.get('packs.account-status.refuse.en') : null;
+  const packsMod = path.join(E.t.dir, 'packs', 'packsApprovedAnswers.js');
+  if (require('fs').existsSync(packsMod)) {
+    const packs = require(packsMod);
+    const row = packs.get('packs.account-status.refuse.en');
     refuse = row && (row.body || row.text || '');
-  } catch (_) { refuse = ''; }
+  }
   const bodies = [guard.SAFE_SPREAD_REPLY, broker, 'Los spreads se muestran en la plataforma.', 'Os spreads aparecem na plataforma.'];
   if (refuse) bodies.push(refuse);
   for (const body of bodies) {

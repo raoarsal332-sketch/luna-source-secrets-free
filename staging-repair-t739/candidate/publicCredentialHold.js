@@ -266,7 +266,9 @@ function hasDigit(t) { return /\d/.test(t); }
 function hasSymbol(t) { return /[^A-Za-z0-9\s]/.test(t); }
 
 function trimToken(tok) {
-  return String(tok).replace(/^[("'\u201C\u2018`*_\[<{]+/, '').replace(/[)"'\u201D\u2019`*_\]>}.,;:!?]+$/, '');
+  return String(tok)
+    .replace(/^[\p{P}("'`*_\[<{]+/u, '')
+    .replace(/[\p{P})"'\u201D\u2019`*_\]>}.,;:!?]+$/u, '');
 }
 
 function looksLikeUrlOrMail(tok) {
@@ -396,7 +398,9 @@ function detectInView(view) {
     if (sig.ids.some((id) => adjacentSecret(view, id, sig.cue))) return CODES.UNLABELLED;
     if (sig.cue && sig.shaped) return CODES.SPLIT;
   }
-  if (sig.secrets.length) return CODES.SECRET_LABELLED;
+  // A weak label ("pass", "pw") is not enough on its own: "Pack Pass: credit-purchased" is
+  // ordinary catalog text. Only a strong password-label, or a strong-shaped token, holds with no id.
+  if (sig.secrets.some((s) => s.strong)) return CODES.SECRET_LABELLED;
   if (sig.shaped) return CODES.SECRET_SHAPED;
   return null;
 }
@@ -410,12 +414,12 @@ function detectInView(view) {
 function detectContextSplit(view, contextViews) {
   if (!contextViews || !contextViews.length) return null;
   const cur = viewSignals(view);
-  const curSecret = cur.secrets.length > 0 || cur.shaped;
+  const curSecret = cur.secrets.some((s) => s.strong) || cur.shaped;
   const curId = cur.ids.length > 0 && cur.cue;
   if (!curSecret && !curId) return null;
   for (const cv of contextViews) {
     const ctx = viewSignals(cv.text);
-    const ctxSecret = ctx.secrets.length > 0 || ctx.shaped;
+    const ctxSecret = ctx.secrets.some((s) => s.strong) || ctx.shaped;
     const ctxId = ctx.ids.length > 0 && ctx.cue;
     if ((curSecret && ctxId) || (curId && ctxSecret)) return CODES.CONTEXT;
   }

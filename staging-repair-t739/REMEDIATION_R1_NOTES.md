@@ -57,4 +57,12 @@ OWNER-REVIEWABLE DEFAULT. When a module detector claims the turn and that module
 
 Candidate: `node tests/t8_remediation_r1.js` 6/6.
 
-Not done yet: full suite rerun, freeze. Atom r1 copy waits until after the freeze. Packs r1 is not copied.
+## Step 6 — false holds found by the catalog scan
+
+`packs.pack-pass.en` ("Pack Pass: … credit-purchased") was held because a weak label `pass` plus a colon treated a hyphenated word as a secret. Id-independent labelled holds now require a strong password label. Weak labels still hold only together with a login id.
+
+`atom.overview.ur` / `.hi` were held because `1-Step)।` kept a trailing danda, so the token looked strong-shaped. Trailing Unicode punctuation is trimmed before the shape check. `Fake#Pass1` still holds.
+
+Catalog scan after the fix: 474 bodies, 0 holds. `t1` 53/53, `t2` 51/51, `t7` 6/6, `t8` 6/6.
+
+Next: freeze `t739-integrated-r1`. Atom r1 copy waits until after that freeze. Packs r1 is not copied.
