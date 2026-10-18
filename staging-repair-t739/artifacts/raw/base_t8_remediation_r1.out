@@ -1,0 +1,19 @@
+== remediation r1 (baseline)
+OBS|baseline-spread-gate|{"personal":true,"general":false,"plain":true}
+  ok   MT5-4 spread-test route is only a generic spread or test-access ask
+OBS|baseline-deliver|{"held":false,"writes":1,"head":"Spreads on the FundedEli"}
+OBS|baseline-deliver|{"held":false,"writes":1,"head":"No, Funded Elite, operat"}
+OBS|baseline-deliver|{"held":false,"writes":1,"head":"Los spreads se muestran "}
+OBS|baseline-deliver|{"held":false,"writes":1,"head":"Os spreads aparecem na p"}
+  ok   MT5-1 safe replies are delivered through postClientCommentOnce -> icRequest
+OBS|baseline-layerA|{"held":false,"writes":1}
+OBS|baseline-layerA|{"held":false,"writes":1}
+OBS|baseline-layerA|{"held":false,"writes":1}
+  ok   MT5-2 lone password, cue-free secret, and cross-message split are held at the send boundary
+OBS|baseline-s10|{"leaked":true,"publicWrites":0}
+  ok   MT5-2 S10 FOLLOW does not persist the plaintext password
+OBS|baseline-pending|skipped
+  ok   MT5-3 pending spread append is empty after the turn, and a bare follow-up does not disclose credentials
+OBS|false-holds|no-module
+  ok   false-hold measurement is separate from leak holds
+RESULT remediation r1 (baseline): 6 passed, 0 failed, 6 total

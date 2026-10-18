@@ -19,7 +19,7 @@ OBS|packs-detector|claimed=279 module-scope-cases=90 claimed-though-module-says-
   ok   F1 mixed turn: a clearly module-specific English clause + a general V12 clause is terminal silent (no partial answer)
   ok   F1 mixed turn: module clause + a backend/account clause is terminal silent too (and the order of the clauses does not matter)
   ok   F1 mixed language: an English module clause inside a turn that also contains Spanish is still claimed; a purely non-English module ask is not
-  ok   F1 uncertain language: "Elite Packs?" alone is NOT terminal (documented gap) and reaches no V12 selection
+  ok   F1-8 uncertain + claimed + flag OFF is terminal-silent (owner-reviewable default), including short English module asks
   ok   F1 runs before intent classification: a module ask that classifies as small talk / support-meta still cannot reach the main path
   ok   F1 not taken: human-owned conversation, customer human request, fin-wait / controls outrank, flags ON route to the module
   ok   F1 side effects (trace): terminal reason is not deferred, handled:true, no ledger, no note, no assignment, no model, one body-free log line
@@ -33,7 +33,7 @@ OBS|packs-detector|claimed=279 module-scope-cases=90 claimed-though-module-says-
   ok   F5b contextual follow-up route is gated the same way
   ok   F5b an English verdict cannot be re-rendered into another locale by a language hint
   ok   F5b the gate is re-evaluated before the result: English evidence that vanishes during the model call drops ANY pick, deterministic included
-  ok   F5b non-English main route unchanged: ES / Roman Urdu / Urdu-script deterministic asks still select with no English evidence
+  ok   F5-7 gated FAQ abstains unless lang is en: ES / Roman Urdu / Urdu-script deterministic asks do not receive an English V12 row
   ok   F5b prepare passes the whole turn as language evidence: "Do you have a free trial? Are you a broker?" is selected clause by clause
   ok   no generic stub other than the inert startup ones was called; no egress
 RESULT modules (candidate): 35 passed, 0 failed, 35 total

@@ -65,4 +65,6 @@ Candidate: `node tests/t8_remediation_r1.js` 6/6.
 
 Catalog scan after the fix: 474 bodies, 0 holds. `t1` 53/53, `t2` 51/51, `t7` 6/6, `t8` 6/6.
 
-Next: freeze `t739-integrated-r1`. Atom r1 copy waits until after that freeze. Packs r1 is not copied.
+## Step 7 — freeze
+
+Frozen content commit is `76e1c9ee8be6aa522818a8905a6d98af21621ac8`. The following commit adds `artifacts/FROZEN_CANDIDATE.md`, `artifacts/MANIFEST.sha256` (self-sha256 `66322f8011a73a39b3f468c542ecbceef44f1613930171cac079a526fcd266bf`, 99 paths, 0 mismatches), `artifacts/REMEDIATION_R1_REPORT.md`, and the raw suite outputs. Candidate id `t739-integrated-r1`. Atom r1 selector copy is a later commit, after this freeze. Packs r1 is not copied.

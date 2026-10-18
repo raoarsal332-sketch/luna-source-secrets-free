@@ -31,7 +31,10 @@
   ok   HOLD  percent encoded text
   ok   HOLD  rot13 label
   ok   HOLD  split over lines with labels apart
-  ok   PASS  GAP (policy): a lone labelled password without any login is not a pair
+  ok   HOLD  lone labelled password with no login id (MT5-2)
+  ok   HOLD  cue-free strong-shaped secret with no login id (MT5-2)
+  ok   HOLD  password split from an earlier login (MT5-2 context)
+  ok   PASS  envelope admin_id is not a credential (MT5-1)
   ok   PASS  FAQ-style answer
   ok   PASS  reset-password instructions
   ok   PASS  asking customer for account number
@@ -49,4 +52,4 @@
   ok   holdOutgoingPayload ignores GET and internal notes, holds comment
   ok   holdOutgoingPayload scans nested payload strings (attachments / extra fields)
   ok   hold result and log line are body-free
-RESULT detector: 50 passed, 0 failed, 50 total
+RESULT detector: 53 passed, 0 failed, 53 total

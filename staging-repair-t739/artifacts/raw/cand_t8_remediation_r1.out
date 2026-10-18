@@ -1,0 +1,9 @@
+== remediation r1 (candidate)
+  ok   MT5-4 spread-test route is only a generic spread or test-access ask
+  ok   MT5-1 safe replies are delivered through postClientCommentOnce -> icRequest
+  ok   MT5-2 lone password, cue-free secret, and cross-message split are held at the send boundary
+  ok   MT5-2 S10 FOLLOW does not persist the plaintext password
+  ok   MT5-3 pending spread append is empty after the turn, and a bare follow-up does not disclose credentials
+OBS|false-holds|{"holds":0,"of":17,"codes":[]}
+  ok   false-hold measurement is separate from leak holds
+RESULT remediation r1 (candidate): 6 passed, 0 failed, 6 total
