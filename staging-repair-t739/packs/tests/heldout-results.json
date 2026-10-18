@@ -1,0 +1,228 @@
+{
+  "n": 121,
+  "correct": 98,
+  "falseRefusal": 22,
+  "wrong": 1,
+  "leaks": 0,
+  "by": {
+    "general": {
+      "n": 76,
+      "correct": 61,
+      "falseRefusal": 14,
+      "wrong": 1,
+      "leaks": 0
+    },
+    "neighbor": {
+      "n": 7,
+      "correct": 7,
+      "falseRefusal": 0,
+      "wrong": 0,
+      "leaks": 0
+    },
+    "policy-first-person": {
+      "n": 15,
+      "correct": 8,
+      "falseRefusal": 7,
+      "wrong": 0,
+      "leaks": 0
+    },
+    "state": {
+      "n": 10,
+      "correct": 10,
+      "falseRefusal": 0,
+      "wrong": 0,
+      "leaks": 0
+    },
+    "mixed-needed": {
+      "n": 4,
+      "correct": 4,
+      "falseRefusal": 0,
+      "wrong": 0,
+      "leaks": 0
+    },
+    "context-aside": {
+      "n": 3,
+      "correct": 2,
+      "falseRefusal": 1,
+      "wrong": 0,
+      "leaks": 0
+    },
+    "boundary": {
+      "n": 4,
+      "correct": 4,
+      "falseRefusal": 0,
+      "wrong": 0,
+      "leaks": 0
+    },
+    "off-topic": {
+      "n": 2,
+      "correct": 2,
+      "falseRefusal": 0,
+      "wrong": 0,
+      "leaks": 0
+    }
+  },
+  "fails": [
+    {
+      "kind": "general",
+      "q": "Could you sketch what these three-card reward packs are for?",
+      "expect": "overview",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "general",
+      "q": "How does someone reach the page that lists those five pack tabs?",
+      "expect": "dashboard-tabs",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "general",
+      "q": "Which tier is the sensible one to buy first?",
+      "expect": "which-pack-best",
+      "got": "not-elite-packs",
+      "why": "not-elite-packs"
+    },
+    {
+      "kind": "general",
+      "q": "How likely is an Epic compared with the other rarities?",
+      "expect": "drop-rates",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "general",
+      "q": "Where can Pack Credits be topped up?",
+      "expect": "buy-credits",
+      "got": "no-confident-select",
+      "why": "no-confident-select"
+    },
+    {
+      "kind": "general",
+      "q": "Is there a conversion from the payout balance into packs?",
+      "expect": "convert-payout-credits",
+      "got": "no-confident-select",
+      "why": "no-confident-select"
+    },
+    {
+      "kind": "general",
+      "q": "If the monthly plan is cancelled, does the paid window remain?",
+      "expect": "cancel-subscription",
+      "got": "not-elite-packs",
+      "why": "not-elite-packs"
+    },
+    {
+      "kind": "general",
+      "q": "How do the successive upgrade offers work after an open?",
+      "expect": "chain-upgrade-discounts",
+      "got": "not-elite-packs",
+      "why": "not-elite-packs"
+    },
+    {
+      "kind": "general",
+      "q": "How is a saved card applied to a challenge at checkout?",
+      "expect": "inventory-use-card",
+      "got": "eligibility-labels",
+      "why": "packs-cue-select"
+    },
+    {
+      "kind": "general",
+      "q": "Where do unused cards wait until someone redeems them?",
+      "expect": "inventory-use-card",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "general",
+      "q": "Do reward cards rewrite rules on their own, or must someone apply them?",
+      "expect": "card-auto-apply",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "general",
+      "q": "Which account sizes receive a complimentary pack?",
+      "expect": "free-packs-general",
+      "got": "no-confident-select",
+      "why": "no-confident-select"
+    },
+    {
+      "kind": "general",
+      "q": "A pack never arrived. What should someone do?",
+      "expect": "missing-reward",
+      "got": "handoff.unverified",
+      "why": "pregate-multiple-intents-no-partial-answer"
+    },
+    {
+      "kind": "general",
+      "q": "Is the Elite Atom bundle the same promo as the pack launch offers?",
+      "expect": "atom-bundle-distinct",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "general",
+      "q": "Are the accounts these cards apply to simulated?",
+      "expect": "simulated",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "Suppose I apply a half-price reward on the challenge I am running. Is a refund still possible?",
+      "expect": "refunds-legal",
+      "got": "account-status.refuse",
+      "why": "pregate-mixed-general-and-personal"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "If I have already opened the pack, do I still have a refund?",
+      "expect": "refunds-legal",
+      "got": "account-status.refuse",
+      "why": "pregate-personal-account-state"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "When I cancel the monthly plan, do I keep the period I paid for?",
+      "expect": "cancel-subscription",
+      "got": "not-elite-packs",
+      "why": "not-elite-packs"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "Can I combine two discount cards if I check out a single time?",
+      "expect": "discount-stacking",
+      "got": "account-status.refuse",
+      "why": "pregate-personal-account-state"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "Does opening faster change which cards I can pull?",
+      "expect": "opening-and-charges",
+      "got": "no-confident-select",
+      "why": "no-confident-select"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "Are my payout credits convertible into pack credits?",
+      "expect": "convert-payout-credits",
+      "got": "account-status.refuse",
+      "why": "pregate-personal-account-state"
+    },
+    {
+      "kind": "policy-first-person",
+      "q": "How do I get Instant Override if I want that card?",
+      "expect": "exotic-cards",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    },
+    {
+      "kind": "context-aside",
+      "q": "Just curious, nothing on my account. What are these reward packs?",
+      "expect": "overview",
+      "got": "handoff.unverified",
+      "why": "pregate-clause-not-positively-general"
+    }
+  ]
+}

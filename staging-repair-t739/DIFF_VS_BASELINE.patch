@@ -1,5 +1,5 @@
 --- baseline/packsOwnershipPregate.js	2026-10-18 13:23:42.431439091 +0000
-+++ packsOwnershipPregate.js	2026-10-18 18:21:30.454991926 +0000
++++ packsOwnershipPregate.js	2026-10-18 19:02:52.266719741 +0000
 @@ -1,22 +1,35 @@
  'use strict';
  /**
@@ -51,7 +51,7 @@
   */
  
  const KIND = Object.freeze({
-@@ -24,820 +37,1180 @@
+@@ -24,820 +37,1281 @@
    REFUND: 'refund',
    MISSING: 'missing-item',
    AMBIGUOUS: 'ambiguous-account-status',
@@ -805,7 +805,9 @@
 +    .replace(/^(?:(?:please|kindly|now|just|also)\s+)+/, '')
 +    .replace(/^(?:can|could|would|will)\s+you\s+(?:please\s+|kindly\s+)?/, '')
 +    .trim();
-+  return /^(?:check|confirm|verify|validate|see|look)(?:\s+(?:for\s+me|please|up|into|at|now))?$/.test(t);
++  return /^(?:check|confirm|verify|validate|see|look)(?:\s+(?:for\s+me|please|up|into|at|now))?$/.test(t)
++    || /^(?:tell|ask)\s+me$/.test(t)
++    || /^(?:let\s+me\s+know|i\s+(?:want|need)\s+to\s+know|i\s+am\s+not\s+sure|know|wonder|not\s+sure)$/.test(t);
 +}
 +
 +/**
@@ -1053,7 +1055,7 @@
 +      info.masked.push('where-do-i');
 +      return ' ~wherei~ ';
 +    }
-   );
++  );
 +  m = m.replace(
 +    /\bwhat\s+(?:do|should|can|must|would)\s+(?:i|we)\s+(?:do|need\s+to\s+do|need|pay|owe)\b/g,
 +    () => {
@@ -1082,7 +1084,7 @@
 +      info.masked.push('policy-can-i');
 +      return ' ~policy~ ';
 +    }
-+  );
+   );
 +  m = m.replace(
 +    /\b(?:do|does)\s+(?:i|we)\s+(?:need\s+to|have\s+to|need|pay|lose|owe)\b/g,
 +    () => {
@@ -1202,6 +1204,79 @@
 +  return w.replace(/\s+/g, ' ').trim();
 +}
 +
++function requestsOwnAccountState(s, intro) {
++  // A fronted "if I …" is a hypothetical, not a request to read the account,
++  // unless the clause is itself a lookup ("verify if … is in the collection").
++  if ((intro === 'if' || intro === 'unless') && !LOOKUP_RE.test(s) && !/\b(?:verify|confirm|check|validate)\b/.test(s)) {
++    const embeddedPossession = /\b(?:i|we)\s+(?:own|hold)\b/.test(s) || /\bmine\b/.test(s) || /\b(?:did|have|has)\s+(?:i|we)\s+(?:get|got|receive|own)\b/.test(s);
++    if (!embeddedPossession) return false;
++  }
++  if (/\b(?:know|wonder)\s+if\b/.test(s)) return true;
++  if (/\bnothing\s+on\s+my\b/.test(s)) return false;
++  if (/\b(?:credits?|cards?|packs?|balance)\s+(?:i|we)\s+have\b/.test(s)) return true;
++  if (/\bwith\s+(?:what\s+)?(?:i|we)\s+have\b/.test(s)) return true;
++  if (/\b(?:check|confirm|verify|validate)\b/.test(s) && !/\bcheckout\b/.test(s)) {
++    if (/\b(?:if|whether|my|our|status|balance|collection|inventory)\b/.test(s)) return true;
++    if (/^(?:please\s+|kindly\s+)?(?:can\s+you\s+|could\s+you\s+|would\s+you\s+|will\s+you\s+)?(?:please\s+|kindly\s+)?(?:check|confirm|verify|validate)\b/.test(s)) return true;
++  }
++  // Present "do I own/have" is possession. "how do I open/buy/get" is a procedure and must not match.
++  if (/(?<!how\s)(?<!what\s)\b(?:do|does)\s+(?:i|we)\s+(?:still\s+|already\s+|even\s+|not\s+)?(?:have|own|hold|possess|qualify)\b/.test(s) && !/\bhave\s+to\b/.test(s) && !/\bneed\s+to\b/.test(s)) return true;
++  if (/\b(?:did|have|has|had)\s+(?:i|we)\s+(?:just\s+|already\s+|ever\s+|not\s+)?(?:get|got|receive|received|pull|pulled|buy|bought|earn|earned|unlock|unlocked|open|opened)\b/.test(s)) return true;
++  if (/\bhow\s+(?:many|much)\b/.test(s) && /\b(?:do\s+(?:i|we)\s+have|have\s+(?:i|we)|left|remaining|balance)\b/.test(s) && /\b(?:i|we|my|our)\b/.test(s)) return true;
++  if (/\b(?:is|are|was|were)\s+(?:my|our)\b/.test(s) && !RULE_PROPERTY_RE.test(s)) return true;
++  if (/\b(?:is|are|was|were)\s+(?:mine|ours)\b/.test(s) || /\bbelongs?\s+to\s+me\b/.test(s)) return true;
++  if (/\bwhere\s+(?:is|are|did)\s+(?:my|our)\b/.test(s)) return true;
++  if (/^(?:please\s+|kindly\s+)?(?:show|list|display|pull\s+up)\b/.test(s) && /\b(?:my|i|we)\b/.test(s)) return true;
++  if (/\b(?:what|which)\b(?:\s+\w+){0,6}\s+(?:do|did|have|has)\s+(?:i|we)\s+(?:own|have|hold|got)\b/.test(s)) return true;
++  if (/\bwhat\s+(?:is|are)\s+my\b/.test(s) || /\bwhat\s+is\s+in\s+my\b/.test(s)) return true;
++  if (/\bstatus\s+of\s+(?:my|our)\b/.test(s) || (/\bstatus\b/.test(s) && /\b(?:my|our)\b/.test(s))) return true;
++  if (/\b(?:when\s+)?will\s+(?:i|we)\s+(?:get|receive)\s+my\b/.test(s)) return true;
++  if (/\b(?:am\s+i|are\s+we)\s+(?:eligible|able|qualified)\b/.test(s) || /\b(?:do|did)\s+(?:i|we)\s+qualify\b/.test(s)) return true;
++  if (/\bhow\s+(?:do|can|to)\s+(?:i|we)\s+(?:know|check|see|tell)\b/.test(s) && /\b(?:own|have|balance|status|if|whether)\b/.test(s)) return true;
++  if (/\bhow\s+(?:do|can|to)\s+(?:i|we)\s+(?:get|receive)\s+my\b/.test(s) && NAMED_CARD_RE.test(s)) return true;
++  if (/\b(?:can|could|will|would)\s+(?:i|we)\s+(?:get|receive|have)\b/.test(s) && NAMED_CARD_RE.test(s) && !/\bhow\b/.test(s)) return true;
++  if (/\bhow\s+(?:many|much)\b/.test(s) && /\bcan\s+(?:i|we)\s+(?:get|have|own|pull|receive)\b/.test(s) && !/\b(?:per|each|every|single)\b/.test(s) && !/\bin\s+(?:a|an|one|each|every)\b/.test(s)) return true;
++  if (/\bin\s+my\s+(?:inventory|account|collection|dashboard|packs)\b/.test(s) && !/\bhow\s+(?:do|can|to)\s+(?:i|we)\s+(?:use|apply|open|find|see|get\s+to|reach)\b/.test(s)) return true;
++  if (/\b(?:is|are|was|were)\b/.test(s) && NAMED_CARD_RE.test(s) && /\b(?:unlocked|showing|live|active|available|added|granted|received|enabled|on)\b/.test(s) && !/\bwhat\s+(?:is|are|does)\b/.test(s)) return true;
++  if (/\bwhy\s+(?:do|did)\s+(?:i|we)\s+not\s+have\b/.test(s)) return true;
++  if (/\b(?:i|we)\s+(?:own|have|got|hold)\b/.test(s) && (NAMED_CARD_RE.test(s) || /\bit\b/.test(s))) return true;
++  if (/\b(?:i|we)\s+(?:think|am\s+not\s+sure|are\s+not\s+sure)\b/.test(s) && /\b(?:got|own|have|received)\b/.test(s)) return true;
++  if (/\b(?:he|she|him|his|her)\b/.test(s) && /\b(?:own|owns|have|has|got|get|eligible|unlock|receive|received)\b/.test(s)) return true;
++  if (/\b(?:this|that|the|my)\s+(?:\w+\s+){0,3}?(?:user|customer|client|trader|account|friend|login|holder|owner)\b/.test(s) && /\b(?:own|owns|have|has|got|get|eligible|qualify|unlock|unlocked|receive|received|entitled)\b/.test(s)) return true;
++  if (/\b(?:did|has|have|was|were)\s+(?:my|our)\b/.test(s)) return true;
++  if (/\b(?:cards?|credits?)\s+(?:i|we)\s+(?:currently\s+)?(?:hold|own|have)\b/.test(s)) return true;
++  if (/\bfor\s+me\b/.test(s) && /\b(?:collection|inventory|account|enabled|unlocked|active|showing)\b/.test(s)) return true;
++  if (/\bmine\b/.test(s)) return true;
++  if (/\bshowing\s+yet\b/.test(s) || /\bnot\s+unlocked\s+yet\b/.test(s)) return true;
++  if (/\b(?:does|did)\s+(?!the\b|a\b|an\b|this\b|that\b|my\b|our\b|it\b|pack\b|packs\b|card\b|cards\b|oracle\b|whale\b|ignition\b|breakout\b|subscription\b|plan\b|key\b|account\b|credit\b|credits\b)[a-z]+\s+(?:have|own|get|got)\b/.test(s)) return true;
++  if (/^(?:eligible|qualified)\b/.test(s) || /\bcredits?\s+left\b/.test(s) || /\bwhich\s+cards\s+are\s+unlocked\b/.test(s)) return true;
++  if (NAMED_CARD_RE.test(s) && /\b(?:unlocked|showing|granted|received|added)\b/.test(s) && !/\bwhat\s+(?:is|are|does)|how\s+(?:do|does|to)|who\s+can\b/.test(s)) return true;
++  return false;
++}
++
++function isHowOrRuleQuestion(s) {
++  if (/\b(?:what|how|when|where|why|who|which|whose)\b/.test(s)) return true;
++  if (/^(?:can|could|do|does|did|is|are|will|would|should|may|shall)\b/.test(s)) return true;
++  if (/\b(?:explain|describe|sketch|outline|define|summarize|summarise|rundown|big\s+picture|in\s+short|overview)\b/.test(s)) return true;
++  if (/\bwhat\s+happens\b/.test(s)) return true;
++  if (RULE_PROPERTY_RE.test(s)) return true;
++  if (/\b(?:difference|versus|vs)\b/.test(s)) return true;
++  if (/\b(?:give|tell)\s+me\b/.test(s) && /\b(?:about|rundown|picture|overview)\b/.test(s)) return true;
++  return false;
++}
++
++function anaphoraBlocksRule(s, ctx) {
++  if (!ANAPHORA_RE.test(s)) return false;
++  const resolved = !!(ctx && (ctx.priorGeneralItem || ctx.sameMessageGeneralItem) && !ctx.personalContextBlocks);
++  return !resolved;
++}
++
++function isNarrativeAside(s) {
++  if (requestsOwnAccountState(s, null)) return false;
++  if (NAMED_CARD_RE.test(s) && /\b(?:own|have|got|unlocked|showing)\b/.test(s)) return false;
++  return /\b(?:just\s+curious|nothing\s+on\s+my|i\s+(?:was|am)\s+(?:just\s+)?(?:reading|wondering|curious|asking|looking))\b/.test(s);
++}
++
 +function interpretClause(clauseText, intro, ctx) {
    const reasons = [];
 +  const base = { text: clauseText, intro: intro || null };
@@ -1243,9 +1318,11 @@
 +      reasons.push('refund-and-missing-in-one-clause');
 +      return done(VERDICT.AMBIGUOUS, { hasItem });
 +    }
-+    // "can I still get a refund" is the rule (still = the rule continues). A status
-+    // word or a lookup asks for the value of this customer's refund/missing item.
-+    if (!isRuleFact(s) && (LOOKUP_RE.test(s) || (refundCue && refundStateQ) || (missingCue && missingStateQ))) {
++    // "can I still get a refund" is the rule. A status word asks for this
++    // customer's refund only when the clause refers to them. "Are opened packs
++    // still refundable?" does not.
++    const refundAboutThem = refundCue && refs && (LOOKUP_RE.test(s) || refundStateQ);
++    if (!isRuleFact(s) && ((LOOKUP_RE.test(s) && refs && (refundCue || missingCue)) || refundAboutThem || (missingCue && missingStateQ && refs))) {
 +      reasons.push(refundCue ? 'refund-state-query' : 'missing-state-query');
 +      return done(VERDICT.PERSONAL, { hasItem });
 +    }
@@ -1256,13 +1333,134 @@
 +    reasons.push(refundCue ? 'refund-intent' : 'missing-item-report');
 +    return done(refundCue ? VERDICT.REFUND : VERDICT.MISSING, { hasItem });
 +  }
-+
+ 
+-  const tellMeAbout =
+-    (/\btell me about\b/i.test(t) ||
+-      /\btell me what\b/i.test(t) ||
+-      (/\btell me\b/i.test(t) && /\b(?:rarity|chances|odds|drop|rates?|floor|cost|price)\b/i.test(t)) ||
+-      /\bexpl[ií](?:ca|que|came)\b/i.test(t) ||
+-      /\bdime sobre\b/i.test(t) ||
+-      /أخبرني\s+عن|اشرح|حدثني\s+عن/.test(t) ||
+-      /के\s*बारे\s*में|ke\s+baare\s+(?:mein|me)\b/i.test(t)) &&
+-    !/\btell me (?:if|whether)\b/i.test(t) &&
+-    !/\bdime si\b/i.test(t);
+-  if (tellMeAbout) reasons.push('tell-me-about');
+-
+-  const definition =
+-    /\b(?:what\s+are|what\s+is|what\s+does|which\s+packs?|from\s+which|explain|list)\b/i.test(t) ||
+-    /\bkya\s+hain\b/i.test(t) ||
+-    /\bqu[eé]\s+(?:son|es)\b/i.test(t) ||
+-    /\bquais\s+s[aã]o\b/i.test(t) ||
+-    /\bo\s+que\s+s[aã]o\b/i.test(t) ||
+-    /ما\s+ه[يو]|ما\s+هي/.test(t) ||
+-    /क्या\s+हैं|क्या\s+है/.test(t) ||
+-    /کیا\s*ہیں|کیا\s*ہے/.test(t);
+-  if (definition) reasons.push('definition');
+-
+-  const howTo =
+-    (/\bhow\s+(?:do|can|to)\s+(?:i|we)\b/i.test(t) ||
+-      /\bkaise\s+(?:kharid|milta|milega|le|paun|paoon|add\s+kare|unlock\s+kare|kharidu)\w*\b/i.test(t) ||
+-      /\bc[oó]mo\s+(?:puedo|obtengo|compro|cancelo|uso|consigo)\b/i.test(t) ||
+-      /\bcomo\s+(?:posso|obtenho|compro|cancelo|uso|consigo)\b/i.test(t) ||
+-      /كيف\s+(?:أحصل|أشتري|أستخدم|أفتح)/.test(t) ||
+-      /कैसे\s+(?:मिलता|खरीद|पाऊं|पाऊँ)/.test(t) ||
+-      /کیسے\s+(?:ملتا|خرید)/.test(t)) &&
+-    !/\bhow\s+did\s+(?:i|we)\b/i.test(t) &&
+-    !/\b(?:did|have|has)\s+(?:i|we)\b/i.test(t) &&
+-    !/\b(?:do|did)\s+i\s+own\b/i.test(t);
+-  if (howTo) reasons.push('how-to');
+-
+-  const processGet =
+-    /\bwhat\s+do\s+i\s+get\s+in\b/i.test(t) ||
+-    /\bdo\s+i\s+get\s+(?:three|3|\d+)\s+cards\b/i.test(t) ||
+-    /\b(?:each\s+time|when)\s+i\s+open\b/i.test(t) ||
+-    (/\bfree\s+(?:elite\s+)?pack\b/i.test(t) &&
+-      /\b(?:used before|before pack credits|priority|charged first)\b/i.test(t)) ||
+-    (/\b(?:close|closing)\b/i.test(t) &&
+-      /\b(?:opening|reveal|charged)\b/i.test(t) &&
+-      /\bpack\b/i.test(t));
+-  if (processGet) reasons.push('process-get');
+-
+-  const inventoryHowTo =
+-    (/\bhow\s+do\s+i\s+use\b/i.test(t) ||
+-      /\b(?:use|apply)\s+(?:a\s+)?card\b/i.test(t) ||
+-      /\bwhere\s+(?:are|do\s+i\s+find)\b/i.test(t)) &&
+-    !(NAMED_CARD_RE.test(t) && /\b(?:own|unlock|received|confirm\s+i|do i have)\b/i.test(t));
+-  if (inventoryHowTo) reasons.push('inventory-howto');
+-
+-  const personalBalanceLeft =
+-    /\b(?:credits?|cr[eé]ditos?|کریڈٹ|क्रेडिट|رصيد)\b/i.test(t) &&
+-    /\b(?:left|remaining|balance|quedan|restan|restam|bachi|baaki|do i have|mere\s+paas|لدي|المتبقي)\b/i.test(t);
+-
+-  const rates = /\b(?:drop\s*rates?|odds|probability|per\s*card|\bchances?\b|exotic\s*rates?|tasas|por\s*carta|rarity\s+chances)\b/i.test(t);
+-  if (rates && !personalBalanceLeft) reasons.push('rates');
+-
+-  const autoApplyHowItWorks =
+-    /\b(?:automatic(?:ally)?|by\s*itself)\b/i.test(t) &&
+-    /\b(?:change|apply)\b/i.test(t) &&
+-    /\b(?:card|pack|rules?|challenge)\b/i.test(t) &&
+-    !/\b(?:did i|do i own|confirm i|in my inventory)\b/i.test(t);
+-  if (autoApplyHowItWorks) reasons.push('auto-apply-howto');
+-
+-  const price =
+-    /\b(?:cost|price|how\s*much|precio|preço|ka\s+hai\s+cost|kitne\s+credits\s+ka)\b/i.test(t) &&
+-    !personalBalanceLeft;
+-  if (price) reasons.push('price');
+-
+-  const cardCount =
+-    /\b(?:how\s*many\s*cards|cards?\s*(?:exist|in\s*total|to\s*collect)|76|collection\s*size|cards?\s*in\s*(?:an?\s*)?(?:elite\s*|exotic\s*)?pack)\b/i.test(
+-      t
+-    ) && !personalBalanceLeft;
+-  if (cardCount) reasons.push('card-count');
+-
+-  const theirOwn = /\b(?:their|its|his|her)\s+own\b/i.test(t);
+-  if (theirOwn) reasons.push('their-own');
+-
+-  const freeTier =
+-    /\bfree(?:\s+\w+){0,3}\s*packs?\b/i.test(t) &&
+-    (/\b(?:new\s+(?:\d+\s*)?k?\s*account|naye\b|new\s+account|launch\s*week)\b/i.test(t) ||
+-      /\b(?:5|25|50|100|200|300|400)\s*k\b/i.test(t) ||
+-      /\bwhich\s*(?:account|size)\b/i.test(t));
+-  if (freeTier) reasons.push('free-tier');
+-
+-  const policyCanI =
+-    /\bcan i\b/i.test(t) &&
+-    /\b(?:withdraw|cash\s*out|convert|refund|cancel|stack|buy|purchase|redeem)\b/i.test(t);
+-  if (policyCanI) reasons.push('policy-can-i');
 +  // Indirect "if/whether" remnant: "is X in the collection" is presence, not a hypothetical.
 +  if ((intro === 'if' || intro === 'whether') && /\b(?:is|are|was|were)\b/.test(s) && /\bin\s+(?:the\s+|my\s+|our\s+)?(?:collection|inventory|account|my\s*packs)\b/.test(s)) {
 +    reasons.push('indirect-presence-question');
 +    return done(VERDICT.PERSONAL, { hasItem });
 +  }
-+
+ 
+-  const whichBest = /\bwhich pack(?:s)?(?:\s+is)?\s+best\b/i.test(t) || /\bshould i buy\b/i.test(t);
+-  if (whichBest) reasons.push('which-best');
++  // PERSONAL only with positive evidence that the customer wants their own
++  // account value. A how-it-works / what-is-the-rule question is GENERAL even
++  // when it uses I/my as the generic actor.
++  if (isNarrativeAside(s) && !isHowOrRuleQuestion(s)) {
++    reasons.push('narrative-aside');
++    return done(VERDICT.NEUTRAL, { hasItem: false });
++  }
++  if (requestsOwnAccountState(s, intro) || isStateFact(s)) {
++    reasons.push('positive-account-state');
++    return done(VERDICT.PERSONAL, { hasItem });
++  }
++  if ((intro === 'if' || intro === 'unless') && !LOOKUP_RE.test(s)) {
++    reasons.push('hypothetical-condition');
++    return done(VERDICT.GENERAL, { hasItem, frame: 'cond', anaphoric: false });
++  }
++  if (ctx && ctx.personalContextBlocks && (anaphoraBlocksRule(s, ctx) || /\b(?:why\s+not|what\s+about|how\s+about|the\s+rest)\b/.test(s) || (/\bhow\s+many\b/.test(s) && /\bleft\b/.test(s) && !/\bper\b/.test(s)))) {
++    reasons.push('ellipsis-in-personal-context');
++    return done(VERDICT.PERSONAL, { hasItem });
++  }
++  if (isHowOrRuleQuestion(s) && !anaphoraBlocksRule(s, ctx)) {
++    reasons.push('rule-question-default-general');
++    return done(VERDICT.GENERAL, { hasItem, frame: 'rule', anaphoric: false });
++  }
+ 
+-  if (!reasons.length) {
+-    return Object.freeze({ hit: false, reasons });
 +  const fact = isStateFact(s) ? 'state' : isRuleFact(s) ? 'rule' : 'unknown';
 +  if (fact === 'state') {
 +    reasons.push('requested-fact-account-state');
@@ -1397,100 +1595,7 @@
 +    }
 +    void toks;
 +  }
- 
--  const tellMeAbout =
--    (/\btell me about\b/i.test(t) ||
--      /\btell me what\b/i.test(t) ||
--      (/\btell me\b/i.test(t) && /\b(?:rarity|chances|odds|drop|rates?|floor|cost|price)\b/i.test(t)) ||
--      /\bexpl[ií](?:ca|que|came)\b/i.test(t) ||
--      /\bdime sobre\b/i.test(t) ||
--      /أخبرني\s+عن|اشرح|حدثني\s+عن/.test(t) ||
--      /के\s*बारे\s*में|ke\s+baare\s+(?:mein|me)\b/i.test(t)) &&
--    !/\btell me (?:if|whether)\b/i.test(t) &&
--    !/\bdime si\b/i.test(t);
--  if (tellMeAbout) reasons.push('tell-me-about');
--
--  const definition =
--    /\b(?:what\s+are|what\s+is|what\s+does|which\s+packs?|from\s+which|explain|list)\b/i.test(t) ||
--    /\bkya\s+hain\b/i.test(t) ||
--    /\bqu[eé]\s+(?:son|es)\b/i.test(t) ||
--    /\bquais\s+s[aã]o\b/i.test(t) ||
--    /\bo\s+que\s+s[aã]o\b/i.test(t) ||
--    /ما\s+ه[يو]|ما\s+هي/.test(t) ||
--    /क्या\s+हैं|क्या\s+है/.test(t) ||
--    /کیا\s*ہیں|کیا\s*ہے/.test(t);
--  if (definition) reasons.push('definition');
--
--  const howTo =
--    (/\bhow\s+(?:do|can|to)\s+(?:i|we)\b/i.test(t) ||
--      /\bkaise\s+(?:kharid|milta|milega|le|paun|paoon|add\s+kare|unlock\s+kare|kharidu)\w*\b/i.test(t) ||
--      /\bc[oó]mo\s+(?:puedo|obtengo|compro|cancelo|uso|consigo)\b/i.test(t) ||
--      /\bcomo\s+(?:posso|obtenho|compro|cancelo|uso|consigo)\b/i.test(t) ||
--      /كيف\s+(?:أحصل|أشتري|أستخدم|أفتح)/.test(t) ||
--      /कैसे\s+(?:मिलता|खरीद|पाऊं|पाऊँ)/.test(t) ||
--      /کیسے\s+(?:ملتا|خرید)/.test(t)) &&
--    !/\bhow\s+did\s+(?:i|we)\b/i.test(t) &&
--    !/\b(?:did|have|has)\s+(?:i|we)\b/i.test(t) &&
--    !/\b(?:do|did)\s+i\s+own\b/i.test(t);
--  if (howTo) reasons.push('how-to');
--
--  const processGet =
--    /\bwhat\s+do\s+i\s+get\s+in\b/i.test(t) ||
--    /\bdo\s+i\s+get\s+(?:three|3|\d+)\s+cards\b/i.test(t) ||
--    /\b(?:each\s+time|when)\s+i\s+open\b/i.test(t) ||
--    (/\bfree\s+(?:elite\s+)?pack\b/i.test(t) &&
--      /\b(?:used before|before pack credits|priority|charged first)\b/i.test(t)) ||
--    (/\b(?:close|closing)\b/i.test(t) &&
--      /\b(?:opening|reveal|charged)\b/i.test(t) &&
--      /\bpack\b/i.test(t));
--  if (processGet) reasons.push('process-get');
--
--  const inventoryHowTo =
--    (/\bhow\s+do\s+i\s+use\b/i.test(t) ||
--      /\b(?:use|apply)\s+(?:a\s+)?card\b/i.test(t) ||
--      /\bwhere\s+(?:are|do\s+i\s+find)\b/i.test(t)) &&
--    !(NAMED_CARD_RE.test(t) && /\b(?:own|unlock|received|confirm\s+i|do i have)\b/i.test(t));
--  if (inventoryHowTo) reasons.push('inventory-howto');
--
--  const personalBalanceLeft =
--    /\b(?:credits?|cr[eé]ditos?|کریڈٹ|क्रेडिट|رصيد)\b/i.test(t) &&
--    /\b(?:left|remaining|balance|quedan|restan|restam|bachi|baaki|do i have|mere\s+paas|لدي|المتبقي)\b/i.test(t);
--
--  const rates = /\b(?:drop\s*rates?|odds|probability|per\s*card|\bchances?\b|exotic\s*rates?|tasas|por\s*carta|rarity\s+chances)\b/i.test(t);
--  if (rates && !personalBalanceLeft) reasons.push('rates');
--
--  const autoApplyHowItWorks =
--    /\b(?:automatic(?:ally)?|by\s*itself)\b/i.test(t) &&
--    /\b(?:change|apply)\b/i.test(t) &&
--    /\b(?:card|pack|rules?|challenge)\b/i.test(t) &&
--    !/\b(?:did i|do i own|confirm i|in my inventory)\b/i.test(t);
--  if (autoApplyHowItWorks) reasons.push('auto-apply-howto');
--
--  const price =
--    /\b(?:cost|price|how\s*much|precio|preço|ka\s+hai\s+cost|kitne\s+credits\s+ka)\b/i.test(t) &&
--    !personalBalanceLeft;
--  if (price) reasons.push('price');
--
--  const cardCount =
--    /\b(?:how\s*many\s*cards|cards?\s*(?:exist|in\s*total|to\s*collect)|76|collection\s*size|cards?\s*in\s*(?:an?\s*)?(?:elite\s*|exotic\s*)?pack)\b/i.test(
--      t
--    ) && !personalBalanceLeft;
--  if (cardCount) reasons.push('card-count');
--
--  const theirOwn = /\b(?:their|its|his|her)\s+own\b/i.test(t);
--  if (theirOwn) reasons.push('their-own');
--
--  const freeTier =
--    /\bfree(?:\s+\w+){0,3}\s*packs?\b/i.test(t) &&
--    (/\b(?:new\s+(?:\d+\s*)?k?\s*account|naye\b|new\s+account|launch\s*week)\b/i.test(t) ||
--      /\b(?:5|25|50|100|200|300|400)\s*k\b/i.test(t) ||
--      /\bwhich\s*(?:account|size)\b/i.test(t));
--  if (freeTier) reasons.push('free-tier');
--
--  const policyCanI =
--    /\bcan i\b/i.test(t) &&
--    /\b(?:withdraw|cash\s*out|convert|refund|cancel|stack|buy|purchase|redeem)\b/i.test(t);
--  if (policyCanI) reasons.push('policy-can-i');
++
 +  if (HEDGE_RE.test(wNoMarks)) note('hedge-uncertain');
 +  if (ctx.obfuscated) note('obfuscated-input');
 +
@@ -1536,18 +1641,14 @@
 +    condBlockers.forEach((x) => blockers.push(x));
 +    frame = null;
 +  }
- 
--  const whichBest = /\bwhich pack(?:s)?(?:\s+is)?\s+best\b/i.test(t) || /\bshould i buy\b/i.test(t);
--  if (whichBest) reasons.push('which-best');
++
 +  if (frame === 'wh' && !hasMask && !ITEM_RE.test(wNoMarks) && !GENERIC_PERSON_RE.test(wNoMarks)) {
 +    const BARE_FILLER = new Set(['is', 'are', 'do', 'does', 'not', 'so', 'come', 'it', 'that', 'this', 'the', 'a', 'an', 'then', 'now', 'about', 'else', 'exactly', 'really', 'else', 'here', 'there', 'one', 'ones', 'of', 'to', 'for', 'on', 'in', 'work', 'works', 'happen', 'happens']);
 +    const content = wNoMarks.split(/\s+/).slice(1).filter((t) => t && !BARE_FILLER.has(t));
 +    const resolved = anaphoraPresent && (ctx.priorGeneralItem || ctx.sameMessageGeneralItem) && !ctx.personalContextBlocks;
 +    if (!content.length && !resolved) note('wh-without-content');
 +  }
- 
--  if (!reasons.length) {
--    return Object.freeze({ hit: false, reasons });
++
 +  if (frame === 'aux' && fact !== 'rule') {
 +    if (!(ITEM_RE.test(wNoMarks) || GENERIC_PERSON_RE.test(wNoMarks) || (anaphoraPresent && (ctx.priorGeneralItem || ctx.sameMessageGeneralItem)))) {
 +      note('aux-question-without-rule-subject');
@@ -1557,13 +1658,22 @@
 -  // Mixed ownership+product bait is not an unambiguous general question.
 +  const strandedRule = /\b(?:\d+\s*%|percent)\s+off\s*$|\b(?:are|is)\s+there\s*$|\b(?:cash|cashed)\s+out\s*$|\bone\s+off\s*$|\bshow\s+up\s*$/;
 +  if (DANGLING_RE.test(wNoMarks) && !STRANDED_OK_RE.test(wNoMarks) && !strandedRule.test(wNoMarks)) note('dangling-state-particle');
-+  if (
+   if (
+-    hasResidualPersonalStatusClause(t) &&
+-    !howTo &&
+-    !processGet &&
+-    !policyCanI &&
+-    !inventoryHowTo &&
+-    !freeTier &&
+-    !autoApplyHowItWorks
 +    info.masked.includes('policy-can-i') &&
 +    info.howVerbs.some((v) => CAPABILITY_VERBS.has(v)) &&
 +    NAMED_CARD_RE.test(wNoMarks)
-+  ) {
+   ) {
+-    return Object.freeze({ hit: false, reasons: [], blockedBy: 'residual-personal-status' });
 +    note('named-item-capability-question');
-+  }
+   }
+-  return Object.freeze({ hit: true, reasons });
 +
 +  if (!frame && fact === 'rule') frame = 'rule';
 +  if (!frame) note('no-positive-rule-frame');
@@ -1577,30 +1687,21 @@
 +  const protectedPossessive = /\b(?:my|our)\s+(?:instant\s+override|lifetime\s+split|open\s+season|founder'?s?\s+key|the\s+million|primordial|balance|meter|status|inventory|account|collection|dashboard)\b/.test(wNoMarks);
 +  // Clear only a generic actor (I/me/we). A remaining "my"/"our" still points at the customer's container.
 +  const leftoverPossessive = /\b(?:my|our)\b/.test(personHay);
-   if (
--    hasResidualPersonalStatusClause(t) &&
--    !howTo &&
--    !processGet &&
--    !policyCanI &&
--    !inventoryHowTo &&
--    !freeTier &&
--    !autoApplyHowItWorks
++  if (
 +    frame &&
 +    (frame === 'wh' || frame === 'aux' || frame === 'topic' || frame === 'rule') &&
 +    !protectedPossessive &&
 +    !leftoverPossessive &&
 +    blockers.length &&
 +    blockers.every((b) => b === 'first-person' || b === 'aux-question-without-rule-predicate' || b === 'no-positive-rule-frame')
-   ) {
--    return Object.freeze({ hit: false, reasons: [], blockedBy: 'residual-personal-status' });
++  ) {
 +    blockers.length = 0;
 +  }
 +
 +  if (!blockers.length) {
 +    reasons.push('general:' + frame + (mc ? ':masked-actor' : ''));
 +    return done(VERDICT.GENERAL, { hasItem, frame, anaphoric });
-   }
--  return Object.freeze({ hit: true, reasons });
++  }
 +
 +  blockers.forEach((b) => reasons.push(b));
 +  const personalSignal =
@@ -1975,7 +2076,7 @@
    extractFeatures,
    evaluateOwnershipPregate,
    productSelectPermitted,
-@@ -849,4 +1222,9 @@
+@@ -849,4 +1323,9 @@
    detectPersonalStance,
    detectAccountStatusTerm,
    detectUnambiguousGeneralProduct,
@@ -1986,8 +2087,8 @@
 +  MAX_INPUT_CHARS,
  };
 --- baseline/packsAnswerSelect.js	2026-10-18 13:23:42.431439091 +0000
-+++ packsAnswerSelect.js	2026-10-18 18:21:30.530990668 +0000
-@@ -1,20 +1,55 @@
++++ packsAnswerSelect.js	2026-10-18 19:04:23.899624534 +0000
+@@ -1,20 +1,61 @@
  'use strict';
  /**
   * Elite Packs answer selection — CLASSIFY / SELECT only (V12 contract).
@@ -2023,7 +2124,8 @@
 +  return !!(opts && opts.packsEnabled === true);
 +}
 +
-+/**
+ /**
+- * Wrap every product selector: missing/blocking gate → no match (fail-closed).
 + * Shared language-gate input. Expected shape (produced by the other author's
 + * shared gate):
 + *   { language: 'en', confident: true, allowsAnswer: true }
@@ -2033,23 +2135,28 @@
 +function languageGateDecision(gate) {
 +  if (gate === undefined || gate === null) return { ok: false, reason: 'language-gate-absent-fail-closed' };
 +  if (typeof gate !== 'object' || Array.isArray(gate)) return { ok: false, reason: 'language-gate-malformed-fail-closed' };
-+  if (gate.allowsAnswer !== true) return { ok: false, reason: 'language-gate-not-allowed' };
-+  if (typeof gate.language !== 'string' || gate.language.toLowerCase() !== 'en') {
-+    return { ok: false, reason: 'language-gate-not-english' };
++  const lang = typeof gate.language === 'string' ? gate.language.toLowerCase() : '';
++  const english = lang === 'en' || lang.startsWith('en-') || lang.startsWith('en_');
++  // Explicit rejection still fails closed. A missing allowsAnswer on confident English does not.
++  if (gate.allowsAnswer === false || (gate.allowsAnswer != null && gate.allowsAnswer !== true)) {
++    return { ok: false, reason: 'language-gate-not-allowed' };
 +  }
++  if (!english) return { ok: false, reason: 'language-gate-not-english' };
 +  if (gate.confident === false || gate.uncertain === true || gate.mixed === true) {
 +    return { ok: false, reason: 'language-gate-uncertain' };
++  }
++  if (gate.allowsAnswer !== true && gate.confident !== true) {
++    return { ok: false, reason: 'language-gate-not-allowed' };
 +  }
 +  return { ok: true, reason: 'language-gate-english' };
 +}
 +
- /**
-- * Wrap every product selector: missing/blocking gate → no match (fail-closed).
++/**
 + * Wrap every product selector: missing/blocking gate => no match (fail-closed).
   * Selectors must not fire unless productSelectPermitted(gate) === true.
   */
  function gatedTest(fn) {
-@@ -24,26 +59,6 @@
+@@ -24,30 +65,10 @@
    };
  }
  
@@ -2076,7 +2183,12 @@
  function packsProductHint(text) {
    const t = String(text || '').toLowerCase();
    if (
-@@ -63,70 +78,26 @@
+-    /\belite\s*packs?\b|\bpack\s*credits?\b|\bmy\s*packs\b|\bopen(?:ing)?\s+(?:a\s+)?pack\b|\bpack\s*pass\b|\blucky\s*streak\b|\bthe\s*million\b|\bignition\b|\bbreakout\b|\bmarket\s*maker\b|\bwhale\s*pack\b|\boracle\s*pack\b|\bfounder'?s?\s*key\b|\binstant\s*override\b|\bopen\s*season\b|\blifetime\s*split\b|\bpayout\s*boost\s*100\b|\b100\s*%\s*payout\s*card\b|\bdrop\s*rates?\b|\bredeem\s*key\b|\bfree\s*packs?\b|\bexotic\b|\bprimordial\b|\bpurple\s*card\b|\bpink\s*card\b|\bpack\s*credits?\b|\bmythic\b|\blegendary\b/.test(
++    /\belite\s*packs?\b|\bpacks?\b|\bcards?\b|\bcredits?\b|\bkeys?\b|\brarit(?:y|ies)\b|\bodds\b|\binventory\b|\bcollection\b|\bmy\s*packs\b|\bopen(?:ing)?\s+(?:a\s+)?pack\b|\bpack\s*pass\b|\blucky\s*streak\b|\bthe\s*million\b|\bignition\b|\bbreakout\b|\bmarket\s*maker\b|\bwhale\b|\boracle\b|\bfounder'?s?\s*key\b|\binstant\s*override\b|\bopen\s*season\b|\blifetime\s*split\b|\bpayout\s*boost\b|\b100\s*%\s*payout\b|\bdrop\s*rates?\b|\bredeem\b|\bfree\s*packs?\b|\bexotic\b|\bprimordial\b|\bpurple\b|\bpink\b|\bmythic\b|\blegendary\b|\bsubscription\b|\bcrypto\b|\brefund|\bdiscount\b|\bcheckout\b|\bseal\b|\breveal\b|\bmultiplier\b|\bx[235]\b|\batom\b|\bsimulated\b|\bdashboard\b|\bgiveaway\b|\bepic\b/.test(
+       t
+     )
+   ) {
+@@ -63,70 +84,26 @@
    ) {
      return 'elite-packs';
    }
@@ -2157,7 +2269,7 @@
  
  function rowIsSendable(row) {
    if (!row) return false;
-@@ -134,27 +105,18 @@
+@@ -134,27 +111,18 @@
    return row.sendable === true && row.approval === 'source-verified';
  }
  
@@ -2196,7 +2308,7 @@
    return {
      abstain: false,
      answerId: id,
-@@ -162,7 +124,7 @@
+@@ -162,7 +130,7 @@
      contentHash: row.contentHash,
      reason,
      productHint: prod || 'elite-packs',
@@ -2205,7 +2317,7 @@
    };
  }
  
-@@ -217,7 +179,7 @@
+@@ -217,7 +185,7 @@
      conf: 0.98,
      test: (t) =>
        !/oracle\s*pack\s*upgrade/.test(t) &&
@@ -2214,7 +2326,7 @@
          (/special\s*pack/.test(t) && /(?:chain|stack|better\s*offer)/.test(t)) ||
          (/15\s*%/.test(t) && /20\s*%/.test(t) && /pack/.test(t))),
    },
-@@ -225,19 +187,24 @@
+@@ -225,19 +193,24 @@
      id: 'packs.discount-stacking',
      conf: 0.97,
      test: (t) =>
@@ -2243,7 +2355,7 @@
    },
    {
      id: 'packs.free-packs-general',
-@@ -248,7 +215,7 @@
+@@ -248,7 +221,7 @@
        if (/redeem\s*key|where\s*do\s*free\s*packs\s*appear|\batom\b/.test(t)) return false;
        // New-account / launch free-tier (incl. HC size+credits confirmations) — not pack list prices.
        if (
@@ -2252,7 +2364,7 @@
            t
          )
        ) {
-@@ -274,8 +241,9 @@
+@@ -274,8 +247,9 @@
      test: (t) => {
        // Primordial / The Million "ordinary odds" asks belong to the-million, not the rate table.
        if (/(?:the\s*million|primordial)/.test(t) && /(?:ordinary|normales?|normal)/.test(t)) return false;
@@ -2263,7 +2375,7 @@
            t
          );
        return rateCue && !/fast\s*open|charg|deduct|when\s*are\s*credits|how\s*many\s*credits/.test(t);
-@@ -284,13 +252,19 @@
+@@ -284,13 +258,19 @@
    {
      id: 'packs.card-count',
      conf: 0.96,
@@ -2290,7 +2402,7 @@
    },
    {
      id: 'packs.cards-per-pack',
-@@ -298,9 +272,9 @@
+@@ -298,9 +278,9 @@
      // Keep "how many cards in an Exotic pack" → cards-per-pack; block definition paraphrases without how-many.
      test: (t) => {
        // "how many cards in a pack" / "cards in an Exotic pack" — not "how many cards to collect in Elite Packs".
@@ -2302,7 +2414,7 @@
            t
          );
        if (!countInPack) return false;
-@@ -312,8 +286,8 @@
+@@ -312,8 +292,8 @@
      id: 'packs.opening-and-charges',
      conf: 0.96,
      test: (t) =>
@@ -2313,7 +2425,7 @@
          t
        ),
    },
-@@ -327,7 +301,7 @@
+@@ -327,7 +307,7 @@
    {
      id: 'packs.uses-multiplier',
      conf: 0.96,
@@ -2322,7 +2434,7 @@
    },
    {
      id: 'packs.the-million',
-@@ -353,9 +327,7 @@
+@@ -353,9 +333,7 @@
      // Product FAQ + how-to ("How do I get Instant Override?"). Personal elig handled by accountStatusAsk.
      // Allow intervening words: "Exotic Elite Pack cards". Rate/odds → drop-rates (not here).
      test: (t) =>
@@ -2333,7 +2445,7 @@
        !/(?:drop\s*rate|odds|probability|\bchance\b|exotic\s*rates?|can\s+\w+\s+drop\s+exotic)/.test(t) &&
        (/(?:exotic(?:\s+\w+){0,4}\s*cards?|instant\s*override|lifetime\s*split|open\s*season|بطاقات\s*exotic|exotic\s*بطاقات|cartas?\s*exotic|exotic\s*cartas?)/.test(t) ||
          (/founder'?s?\s*key/.test(t) && !/stack|combine|other\s*discount|exception/.test(t))),
-@@ -364,53 +336,66 @@
+@@ -364,53 +342,66 @@
      id: 'packs.eligibility-labels',
      conf: 0.96,
      test: (t) =>
@@ -2414,7 +2526,7 @@
    },
    {
      id: 'packs.cancel-subscription',
-@@ -420,7 +405,10 @@
+@@ -420,7 +411,10 @@
    {
      id: 'packs.monthly-subscription',
      conf: 0.93,
@@ -2426,7 +2538,7 @@
    },
    {
      id: 'packs.card-auto-apply',
-@@ -428,18 +416,19 @@
+@@ -428,18 +422,19 @@
      // Below refunds (0.99). Pure auto-apply questions only.
      test: (t) =>
        !/refund|missing|didn'?t|eligible|qualify/.test(t) &&
@@ -2450,7 +2562,7 @@
    },
    {
      id: 'packs.eligibility-labels',
-@@ -463,24 +452,29 @@
+@@ -463,24 +458,29 @@
      conf: 0.88,
      // Below card-count. Only when asking about Collection tab / discovery, not total card count.
      test: (t) =>
@@ -2486,7 +2598,7 @@
    },
    {
      id: 'packs.overview',
-@@ -489,8 +483,9 @@
+@@ -489,8 +489,9 @@
        /^(?:what\s*are\s*elite\s*packs?\??|elite\s*packs?\s*(?:overview|explained)\??|how\s*do\s*elite\s*packs?\s*work\??)\s*$/.test(
          t.trim()
        ) ||
@@ -2498,11 +2610,65 @@
            t
          )),
    },
-@@ -506,170 +501,189 @@
+@@ -506,170 +507,259 @@
    )
  );
  
-+function bestProductMatch(t, prod, gate) {
++function topicScores(t) {
++  const rows = [];
++  const add = (id, score) => {
++    if (score >= 4) rows.push({ id, score });
++  };
++  const costQ = /how\s+much|how\s+many\s+credits|\bprice\b|\bcost\b|sell\s+for|credit\s+amount/.test(t);
++  const oddsQ = /drop\s*rates?|\bodds\b|how\s+likely|probability|how\s+often/.test(t);
++  const floorQ = /rarity\s+floor|minimum\s+rarity|lowest\s+rarity|common\s+card/.test(t);
++  if (oddsQ && !/collection\s+tab/.test(t)) add('packs.drop-rates', 5 + (/\bwhale\b|\boracle\b|\bignition\b/.test(t) ? 2 : 0));
++  if (floorQ) add('packs.rarity-floor', 6);
++  if (costQ && /pack|oracle|whale|ignition|breakout|tier/.test(t) && !floorQ) add('packs.pack-costs-floors', 6);
++  if (/\bwhale\b/.test(t) && !oddsQ && !costQ && !floorQ) add('packs.followup.whale-pack', 6);
++  if (/\boracle\b/.test(t) && !oddsQ && !costQ && !floorQ && !/upgrade\s+offer|chain/.test(t)) add('packs.followup.oracle-pack', 6);
++  if (/withdraw|cash\s*out|cashable|cashed/.test(t) && /credit/.test(t)) add('packs.withdraw-credits', 6);
++  const convertQ = /convert|turned\s+into|turn\b[^.]{0,40}\binto\b|conversion/.test(t);
++  if (/payout\s+credits?/.test(t) && /pack\s+credits?|differ|difference|versus|\bvs\b|separat|convert|turned\s+into|turn\b|conversion/.test(t) && !/withdraw|cash\s*out|cashable/.test(t)) {
++    add(convertQ ? 'packs.convert-payout-credits' : 'packs.credits-vs-payout-credits', 6);
++  }
++  if (/two\s+credit\s+balances|balances\s+expire|pack\s+credits?\s+differ/.test(t)) add('packs.credits-vs-payout-credits', 6);
++  if (/automatically|on\s+their\s+own|by\s+itself|on\s+its\s+own|sitting\s+unused|rewrite\s+rules|apply\s+automatically/.test(t)) add('packs.card-auto-apply', 6);
++  if (/pack\s+pass/.test(t)) add('packs.pack-pass', 6);
++  if (/three[-\s]card|three\s+(?:separate\s+)?card|cards?\s+per\s+pack/.test(t) || (/how\s+many\s+cards/.test(t) && /pack/.test(t) && !/collect|catalogue|catalog|in\s+total|distinct/.test(t))) {
++    add('packs.cards-per-pack', 5);
++  }
++  if (/distinct\s+cards|catalogue|catalog|in\s+total|to\s+collect|different\s+cards/.test(t)) add('packs.card-count', 5);
++  if (/top(?:\s|-)?up|purchase\s+additional|buy\s+(?:more\s+)?(?:pack\s+)?credits?/.test(t)) add('packs.buy-credits', 5);
++  if (/monthly|subscription/.test(t) && /cancel/.test(t)) add('packs.cancel-subscription', 6);
++  else if (/monthly|subscription/.test(t) && /credit|plan|renew|bill/.test(t)) add('packs.monthly-subscription', 5);
++  if (/crypto/.test(t) && /discount|cheaper|percent|%|off/.test(t)) add('packs.crypto-discount', 6);
++  if (/seal|reveal|deduct|charged|fast\s*open|open(?:ing)?\s+(?:a\s+)?pack|when\s+would\s+credits/.test(t) && !/refund/.test(t)) add('packs.opening-and-charges', 5);
++  if (/chain|upgrade\s+offer|next\s+pack|second\s+pack/.test(t) && /discount|offer|%|after/.test(t)) add('packs.chain-upgrade-discounts', 5);
++  if (/inventory|saved\s+card|apply\s+(?:a|one|the|my)/.test(t) && /apply|use|checkout|redeem/.test(t) && !/automatically|on\s+its\s+own|by\s+itself/.test(t)) add('packs.inventory-use-card', 5);
++  if (/\bx3\b|\bx2\b|\bx5\b|times[-\s]three|multiplier|how\s+many\s+times/.test(t)) add('packs.uses-multiplier', 5);
++  if (/stack|combin/.test(t) && /discount|offer|founder|checkout/.test(t)) add('packs.discount-stacking', 5);
++  if (/eligible\s+label|skip\s+a\s+step|which\s+account\s+sizes/.test(t)) add('packs.eligibility-labels', 5);
++  if (/exotic|instant\s+override|lifetime\s+split|open\s+season/.test(t) && !/showing|mine|do\s+i\s+own|in\s+my/.test(t)) add('packs.exotic-cards', 4);
++  if (/primordial|the\s+million/.test(t)) add('packs.the-million', 5);
++  if (/lucky\s+streak/.test(t)) add('packs.lucky-streak', 6);
++  if (/special\s+pack/.test(t)) add('packs.special-packs', 5);
++  if (/giveaway|redeem\s+key|my\s+packs\s+tab/.test(t)) add('packs.my-packs-keys', 5);
++  if (/collection\s+tab/.test(t)) add('packs.collection', 6);
++  if (/free\s+pack|complimentary\s+pack/.test(t) && !/pack\s+pass/.test(t)) add('packs.free-packs-general', 5);
++  if (/purple|pink/.test(t) && /card/.test(t)) add('packs.followup.purple-card-ambiguous', 6);
++  if (/payout\s+boost|100\s*%\s+payout/.test(t)) add('packs.followup.payout-boost-100', 6);
++  if (/atom/.test(t) && /bundle|promo|pack/.test(t)) add('packs.atom-bundle-distinct', 5);
++  if (/simulated/.test(t) || (/real\s+money/.test(t) && /account/.test(t))) add('packs.simulated', 6);
++  if (/real\s+money/.test(t) && /pack\s+credits?/.test(t) && !/account/.test(t)) add('packs.credits-vs-payout-credits', 6);
++  if (/which\s+tier|worth\s+opening|sensible\s+one\s+to\s+buy|which\s+pack|best\s+pack/.test(t)) add('packs.which-pack-best', 5);
++  if (/\btabs?\b|\bmenu\b|\bdashboard\b/.test(t) && /inventory|collection|credits|packs/.test(t)) add('packs.dashboard-tabs', 5);
++  if (/reward\s+packs?|three-card\s+reward|what\s+are\s+(?:these\s+)?(?:elite\s+)?packs|how\s+do\s+(?:elite\s+)?packs\s+work|big\s+picture/.test(t) && !oddsQ && !costQ) add('packs.overview', 4);
++  rows.sort((a, b) => b.score - a.score);
++  return rows;
++}
++
++function regexBest(t, prod, gate) {
 +  const matches = [];
 +  for (const sel of SELECTORS) {
 +    try {
@@ -2518,6 +2684,22 @@
 +    if (id) return { id, baseId: sel.id, conf: sel.conf, top: matches[0] };
 +  }
 +  return { id: null, top: matches[0] || null };
++}
++
++function bestProductMatch(t, prod, gate) {
++  const regex = regexBest(t, prod, gate);
++  const ranked = topicScores(t);
++  const top = ranked[0];
++  const second = ranked[1];
++  const margin = top ? top.score - (second ? second.score : 0) : 0;
++  if (top && margin >= 2) {
++    const id = deliverableId(top.id, 'product');
++    const beatsRegex = !regex.id || regex.baseId === top.id || top.score >= 6;
++    if (id && beatsRegex) {
++      return { id, baseId: top.id, conf: Math.min(0.97, 0.75 + top.score / 40), top: { id: top.id, conf: 0.9 } };
++    }
++  }
++  return regex;
 +}
 +
 +function abstainResult(reason, extra) {
@@ -2560,16 +2742,6 @@
 +
 +  if (typeof text !== 'string') {
 +    return abstainResult('pregate-missing-text-fail-closed');
-+  }
-+
-+  let gate;
-+  try {
-+    gate = pregate.evaluateOwnershipPregate(text, opts);
-+  } catch (_) {
-+    return abstainResult('pregate-throw-fail-closed');
-+  }
-+  if (!gate || typeof gate.kind !== 'string') {
-+    return abstainResult('pregate-malformed-fail-closed');
    }
  
 -  // --- Option 1: mandatory ownership / account-status pre-gate ---
@@ -2586,6 +2758,16 @@
 -    );
 -    refused.pregateKind = gate.kind;
 -    return refused;
++  let gate;
++  try {
++    gate = pregate.evaluateOwnershipPregate(text, opts);
++  } catch (_) {
++    return abstainResult('pregate-throw-fail-closed');
++  }
++  if (!gate || typeof gate.kind !== 'string') {
++    return abstainResult('pregate-malformed-fail-closed');
++  }
++
 +  const norm = (gate.features && gate.features.normalized) || '';
 +  const localLang = pregate.languageEvidence(norm);
 +  if (localLang.nonEnglish) {
@@ -2643,9 +2825,8 @@
 -    ) {
 -      return { abstain: true, reason: 'not-elite-packs', confidence: 0.2, productHint: prod, lang, pregateKind: gate.kind };
 -    }
-+    return tag(selectId('packs.handoff.unverified', 'handoff', 0.99, 'pregate-fail-closed', prod));
-   }
- 
+-  }
+-
 -  const matches = [];
 -  for (const sel of SELECTORS) {
 -    try {
@@ -2653,9 +2834,10 @@
 -    } catch (_) {
 -      /* ignore */
 -    }
--  }
++    return tag(selectId('packs.handoff.unverified', 'handoff', 0.99, 'pregate-fail-closed', prod));
+   }
 -  matches.sort((a, b) => b.conf - a.conf);
--
+ 
 +  // kind === NOT_PERSONAL and every clause positively general from here.
    if (
 -    pregate.productSelectPermitted(gate) &&
@@ -2680,9 +2862,8 @@
 -      else matches.push({ id: 'packs.overview', conf: 0.85 });
 -      matches.sort((a, b) => b.conf - a.conf);
 -    }
-+    return tag({ abstain: true, reason: 'not-elite-packs', confidence: 0.2, productHint: '', lang: 'en' });
-   }
- 
+-  }
+-
 -  // Defense-in-depth: ML objects are not gatedTest wrappers. Never emit a
 -  // product FAQ if the gate is missing, uncertain, or blocking.
 -  if (!pregate.productSelectPermitted(gate)) {
@@ -2695,8 +2876,9 @@
 -    );
 -    closed.pregateKind = gate && gate.kind;
 -    return closed;
--  }
--
++    return tag({ abstain: true, reason: 'not-elite-packs', confidence: 0.2, productHint: '', lang: 'en' });
+   }
+ 
 -  for (const sel of matches) {
 -    if (sel.conf < CONFIDENCE_THRESHOLD) break;
 -    const id = preferSendableLocaleId(sel.id, lang);
@@ -2883,7 +3065,7 @@
    get,
    list,
 --- baseline/INTERFACE_REQUEST.md	2026-10-18 13:23:42.431439091 +0000
-+++ INTERFACE_REQUEST.md	2026-10-18 18:23:01.793420701 +0000
++++ INTERFACE_REQUEST.md	2026-10-18 19:05:12.236133972 +0000
 @@ -1,51 +1,67 @@
 -# INTERFACE_REQUEST — Elite Packs KB on FAQ V12 (staging)
 +# INTERFACE_REQUEST - Elite Packs module (staging repair t739)
@@ -2927,7 +3109,7 @@
 +## 3. Routing (the ownership gate runs first, before any selector)
  
 -## What Packs needs (thin)
-+`evaluateOwnershipPregate(text, opts)` interprets the message clause by clause (proposition, subject, requested fact, context, uncertainty). A clause is GENERAL only when the requested fact is the rule (what happens if I, can I still, are my credits withdrawable, does this feature change the outcome). It is PERSONAL when the requested fact is the value of this customer's account (do I have, was it added, is mine in the collection, how many credits do I have). A generic actor (I/me) does not by itself make a rule question personal, and a remaining possessive on the customer's container does not become a generic actor. Everything else is blocked.
++`evaluateOwnershipPregate(text, opts)` interprets the message clause by clause. A question about how something works or what the rule is defaults to GENERAL. PERSONAL requires positive evidence that the customer is asking for their own account value (possession, status, balance, delivery, or a specific item of theirs). `I` / `my` in a rule question is not that evidence. A hypothetical `if I …` is a condition, not a lookup. When a real account-state request is joined to a general question, the message is mixed and the module refuses rather than answering only the general part. A narrative aside that does not ask for an account value is ignored.
  
 -1. **Load path** — Allow an optional additional approved-answer file, e.g.  
 -   `LUNA_FAQ_APPROVED_ANSWERS_EXTRA=/home/ubuntu/staging-elite-packs-20261017/kb/elite_packs/faq-approved-answers-packs-v1.json`  
@@ -2940,7 +3122,7 @@
 +| `ambiguous-account-status` | `packs.handoff.unverified.en` |
 +| `refund` | `packs.refunds-legal.en` |
 +| `missing-item` | `packs.missing-reward.en` |
-+| `not-personal` | product selector, then clause-coverage check. A condition clause is not a second intent. A general clause that selects nothing is kept when it names no Packs item, when the chosen selector also matches that clause, or when a condition clause selects the same row. A clause that selects a different id is a handoff. No partial answer. |
++| `not-personal` | topic/entity score, with the phrase selectors as a fallback. A condition clause is not a second intent. A clause that selects a different id is a handoff. No partial answer. Catalog words (pack, card, credit, key, rarity, My Packs, pack names) establish the module without the literal phrase "Elite Packs". |
  
 -2. **Product hint** — Extend `productHint()` (or accept an injected hint function) so that  
 -   `/elite\s*packs?|pack\s*credits?|ignition|oracle\s*pack|whale\s*pack|the\s*million|pack\s*pass|lucky\s*streak|instant\s*override|primordial/`  

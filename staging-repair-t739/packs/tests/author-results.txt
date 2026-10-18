@@ -54,5 +54,5 @@ scope:selector-never-emits-nonsendable-free-tier              1/1
 ----
 TOTAL 1328/1328 pass, 0 fail
 CRITICAL ownership->product leaks (author cases): 0
-General controls: 79 asked | answered correctly 79 (without caller scope hint: 60) | false refusal(refuse 0, handoff 0, abstain 0) | wrong answer 0
+General controls: 79 asked | answered correctly 79 (without caller scope hint: 79) | false refusal(refuse 0, handoff 0, abstain 0) | wrong answer 0
 Must-stay-general gate permits: 13/13
