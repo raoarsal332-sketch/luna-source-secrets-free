@@ -31,7 +31,7 @@ The scored result is the gold-table cell, not the covering set. `acceptableSet` 
 
 `packs.account-status.refuse.en` (`084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea`) is the scored send only for an exclusive personal or mixed ask when `decide` runs. `shared` and `none` personal or mixed asks do not send it.
 
-Flag-off for every exclusive row is F1 silence: no reply, no note, no assignment, refuse id not sent. Flag-off for `shared` and `none` is the same main-route cell, not F1.
+Flag-off for every exclusive Packs row is F1 silence: no reply, no note, no assignment, refuse id not sent. Flag-off for `shared` and `none` is the same main-route cell, not F1, except where section (b) gives the turn to Atom. Those rows are F1 silence because the Atom flag is off.
 
 `packs.handoff.unverified.en` (`711e367ff423b475860478dbd2e5b66d1b8c0b3372efd0298558876cc0f940f0`) stays in the catalog index and out of the product pool. It is not the near-neighbour filler.
 
@@ -41,9 +41,9 @@ A canonical `policy.*` veto is the scored `ABSTAIN` only when `decide` runs. On 
 
 `staging-repair-t742/packs/devset/packs-dev-t742.json`
 
-sha256 `cc3e7bcc6e3ff7d23971f79a6f419d70978f4bf06fb6e11783e0919f1ab05636`
+sha256 `8f7db1ab1df06a3f07ba3bcbf60ca30d5c36d15a8e8fe0667e382c705906babb`
 
-336 rows. The changelog section `Alignment to ad6169bb` has one line per row. Flag-on scored result changed on 248 rows. The other 88 are exclusive rows whose flag-on partId or abstain code stayed the same and whose flag-off is now F1 silence. One claim kind changed: `PD-123` is `none` plain, because the host-normalized text has the Atom token, no Packs token, and no selector word.
+336 rows. Freeze re-check 4 changes four rows only: `PD-123`, `PD-256`, `PD-257`, and `PD-258`. Each has the Atom token and no Packs token. Packs-local claim kind stays. Section (b) gives the turn to Atom, so the flag-on cell is the Atom decide cell and flag-off is F1 silence.
 
 | Gold-table row | Rows | Flag-on scored result |
 | --- | --- | --- |
@@ -51,13 +51,16 @@ sha256 `cc3e7bcc6e3ff7d23971f79a6f419d70978f4bf06fb6e11783e0919f1ab05636`
 | `exclusive` / Packs / mixed / decide runs | 9 | `SEND` the same refuse id, no product part |
 | `exclusive` / Packs / general / decide runs | 77 | 52 `SEND` of the one `partId`; 25 `ABSTAIN` (15 `COVERAGE_DENIED`, 10 `unresolved-policy`) |
 | `shared` / personal or mixed | 16 | main route, no module body, refuse id not sent |
-| `shared` / general | 123 | main route, V12 or spread only, no module body |
+| `shared` / general | 120 | main route, V12 or spread only, no module body |
 | `none`, both entities | 6 | main route, no module body, not terminal silence |
-| `none`, plain / general | 72 | main route, V12 or spread |
+| `none`, plain / general | 71 | main route, V12 or spread |
 | `none`, plain / personal or mixed | 25 | main route, no module body, refuse id not sent |
 | `none`, obfuscated not-a-claim | 0 | no dev row left without an entity token after (e) in the `at0m` or zero-width sense |
+| atom-owned, section (b) | 4 | Atom decide cell, not the Packs main route |
 
-Flag-off: 94 exclusive rows are F1 silence. 242 `shared` and `none` rows keep the same main-route cell.
+`PD-123` flag-on is `SEND` `atom.bundles.en` (`c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a`): that body states the free Market Maker Pack plus 6,000 credits on a three-account order. `PD-257` flag-on is `SEND` `atom.1step.news.en` (`8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee`): both news bodies state that evaluation news trading is allowed, and that id is the deterministic pick. `PD-256` and `PD-258` are `atom-decide`: the phase counts conflict, and no sendable Atom body states a credential-email download.
+
+Flag-off: 98 rows are F1 silence (94 exclusive Packs, plus these 4 Atom-owned rows). 238 `shared` and `none` rows keep the same main-route cell.
 
 `PD-125`, `PD-183`, `PD-219`, `PD-250`, `PD-255`, and `PD-314` are the both-entity rows. `PD-183` does not emit `packs.atom-bundle-distinct.en`.
 
