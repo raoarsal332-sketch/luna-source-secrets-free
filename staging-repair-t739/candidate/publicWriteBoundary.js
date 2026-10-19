@@ -162,6 +162,16 @@ function paragraphsOf(plain) {
   return n.split(/\n\n/).map((p) => p.trim()).filter(Boolean);
 }
 
+function approvedParagraphComposition(plain) {
+  const index = loadIndex();
+  const paras = paragraphsOf(plain);
+  if (!paras.length) return false;
+  return paras.every((p) => {
+    const hit = lookupExact(index, p);
+    return hit && (hit.kind === 'catalog' || hit.kind === 'template' || hit.kind === 'spread' || hit.kind === 'greeting');
+  });
+}
+
 function lookupExact(index, text) {
   const hits = index.byText.get(normalizeBody(text)) || [];
   return hits[0] || null;
@@ -258,6 +268,60 @@ function plainMainRouteModelTextDenied(ctx) {
   return false;
 }
 
+function exclusiveFlagOffTurn(turn) {
+  const sample = String((turn && (turn.text || turn.normalized)) || '');
+  if (!sample) return false;
+  try {
+    const router = require('./publicRouter');
+    const { languageGate } = require('./faqAnswerSelect');
+    const { normalizeForRoute } = require('./routeNormalizer');
+    const normalized = turn.normalized || normalizeForRoute(sample);
+    const gate = languageGate(normalized, []);
+    if (!gate || gate.lang === 'non-en') return false;
+    const input = { text: sample, normalized };
+    const resolved = router.resolveClaims(router.askClaim('packs', input), router.askClaim('atom', input), normalized);
+    if (!resolved || resolved.kind !== 'exclusive') return false;
+    const flag = resolved.entity === 'packs' ? 'LUNA_PACKS_ENABLED' : 'LUNA_ATOM_SELECTOR_ENABLED';
+    if (router.flagOn(flag)) return false;
+    return gate.lang === 'en' || gate.lang === 'uncertain';
+  } catch (_) {
+    return looksProtected(sample);
+  }
+}
+
+function spreadOnlyVerdict(verdict) {
+  const ids = (verdict && verdict.ids) || [];
+  const cls = ids[0];
+  return (cls === 'comp.spread-only' || cls === 'comp.greeting-plus-spread') && ids.includes('tpl.spread.safe-reply');
+}
+
+function spreadTemplateEligible(turn) {
+  const text = String((turn && (turn.text || turn.normalized)) || '');
+  try {
+    const gate = require('./spreadAskGate');
+    if (gate.personalAccountCue(text) === true) return false;
+    const cid = turn && turn.conversationId;
+    const state = require('./spreadTestState').load(cid);
+    const eventAt = Number((turn && turn.eventAt) || 0);
+    if (state && state.state === 'offered') {
+      if (eventAt && state.eventAt && eventAt < Number(state.eventAt)) return false;
+      return true;
+    }
+    const explained = gate.explain(text);
+    return !!(explained && explained.reason === 'spread-test-credential');
+  } catch (_) {
+    return false;
+  }
+}
+
+function applyExclusiveFlagOff(verdict) {
+  if (!verdict || !verdict.ok || verdict.skipped) return verdict;
+  const turn = currentTurn();
+  if (!exclusiveFlagOffTurn(turn)) return verdict;
+  if (spreadOnlyVerdict(verdict) && spreadTemplateEligible(turn)) return verdict;
+  return deny('NOT_APPROVED_OUTPUT');
+}
+
 function assertApprovedPublicOutput(data, opts) {
   opts = opts || {};
   if (!data || data.message_type !== 'comment') return { ok: true, ids: [], hashes: [], skipped: true };
@@ -317,13 +381,13 @@ function assertApprovedPublicOutput(data, opts) {
     body = lookupExact(index, coreText);
     if (!body) {
       if (plainMainRouteModelTextDenied({ plain: coreText, opScope: opts.opScope, conversationId: opts.conversationId, data })) return deny('NOT_APPROVED_OUTPUT');
-      return {
+      return applyExclusiveFlagOff({
         ok: true,
         code: 'OK',
         ids: ['comp.main-route-model'],
         hashes: [sha256(coreText)],
         classId: 'comp.main-route-model',
-      };
+      });
     }
     if (body.kind === 'nonsendable') return deny('NON_SENDABLE');
     if (body.hash !== sha256(coreText)) return deny('NOT_APPROVED_OUTPUT');
@@ -348,7 +412,7 @@ function assertApprovedPublicOutput(data, opts) {
     ids.push(part.id);
     hashes.push(part.hash);
   }
-  return { ok: true, code: 'OK', ids, hashes, classId };
+  return applyExclusiveFlagOff({ ok: true, code: 'OK', ids, hashes, classId });
 }
 
 function logDecision(verdict, data) {
@@ -396,6 +460,7 @@ module.exports = {
   currentTurn,
   plainMainRouteModelTextDenied,
   moduleTurnProtected,
+  approvedParagraphComposition,
   loadIndex,
   hrefCount,
   attachmentCount,

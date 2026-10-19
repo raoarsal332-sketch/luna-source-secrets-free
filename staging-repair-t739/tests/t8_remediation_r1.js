@@ -275,7 +275,24 @@ test('spread silence rows emit no public text, and an older offered follow-up st
   fake.getConversation(first.id).conversation_parts.conversation_parts.push(follow);
   await index.handleWebhook(webhookReq(first.id, follow), res);
   const hits = (fake.publicWrites().map((p) => p.data.body).join('\n').match(/cannot post a test account number or password/gi) || []).length;
-  assert.ok(hits >= 2, 'older non-personal offered turn omitted the template, hits=' + hits);
+  assert.ok(hits >= 2, 'later non-personal offered turn omitted the template, hits=' + hits);
+
+  reset();
+  const older = newConv('thanks, that helps');
+  const atomicOlder = require(path.join(E.t.dir, 'atomicJsonFile'));
+  const newerAt = Date.now();
+  atomicOlder.writeJsonAtomic(state.filePath(), {
+    [older.id]: {
+      v: 1, conversationId: older.id, eventId: 'newer-event', state: 'offered',
+      templateId: 'tpl.spread.safe-reply', templateHash: state.templateHash(),
+      offeredAt: new Date(newerAt - 1000).toISOString(),
+      expiresAt: new Date(newerAt + 3600000).toISOString(),
+      eventAt: Math.floor(Date.now() / 1000) + 120, acted: false,
+    },
+  });
+  await index.handleWebhook(webhookReq(older.id, older.user), res);
+  assert.strictEqual(fake.publicWrites().length, 0, 'out-of-order older event posted the spread template');
+  assert.strictEqual(state.load(older.id).eventId, 'newer-event', 'older event overwrote the newer decision');
 });
 
 run('remediation r1 (' + E.which + ')');

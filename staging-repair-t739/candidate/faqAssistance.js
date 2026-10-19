@@ -802,7 +802,12 @@ async function execute(plan, full, parts, d, preparedDraft, validationProof, rec
     }
 
     // V12: approved bodies must not pass postProcessModelReply (mutates allowlisted caveat punctuation).
-    const screened = d.screen(core);
+    // An exact catalog body is already the approved text. Screening it can drop a
+    // sentence and then fail the allowlist. Only non-exact compositions are screened.
+    const exactBody = approved.assertAllowlistedFinal(approved.normalizeBody(core), plan.answerIds);
+    const screened = exactBody.ok && exactBody.reason === 'exact'
+      ? { ok: true, body: core, removed: [] }
+      : d.screen(core);
     if (!screened.ok || !screened.body) {
       log(plan.cid, 'final-public-screen-held');
       return { handled: true, reason: 'final-public-screen-held' };

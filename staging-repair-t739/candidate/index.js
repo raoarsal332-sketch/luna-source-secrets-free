@@ -281,6 +281,9 @@ async function icRequest(method, url, data, tag, opScope, retryPermission) {
     if (__f1Cid && f1AbstainMark.blocksConversation(__f1Cid)) {
       return { ok: false, skipped: true, held: true, unknown: false, reason: 'f1-english-module-off', delivery: 'not-attempted' };
     }
+    if (__f1Cid && ownershipWriteLock.commentBlocked(__f1Cid)) {
+      return { ok: false, skipped: true, held: true, unknown: false, reason: 'ownership-lock', delivery: 'not-attempted' };
+    }
   }
   // PUBLIC_CREDENTIAL_HOLD_V1: nothing credential-bearing reaches the fast-ack store or the transport.
   const __credHold = credentialHoldForWrite(method, url, data);
@@ -6040,7 +6043,7 @@ const ownershipBoundary = require('./ownershipBoundary');
 const faqAssistance = require('./faqAssistance');
 /** Option B FAQ prepared while human-owned; execute only after model returns REPLY (not CLOSE/SKIP). */
 const deferredHumanOwnedFaq = new Map();
-const ownershipWriteLocks = new Map();
+const ownershipWriteLock = require('./ownershipWriteLock');
 function ownershipUnavailableResult(reason) {
   // An unavailable read is recoverable; human ownership/STOP/aiOff are deliberate
   // holds. Reuse the durable worker's bounded retry for the former only. Direct
@@ -6050,11 +6053,7 @@ function ownershipUnavailableResult(reason) {
   return { ok: false, skipped: true, reason };
 }
 function withOwnershipWriteLock(conversationId, fn) {
-  const id = String(conversationId), before = ownershipWriteLocks.get(id) || Promise.resolve();
-  const run = before.catch(() => {}).then(fn), settled = run.then(() => {}, () => {});
-  ownershipWriteLocks.set(id, settled);
-  settled.then(() => { if (ownershipWriteLocks.get(id) === settled) ownershipWriteLocks.delete(id); });
-  return run;
+  return ownershipWriteLock.withOwnershipWriteLock(conversationId, fn);
 }
 function ownershipOptions(conversationId) {
   const known = new Set((conversationId ? ownershipBoundary.knownParts(conversationId) : []).map((x) => String(x.id)));
@@ -6200,7 +6199,10 @@ async function postReplyWithOwnershipLock(conversationId, messageType, body, opS
       credentialHoldLog('conversations/' + conversationId, __preHold);
       return publicCredentialHold.holdResult(__preHold);
     }
-    const screen = publicReplyBoundary.screen(original);
+    const __approvedComposition = require('./publicWriteBoundary').approvedParagraphComposition(original);
+    const screen = __approvedComposition
+      ? { ok: true, body: original, removed: [] }
+      : publicReplyBoundary.screen(original);
     if (!screen.ok) return { ok: false, skipped: true, reason: screen.reason || 'boundary-empty' };
     const origLetters = (original.match(/[\p{L}\p{N}]/gu) || []).length;
     const nextLetters = (String(screen.body || '').match(/[\p{L}\p{N}]/gu) || []).length;
@@ -6811,7 +6813,16 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     const __nameBoundary = require('./publicWriteBoundary');
     const __nameTurn = __nameBoundary.currentTurn() || {};
     const __first = firstNameFromClient(clientName);
-    if (__first) __nameBoundary.bindTurn({ ...__nameTurn, expectedFirstName: __first });
+    const next = { ...__nameTurn };
+    if (__first) next.expectedFirstName = __first;
+    if (!next.text && latestClientText) next.text = latestClientText;
+    if (!next.normalized && (next.text || latestClientText)) {
+      next.normalized = require('./routeNormalizer').normalizeForRoute(next.text || latestClientText);
+    }
+    if (!next.conversationId) next.conversationId = String(conversationId || '');
+    if (!next.eventId && userPart && userPart.id) next.eventId = String(userPart.id);
+    if (!next.eventAt && userPart && userPart.created_at) next.eventAt = Number(userPart.created_at);
+    __nameBoundary.bindTurn(next);
   } catch (_) {}
   const __posted = await postReply(conversationId, 'comment', finalBody, userPart && userPart.id ? 'turn:' + userPart.id : undefined);
   return __posted;
@@ -7768,6 +7779,10 @@ const handleWebhook = async (req, res) => {
       console.log('SKIP inflight', conversationId, '(rerun queued)');
       return res.sendStatus(200);
     }
+    if (ownershipWriteLock.commentBlocked(conversationId)) {
+      console.log('SKIP ownership-lock-armed', conversationId);
+      return res.sendStatus(200);
+    }
     clientReplyInflight.set(inflightKey, Date.now());
     if (!(req && req.__burstRerun)) burstRerunChain.delete(inflightKey);
 
@@ -7839,6 +7854,8 @@ const handleWebhook = async (req, res) => {
         conversationId: String(conversationId || ''),
         expectedFirstName: '',
         inboundCredential: __inboundCredential,
+        eventId: String((__bindPart && __bindPart.id) || ''),
+        eventAt: Number((__bindPart && __bindPart.created_at) || 0),
       });
     } catch (_) {}
     let __humanOwnedLegacyFaqBypass = false;

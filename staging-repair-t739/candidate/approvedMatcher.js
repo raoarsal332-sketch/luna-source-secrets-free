@@ -427,19 +427,50 @@ function matchApproved({ normalized, rows, params, clarify }) {
   };
 }
 
+const PACKS_REFUSE_ID = 'packs.account-status.refuse.en';
+const ATOM_REFUSE_ID = 'atom.account-status.refuse.en';
+
+/**
+ * The module sends this id before proposition coverage and before the
+ * unresolved-policy veto. The boundary must accept that same approved refusal.
+ * Any other id still needs statement coverage.
+ */
+function approvedRefusalEligible(normalized, candidateId) {
+  if (candidateId === PACKS_REFUSE_ID) {
+    try {
+      const mod = require(path.join(t742Root(), 'packs', 'impl', 'packsAccount'));
+      return !!(mod && mod.isPersonalOrMixed && mod.isPersonalOrMixed(normalized));
+    } catch (_) {
+      return false;
+    }
+  }
+  if (candidateId === ATOM_REFUSE_ID) {
+    try {
+      const mod = require(ATOM_MODULE_PATH);
+      if (!mod || typeof mod.explain !== 'function') return false;
+      return mod.explain(normalized).personal === true;
+    } catch (_) {
+      return false;
+    }
+  }
+  return false;
+}
+
 function coversAllIntents(normalized, candidateId, rows, params) {
   const T = params && typeof params.T === 'number' ? params.T : null;
   if (T == null || !(T >= 0) || !candidateId) return false;
-  if (unresolvedPolicy(normalized)) return false;
-  if (twoStepTrailing(normalized)) return false;
   const row = (rows || []).find((r) => r.id === candidateId);
   if (!row) return false;
+  if (approvedRefusalEligible(normalized, candidateId)) return true;
+  if (unresolvedPolicy(normalized)) return false;
+  if (twoStepTrailing(normalized)) return false;
   return statementCovers(normalized, row, catalogStemSet(rows || []));
 }
 
 module.exports = {
   matchApproved,
   coversAllIntents,
+  approvedRefusalEligible,
   statementCovers,
   loadParams,
   twoStepTrailing,

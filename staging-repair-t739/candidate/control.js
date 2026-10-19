@@ -323,6 +323,31 @@ function requireControl(req, res, next) {
 }
 
 
+function authorizeControlComment(conversationId, body) {
+  try {
+    const lock = require('./ownershipWriteLock');
+    if (lock.commentBlocked(conversationId)) {
+      return { status: 409, data: null, held: true, reason: 'ownership-lock' };
+    }
+    const f1 = require('./f1AbstainMark');
+    if (conversationId && f1.blocksConversation(conversationId)) {
+      return { status: 409, data: null, held: true, reason: 'f1-english-module-off' };
+    }
+    const cred = require('./publicCredentialHold');
+    const held = cred.holdOutgoingPayload('post', body, { conversationId });
+    if (held && held.hold) return { status: 409, data: null, held: true, reason: 'credential-hold' };
+    const boundary = require('./publicWriteBoundary');
+    const verdict = boundary.assertApprovedPublicOutput(body, { conversationId, opScope: 'control' });
+    boundary.logDecision(verdict, body);
+    if (!verdict || !verdict.ok) {
+      return { status: 409, data: null, held: true, reason: (verdict && verdict.code) || 'NOT_APPROVED_OUTPUT' };
+    }
+    return null;
+  } catch (_) {
+    return { status: 409, data: null, held: true, reason: 'NOT_APPROVED_OUTPUT' };
+  }
+}
+
 function intercomHeaders() {
   return {
     Authorization: 'Bearer ' + process.env.INTERCOM_ACCESS_TOKEN,
@@ -333,6 +358,12 @@ function intercomHeaders() {
 }
 
 async function intercomRequest(method, path, body, query) {
+  const verb = String(method || 'GET').toLowerCase();
+  if (!['get', 'head', 'options'].includes(verb) && body && body.message_type === 'comment') {
+    const cid = (String(path).match(/conversations\/([^/?]+)/) || [])[1] || '';
+    const denied = authorizeControlComment(cid, body);
+    if (denied) return denied;
+  }
   let url = INTERCOM_BASE + (path.startsWith('/') ? path : '/' + path);
   if (query && typeof query === 'object') {
     const qs = new URLSearchParams();
@@ -672,6 +703,7 @@ async function convReply(id, payload) {
 }
 
 module.exports = {
+  authorizeControlComment,
   mount,
   isPaused,
   getTestMode,

@@ -371,15 +371,15 @@ test('ON1 Packs ON: an ordinary exclusive catalog question sends the overview bo
     assert.strictEqual(lm.state.calls.length, 0);
   });
 });
-test('ON2 Atom ON: a covering exclusive ask sends the one approved id; a fee-return ask abstains', async () => {
+test('ON2 Atom ON: a covering exclusive ask sends the one approved id; a first-person fee-return ask sends the approved refusal', async () => {
   await withFlags({ LUNA_ATOM_SELECTOR_ENABLED: '1' }, async () => {
     const a = await prep('What is Elite Atom?');
     assert.deepStrictEqual({ r: a.reason, t: a.terminal, m: a.module }, { r: 'module-send', t: true, m: 'atom' });
     assert.deepStrictEqual(a.plan.answerIds, ['atom.overview.en']);
     const fee = await prep('Can I get my Atom challenge fee back after the first payout?');
     assert.strictEqual(fee.terminal, true);
-    assert.strictEqual(fee.reason, 'unresolved-policy');
-    assert.ok(!fee.plan);
+    assert.strictEqual(fee.reason, 'module-send');
+    assert.deepStrictEqual(fee.plan && fee.plan.answerIds, ['atom.account-status.refuse.en']);
     reset();
     const { id, user } = newConv('What is Elite Atom?');
     lm.state.queue.push('ACTION: REPLY\nBODY: x');

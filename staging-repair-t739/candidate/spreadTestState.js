@@ -154,7 +154,7 @@ function onTurn(opts) {
       return { send: false, state: 'offered', reason: 'duplicate-event', duplicate: true, blockPublic: true, silence: true };
     }
     if (eventAt && cur.eventAt && eventAt < Number(cur.eventAt)) {
-      return { send: true, state: 'offered', reason: 'offered-resend', entry: false, classId: 'comp.spread-only', stale: true };
+      return { send: false, state: 'offered', reason: 'out-of-order', entry: false, blockPublic: true, silence: true, stale: true };
     }
     if (!(eventId && cur.eventId === eventId)) {
       cur.eventId = eventId || cur.eventId;
