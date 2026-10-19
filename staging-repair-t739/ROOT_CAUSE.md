@@ -89,7 +89,9 @@ First divergence: sender authorization. State was held; the send path did not tr
 
 **Limitation.** The sealed "eligible entry missed the template" case was not reproduced on the constructed `spread-test-credential` sentence, which already sent. No entry rule was widened. A personal spread complaint can still take the ordinary identity path. That path does not post the spread template.
 
-## What was not changed
+## What was not changed on 98e3a91
+
+The list below is that contract commit. The cycle-2 freeze later in this file integrates the author module commits. It does not edit those modules further.
 
 - Packs and Atom module logic (`packsDecide.js`, `atomModule.js`, propositions, catalogs).
 - Design file sha256 `17e89179ae28881e2eb20b1116be7f852750ba0958009947a61c8269f820808c`.
@@ -97,7 +99,9 @@ First divergence: sender authorization. State was held; the send path did not tr
 - Option A, F1/F2/F5, STOP, aiOff, Fin-wait, Risk, ownership, duplicate inflight, and the lock serializer.
 - `t3` frozen pair: 27/29. The two F1 outcomes `existing-unowned-faq-path` and `module-off-fail-closed` were not "fixed".
 
-## Author results on this change
+## Author results on 98e3a91
+
+These numbers are the contract head before Atom `63165ef6` and Packs `cfcc2292`. They are not the freeze result. The freeze table is in `FREEZE_MANIFEST.md`.
 
 | Check | Result |
 | --- | --- |
@@ -116,3 +120,9 @@ First divergence: sender authorization. State was held; the send path did not tr
 | Atom dev module and router | 401/401, false refusals 0/287, mismatches 0 PASS |
 | Sealed set | UNTESTED |
 | Production / Intercom | BLOCKED (not run; staging only) |
+
+## Cycle-2 freeze
+
+Atom `63165ef6` (commit `31d8f7b`, source `db98c83` on `t742-impl-atom`) and Packs `cfcc2292` are on one candidate. The outbound contract stays the authority. Conflict resolutions and the rerun are in `FREEZE_MANIFEST.md`.
+
+t6 ON2 fails because Atom now abstains `unresolved-policy` / `policy.fee-refunds` on "Can I get my Atom challenge fee back after the first payout?" before the account-state refusal. Atom logic was not edited to make that assertion pass. The t3 F1 pair is unchanged. Packs held-out required sends stay 7/12 exact. Nothing was tuned toward that score.

@@ -6822,6 +6822,11 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     if (!next.conversationId) next.conversationId = String(conversationId || '');
     if (!next.eventId && userPart && userPart.id) next.eventId = String(userPart.id);
     if (!next.eventAt && userPart && userPart.created_at) next.eventAt = Number(userPart.created_at);
+    if (!Array.isArray(next.priorNorm)) {
+      next.priorNorm = priorClientTexts
+        .map((t) => require('./routeNormalizer').normalizeForRoute(t))
+        .filter(Boolean);
+    }
     __nameBoundary.bindTurn(next);
   } catch (_) {}
   const __posted = await postReply(conversationId, 'comment', finalBody, userPart && userPart.id ? 'turn:' + userPart.id : undefined);
@@ -7843,6 +7848,14 @@ const handleWebhook = async (req, res) => {
       const __bindParts = __ownParts || (conversation && conversation.conversation_parts && conversation.conversation_parts.conversation_parts) || [];
       const __bindPart = findLatestUserPart(__bindParts, full);
       const __bindText = stripHtml((__bindPart && __bindPart.body) || '');
+      const __priorNorm = [];
+      for (const __bp of __bindParts) {
+        if (!__bp || __bp === __bindPart) continue;
+        if (__bindPart && String(__bp.id || '') === String(__bindPart.id || '')) continue;
+        if (!['user', 'lead'].includes(String((__bp.author || {}).type || ''))) continue;
+        const __bt = stripHtml(String(__bp.body || ''));
+        if (__bt) __priorNorm.push(__bindNorm.normalizeForRoute(__bt));
+      }
       let __inboundCredential = false;
       try {
         const __ins = publicCredentialHold.inspect(__bindText);
@@ -7851,6 +7864,7 @@ const handleWebhook = async (req, res) => {
       __bindBoundary.bindTurn({
         normalized: __bindNorm.normalizeForRoute(__bindText),
         text: __bindText,
+        priorNorm: __priorNorm,
         conversationId: String(conversationId || ''),
         expectedFirstName: '',
         inboundCredential: __inboundCredential,

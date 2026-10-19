@@ -70,14 +70,15 @@ function catalogCensus(data) {
 }
 
 function decide(input) {
-  const normalized = input && input.normalized != null ? String(input.normalized) : '';
+  const current = input && input.normalized != null ? String(input.normalized) : '';
+  const prior = input && Array.isArray(input.prior) ? input.prior.map((t) => String(t || '')).filter(Boolean) : [];
   const gate = (input && input.gate) || {};
   const claim = (input && input.claim) || {};
   if (gate.lang === 'non-en') return abstain('language-non-en', null);
   if (claim.kind !== 'exclusive') return abstain('not-exclusive', null);
 
   const data = approved.load();
-  if (isPersonalOrMixed(normalized)) {
+  if (isPersonalOrMixed(current, prior)) {
     const row = data.byId.get(REFUSE_ID);
     if (!row || !row.sendable) return abstain('COVERAGE_DENIED', null);
     return { action: 'SEND', partId: row.id, contentHash: row.contentHash };
@@ -85,6 +86,8 @@ function decide(input) {
 
   const params = (input && input.params) || loadParams();
   if (!params) return abstain('calibration-blocked', null);
+  const continuation = prior.length && (/^\s*(?:and|also)\b/.test(current) || /\b(?:it|that|this|one|they|them)\b/.test(current));
+  const normalized = continuation ? prior[prior.length - 1] + ' ' + current : current;
   const matched = preferSpecific(matchApproved({ normalized, rows: productRows(data), params }), data);
   if (matched && matched.action === 'SEND') {
     const row = data.byId.get(matched.partId);

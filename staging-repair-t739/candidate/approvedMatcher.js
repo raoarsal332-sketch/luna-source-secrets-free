@@ -278,10 +278,26 @@ function coversByFacts(normalized, partId, facts) {
   return triggered.every((fact) => Array.isArray(fact.statedBy) && fact.statedBy.includes(partId));
 }
 
-function packsPropositionCovers(normalized, partId) {
+function packsPropositionCovers(normalized, partId, prior) {
   const data = loadPacksFacts();
-  if (!data) return false;
-  return coversByFacts(normalized, partId, data.facts);
+  if (data && coversByFacts(normalized, partId, data.facts)) return true;
+  // Applicability is a fallback after a fact miss. It does not replace the
+  // fact file, and it does not cover a product id on an account-state turn.
+  // The refusal id is decided by approvedRefusalEligible, not by bodyCovers.
+  if (partId === PACKS_REFUSE_ID) return false;
+  try {
+    const account = require(path.join(t742Root(), 'packs', 'impl', 'packsAccount'));
+    if (account && typeof account.isPersonalOrMixed === 'function' && account.isPersonalOrMixed(normalized, prior)) {
+      return false;
+    }
+  } catch (_) {
+    return false;
+  }
+  try {
+    const app = require(path.join(t742Root(), 'packs', 'impl', 'packsApplicability'));
+    if (app && typeof app.bodyCovers === 'function') return app.bodyCovers(normalized, partId) === true;
+  } catch (_) { /* facts already missed */ }
+  return false;
 }
 
 function atomCoveredIds(normalized) {
@@ -344,12 +360,12 @@ function stemCovers(normalized, row, catalog) {
  * A non-module catalog row (V12) still uses stem containment when a stem
  * catalog Set is passed, because that catalog has no proposition file.
  */
-function statementCovers(normalized, row, feed) {
+function statementCovers(normalized, row, feed, prior) {
   if (!row || typeof row.body !== 'string') return false;
   const fed = propositionFeed(feed);
   if (fed) return !!fed(normalized, row);
   const id = String(row.id || '');
-  if (id.startsWith('packs.')) return packsPropositionCovers(normalized, id);
+  if (id.startsWith('packs.')) return packsPropositionCovers(normalized, id, prior);
   if (id.startsWith('atom.')) return atomPropositionCovers(normalized, id);
   if (feed && typeof feed.has === 'function') return stemCovers(normalized, row, feed);
   return false;
@@ -435,11 +451,11 @@ const ATOM_REFUSE_ID = 'atom.account-status.refuse.en';
  * unresolved-policy veto. The boundary must accept that same approved refusal.
  * Any other id still needs statement coverage.
  */
-function approvedRefusalEligible(normalized, candidateId) {
+function approvedRefusalEligible(normalized, candidateId, prior) {
   if (candidateId === PACKS_REFUSE_ID) {
     try {
       const mod = require(path.join(t742Root(), 'packs', 'impl', 'packsAccount'));
-      return !!(mod && mod.isPersonalOrMixed && mod.isPersonalOrMixed(normalized));
+      return !!(mod && mod.isPersonalOrMixed && mod.isPersonalOrMixed(normalized, prior));
     } catch (_) {
       return false;
     }
@@ -456,15 +472,15 @@ function approvedRefusalEligible(normalized, candidateId) {
   return false;
 }
 
-function coversAllIntents(normalized, candidateId, rows, params) {
+function coversAllIntents(normalized, candidateId, rows, params, prior) {
   const T = params && typeof params.T === 'number' ? params.T : null;
   if (T == null || !(T >= 0) || !candidateId) return false;
   const row = (rows || []).find((r) => r.id === candidateId);
   if (!row) return false;
-  if (approvedRefusalEligible(normalized, candidateId)) return true;
+  if (approvedRefusalEligible(normalized, candidateId, prior)) return true;
   if (unresolvedPolicy(normalized)) return false;
   if (twoStepTrailing(normalized)) return false;
-  return statementCovers(normalized, row, catalogStemSet(rows || []));
+  return statementCovers(normalized, row, catalogStemSet(rows || []), prior);
 }
 
 module.exports = {

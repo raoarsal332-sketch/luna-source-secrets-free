@@ -393,8 +393,24 @@ function assertApprovedPublicOutput(data, opts) {
     if (body.hash !== sha256(coreText)) return deny('NOT_APPROVED_OUTPUT');
     if (body.kind === 'catalog') {
       const params = loadParams();
-      const normalized = (turn && turn.normalized) || (opts.normalized) || '';
-      if (!normalized || !coversAllIntents(normalized, body.id, index.rows, params)) return deny('COVERAGE_DENIED');
+      const current = String((boundNow && boundNow.normalized) || (opts.normalized) || '');
+      const priorNorm = (boundNow && Array.isArray(boundNow.priorNorm)) ? boundNow.priorNorm : [];
+      const continuation = priorNorm.length && (/^\s*(?:and|also)\b/.test(current) || /\b(?:it|that|this|one|they|them)\b/.test(current));
+      let normalized = current;
+      // Follow-up pronouns are checked with the previous customer sentence.
+      // That join is not used to make a product body cover an account-state ask.
+      // The refusal id still goes through coversAllIntents, with priorNorm.
+      if (continuation && body.id !== 'packs.account-status.refuse.en') {
+        let accountState = false;
+        if (String(body.id || '').startsWith('packs.')) {
+          try {
+            const account = require('../../staging-repair-t742/packs/impl/packsAccount');
+            accountState = !!(account && account.isPersonalOrMixed && account.isPersonalOrMixed(current, priorNorm));
+          } catch (_) { accountState = true; }
+        }
+        if (!accountState) normalized = String(priorNorm[priorNorm.length - 1] || '') + ' ' + current;
+      }
+      if (!current || !coversAllIntents(normalized, body.id, index.rows, params, priorNorm)) return deny('COVERAGE_DENIED');
     }
   }
   if (!greeting && !body && !spread) return deny('NOT_APPROVED_OUTPUT');
