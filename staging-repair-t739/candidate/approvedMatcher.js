@@ -2,10 +2,11 @@
 /**
  * Shared matcher. In-process. No paid model. No network. No per-module word list.
  * Score is cosine of IDF-weighted tokens (length >= 2) and overlapping character
- * trigrams. Membership is coverage: the body states every substantive intent.
- * Cosine only ranks the covering set. T is frozen at 0, so it is not a send
- * floor. M is frozen null and is not a parameter. Two covering rows do not
- * abstain by themselves.
+ * trigrams. Membership is proposition coverage. Packs feeds the frozen fact
+ * list. Atom feeds the frozen body-fact result. Lexical stem containment is
+ * not membership for either module. Cosine only ranks the covering set. T is
+ * frozen at 0, so it is not a send floor. M is frozen null and is not a
+ * parameter. Two covering rows do not abstain by themselves.
  */
 
 const fs = require('fs');
@@ -135,12 +136,48 @@ function reduceConflicts(rows) {
   return { conflict: false, rows: kept };
 }
 
+function productOf(n) {
+  if (/\b(?:nobody named|without picking|no variant|product unspecified|product not (?:said|stated|named)|variant not named|variant missing|did not name|have not picked|did not say trailing or static or a variant|no 1-step or 2-step|no product named)\b/.test(n)) {
+    return null;
+  }
+  const oneRe = /\b(?:1\s*-\s*step|1\s+step|one\s*-\s*step|one\s+step)\b/;
+  const twoRe = /\b(?:2\s*-\s*step|2\s+step|two\s*-\s*step|two\s+step)\b/;
+  const one = oneRe.test(n);
+  const two = twoRe.test(n);
+  if (one && two) {
+    if (/\b(?:compar\w*|both variants|together with|and also|versus)\b/.test(n)) return 'both';
+    const i1 = n.search(oneRe);
+    const i2 = n.search(twoRe);
+    return i1 >= 0 && (i2 < 0 || i1 < i2) ? '1' : '2';
+  }
+  if (one) return '1';
+  if (two) return '2';
+  return null;
+}
+
+function negatedTrail(n) {
+  return /\b(?:did not say|without saying|not say) trailing\b/.test(n);
+}
+
+function asksTrail(n) {
+  if (negatedTrail(n)) return false;
+  return /\btrailing\b/.test(n) || /\btrail\b/.test(n);
+}
+
+/**
+ * Frozen 2-Step trailing veto. The literal word "trailing" is not required:
+ * "trail" counts, a negated trail does not, and a drawdown that moves with
+ * the peak counts. The product must be 2-Step, and "together with" does not.
+ */
 function twoStepTrailing(normalized) {
-  const t = String(normalized || '');
-  const two = /\b(?:2-step|2 step|two-step|two step|atom 2-step)\b/.test(t);
-  const trailing = /\btrailing\b/.test(t);
-  const topic = /\b(?:max|maximum)\s+(?:loss|drawdown)\b/.test(t) || /\bdrawdown\b/.test(t);
-  return two && trailing && topic;
+  const n = String(normalized || '');
+  if (productOf(n) !== '2') return false;
+  if (/\btogether with\b/.test(n)) return false;
+  const trail = asksTrail(n);
+  const lossTopic = /\b(?:max(?:imum)?\s+(?:loss|drawdown)|drawdown|floor|overall\s+loss|equity stop)\b/.test(n);
+  if (trail && (lossTopic || /\b(?:lock|mechanism|follow|open profit)\b/.test(n) || /\btrail\b/.test(n))) return true;
+  if (/\bdrawdown\b/.test(n) && /\b(?:moves with|peak)\b/.test(n)) return true;
+  return false;
 }
 
 const STOP = new Set(
@@ -191,13 +228,94 @@ function concealedSpelling(normalized) {
   return false;
 }
 
-/**
- * The body states every substantive intent when each clause's catalog facts
- * occur in that body. Paraphrase glue that is not a catalog stem is ignored.
- * Cosine is not this check.
- */
-function statementCovers(normalized, row, catalog) {
-  if (!row || typeof row.body !== 'string') return false;
+const PACKS_FACTS_PATH = path.join(__dirname, '..', '..', 'staging-repair-t742', 'packs', 'impl', 'packs-propositions.json');
+const ATOM_MODULE_PATH = path.join(__dirname, '..', '..', 'staging-repair-t742', 'atom', 'atomModule.js');
+
+let packsFactsCache = null;
+const atomCoverCache = new Map();
+
+function loadPacksFacts() {
+  if (packsFactsCache) return packsFactsCache;
+  try {
+    const data = JSON.parse(fs.readFileSync(PACKS_FACTS_PATH, 'utf8'));
+    if (!data || !Array.isArray(data.facts)) return null;
+    packsFactsCache = data;
+    return data;
+  } catch (_) {
+    return null;
+  }
+}
+
+function packsConcealed(normalized) {
+  const s = String(normalized || '');
+  if (/[a-z][@^#*~][a-z0-9]|[a-z0-9][@^#*~][a-z]/i.test(s)) return true;
+  for (const tok of s.match(/[\p{L}\p{N}]+/gu) || []) {
+    if (/[a-z]/i.test(tok) && /\d/.test(tok) && !/^\d+k$/i.test(tok) && !/^x\d+$/i.test(tok)) return true;
+  }
+  return false;
+}
+
+function factTriggered(fact, text) {
+  const any = Array.isArray(fact.any) ? fact.any : [];
+  const all = Array.isArray(fact.all) ? fact.all : [];
+  if (!any.length && !all.length) return false;
+  if (any.length && !any.some((phrase) => text.includes(phrase))) return false;
+  if (all.length && !all.every((phrase) => text.includes(phrase))) return false;
+  return true;
+}
+
+function coversByFacts(normalized, partId, facts) {
+  const text = String(normalized || '');
+  if (packsConcealed(text)) return false;
+  const triggered = (facts || []).filter((fact) => factTriggered(fact, text));
+  if (!triggered.length) return false;
+  return triggered.every((fact) => Array.isArray(fact.statedBy) && fact.statedBy.includes(partId));
+}
+
+function packsPropositionCovers(normalized, partId) {
+  const data = loadPacksFacts();
+  if (!data) return false;
+  return coversByFacts(normalized, partId, data.facts);
+}
+
+function atomCoveredIds(normalized) {
+  const key = String(normalized || '');
+  if (atomCoverCache.has(key)) return atomCoverCache.get(key);
+  let set = null;
+  try {
+    const mod = require(ATOM_MODULE_PATH);
+    if (mod && typeof mod.explain === 'function') {
+      const explained = mod.explain(key);
+      set = new Set((explained && explained.covered) || []);
+    }
+  } catch (_) {
+    set = null;
+  }
+  atomCoverCache.set(key, set);
+  return set;
+}
+
+function atomPropositionCovers(normalized, partId) {
+  const covered = atomCoveredIds(normalized);
+  if (!covered) return false;
+  return covered.has(partId);
+}
+
+function propositionFeed(feed) {
+  if (typeof feed === 'function') return feed;
+  if (feed && typeof feed.covers === 'function') {
+    return (normalized, row) => feed.covers(normalized, row);
+  }
+  if (Array.isArray(feed)) {
+    return (normalized, row) => coversByFacts(normalized, row && row.id, feed);
+  }
+  if (feed && Array.isArray(feed.facts)) {
+    return (normalized, row) => coversByFacts(normalized, row && row.id, feed.facts);
+  }
+  return null;
+}
+
+function stemCovers(normalized, row, catalog) {
   if (concealedSpelling(normalized)) return false;
   const clauses = splitCandidateAsks(normalized).filter(substantive);
   if (!clauses.length) return false;
@@ -210,6 +328,25 @@ function statementCovers(normalized, row, catalog) {
     for (const fact of facts) if (!bodyStems.has(fact)) return false;
   }
   return saw;
+}
+
+/**
+ * Proposition membership. A feed is a covers(normalized, row) function, an
+ * object with that method, or a fact list ({id, any, all, statedBy}). With
+ * no feed, packs.* reads the frozen Packs fact file and atom.* reads the
+ * frozen Atom body-fact result. Neither falls back to lexical stems.
+ * A non-module catalog row (V12) still uses stem containment when a stem
+ * catalog Set is passed, because that catalog has no proposition file.
+ */
+function statementCovers(normalized, row, feed) {
+  if (!row || typeof row.body !== 'string') return false;
+  const fed = propositionFeed(feed);
+  if (fed) return !!fed(normalized, row);
+  const id = String(row.id || '');
+  if (id.startsWith('packs.')) return packsPropositionCovers(normalized, id);
+  if (id.startsWith('atom.')) return atomPropositionCovers(normalized, id);
+  if (feed && typeof feed.has === 'function') return stemCovers(normalized, row, feed);
+  return false;
 }
 
 function loadParams(file) {

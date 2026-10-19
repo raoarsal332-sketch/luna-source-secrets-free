@@ -11,7 +11,6 @@ const { packsEntityPresent, atomEntityPresent } = require('./moduleInterface');
 const { normalizeForRoute } = require('./routeNormalizer');
 const { languageGate } = require('./faqAnswerSelect');
 const { matchApproved, loadParams } = require('./approvedMatcher');
-const { canonicalPolicy } = require('./unresolvedPolicy');
 const f1 = require('./f1AbstainMark');
 
 if (!process.env.LUNA_ATOM_APPROVED_ANSWERS) {
@@ -37,13 +36,32 @@ function deliveryWired(input) {
   return true;
 }
 
-function askClaim(entity, input) {
-  let mod = null;
+function tryRequire(rel) {
   try {
-    mod = entity === 'packs' ? require('./packs/packsAnswerSelect') : require('./atom/atomAnswerSelect');
+    return require(rel);
   } catch (_) {
-    mod = null;
+    return null;
   }
+}
+
+/**
+ * Prefer a module that exports claim and decide. The candidate selector is
+ * first. The author package is the fallback so the host does not keep a
+ * second ownership pregate. Module files are not edited here.
+ */
+function loadOwnerModule(entity) {
+  const rels = entity === 'packs'
+    ? ['./packs/packsAnswerSelect', '../../staging-repair-t742/packs/impl']
+    : ['./atom/atomAnswerSelect', '../../staging-repair-t742/atom/atomModule'];
+  const mods = rels.map(tryRequire).filter(Boolean);
+  return mods.find((m) => typeof m.decide === 'function' && typeof m.claim === 'function')
+    || mods.find((m) => typeof m.decide === 'function')
+    || mods.find((m) => typeof m.claim === 'function')
+    || null;
+}
+
+function askClaim(entity, input) {
+  const mod = loadOwnerModule(entity);
   if (mod && typeof mod.claim === 'function') {
     try {
       const claim = mod.claim(input);
@@ -78,59 +96,33 @@ function sendableRows(entity) {
   return atom.listSendable().filter((r) => r.id !== ATOM_REFUSE_ID && r.id !== 'atom.handoff.unverified.en');
 }
 
-function rowById(entity, id) {
-  const mod = entity === 'packs' ? require('./packs/packsApprovedAnswers') : require('./atom/atomApprovedAnswers');
-  const row = mod.get(id);
-  if (!row) return null;
-  return row;
-}
-
-function sendRow(entity, id) {
-  const row = rowById(entity, id);
-  if (!row || !row.body) return { action: 'ABSTAIN', code: 'NON_SENDABLE', policy: null };
-  if (row.sendable === false) return { action: 'ABSTAIN', code: 'NON_SENDABLE', policy: null };
-  return { action: 'SEND', partId: row.id, contentHash: row.contentHash, policy: null };
-}
-
 async function hostDecide(input) {
   const entity = input.claim && input.claim.entity;
   const text = String(input.text || '');
   const normalized = String(input.normalized || '');
   const params = input.params || loadParams();
-  if (entity === 'packs') {
+  const mod = loadOwnerModule(entity);
+  if (mod && typeof mod.decide === 'function') {
     try {
-      const pre = require('./packs/packsOwnershipPregate');
-      const g = pre.evaluateOwnershipPregate(text);
-      if (g && (g.kind === pre.KIND.PERSONAL || g.kind === pre.KIND.MIXED)) return sendRow('packs', PACKS_REFUSE_ID);
-      if (g && g.kind === pre.KIND.AMBIGUOUS) return { action: 'ABSTAIN', code: 'account-ambiguous', policy: null };
-    } catch (_) { /* pregate unavailable: matcher still runs */ }
-  }
-  let clarify = false;
-  if (entity === 'atom') {
-    try {
-      const atom = require('./atom/atomAnswerSelect');
-      if (atom.accountSpecific(normalized) || atom.accountSpecific(text)) return sendRow('atom', ATOM_REFUSE_ID);
-      const selected = await atom.selectAtomAnswer(text, {
-        enabled: true,
-        languageGate: { lang: 'en', language: 'en', confident: true, allowsAnswer: true },
+      const decided = await mod.decide({
+        text,
+        normalized,
+        prior: input.prior || [],
+        gate: input.gate,
+        claim: input.claim,
+        params,
       });
-      if (selected && (selected.action === 'clarify' || selected.clarify)) clarify = true;
-      const pol = canonicalPolicy(selected && selected.reason);
-      if (pol) return { action: 'ABSTAIN', code: 'unresolved-policy', policy: pol };
+      if (decided && (decided.action === 'SEND' || decided.action === 'ABSTAIN')) return decided;
     } catch (_) {
       return { action: 'ABSTAIN', code: 'decide-error', policy: null };
     }
   }
-  let mod = null;
-  try {
-    mod = entity === 'packs' ? require('./packs/packsAnswerSelect') : require('./atom/atomAnswerSelect');
-  } catch (_) { mod = null; }
-  if (mod && typeof mod.decide === 'function') {
+  let clarify = false;
+  if (entity === 'atom' && mod && typeof mod.explain === 'function') {
     try {
-      const decided = await mod.decide({ text, normalized, prior: input.prior || [], gate: input.gate, claim: input.claim });
-      if (decided && (decided.action === 'SEND' || decided.action === 'ABSTAIN')) return decided;
+      clarify = !!mod.explain(normalized).clarify;
     } catch (_) {
-      return { action: 'ABSTAIN', code: 'decide-error', policy: null };
+      clarify = false;
     }
   }
   const matched = matchApproved({ normalized, rows: sendableRows(entity), params, clarify });

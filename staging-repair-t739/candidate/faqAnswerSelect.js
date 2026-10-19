@@ -61,8 +61,22 @@ function shortClearEnglish(text) {
   return /^(?:is|are|do|does|did|can|could|what|when|where|how|why|which|who|will|would|should)$/.test(words[0]);
 }
 
+/**
+ * Option A / F5. A full English sentence is English. A short catalog term is not:
+ * fewer than four alphabetic tokens stays uncertain ("payout?", "Atom 289.").
+ * A content word is an alphabetic token of length >= 4 that is not a function word.
+ * This does not run ahead of nonEnglishEvidence, so a non-English cue stays non-en.
+ */
+function fullEnglishSentence(text) {
+  const words = String(text || '')
+    .toLowerCase()
+    .match(/[a-z']+/g);
+  if (!words || words.length < 4) return false;
+  return words.some((w) => w.length >= 4 && !EN_FUNCTION_WORDS.has(w));
+}
+
 function reliableEnglish(text) {
-  return englishEvidence(text) || shortClearEnglish(text);
+  return englishEvidence(text) || shortClearEnglish(text) || fullEnglishSentence(text);
 }
 
 function nonEnglishEvidence(text) {
@@ -87,9 +101,9 @@ function mkGate(lang, basis) {
 }
 
 /**
- * Tri-state language gate. A short catalog term ("payout?") is not English evidence: English
- * needs function-word evidence in the current text or in prior customer messages. Language
- * never establishes intent; this only decides whether a route may run at all.
+ * Tri-state language gate. A short catalog term ("payout?", "Atom 289.") is not English
+ * evidence. Function-word evidence, a short clear question, or a full English sentence
+ * (four or more alphabetic tokens and a content word) is. Language never establishes intent.
  * 'non-en' is returned unchanged for the existing non-English route.
  */
 function languageGate(text, priorTexts) {

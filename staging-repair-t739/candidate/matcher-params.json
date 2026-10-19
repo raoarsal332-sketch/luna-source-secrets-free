@@ -16,12 +16,29 @@
   },
   "measurement": {
     "sealed": "not-read",
-    "atomDevExclusive": "401/401",
-    "atomDevFalseRefusals": "0/287",
+    "label": "AUTHOR-TESTED",
+    "membership": "proposition-feed",
+    "packsPropositionsSha256": "8be5778a8d684126c0d4f23f90ca93821f4681895e8b987c42587ceaa97506ac",
+    "stemContainment": "not membership. It false-refused 239/287 Atom gold sends and left Packs at 55/94, false refusals 39/69",
     "atomGridBest": "348/401 at T=0.15, false refusals 53/287, no grid T qualifies",
-    "packsDevExclusive": "55/94 at T=0 and at T=0.15",
-    "packsDevFalseRefusals": "39/69",
     "packsGoldCosineBelow015": "6/52 product sends",
-    "packsGridQualifies": false
+    "packsGridQualifies": false,
+    "routerPath": {
+      "packsFlagOn": "94/94",
+      "packsFalseRefusals": "0/69",
+      "packsFlagOffF1": "94/94",
+      "packsNormalizerMismatches": "0/336",
+      "packsPolicyMiss": 0,
+      "packsPolicyExtra": 0,
+      "atomFlagOn": "399/401",
+      "atomFalseRefusals": "1/287",
+      "atomFlagOffF1": "401/401",
+      "atomCatalogPlans": "287/287",
+      "atomLanguageUncertain": "1/401",
+      "atomPolicyShortCircuitOnGoldSend": "0/287",
+      "atomModuleDirect": "400/401",
+      "atomPolicyMiss": 0,
+      "atomPolicyExtra": 0
+    }
   }
 }

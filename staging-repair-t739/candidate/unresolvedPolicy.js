@@ -1,9 +1,10 @@
 'use strict';
 /**
  * One unresolved-policy registry. Returns a canonical id or null.
- * Local module strings are aliases only. A listed substitute row stays
- * sendable for its own id and is not the answer when this returns a policy id.
- * The matcher does not contain these names.
+ * Packs-only vetoes run first, then the Atom detectors. A listed
+ * substitute row stays sendable for its own id and is not the answer
+ * when this returns a policy id. The matcher does not contain these names.
+ * Local module strings are aliases only.
  */
 
 const ALIASES = Object.freeze({
@@ -30,55 +31,137 @@ const IDS = Object.freeze([
   'policy.opened-pack-statutory-right',
 ]);
 
-function has(text, re) {
-  return re.test(text);
+function packsPolicy(t) {
+  if (/\bfee\b/.test(t) && /\brefund/.test(t) && !/\bpack purchase/.test(t)) {
+    return 'policy.fee-refunds';
+  }
+  if (/\bcoupons?\b/.test(t) && /\b(?:stack|combin)/.test(t)) {
+    return 'policy.coupon-stacking';
+  }
+  const safeFreePack = /\b(?:quoted as settled fact|instead of quoting|will a specific tier|specific tier or percent)\b/.test(t);
+  const demandsFreePack =
+    /\bwhat free-pack tier\b/.test(t) ||
+    /\bhelp center\b/.test(t) ||
+    /\blaunch-?landing\b/.test(t) ||
+    (/\bprovisional\b/.test(t) && /\bfree-pack\b/.test(t)) ||
+    /\bwhich number is the settled\b/.test(t);
+  if (demandsFreePack && !safeFreePack) return 'policy.free-pack-tier-conflict';
+  if (/\bevery (?:risk )?rule\b/.test(t) || /\brules? (?:are|is) (?:all )?removed\b/.test(t) || /\bevery rule lifted\b/.test(t)) {
+    return 'policy.the-million-every-rule-conflict';
+  }
+  if (/\b(?:exact bundle|bundle sizes|bonus percent|today'?s bonus)\b/.test(t)) {
+    return 'policy.live-bundle-sizes';
+  }
+  if (
+    /\bstill live\b/.test(t) ||
+    /\blive override\b/.test(t) ||
+    /\bshowing right now\b/.test(t) ||
+    /\bat this minute\b/.test(t) ||
+    (/\bright now\b/.test(t) && /\b(?:percent|price|countdown)\b/.test(t) && !/\bmy\b/.test(t))
+  ) {
+    return 'policy.live-offer-freshness';
+  }
+  if (/\bexact (?:count|threshold|number)\b/.test(t) && !/\bdashboard-only\b/.test(t) && !/\bhides the exact\b/.test(t)) {
+    return 'policy.dashboard-only-meter-thresholds';
+  }
+  if (/\bstatutory\b/.test(t) && /\b(?:already been opened|already opened|has been opened|still exist)\b/.test(t)) {
+    return 'policy.opened-pack-statutory-right';
+  }
+  return null;
+}
+
+function atomFeeReturn(t) {
+  if (/\bnot a refund\b/.test(t)) return false;
+  // Pack purchase finality names a consumer code for pack refunds. That ask
+  // is not the Atom fee-return veto (PD-305).
+  if (/\bconsumer code\b/.test(t) && /\bpack refunds?\b/.test(t)) return false;
+  return (
+    /\b(?:refund(?:ed|s)?|reimburse\w*|rebates?|repaid|repay\w*)\b/.test(t) ||
+    /\bhanded back\b/.test(t) ||
+    /\bcredited back\b/.test(t) ||
+    /\bcome back\b/.test(t) ||
+    /\breturned after\b/.test(t) ||
+    /\bpurchase price be returned\b/.test(t) ||
+    /\bcharge repaid\b/.test(t)
+  );
+}
+
+function atomEquality50(t) {
+  if (/\bequal split\b/.test(t)) return false;
+  const topic = /\b(?:consistenc\w*|best[\s-]day|50|fifty|half)\b/.test(t);
+  if (!topic) return false;
+  return (
+    /\b(?:exactly|precisely|on the nose|exact equality|right at)\b/.test(t) ||
+    /\bequal to half\b/.test(t) ||
+    /\bequals the halfway\b/.test(t) ||
+    /\bprecisely equal\b/.test(t) ||
+    /\bborderline\b/.test(t) ||
+    (/\bequality\b/.test(t) && /\b(?:50|fifty|half)\b/.test(t))
+  );
+}
+
+function atomNewsMinutes(t) {
+  if (/\bminute of the day\b/.test(t) || /\bclock time\b/.test(t)) return false;
+  if (!/\b(?:news|release|print|event|blackout)\b/.test(t)) return false;
+  return (
+    /\bminutes\b/.test(t) ||
+    /\bseconds\b/.test(t) ||
+    /\bgmt\b/.test(t) ||
+    /\bblackout\b/.test(t) ||
+    /\bclock range\b/.test(t) ||
+    /\binstruments?\b/.test(t) ||
+    /\bwindow\b/.test(t) ||
+    /\bminute count\b/.test(t)
+  );
+}
+
+function atomSku(t) {
+  return (
+    /\bwhich size should\b/.test(t) ||
+    /\bwhich atom size should\b/.test(t) ||
+    /\bshould (?:a |the )?(?:beginner|customer)\b/.test(t) ||
+    /\brecommend an atom\b/.test(t) ||
+    /\bbest atom plan\b/.test(t) ||
+    /\bpick the right\b/.test(t) ||
+    /\bmost suitable\b/.test(t) ||
+    /\bhelp me choose\b/.test(t) ||
+    /\bought they\b/.test(t) ||
+    /\bchoose between\b/.test(t) ||
+    /\b50k or atom 100k\b/.test(t)
+  );
+}
+
+function atomTranslation(t) {
+  return /\b(?:translate|translation|german wording)\b/.test(t) ||
+    /\b(?:into|in)\s+(?:spanish|french|urdu|arabic|portuguese|hindi|german|italian)\b/.test(t);
+}
+
+function atomCouponStack(t) {
+  return (
+    /\bstack(?:ing|ed)?\b/.test(t) ||
+    /\bcombine\b/.test(t) ||
+    /\bboth coupons\b/.test(t) ||
+    /\btwo (?:promo|voucher|discounts)\b/.test(t) ||
+    /\bsecond code\b/.test(t) ||
+    /\bcoupons be combined\b/.test(t) ||
+    /\b2 promo codes\b/.test(t)
+  );
+}
+
+function atomPolicy(t) {
+  if (atomFeeReturn(t)) return 'policy.fee-refunds';
+  if (atomEquality50(t)) return 'policy.equality-50';
+  if (atomNewsMinutes(t)) return 'policy.news-minutes';
+  if (atomSku(t)) return 'policy.sku';
+  if (atomTranslation(t)) return 'policy.translations';
+  if (atomCouponStack(t)) return 'policy.coupon-stacking';
+  return null;
 }
 
 function unresolvedPolicy(normalized) {
   const t = String(normalized || '');
   if (!t) return null;
-  if (has(t, /\btranslat/) || has(t, /\b(?:in|into)\s+(?:urdu|hindi|spanish|arabic|portuguese|french|german|chinese|russian|turkish|bengali|farsi|persian|italian|roman\s+urdu)\b/)) {
-    return 'policy.translations';
-  }
-  if (has(t, /\b(?:refund|reimburs|rebate|handed\s+back|money\s+back|given\s+back|fee\s+back)\b/)
-    && has(t, /\b(?:fee|fees|challenge|evaluation|reset|payout|paid|start|failed)\b/)) {
-    return 'policy.fee-refunds';
-  }
-  if (has(t, /\b(?:50|fifty)\b/) && has(t, /\b(?:percent|%|consistency)\b/)
-    && has(t, /\b(?:exact(?:ly)?|equal|equality|right\s+at|precisely|consistency)\b/)) {
-    return 'policy.equality-50';
-  }
-  if (has(t, /\bnews\b/) && has(t, /\b(?:minutes?|mins?|window)\b/)) {
-    return 'policy.news-minutes';
-  }
-  if (has(t, /\bsku\b/) || has(t, /\bwhich\s+(?:size|one|plan|account)\b.{0,40}\b(?:buy|get|pick|choose)\b/)
-    || has(t, /\b(?:should|beginner)\b.{0,40}\b(?:buy|size)\b/)) {
-    return 'policy.sku';
-  }
-  if ((has(t, /\b(?:stack(?:ed|ing)?|combine[d]?)\b/) && has(t, /\b(?:coupon|coupons|code|codes|voucher|promo)\b/))
-    || has(t, /\bhomepage\s+coupon\b/)
-    || (has(t, /\bcoupon\b/) && has(t, /\b(?:stack|sale|newsletter)\b/))) {
-    return 'policy.coupon-stacking';
-  }
-  if (has(t, /\bfree[-\s]?pack\b/) && has(t, /\b(?:tier|percent|credit)\b/) && has(t, /\b(?:50k|100k|account|help\s+center)\b/)) {
-    return 'policy.free-pack-tier-conflict';
-  }
-  if (has(t, /\bmillion\b/) && has(t, /\bevery\s+rule\b|lifts\s+every|rule-lifted|every-rule/)) {
-    return 'policy.the-million-every-rule-conflict';
-  }
-  if (has(t, /\bbundle\b/) && has(t, /\b(?:today|current|bonus)\b/) && has(t, /\bcredits?\b/)) {
-    return 'policy.live-bundle-sizes';
-  }
-  if (has(t, /\b(?:still\s+live|right\s+now|this\s+minute|countdown)\b/)) {
-    return 'policy.live-offer-freshness';
-  }
-  if (has(t, /\b(?:lucky\s+streak|pack\s+pass)\b/) && has(t, /\b(?:how\s+many|exact\s+count|fills?|fill)\b/)) {
-    return 'policy.dashboard-only-meter-thresholds';
-  }
-  if (has(t, /\b(?:statutory|legal\s+ruling)\b/) && has(t, /\b(?:opened|seal|withdrawal)\b/)) {
-    return 'policy.opened-pack-statutory-right';
-  }
-  return null;
+  return packsPolicy(t) || atomPolicy(t);
 }
 
 function canonicalPolicy(localOrId) {

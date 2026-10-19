@@ -3,7 +3,9 @@
  * normalizeForRoute. One normalizer, match side only.
  * NFKC, strip format characters, UTS #39-style confusable skeleton except
  * ASCII Latin letters and ASCII digits, lowercase, then join a spaced
- * single-letter run. Does not rewrite catalog bodies or public comments.
+ * single-letter run. The frozen host string also maps U+00D7 (×) to "x"
+ * and U+00B7 (·) to ".", and joins a single-letter run when the separators
+ * are repeated. Does not rewrite catalog bodies or public comments.
  * Digit 0 is not rewritten. Latin m stays m. at0m stays not-a-claim.
  * The hand map in faqModuleDetectors.js is not used.
  */
@@ -88,6 +90,8 @@ function skeletonChar(ch) {
   const cp = ch.codePointAt(0);
   if (cp >= 0x30 && cp <= 0x39) return ch;
   if ((cp >= 0x41 && cp <= 0x5a) || (cp >= 0x61 && cp <= 0x7a)) return ch;
+  if (cp === 0x00d7) return 'x';
+  if (cp === 0x00b7) return '.';
   if (CONFUSABLES.has(ch)) return CONFUSABLES.get(ch);
   const math = mathFold(cp);
   if (math) return math;
@@ -95,7 +99,7 @@ function skeletonChar(ch) {
 }
 
 function joinSpacedLetters(s) {
-  return s.replace(/(?<![a-z0-9])(?:[a-z][ .\-_*\u00b7]){2,}[a-z](?![a-z0-9])/g, (m) => m.replace(/[ .\-_*\u00b7]/g, ''));
+  return s.replace(/(?<![a-z0-9])(?:[a-z][ .\-_*\u00b7]+){2,}[a-z](?![a-z0-9])/g, (m) => m.replace(/[ .\-_*\u00b7]/g, ''));
 }
 
 function normalizeForRoute(text) {
