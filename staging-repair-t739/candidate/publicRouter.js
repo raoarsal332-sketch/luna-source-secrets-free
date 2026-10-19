@@ -138,7 +138,7 @@ async function route(input) {
   const prior = Array.isArray(input.prior) ? input.prior.map((t) => String(t || '')) : [];
   const normalized = normalizeForRoute(text);
   const priorNorm = prior.map((t) => normalizeForRoute(t));
-  const gate = languageGate(normalized, priorNorm);
+  let gate = languageGate(normalized, priorNorm);
   if (f1.blocks(input.conversationId, input.eventId)) {
     return { terminal: true, f1: true, reason: 'f1-english-module-off', mainRoute: false, normalized, gate, kind: 'exclusive' };
   }
@@ -177,21 +177,33 @@ async function route(input) {
     return { terminal: true, reason: 'module-on-delivery-not-wired', mainRoute: false, normalized, gate, kind: 'exclusive', entity: resolved.entity };
   }
   if (gate.lang !== 'en') {
-    // Option A. Flag-on uncertain is not F1 and decide does not run.
-    // The main route stays in force. Its suppression is that a protected
-    // comment origin does not let the model compose a public paragraph.
-    if (input.conversationId) f1.clear(input.conversationId);
-    return {
-      terminal: false,
-      f1: false,
-      reason: 'language-uncertain-module-on',
-      mainRoute: true,
-      suppressPublicComposition: true,
-      normalized,
-      gate,
-      kind: 'exclusive',
-      entity: resolved.entity,
-    };
+    // A short account-state ask is still English enough for decide. A bare
+    // catalog term ("packs?") stays uncertain and does not compose.
+    let accountState = false;
+    if (resolved.entity === 'packs') {
+      try {
+        const account = require('../../staging-repair-t742/packs/impl/packsAccount');
+        accountState = !!(account && account.isPersonalOrMixed && account.isPersonalOrMixed(normalized, priorNorm));
+      } catch (_) { accountState = false; }
+    }
+    if (!accountState) {
+      // Option A. Flag-on uncertain is not F1 and decide does not run.
+      // The main route stays in force. Its suppression is that a protected
+      // comment origin does not let the model compose a public paragraph.
+      if (input.conversationId) f1.clear(input.conversationId);
+      return {
+        terminal: false,
+        f1: false,
+        reason: 'language-uncertain-module-on',
+        mainRoute: true,
+        suppressPublicComposition: true,
+        normalized,
+        gate,
+        kind: 'exclusive',
+        entity: resolved.entity,
+      };
+    }
+    gate = { ...gate, lang: 'en', basis: 'account-state-english' };
   }
   const decided = await hostDecide({ text, normalized, prior: priorNorm, gate, claim: resolved.claim, params: input.params });
   if (!decided || decided.action !== 'SEND') {

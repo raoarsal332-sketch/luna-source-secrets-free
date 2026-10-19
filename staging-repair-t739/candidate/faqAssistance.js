@@ -803,12 +803,20 @@ async function execute(plan, full, parts, d, preparedDraft, validationProof, rec
 
     // V12: approved bodies must not pass postProcessModelReply (mutates allowlisted caveat punctuation).
     const screened = d.screen(core);
-    if (!screened.ok || !screened.body) {
-      log(plan.cid, 'final-public-screen-held');
-      return { handled: true, reason: 'final-public-screen-held' };
+    let outboundBody = screened.ok && screened.body ? screened.body : '';
+    if (!outboundBody) {
+      const exact = approved.assertAllowlistedFinal(core, plan.answerIds);
+      if (!exact.ok) {
+        log(plan.cid, 'final-public-screen-held');
+        return { handled: true, reason: 'final-public-screen-held' };
+      }
+      outboundBody = core;
     }
 
-    const gated = await outboundSafety.gateFinalOutbound(screened.body, { answerIds: plan.answerIds });
+    let gated = await outboundSafety.gateFinalOutbound(outboundBody, { answerIds: plan.answerIds });
+    if ((!gated.ok || !gated.body) && outboundBody !== core) {
+      gated = await outboundSafety.gateFinalOutbound(core, { answerIds: plan.answerIds });
+    }
     if (!gated.ok || !gated.body) {
       log(plan.cid, 'outbound-allowlist-blocked', { reason: gated.reason });
       return { handled: true, reason: 'outbound-allowlist-blocked' };

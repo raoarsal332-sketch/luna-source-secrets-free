@@ -47,11 +47,27 @@ function clauseIsAccountState(clause) {
   return false;
 }
 
-function isPersonalOrMixed(normalized) {
-  return splitIntents(normalized).some(clauseIsAccountState);
+function clauseIsPastAccount(clause) {
+  if (/^\s*if\b/.test(clause)) return false;
+  if (/\bhow do i\b/.test(clause)) return false;
+  if (/\bi am asking\b/.test(clause) || /\bi'm asking\b/.test(clause)) return false;
+  if (/\bi might\b/.test(clause)) return false;
+  if (/\bi have a question\b/.test(clause)) return false;
+  return /\b(?:i|we)\b/.test(clause) && /\b[a-z]{3,}ed\b/.test(clause);
+}
+
+function isPersonalOrMixed(normalized, prior) {
+  if (splitIntents(normalized).some((clause) => clauseIsAccountState(clause) || clauseIsPastAccount(clause))) return true;
+  const prev = (Array.isArray(prior) ? prior : []).map((t) => String(t || '')).filter(Boolean);
+  if (!prev.length) return false;
+  const current = String(normalized || '');
+  if (!/\b(?:it|that|this|one|they|them)\b/.test(current)) return false;
+  if (!/\b(?:show up|showed up|arrived|arrive|landed|posted|post|land)\b/.test(current)) return false;
+  return splitIntents(prev.join(' ')).some((clause) => clauseIsAccountState(clause) || clauseIsPastAccount(clause));
 }
 
 module.exports = {
   splitIntents,
   isPersonalOrMixed,
+  clauseIsAccountState,
 };

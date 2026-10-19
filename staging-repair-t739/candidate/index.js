@@ -6200,6 +6200,16 @@ async function postReplyWithOwnershipLock(conversationId, messageType, body, opS
       credentialHoldLog('conversations/' + conversationId, __preHold);
       return publicCredentialHold.holdResult(__preHold);
     }
+    const __catalogExact = (() => {
+      try {
+        const __idx = require('./publicWriteBoundary').loadIndex();
+        const __hits = __idx.byText.get(require('./faqApprovedAnswers').normalizeBody(original)) || [];
+        return __hits.some((p) => p.kind === 'catalog');
+      } catch (_) { return false; }
+    })();
+    if (__catalogExact) {
+      body = original;
+    } else {
     const screen = publicReplyBoundary.screen(original);
     if (!screen.ok) return { ok: false, skipped: true, reason: screen.reason || 'boundary-empty' };
     const origLetters = (original.match(/[\p{L}\p{N}]/gu) || []).length;
@@ -6211,6 +6221,7 @@ async function postReplyWithOwnershipLock(conversationId, messageType, body, opS
       body = original;
     } else {
       body = screen.body;
+    }
     }
   }
   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
@@ -7828,6 +7839,14 @@ const handleWebhook = async (req, res) => {
       const __bindParts = __ownParts || (conversation && conversation.conversation_parts && conversation.conversation_parts.conversation_parts) || [];
       const __bindPart = findLatestUserPart(__bindParts, full);
       const __bindText = stripHtml((__bindPart && __bindPart.body) || '');
+      const __priorNorm = [];
+      for (const __bp of __bindParts) {
+        if (!__bp || __bp === __bindPart) continue;
+        if (__bindPart && String(__bp.id || '') === String(__bindPart.id || '')) continue;
+        if (!['user', 'lead'].includes(String((__bp.author || {}).type || ''))) continue;
+        const __bt = stripHtml(String(__bp.body || ''));
+        if (__bt) __priorNorm.push(__bindNorm.normalizeForRoute(__bt));
+      }
       let __inboundCredential = false;
       try {
         const __ins = publicCredentialHold.inspect(__bindText);
@@ -7836,6 +7855,7 @@ const handleWebhook = async (req, res) => {
       __bindBoundary.bindTurn({
         normalized: __bindNorm.normalizeForRoute(__bindText),
         text: __bindText,
+        priorNorm: __priorNorm,
         conversationId: String(conversationId || ''),
         expectedFirstName: '',
         inboundCredential: __inboundCredential,

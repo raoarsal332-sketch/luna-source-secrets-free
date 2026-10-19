@@ -279,6 +279,10 @@ function coversByFacts(normalized, partId, facts) {
 }
 
 function packsPropositionCovers(normalized, partId) {
+  try {
+    const app = require(path.join(t742Root(), 'packs', 'impl', 'packsApplicability'));
+    if (app && typeof app.bodyCovers === 'function') return app.bodyCovers(normalized, partId);
+  } catch (_) { /* phrase file remains the fallback */ }
   const data = loadPacksFacts();
   if (!data) return false;
   return coversByFacts(normalized, partId, data.facts);

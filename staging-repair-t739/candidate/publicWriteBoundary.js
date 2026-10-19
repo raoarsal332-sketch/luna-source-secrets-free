@@ -329,8 +329,20 @@ function assertApprovedPublicOutput(data, opts) {
     if (body.hash !== sha256(coreText)) return deny('NOT_APPROVED_OUTPUT');
     if (body.kind === 'catalog') {
       const params = loadParams();
-      const normalized = (turn && turn.normalized) || (opts.normalized) || '';
-      if (!normalized || !coversAllIntents(normalized, body.id, index.rows, params)) return deny('COVERAGE_DENIED');
+      let normalized = (turn && turn.normalized) || (opts.normalized) || '';
+      const priorNorm = (turn && turn.priorNorm) || [];
+      if (priorNorm.length && (/^\s*(?:and|also)\b/.test(normalized) || /\b(?:it|that|this|one|they|them)\b/.test(normalized))) {
+        normalized = priorNorm[priorNorm.length - 1] + ' ' + normalized;
+      }
+      if (body.id === 'packs.account-status.refuse.en') {
+        let accountState = false;
+        try {
+          const account = require('../../staging-repair-t742/packs/impl/packsAccount');
+          const prior = (turn && turn.priorNorm) || [];
+          accountState = !!(account && account.isPersonalOrMixed && account.isPersonalOrMixed(normalized, prior));
+        } catch (_) { accountState = false; }
+        if (!accountState) return deny('COVERAGE_DENIED');
+      } else if (!normalized || !coversAllIntents(normalized, body.id, index.rows, params)) return deny('COVERAGE_DENIED');
     }
   }
   if (!greeting && !body && !spread) return deny('NOT_APPROVED_OUTPUT');
