@@ -53,6 +53,15 @@ Fourth revision. Atom alignment `3c173899` applied "two rows at or above `T` mea
 | Abstain on multiple candidates only when they conflict or none covers; otherwise gold is the acceptable set | decision 5, (g), (j), contract |
 | `claim.kind` `none` is a router outcome, not a module `SEND`. Spaced letters fold to Atom; `at0m` does not | (b), (e), (j), contract |
 
+Fifth revision, freeze re-check 3 on `bce740fb`. One end-to-end gold table in (j) is the only scored public result. A covering set on a dev row is metadata, not the scored send. Where this revision and an earlier "router abstains" or "any member is correct" sentence disagree, this revision wins.
+
+| Item | Section |
+| --- | --- |
+| Both-entity `none` is the main route, not terminal silence. Obfuscated not-a-claim is stated separately | (b), (j), contract |
+| End-to-end gold is the router outcome. Refuse id only on an exclusive Packs claim | (h), (j), contract |
+| `claim` uses the host `normalized` string, not `normalizeForDetect` | (e), contract |
+| Reopen-release hashes for two live deps; three files stay owner-requested stubs | (n) |
+
 Scope: staging only. No production, no SSH, no VPS, no deploy, no restart, no real Intercom write, no credentials, no paid model call, no network retrieval. Synthetic data only.
 
 `part_type=comment` write-op defect: separate workstream. Out of this design.
@@ -175,9 +184,13 @@ These two entity definitions are the only surface forms that may produce `exclus
 | Claims | Result |
 | --- | --- |
 | one `exclusive`, the other `none` or `shared` | that module owns the turn |
-| two `exclusive` | abstain, no public text |
-| `exclusive` but the other module's entity span is also present | abstain, no public text. Atom does not keep the turn when the Packs entity is also present, and Packs does not keep it when the Atom entity is also present |
-| no `exclusive` | nobody owns the turn; V12 matcher and spread state may still run |
+| two `exclusive`, or one module returns `exclusive` while the other entity is also present | malformed claim. No public text. `decide` is not sent. The main route does not run |
+| both modules return `none` because both entities are present | not a malformed claim. `decide` is not called. No module body. The main route runs. See the gold table |
+| no `exclusive` (`shared`, plain `none`, or both-entity `none`) | nobody owns the turn; V12 matcher and spread state may still run |
+
+Both-entity is that last row. `faqAssistance.prepare` (lines 484–487) continues into the FAQ path when `moduleScope` returns nothing. A both-entity turn has no exclusive owner, so it is that continuation. Spread state is not inside `moduleScope`. A terminal silence here would repeat the Phase 4 cross-silence of the 3 V12 rows, 3 FAQ rows, and 9 spread rows. "The router abstains" means `decide` is not called and no module id is emitted. It does not suppress V12 or spread.
+
+Obfuscated not-a-claim is a different reason with the same main-route machinery. `at0m`, and a zero-width join that after the host normalizer still is not the token `atom`, are `kind: none` because no entity was recognized. The main route runs, no module body is sent, and the public-write boundary denies a model-composed paragraph. The catalog that route may use is the 12 sendable V12 rows, not a Packs or Atom id. A zero-width space that the host normalizer deletes so the remaining letters are the token `atom` is exclusive, not this class. That case is `unicode-fallthrough`.
 
 A throw from `claim` is an `exclusive` claim for that module (fail closed), same as today's detector `onThrow: true` in `faqAssistance.js` `safeBool`.
 
@@ -634,11 +647,11 @@ Applied once, to the customer text, before the language gate, before `claim`, an
 
 The normalizer does not rewrite a catalog body, a template, or a public comment. Outbound bytes stay the stored approved text. `normalizeBody` remains the whitespace normalizer used for hashes.
 
-After the skeleton and lowercase, `normalizeForRoute` joins a spaced single-letter run with the same join `normalizeForDetect` already uses (`faqModuleDetectors.js` lines 85–86): a run of single letters separated by space, dot, hyphen, underscore, asterisk, or middle dot, not touching a letter or digit on either side, becomes one token. `A t o m` becomes `atom`. That is an Atom entity when the exclusions do not apply and the Packs entity is absent.
+After the skeleton and lowercase, `normalizeForRoute` itself joins a spaced single-letter run: a run of single letters separated by space, dot, hyphen, underscore, asterisk, or middle dot, not touching a letter or digit on either side, becomes one token. `A t o m` becomes `atom`. `claim` does not call `normalizeForDetect`. The hand map at `faqModuleDetectors.js` lines 68–75 is not applied. Deleting `\p{Cf}` is what joins a zero-width space. If the letters that remain are the token `atom`, the turn is an Atom entity. If they are not, the turn is obfuscated not-a-claim.
 
-Digit `0` is not rewritten to `o`. `at0m` stays `at0m` and is not the Atom token. No separate leetspeak pass is added. UTS #39 remains the confusable skeleton; this join is the only extra fold.
+Digit `0` is not rewritten to `o`. `at0m` stays `at0m` and is not the Atom token. No leetspeak pass is added.
 
-Either choice is safety-neutral. Catching the form makes an exclusive Atom claim: flag off is F1 silence, flag on can emit only an approved body. Leaving it uncaught is `kind: none`: the module is not called, and the main route still cannot compose a public paragraph. Neither path emits a credential or an unapproved paragraph. The choice is which route owns the turn. This design catches spaced letters and does not catch `at0m`.
+`claim` reads the `normalized` argument the host already produced. It does not fold again. A confusable that the UTS #39 skeleton maps onto `atom` or `packs` is exclusive when the other entity is absent. That is how `unicode-fallthrough` is caught. A module that folds with the detector hand map instead will miss those asks.
 
 ---
 
@@ -747,13 +760,13 @@ The product-entity check in the router is a separate, closed definition of two p
 
 1. Authors write a development set of synthetic turns, each labelled `ABSTAIN` or with the acceptable set of sendable ids, before any sealed item exists. The file is committed and its sha256 is recorded in `matcher-params.json`. The blinded reviewer writes the sealed set after that hash exists. Dev-set wording is not a source for the sealed set: a sealed item that copies a dev item is contaminated and is not scored. This author does not read the sealed set.
 
-Gold labeling rule, which both dev sets must follow or they are not a calibration set for this matcher. Two rows at or above `T` are not an abstain. The matcher does not break a tie by product match or by lowest specificity. It picks deterministically inside the acceptable set, and every id in that set is correct.
+Gold labeling rule, which both dev sets must follow or they are not a calibration set for this matcher. Two rows at or above `T` are not an abstain. The matcher does not break a tie by product match or by lowest specificity. It picks one id inside the acceptable set. That pick is the scored send when `decide` runs. The set is metadata.
 
 - If one or more approved bodies each cover every intent, and they do not conflict, the label is that set. A single covering body is a set of one.
 - If none covers, or the remaining bodies conflict and are not an obsolete-versus-current split, the label is `ABSTAIN`. A near-neighbour where neither body covers stays `ABSTAIN`.
 - A label change is justified by quoting the body fact. A question whose approved body already covers it is not relabelled `ABSTAIN`. The 95 `SEND` to `ABSTAIN` rows in `3c173899` are not kept. The eight ids that lost every `SEND` label go back into each set their body covers.
-- A row with `claim.kind` `none` does not carry a module `SEND` as its end-to-end label. The label is the router outcome in (b). See the contract.
-2. Sweep `T` on the dev set only, `T` in `{0.15, 0.20, …, 0.60}`. `M` is not swept and is not frozen. Freeze a `T` only if, on the dev set: no non-sendable id is returned, every registry item abstains, false refusals on items whose acceptable set is non-empty are ≤ 5%, and correct decisions are ≥ 95%. A correct decision sends a member of the labelled set, or abstains when the label is `ABSTAIN`. If no `T` qualifies, do not start the sealed run. Report `BLOCKED calibration`.
+- A row with `claim.kind` `shared` or `none` does not carry a module `SEND` as its end-to-end label. The scored label is the gold table in (j).
+2. Sweep `T` on the dev set only, `T` in `{0.15, 0.20, …, 0.60}`. `M` is not swept and is not frozen. Freeze a `T` only if, on exclusive rows where `decide` runs: no non-sendable id is returned, every registry item abstains, false refusals on rows whose scored send is one `partId` are ≤ 5%, and correct decisions are ≥ 95%. Correct means that `partId`, or `ABSTAIN` when that is the label. Another member of `acceptableSet` is not the scored send. `shared` and `none` rows are not matcher sends. If no `T` qualifies, do not start the sealed run. Report `BLOCKED calibration`.
 3. Write `matcher-params.json` with `algorithm`, `T`, catalog file hashes, and `devSetSha256`. Hash that file. The sealed run loads it and refuses to score if the hash differs. Params do not move after the sealed set exists.
 
 ---
@@ -775,7 +788,7 @@ decide({ text, normalized, prior, gate, claim }) ->
 unresolvedPolicy(normalized) -> null | <canonical policy id from the registry>
 ```
 
-There is no `PERSONAL` action and no scope enum `atom|packs|other|none`. Personal and mixed Packs turns are `SEND` of the sendable refuse id in (j). Both product entities in one turn are not `exclusive` for either module; the router abstains (b).
+There is no `PERSONAL` action and no scope enum `atom|packs|other|none`. The refuse id is the scored send only when the gold table says `decide` runs. Both product entities are `kind: none` from each module. `decide` is not called. The main route runs.
 
 Rules:
 
@@ -783,7 +796,8 @@ Rules:
 - `decide` returns `SEND` of a sendable id, or `ABSTAIN`. It never returns prose. It calls `matchApproved` for the score. A matcher win does not override a veto.
 - If `unresolvedPolicy` returns a canonical id, `decide` returns `ABSTAIN` with `code: 'unresolved-policy'` and that `policy`, even when the matcher returned an id.
 - Atom `decide` returns `ABSTAIN` `atom-clarification` on a clarification ask (decision 3) and `ABSTAIN` `atom-2step-trailing` on a 2-Step trailing ask (decision 4). A 1-Step trailing ask and a trailing ask with no product are `SEND` of `atom.1step.max-loss.en` when that is the covering body. `atom.2step.max-loss.en` on a trailing ask is wrong.
-- Multi-intent inside the module is `ABSTAIN` `COVERAGE_DENIED` unless at least one sendable id covers every intent (decision 5). When several do and they agree, `decide` returns the deterministic member from (g). The acceptable set is the gold.
+- Multi-intent inside the module is `ABSTAIN` `COVERAGE_DENIED` unless at least one sendable id covers every intent (decision 5). When several do and they agree, `decide` returns the deterministic member from (g). The acceptable set may be stored on the dev row as metadata. The scored send is that one `partId`, not the set.
+- `claim` uses the host `normalized` string from (e). It does not call `normalizeForDetect` and it does not apply the hand map at `faqModuleDetectors.js` lines 68–75.
 - `contentHash` is the catalog hash of `partId`. The transport recomputes it. A mismatch denies the write.
 - Flag off: the router never calls `decide`.
 - `gate.lang === 'non-en'`: the router never calls `claim` or `decide`.
@@ -840,9 +854,33 @@ Counts below use the reviewer correction. The 22 false refusals are 2 S01 + 12 S
 
 The sealed set is new, written by `bc-ad6955b1` after the dev-set hash in (g) is committed. This author does not read it, does not label it, and does not tune `T` on it. Dev-set wording is not a source for the sealed set. A sealed item that repeats a dev item is contaminated and is not scored.
 
+### End-to-end gold
+
+One table. The scored public result is the router outcome. `decide` runs only for one `exclusive` owner, language `en`, flag on, and delivery wired. Otherwise `decide` does not run. A dev row may keep `acceptableSet` as metadata. That set is not the scored send. Authors copy the public-result cell. They do not invent a second one.
+
+| Claim | Module | Ask | `decide` | Scored public result |
+| --- | --- | --- | --- | --- |
+| `exclusive` | Packs | personal | runs | `packs.account-status.refuse.en` (`084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea`) |
+| `exclusive` | Packs | mixed | runs | the same refuse id, no product part |
+| `exclusive` | Packs | general | runs | the one `partId` `decide` returns, or silence if `decide` is `ABSTAIN` |
+| `exclusive` | Atom | personal | runs | `atom.account-status.refuse.en` (`c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128`) |
+| `exclusive` | Atom | mixed | runs | the same Atom refuse id, no product part |
+| `exclusive` | Atom | general | runs | the one `partId` `decide` returns, or silence if `decide` is `ABSTAIN` |
+| `exclusive` | Packs or Atom | any | does not run (flag off, `en` or `uncertain`) | F1 silence. No reply, no note, no assignment. The refuse id is not sent |
+| `exclusive` | Packs or Atom | any | does not send (flag on, delivery absent) | `module-on-delivery-not-wired`. No invented body |
+| `exclusive` would have been | either | any, `non-en` | does not run | not a module claim. Main route (f) |
+| malformed (`exclusive` while the other entity is present, or two `exclusive`) | either | any | not sent | no public text. The main route does not run |
+| `shared` | Packs or Atom | personal or mixed | does not run | main route. No module body. The refuse id is not sent. No spread template when `personalAccountWhileOffered` is true. A model paragraph is denied |
+| `shared` | Packs or Atom | general | does not run | main route. V12 and spread may send their own approved output. No module body. A model paragraph is denied |
+| `none`, both entities | both tokens present | personal, mixed, or general | does not run | main route. No module body. Not terminal silence. V12 and spread may send their own approved output. A model paragraph is denied. `PD-183` does not emit `packs.atom-bundle-distinct.en` |
+| `none`, obfuscated not-a-claim | no entity token (`at0m`, a zero-width join that is not `atom`) | personal, mixed, or general | does not run | main route. No module body. The 12 sendable V12 rows only, never a Packs or Atom id. A model paragraph is denied. Not F1. `AD349` is this row |
+| `none`, plain | no entity and no shared word | general | does not run | main route. The labelled V12 id or the spread template when that is the labelled send |
+
+`generalAccountAskGuard.js` is absent. Personal and mixed rows that are `shared` or `none` have no second guard. The public-write boundary is what denies a model paragraph, and `personalAccountWhileOffered` is what clears an open spread offer.
+
 ### Strata
 
-Each row is a named stratum. The correct result is the only pass. Overall rates do not replace a stratum threshold.
+Each row is a named stratum. The correct result is the only pass. Overall rates do not replace a stratum threshold. The gold table above is the public result those rows score.
 
 | Stratum | Correct result | Threshold |
 | --- | --- | --- |
@@ -857,11 +895,11 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | `atom-clarification` | Atom clarification ask. Gold: silence. Any catalog id is wrong | 100% abstain, 0 sends |
 | `atom-2step-trailing` | a 2-Step trailing max-loss or drawdown ask. Gold: silence. `atom.2step.max-loss.en` is wrong. `atom.1step.max-loss.en` is also wrong on a 2-Step ask | 100% abstain, 0 sends |
 | `atom-1step-trailing` | a 1-Step trailing max-loss ask, or a trailing max-loss ask that names no product. Gold: `atom.1step.max-loss.en`, hash `78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`. The body states trailing equity. That is the only sendable Atom body that does | 100% exact-id |
-| `packs-personal` | a Packs personal-account ask. Gold: `SEND` `packs.account-status.refuse.en`, hash `084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea`. The row is sendable. Abstain is a fail | 100% exact-id |
-| `packs-mixed` | a Packs turn that is both personal and a product question. Gold: `SEND` the same refuse id. No product body is added. One sendable body covers the account-status boundary | 100% exact-id, 0 product bodies |
+| `packs-personal` | exclusive Packs, flag on, delivery wired, personal ask. Gold: `packs.account-status.refuse.en`. The same ask with `shared` or `none` does not send that id. It uses the gold-table main route | 100% exact-id on exclusive rows, 0 refuse sends on `shared` or `none` |
+| `packs-mixed` | exclusive Packs, flag on, delivery wired, personal plus product. Gold: the same refuse id, no product body. `shared` or `none` does not send it | 100% exact-id on exclusive rows, 0 product bodies, 0 refuse sends on `shared` or `none` |
 | `packs-near-neighbour` | two Packs product rows are close and neither body's text covers every intent. Gold: `ABSTAIN`. `packs.handoff.unverified.en` is not the filler. That id stays sendable for its own handoff role only | 100% abstain, 0 product sends, 0 handoff sends |
-| `multi-cover` | two or more sendable bodies each state every asked fact and do not conflict. Includes the phase-1 8% pair, the 2-Step 1:30 default pair, and the 100K list-price pair in (g). Gold: any id in that set. Silence is a false refusal | 100% send a member of the set, 0 sends outside the set |
-| `claim-kind-none` | `claim.kind` is `none`. Gold is the router outcome, not a module `SEND`. Both entities (Packs `PD-183`): no module body. `at0m` (`AD349`): not an Atom entity, no module `SEND`. Spaced `A t o m` (`AD353`) is not this stratum: after the join it is exclusive Atom and is scored on `f1-english-module-off` while the flag is off | 100% match that router outcome, 0 module sends on a `none` row |
+| `multi-cover` | exclusive, `decide` runs, two or more sendable bodies each state every asked fact and do not conflict. Includes the phase-1 8% pair, the 2-Step 1:30 default pair, and the 100K list-price pair in (g). The acceptable set is metadata. Gold is the one deterministic `partId`. Silence is a false refusal. Another member of the set is not the scored send | 100% that one id, 0 other ids |
+| `claim-kind-none` | both-entity `none` (`PD-183`) and obfuscated not-a-claim (`AD349`). Gold is the matching gold-table row: main route, no module body, not F1. Spaced `A t o m` (`AD353`) is exclusive after the host join and is scored on `f1-english-module-off` while the flag is off | 100% match that row, 0 module sends |
 | `multi-intent-uncovered` | `coversAllIntents` is false, including the 2 `no-isolatable-faq` items. Gold: no policy body. Spread template only when state is `offered` or this turn is the entry class | 0 policy-body sends, 100% of labelled cases omit the uncovered body |
 | `review-status-and-handoff` | the four candidates in (c). Gold: silence | 0 sends |
 | `language-non-en` | Option A from (f): established non-English routing, not a module claim, no English body, no model-composed public paragraph. Localized output only if text, language, relevance, and eligibility are all approved (none are). Otherwise the existing abstain | 100% match that gold |
@@ -875,7 +913,7 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | `unresolved-policy` | every canonical id in the (h) registry abstains. A listed substitute id is a fail | 0 emissions |
 | Overall | labelled correct action across strata, with the per-stratum thresholds above still required | ≥ 95% correct, ≤ 5% false refusal |
 
-False refusal means the labelled acceptable set is non-empty and the run sent nothing or sent an id outside that set. Sending any member of the set is correct, including when the matcher picked a different member. Silence on `flags-off-exclusive-silence`, `f1-english-module-off`, `atom-clarification`, `atom-2step-trailing`, `multi-intent-uncovered`, `review-status-and-handoff`, `language-non-en`, `claim-kind-none` where the router outcome is silence, and `spread-offered-personal-nospread` is the labelled correct action, not a false refusal. Silence on `multi-cover` is a false refusal. Non-isolation of a preserved FAQ is not a pass.
+False refusal means the scored router outcome was an approved send and the run sent nothing or sent a different id. The acceptable set is not a pass for a different member. Silence on `flags-off-exclusive-silence`, `f1-english-module-off`, `atom-clarification`, `atom-2step-trailing`, `multi-intent-uncovered`, `review-status-and-handoff`, and `language-non-en` is the labelled correct action, not a false refusal. Silence on `spread-offered-personal-nospread` is correct. Silence on `multi-cover`, when `decide` was required to send the one `partId`, is a false refusal. A `shared` or `none` personal row that does not send the refuse id is correct. Non-isolation of a preserved FAQ is not a pass.
 
 ### Side-effect channels, all asserted
 
@@ -1035,7 +1073,7 @@ The budget for the implementation that follows this design is one implementation
 | `./repeatedClientQuestion` | `luna-current/01_runtime/repeatedClientQuestion.js` |
 | `./september-promos` | `luna-current/01_runtime/september-promos.js` |
 | `./softEdges` | `luna-current/01_runtime/softEdges.js` |
-| `./teammateHandoffGates` | `luna-current/01_runtime/teammateHandoffGates.js` |
+| `./teammateHandoffGates` | not the `luna-current` copy. That file's sha256 starts `64e44724` (`64e44724322b0c233880e46506e21d6dbf80ca96fe797e1ab7b278e4da6e5dfc`). Implementation uses the reopen-release copy whose sha256 starts `3651c2da`, coordinator-supplied at implementation. It is not in this clone |
 | `./webhookSecurity` | `luna-current/01_runtime/webhookSecurity.js` |
 | `./statePresend/conversationState` | `luna-current/02_statePresend/conversationState.js` |
 | `./statePresend/credentialSanitizer` | `luna-current/02_statePresend/credentialSanitizer.js` |
@@ -1048,7 +1086,19 @@ The budget for the implementation that follows this design is one implementation
 
 #### Stub only
 
-`staging-repair-t739/harness/stubs/` is the only copy of: `accountCheckRequest.js`, `atomicJsonFile.js`, `contextualFollowUp.js`, `continuousOwnership.js`, `escalateProblemPolish.js`, `faqDeliveryRecovery.js`, `handoffClaimGate.js`, `humanRequest.js`, `imageEvidence.js`, `internalNoteFormat.js`, `lunaEpisode.js`, `lunaResponsesTransport.js`, `modelConfig.js`, `modelTestGuard.js`, `partnershipIntent.js`, `policyFactGuard.js`, `prePurchaseGate.js`, `productComparison.js`, `publicResponseContract.js`, `publicRestatementGuard.js`, `replyDecision.js`, `reviewRequestFlow.js`, `riskNoteGate.js`, `teammateAdmins.js`, `teammateAudit.js`, `teammateTopicOwnership.js`, `tradingStagePolicy.js`, `variantComparisonCompleteness.js`, `webhookFastAck.js`, `writeOpStore.js`, `typoNormalizer.js` (required as `./statePresend/typoNormalizer`).
+`staging-repair-t739/harness/stubs/` is the only copy in this clone of: `accountCheckRequest.js`, `atomicJsonFile.js`, `contextualFollowUp.js`, `continuousOwnership.js`, `escalateProblemPolish.js`, `faqDeliveryRecovery.js`, `handoffClaimGate.js`, `humanRequest.js`, `imageEvidence.js`, `internalNoteFormat.js`, `lunaEpisode.js`, `lunaResponsesTransport.js`, `modelConfig.js`, `modelTestGuard.js`, `partnershipIntent.js`, `policyFactGuard.js`, `prePurchaseGate.js`, `productComparison.js`, `publicResponseContract.js`, `publicRestatementGuard.js`, `replyDecision.js`, `reviewRequestFlow.js`, `riskNoteGate.js`, `teammateAdmins.js`, `teammateAudit.js`, `teammateTopicOwnership.js`, `tradingStagePolicy.js`, `variantComparisonCompleteness.js`, `webhookFastAck.js`, `writeOpStore.js`, `typoNormalizer.js` (required as `./statePresend/typoNormalizer`).
+
+#### Live dependencies, historical until current hashes arrive
+
+Every result that needs these files is labelled `historical live deps 8/12 Oct` until a current hash is supplied. The label stays on the result even when a stub lets a harness boot.
+
+| file | what this design uses |
+| --- | --- |
+| `teammateHandoffGates.js` | reopen-release copy, sha256 prefix `3651c2da`. Coordinator-supplied at implementation. Not `luna-current` `64e44724` |
+| `continuousOwnership.js` | reopen-release copy, sha256 prefix `0c5dc007`. Coordinator-supplied at implementation. Not the harness stub |
+| `prePurchaseGate.js` | stub only. Requested from the owner (request v2 sent) |
+| `handoffClaimGate.js` | the Oct-12 file. Stub only in this clone. Requested from the owner (request v2 sent) |
+| `faqDeliveryRecovery.js` | stub only. Requested from the owner (request v2 sent) |
 
 ---
 
@@ -1059,32 +1109,33 @@ This section is the list for the Packs author and the Atom author. The shared de
 ### Both modules
 
 1. Export `claim` and `decide` exactly as (h). Delete any other ownership return.
-2. `claim.kind` is only `exclusive`, `shared`, or `none`. If both the Packs entity and the Atom entity are in the normalized text, `kind` is `none`. The router then abstains. Neither module keeps the turn.
+2. `claim.kind` is only `exclusive`, `shared`, or `none`. If both the Packs entity and the Atom entity are in the normalized text, `kind` is `none`. `decide` is not called. The scored result is the both-entity row of the gold table: main route, no module body, not terminal silence.
 3. `decide` returns `SEND(partId)` or `ABSTAIN(code)`. No prose. No third action.
 4. Language. Uncertain plus an exclusive module claim plus the flag off is fail-closed silence, and the router does that without a public body. Clearly non-English is not a module claim: do not fail closed, do not return a terminal abstain, and do not call the turn handled. The main route stays as (f), Option A settled by t743.
 5. `unresolvedPolicy` returns a stable id from the one registry in (h). Local strings are aliases only. They are not a second registry.
-6. Dev-set labels follow the gold labeling rule in (g). One or more approved bodies each cover every intent and do not conflict: the label is that set, and any member is correct. Otherwise `ABSTAIN`. Two rows at or above `T` is not by itself `ABSTAIN`. Do not relabel a covered question to `ABSTAIN`. The 95 `SEND` to `ABSTAIN` rows in Atom alignment `3c173899` are relabelled back to their acceptable sets. The eight ids that lost every `SEND` label are members of each set their body covers: `atom.1step.funded-profitable-days.en`, `atom.1step.reward.en`, `atom.2step.leverage.en`, `atom.2step.reward.en`, `atom.obsolete.first-payout-14.en`, `atom.obsolete.leverage-150-default.en`, `atom.obsolete.price-161-permanent.en`, `atom.obsolete.sizes-5k-10k.en`. Every changed label cites the body fact.
-7. `claim.kind` `none` is not a module `SEND`. The dev row states the router outcome. Both product entities: router abstain, no module body, `decide` is not called. Packs `PD-183` is this case. Its `packs.atom-bundle-distinct.en` id is not emitted. `AD349` (`at0m`) stays `none` because digit `0` is not folded, and `atom.1step.max-loss.en` is not the end-to-end gold. `AD353` (spaced `A t o m`) is not `none` after the join in (e): it is exclusive Atom, and end-to-end gold while the flag is off is F1 silence. A row that still has `kind: none` must not also say `decide: SEND`.
+6. Dev-set labels follow (g) for coverage and the gold table for the scored result. One or more approved bodies each cover every intent and do not conflict: `acceptableSet` may list them. The scored send, and only when `decide` runs, is the one deterministic `partId`. Otherwise the scored cell is the gold-table router outcome, not a module `SEND`. Two rows at or above `T` is not by itself `ABSTAIN`. Do not relabel a covered exclusive question to `ABSTAIN`. The 95 rows stay covered sets as metadata. The eight ids stay members of each set their body covers: `atom.1step.funded-profitable-days.en`, `atom.1step.reward.en`, `atom.2step.leverage.en`, `atom.2step.reward.en`, `atom.obsolete.first-payout-14.en`, `atom.obsolete.leverage-150-default.en`, `atom.obsolete.price-161-permanent.en`, `atom.obsolete.sizes-5k-10k.en`. Every changed label cites the body fact.
+7. Relabel `e2e` from the gold table in one pass. `exclusive` and flag on and delivery wired: the module `decide` gold. `shared`: `decide` does not run; public result is the `shared` row. `none`: the router/main-route row. A row with `kind: none` or `kind: shared` must not say `decide: SEND`. `PD-183` is both-entity `none`. `AD349` is obfuscated `none`. `AD353` is exclusive Atom after the host join, F1 silence while the flag is off.
+8. `claim({ normalized })` uses that host string. Do not call `normalizeForDetect`. Do not apply the hand map at `faqModuleDetectors.js` lines 68–75. Confusable exclusive asks are already folded by (e). Folding them again with the detector map misses `unicode-fallthrough`.
 
 ### Packs section and Packs dev set
 
 1. Add `claim`. Today the module exports no ownership signal (`selectPacksAnswer` in `packs/packsAnswerSelect.js` and `packs/INTERFACE_REQUEST.md`). `packsProductHint` does not set `exclusive`.
-2. Delete `PERSONAL` as an action. Personal is `SEND` `packs.account-status.refuse.en`. Mixed personal-plus-product is the same `SEND`, with no product part.
+2. Delete `PERSONAL` as an action. `packs.account-status.refuse.en` is the scored send only on an exclusive Packs claim when `decide` runs. Mixed exclusive is the same id and no product part. A personal or mixed ask that is `shared` or `none` does not send the refuse id.
 3. Stop blocking `packs.account-status.refuse.en` and `packs.handoff.unverified.en` out of the index. Both are sendable (`084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea` and `711e367ff423b475860478dbd2e5b66d1b8c0b3372efd0298558876cc0f940f0`). Keep them out of the product overlap pool (`scopeAllows` product role already excludes those tags). `packs.handoff.unverified.en` is `SEND` only for its handoff role. It is not the near-neighbour answer.
 4. Near-neighbour, where neither product body covers the turn: `ABSTAIN`. Not the handoff id.
 5. Add vetoes the Packs section does not have today: `policy.fee-refunds` and `policy.coupon-stacking`. Do not `SEND` `packs.refunds-legal.en` for fee refunds. Do not `SEND` `packs.discount-stacking.en` for coupon stacking. Those rows stay sendable for their own ids.
 6. Map the six Packs-only names onto the canonical ids in (h): `policy.free-pack-tier-conflict`, `policy.the-million-every-rule-conflict`, `policy.live-bundle-sizes`, `policy.live-offer-freshness`, `policy.dashboard-only-meter-thresholds`, `policy.opened-pack-statutory-right`. Each is `ABSTAIN`. Do not substitute the sendable neighbour named in that table.
-7. Dev labels. Personal rows are the refuse id, not `ABSTAIN`. Mixed rows are the refuse id, not a product id and not both. Near-neighbour rows, where neither body covers, are `ABSTAIN`, not `packs.handoff.unverified.en`. Two sendable Packs bodies that each cover the turn and do not conflict are the acceptable set, not `ABSTAIN`. Fee-refund and coupon-stacking rows are `ABSTAIN` with the canonical policy id, not `packs.refunds-legal.en` or `packs.discount-stacking.en`.
-8. `PD-183` and every other both-entities row: `claim.kind` `none`, end-to-end gold is router abstain, not `outcome: SEND`.
+7. Dev labels. Exclusive personal rows, when `decide` runs, are the refuse id. Exclusive mixed rows are the refuse id, not a product id. `shared` and `none` personal or mixed rows are the gold-table main route, not the refuse id. Near-neighbour rows, where neither body covers, are `ABSTAIN`, not `packs.handoff.unverified.en`. Two sendable Packs bodies that each cover an exclusive turn and do not conflict keep an `acceptableSet`; the scored id is the deterministic pick. Fee-refund and coupon-stacking rows are `ABSTAIN` with the canonical policy id, not `packs.refunds-legal.en` or `packs.discount-stacking.en`.
+8. `PD-183` and every other both-entities row: `claim.kind` `none`, scored result is the both-entity gold-table row (main route, no module body). Not `outcome: SEND`. Not terminal silence.
 
 ### Atom section and Atom dev set
 
-1. Replace the scope return `atom|packs|other|none` with `claim`. Today a turn that also says elite packs stays on Atom. That becomes `kind: 'none'` when the Packs entity is present, and the router abstains.
+1. Replace the scope return `atom|packs|other|none` with `claim`. Today a turn that also says elite packs stays on Atom. That becomes `kind: 'none'` when the Packs entity is present. `decide` is not called. The scored result is the both-entity row of the gold table.
 2. `decide` is `SEND` or `ABSTAIN`. Clarification is `ABSTAIN` `atom-clarification`, not a customer sentence. A handoff suggestion is not a `SEND` unless the registry names a sendable partId, which it does not.
 3. Map local unresolved strings onto the canonical ids: `atom-fee-policy-owner-decision` → `policy.fee-refunds`; `unresolved:consistency-equality` → `policy.equality-50`; `unresolved:news-minutes` → `policy.news-minutes`; `unresolved:checkout-sku-selection` → `policy.sku`; `unresolved:translation` → `policy.translations`; `unresolved:coupon-stacking` → `policy.coupon-stacking`.
 4. Trailing. Scope the veto to 2-Step asks. Dev labels: 2-Step trailing is `ABSTAIN` `atom-2step-trailing`, not `atom.2step.max-loss.en` and not `atom.1step.max-loss.en`. 1-Step trailing, and trailing with no product named, are `atom.1step.max-loss.en` (`78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`), because that body states trailing equity and no other sendable Atom body does.
-5. Drop "product match, then lowest specificity, then abstain" as a labeling rule. Where that rule picked the more specific of two rows and neither body covers every intent, the label becomes `ABSTAIN`. Where two or more bodies each cover every intent and do not conflict, the label is that set. Do not move those rows to `ABSTAIN`. Where the statements conflict, follow the obsolete-versus-current rule in (g). Each changed row cites the body fact. Relabel the 95 rows and restore the eight ids named in the contract item above.
-6. `AD349` stays `claim.kind` `none`. End-to-end gold is the router outcome, not `SEND` `atom.1step.max-loss.en`. `AD353` is exclusive Atom after the spaced-letter join. Do not leave it as `kind: none` with `decide: SEND`. Flag off: F1 silence.
+5. Drop "product match, then lowest specificity, then abstain" as a labeling rule. Where neither body covers every intent, the label is `ABSTAIN`. Where two or more bodies each cover an exclusive turn and do not conflict, `acceptableSet` lists them and the scored id is the deterministic pick. Do not move those rows to `ABSTAIN`. Where the statements conflict, follow the obsolete-versus-current rule in (g). `claim` reads host `normalized` only.
+6. `AD349` (`at0m`) stays obfuscated `none`. Scored result is the main route, not `SEND` `atom.1step.max-loss.en`. `AD353` is exclusive Atom after the host join. Do not leave it as `kind: none` with `decide: SEND`. Flag off: F1 silence. A zero-width join that does not form `atom` is the same obfuscated row as `AD349`. One that does form `atom` is exclusive.
 7. Do not treat a clearly non-English turn as a terminal Atom abstain. Leave it off the module claim.
 
 ---
