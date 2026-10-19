@@ -1,5 +1,1074 @@
 # Atom dev-set label changelog
 
+## Revision ad6169bb
+
+Authority: branch t742-design, commit `ad6169bb671ca5369932d69a31aedfc476b0824c`, doc sha256 `5529a4878d4ef6adbce88875021a5f14b1eb77260bc9e11a4d48be8f26e52677`.
+
+The scored public result is the gold-table router outcome. `acceptableSet` is metadata. `claim` is re-derived from section (e), not from the detector hand map.
+
+Claim kind changes on confusable or zero-width rows: 0.
+
+Re-derived and unchanged: AD351 (U+0410 skeletons to A, then lowercase, so the token is atom; kind stays exclusive). AD349 (digit 0 is not rewritten; at0m stays none, obfuscated). AD352 (U+200B deleted; atom1step is not the token atom; kind stays none, obfuscated). AD353 (spaced letters join to atom; kind stays exclusive).
+
+Rows in this pass: 412.
+
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD001 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD002 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD003 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD004 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD005 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD006 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD007 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD008 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD009 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD010 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD011 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD012 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD013 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD014 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.phases.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.checkout.options.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD015 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD016 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD017 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD018 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD019 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD020 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD021 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD022 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD023 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD024 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD025 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD026 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD027 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD028 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD029 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD030 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD031 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD032 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD033 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD034 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD035 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD036 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD037 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD038 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD039 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD040 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD041 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD042 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD043 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD044 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.news.en, atom.2step.news.en). The scored send, when decide runs, is only atom.2step.news.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD045 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD046 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD047 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.news.en, atom.2step.news.en). The scored send, when decide runs, is only atom.2step.news.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD048 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD049 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD050 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.2step.leverage.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD051 | SEND atom.2step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.leverage.en","contentHash":"9359b2fb2ce639351a49f157e876df5d3645c51188bf1f6a47f9ed1b303d65da"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD052 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.2step.leverage.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD053 | SEND atom.2step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.leverage.en","contentHash":"9359b2fb2ce639351a49f157e876df5d3645c51188bf1f6a47f9ed1b303d65da"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD054 | SEND atom.2step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.leverage.en","contentHash":"9359b2fb2ce639351a49f157e876df5d3645c51188bf1f6a47f9ed1b303d65da"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.reward.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.2step.reward.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD055 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD056 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD057 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD058 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD059 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD060 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD061 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.phases.en, atom.obsolete.10pct-1step.en). The scored send, when decide runs, is only atom.obsolete.10pct-1step.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD062 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD063 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD064 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.phases.en, atom.obsolete.10pct-1step.en). The scored send, when decide runs, is only atom.1step.phases.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD065 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD066 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD067 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD068 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD069 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD070 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD071 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD072 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD073 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD074 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD075 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD076 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD077 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD078 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD079 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD080 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD081 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.funded-profitable-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD082 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD083 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD084 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.funded-profitable-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD085 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD086 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.min-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD087 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.funded-profitable-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD088 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD089 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.funded-profitable-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD090 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD091 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD092 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD093 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD094 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD095 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD096 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD097 | SEND atom.1step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.news.en","contentHash":"8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.news.en, atom.2step.news.en). The scored send, when decide runs, is only atom.2step.news.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD098 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD099 | SEND atom.1step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.news.en","contentHash":"8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD100 | SEND atom.1step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.news.en","contentHash":"8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.news.en, atom.2step.news.en). The scored send, when decide runs, is only atom.2step.news.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD101 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD102 | SEND atom.1step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.news.en","contentHash":"8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD103 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD104 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD105 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD106 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD107 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.1step.leverage.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD108 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.reward.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.1step.reward.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD109 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD110 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD111 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD112 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD113 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD114 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.first-payout-14.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.obsolete.first-payout-14.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD115 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.checkout.options.en, atom.obsolete.first-payout-14.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.obsolete.first-payout-14.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD116 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.checkout.options.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.payouts.general.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD117 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD118 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD119 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD120 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD121 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.first-payout-14.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.obsolete.first-payout-14.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD122 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD123 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.price-161-permanent.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.price-161-permanent.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD124 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD125 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD126 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD127 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD128 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.price-161-permanent.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.price-161-permanent.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD129 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD130 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD131 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD132 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD133 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD134 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD135 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD136 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD137 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD138 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD139 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+| AD140 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD141 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD142 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD143 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD144 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD145 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD146 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD147 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.house.simulated.en, atom.overview.en). The scored send, when decide runs, is only atom.house.simulated.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD148 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD149 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD150 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD151 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.house.simulated.en, atom.overview.en). The scored send, when decide runs, is only atom.overview.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD152 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD153 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.phases.en, atom.obsolete.10pct-1step.en). The scored send, when decide runs, is only atom.obsolete.10pct-1step.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD154 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD155 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD156 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.phases.en, atom.obsolete.10pct-1step.en). The scored send, when decide runs, is only atom.1step.phases.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD157 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.phases.en, atom.obsolete.10pct-1step.en). The scored send, when decide runs, is only atom.obsolete.10pct-1step.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD158 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD159 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.first-payout-14.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.obsolete.first-payout-14.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD160 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD161 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD162 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD163 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD164 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD165 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD166 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.1step.leverage.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD167 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.2step.leverage.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD168 | SEND atom.2step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.leverage.en","contentHash":"9359b2fb2ce639351a49f157e876df5d3645c51188bf1f6a47f9ed1b303d65da"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD169 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD170 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD171 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD172 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.price-161-permanent.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.price-161-permanent.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD173 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD174 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD175 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD176 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD177 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD178 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.sizes-5k-10k.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.sizes-5k-10k.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD179 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD180 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD181 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD182 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD183 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD184 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.reward.en, atom.2step.reward.en, atom.checkout.options.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.1step.reward.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD185 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.reward.en, atom.2step.reward.en, atom.checkout.options.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.payouts.general.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD186 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD187 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD188 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD189 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD190 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD191 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD192 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD193 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD194 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD195 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD196 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD197 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD198 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD199 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD200 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD201 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD202 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD203 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD204 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD205 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD206 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD207 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD208 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD209 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD210 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD211 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD212 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD213 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD214 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD215 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD216 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD217 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD218 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD219 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD220 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD221 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD222 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD223 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD224 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD225 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD226 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD227 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD228 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD229 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD230 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD231 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD232 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD233 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD234 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+AD235 asks for the daily-loss rule and whether the customer personally passed. atom.account-status.refuse.en states that Luna cannot confirm an individual account. It does not state the daily-loss percent. The daily-loss body does not state personal status. Exclusive mixed scores that refuse id and no product part, and only when decide runs. Flag off is F1 silence, so the refuse id is not sent.
+
+| row | old | new |
+|---|---|---|
+| AD235 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|mixed|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD236 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD237 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD238 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD239 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD240 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD241 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD242 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD243 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD244 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD245 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD246 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD247 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD248 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD249 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD250 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD251 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD252 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD253 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD254 | ABSTAIN atom-clarification | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-clarification","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD255 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD256 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD257 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD258 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD259 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD260 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD261 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD262 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD263 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD264 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD265 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD266 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD267 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD268 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD269 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD270 | ABSTAIN COVERAGE_DENIED | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"COVERAGE_DENIED","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD271 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD272 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD273 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD274 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD275 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD276 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD277 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD278 | ABSTAIN unresolved-policy policy.fee-refunds | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.fee-refunds"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD279 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD280 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD281 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD282 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD283 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD284 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD285 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD286 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD287 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD288 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD289 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD290 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD291 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD292 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD293 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD294 | ABSTAIN unresolved-policy policy.news-minutes | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.news-minutes"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD295 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD296 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD297 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD298 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD299 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD300 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD301 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD302 | ABSTAIN unresolved-policy policy.sku | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.sku"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD303 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD304 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD305 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD306 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD307 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD308 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD309 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD310 | ABSTAIN unresolved-policy policy.translations | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.translations"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD311 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD312 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD313 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD314 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD315 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD316 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD317 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD318 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+atom.account-status.refuse.en states that Luna cannot confirm whether an individual account is eligible, compliant, breached, KYC-approved, or ready for a payout. That id is the scored send only on an exclusive claim when decide runs. Flag off is F1 silence. The refuse id is not sent.
+
+| row | old | new |
+|---|---|---|
+| AD319 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD320 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD321 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD322 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD323 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD324 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD325 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD326 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD327 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD328 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD329 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD330 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD331 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD332 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD333 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD334 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD335 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD336 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD337 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+| AD338 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD339 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD340 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD341 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+The host string contains both the atom token and a pack/packs token, so kind is none. decide is not called. The scored result on both flags is the main route: no module body, not terminal silence. V12 and spread may send their own approved output. atom.bundles.en is not emitted.
+
+| row | old | new |
+|---|---|---|
+| AD342 | router both-entities | flagOn none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} | flagOff none|both-entities|main-route {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-and-spread","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD343 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD344 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.sizes-5k-10k.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.sizes-5k-10k.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD345 | SEND atom.obsolete.sizes-5k-10k.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.sizes-5k-10k.en","contentHash":"dfc95533fcfb5d0ece5b963ad56ed3918bbf87d7bff33ebfd7441c354a9f62a2"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD346 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.house.simulated.en, atom.overview.en). The scored send, when decide runs, is only atom.house.simulated.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD347 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.1step.leverage.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD348 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Digit 0 is not rewritten, so at0m is not the token atom. kind is none, obfuscated not-a-claim. The scored result on both flags is the main route. The catalog is the 12 sendable V12 rows only. atom.1step.max-loss.en states trailing equity and is not sent. Not F1.
+
+| row | old | new |
+|---|---|---|
+| AD349 | router no-atom-entity | flagOn none|obfuscated|main-route-v12-12 {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-12-sendable-only","refuseId":false} | flagOff none|obfuscated|main-route-v12-12 {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-12-sendable-only","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD350 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.phases.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.2step.phases.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD351 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+U+200B is deleted. The letters that remain are atom1step, which is not the token atom. kind is none, the same obfuscated row as AD349. The scored result is the main route, 12 sendable V12 rows only. Not an Atom id. Not F1.
+
+| row | old | new |
+|---|---|---|
+| AD352 | router no-atom-entity | flagOn none|obfuscated|main-route-v12-12 {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-12-sendable-only","refuseId":false} | flagOff none|obfuscated|main-route-v12-12 {"result":"main-route","moduleBody":false,"terminalSilence":false,"catalog":"v12-12-sendable-only","refuseId":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD353 | SEND atom.1step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.news.en","contentHash":"8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD354 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD355 | ABSTAIN atom-2step-trailing | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"atom-2step-trailing","policy":null} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+atom.account-status.refuse.en states that Luna cannot confirm whether an individual account is eligible, compliant, breached, KYC-approved, or ready for a payout. That id is the scored send only on an exclusive claim when decide runs. Flag off is F1 silence. The refuse id is not sent.
+
+| row | old | new |
+|---|---|---|
+| AD356 | SEND atom.account-status.refuse.en | flagOn exclusive|Atom|personal|runs {"result":"send","partId":"atom.account-status.refuse.en","contentHash":"c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.price-161-permanent.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.price-161-permanent.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD357 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD358 | SEND atom.overview.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.overview.en","contentHash":"d976a964056cf151c78ef3ad8acbb42e84a5adf1677259cbe77f66d632a6b632"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD359 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.funded-profitable-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD360 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.first-payout-14.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.obsolete.first-payout-14.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD361 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.phases.en, atom.obsolete.10pct-1step.en). The scored send, when decide runs, is only atom.obsolete.10pct-1step.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD362 | SEND atom.obsolete.10pct-1step.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.10pct-1step.en","contentHash":"71196e899a751cc467c2cca105b47017bf6f0d16312bab09a06c70e9e8830fc5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. decide runs when the flag is on and delivery is wired, and it abstains, so the scored public result is silence. Flag off is F1 silence. No module body either way. acceptableSet is empty.
+
+| row | old | new |
+|---|---|---|
+| AD363 | ABSTAIN unresolved-policy policy.coupon-stacking | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.coupon-stacking"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD364 | ABSTAIN unresolved-policy policy.equality-50 | flagOn exclusive|Atom|general|runs|silence {"result":"silence","code":"unresolved-policy","policy":"policy.equality-50"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.price-161-permanent.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.price-161-permanent.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD365 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD366 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD367 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD368 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD369 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.price-161-permanent.en, atom.prices.list.en). The scored send, when decide runs, is only atom.obsolete.price-161-permanent.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD370 | SEND atom.obsolete.price-161-permanent.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.price-161-permanent.en","contentHash":"b778171b1b98d2d9c6c7f9fc44b74080f51543c711756a325318094ef9c1971d"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD371 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD372 | SEND atom.prices.list.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.prices.list.en","contentHash":"202c34344436aa6701413db8afb344a1cf89284b9821820aa9d033c7cd289ca5"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD373 | SEND atom.2step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.consistency.en","contentHash":"9ffaee0d2405d8ac740e277e913e4519f349e054a60128841bcfb48e346f6cd7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD374 | SEND atom.1step.consistency.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.consistency.en","contentHash":"56ffe2f069b3a536aab9a0952d5eac26266341aaff2dd58045764adc60c50982"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.news.en, atom.2step.news.en). The scored send, when decide runs, is only atom.2step.news.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD375 | SEND atom.2step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.news.en","contentHash":"06e84450ddb0ec0a4cbef21f336c99dc996da7714232adb9542501faa86eb5f4"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD376 | SEND atom.1step.news.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.news.en","contentHash":"8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD377 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD378 | SEND atom.1step.leverage.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.leverage.en","contentHash":"2a09bb9287087955a1003d8169e684a9bbd1cd6fb776e0a59fd61ffa17960bfe"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.reward.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.2step.reward.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD379 | SEND atom.2step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.reward.en","contentHash":"07e4a76ec2cbb1009a43729c021d83b8faea717442ea80ab8d97c0614e65ba01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.reward.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.1step.reward.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD380 | SEND atom.1step.reward.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.reward.en","contentHash":"5376b1b98950d670ff0288e893908f188790ea1800f690c2cfd470db5979a0ac"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD381 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.funded-profitable-days.en, atom.1step.min-days.en). The scored send, when decide runs, is only atom.1step.funded-profitable-days.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD382 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD383 | SEND atom.1step.funded-profitable-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.funded-profitable-days.en","contentHash":"3bb567dd237aec2f6e7f78bf26441657f7ac7e845653406d27e821b2bfa51a53"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD384 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD385 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD386 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.2step.phases.en, atom.checkout.options.en). The scored send, when decide runs, is only atom.2step.phases.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD387 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD388 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD389 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD390 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD391 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD392 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.obsolete.first-payout-14.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.obsolete.first-payout-14.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD393 | SEND atom.obsolete.first-payout-14.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.first-payout-14.en","contentHash":"74372a404e6772c0600c11d1045a63a07b63f3a5e0f4872b933008124efd6239"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.checkout.options.en, atom.payouts.general.en). The scored send, when decide runs, is only atom.payouts.general.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD394 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD395 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD396 | SEND atom.payouts.general.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.payouts.general.en","contentHash":"290f684b760683ca4664853c73a971abe99a109f78b946e46e0f142b5416d924"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD397 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD398 | SEND atom.bundles.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.bundles.en","contentHash":"c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD399 | SEND atom.house.eas-copy.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.eas-copy.en","contentHash":"2f7426cbca0a5a2b2efb94a8c6ce0e11b5dfa0673a3b85c953941b6a073057ae"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD400 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.house.simulated.en, atom.overview.en). The scored send, when decide runs, is only atom.house.simulated.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD401 | SEND atom.house.simulated.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.house.simulated.en","contentHash":"41fb7d88fe2826808c70a4e12f18e0fa1a4753e3daa0f489f74ce6a6280dc478"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD402 | SEND atom.2step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.min-days.en","contentHash":"de6161fd95546d9fd46a9b23159e1cda4bb84e956a1565ce60a14c1966eec5f7"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD403 | SEND atom.1step.min-days.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.min-days.en","contentHash":"4721684c627e88ffc72d5ce575edaddca8e400fcfdac644d8187602edfc5f6d6"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD404 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD405 | SEND atom.1step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.daily-loss.en","contentHash":"a227a188ff370d0c8cf2010657b210967aff76e453cddcf03c93802b19101ae1"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD406 | SEND atom.2step.daily-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.daily-loss.en","contentHash":"bac2e061b74a16c7ceb7a0b9b6ea3102a417c23d43a74fd9edb137365a69249b"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD407 | SEND atom.1step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.max-loss.en","contentHash":"78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD408 | SEND atom.2step.max-loss.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.max-loss.en","contentHash":"e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD409 | SEND atom.2step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.2step.phases.en","contentHash":"3555c5ed0cb264c8b3cc389f9bf75a01eb6ba5c96056fd54b4bc231505e9b6c3"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+| AD410 | SEND atom.1step.phases.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.1step.phases.en","contentHash":"2704c9287ca3a42622f3ef5b94d34def202840b5a2ef959a5dc70cb8f92061fb"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. More than one body states every asked fact and they agree, so acceptableSet stays metadata (atom.1step.leverage.en, atom.2step.leverage.en, atom.checkout.options.en, atom.obsolete.leverage-150-default.en). The scored send, when decide runs, is only atom.obsolete.leverage-150-default.en. Another member is not the scored send. Flag off is F1 silence.
+
+| row | old | new |
+|---|---|---|
+| AD411 | SEND atom.obsolete.leverage-150-default.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.obsolete.leverage-150-default.en","contentHash":"45e8d9947e0cf8a9c04fd6663975ab7ffc9b1ea0482e4605be6226ceb0daec01"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+Exclusive general. One covering body. The scored send, when decide runs, is that id. Flag off is F1 silence. The id is not sent while the flag is off.
+
+| row | old | new |
+|---|---|---|
+| AD412 | SEND atom.checkout.options.en | flagOn exclusive|Atom|general|runs {"result":"send","partId":"atom.checkout.options.en","contentHash":"903db507cc76d732e38bc8e3579fd8419196d8297d3d972edd1160c1943f8e6a"} | flagOff exclusive|flag-off|f1-silence {"result":"f1-silence","reply":false,"note":false,"assignment":false} |
+
+---
+
+# Previous revisions
+
 ## Revision bce740fb
 
 Authority: branch t742-design, commit `bce740fb6955e9fc60b3a87809b94bfb67246d7f`, `staging-repair-t739/docs/T742_DESIGN_AND_ACCEPTANCE.md` sha256 `fedb3bc6a7b58172ad3af4cca6f47b2504361883ed901fa407662fa3e352783b`.
