@@ -1,184 +1,71 @@
 # Atom section (t742 alignment)
 
-Staging only. This file is not runtime code. It matches the MODULE ALIGNMENT CONTRACT in `staging-repair-t739/docs/T742_DESIGN_AND_ACCEPTANCE.md` on branch `t742-design` at commit `bce740fb6955e9fc60b3a87809b94bfb67246d7f`, sha256 `fedb3bc6a7b58172ad3af4cca6f47b2504361883ed901fa407662fa3e352783b`. No product code is added here.
+Staging only. Not runtime code. Authority: `staging-repair-t739/docs/T742_DESIGN_AND_ACCEPTANCE.md` on `t742-design` at `ad6169bb671ca5369932d69a31aedfc476b0824c`, sha256 `5529a4878d4ef6adbce88875021a5f14b1eb77260bc9e11a4d48be8f26e52677`.
 
-Catalog bytes stay `faq-approved-answers-atom-v1.json` sha256 `df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6`. No new rows. Bodies, ids, approval, and sendability stay unchanged.
+Catalog bytes stay `faq-approved-answers-atom-v1.json` sha256 `df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6`. No new rows. Bodies, ids, and sendability are unchanged.
 
 Development set: `staging-repair-t742/atom/atom_dev_set.json`  
-sha256 `7fdad664f5359c12acd8a335f79ad0a6be273e3a421f52f4425aca6d702afacf`  
-412 synthetic English rows. Same texts as the prep set. Not an acceptance set.
+sha256 `d0fd43f77d10e2e2012815f3b8babbd89b702cc27436cf9ec142adca85debb4f`  
+412 rows. Same texts. Not an acceptance set.
 
-Label changelog: `staging-repair-t742/atom/LABEL_CHANGELOG.md`  
-This revision changes 107 rows. The prior revision (`3c173899`) is kept below the divider.
+Changelog: `staging-repair-t742/atom/LABEL_CHANGELOG.md`, revision `ad6169bb`. Every row is listed.
 
 Requested model for this alignment: not named. Actual model: `grok-4.7`.
 
-## Gold rule
+## Scored gold
 
-One or more approved bodies each state every asked fact, and they do not conflict: the gold is that acceptable set. Any member is a correct send. Silence on that row is a false refusal.
+The scored public result is the gold-table cell in `e2e`, not the covering set. `acceptableSet` is metadata. Another member of that set is not a correct scored send. The 95 multi-cover sets stay, and the eight ids stay members of each set their body covers.
 
-`decide.partId` is one member, chosen deterministically: highest cosine of IDF-weighted tokens plus overlapping character trigrams, then the lexicographically smallest `partId`. IDF is computed on the 31 sendable English bodies. `T` is not an abstain threshold. Two rows at or above `T` do not abstain.
+`decide` runs only for one exclusive Atom claim, English, flag on, delivery wired. Otherwise `decide` does not run.
 
-Abstain only when no sendable body states every asked fact, or the remaining bodies state incompatible facts and are not an obsolete-versus-current split.
+`atom.account-status.refuse.en` (`c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128`) is the scored send only on that exclusive decide-runs cell, for a personal ask or a mixed ask. It is not sent for `shared` or `none`, and it is not sent when the flag is off.
 
-An obsolete row that restates the same fact stays in the set. `atom.obsolete.10pct-1step.en` and `atom.1step.phases.en` both state that the 1-Step evaluation target is 8%, not 10%. That is agreement. An obsolete row that stated an incompatible fact would be dropped, and the non-obsolete covering ids would stay. No pair in this set is that conflict. The obsolete row stays the only member when it is the only body that states the asked fact (`AD156` and `AD159` ask about an old draft; only `atom.obsolete.10pct-1step.en` says older drafts that said 10% are outdated).
-
-A single covering body is a set of one. `AD089` stays `atom.1step.min-days.en` alone, because only that body states the $500 example. `atom.1step.funded-profitable-days.en` states the 0.5% gate and does not state $500.
-
-`atom.handoff.unverified.en` is sendable and is not a retrieval gold.
+Flag on with delivery absent is the table cell `module-on-delivery-not-wired` for every exclusive row. `resolveExtraPath` is still unwired, so that cell is the staging host. The recorded `e2e.flagOn` cell is the delivery-wired cell. It is not an end-to-end PASS.
 
 ## Claim
 
-| field | values |
-|---|---|
-| `kind` | `exclusive`, `shared`, or `none` |
-| `entity` | `atom` when `kind` is `exclusive`, otherwise `null` |
-| `evidenceSpans` | offsets into the normalized text when `kind` is `exclusive`, otherwise empty |
+`claim` reads the host string from section (e). It does not call `normalizeForDetect` and it does not apply the detector hand map.
 
-Normalization before the entity check: NFKC, delete format characters, fold the detector confusable map (Cyrillic A/a to `a`), lowercase, then join a spaced single-letter run the way `normalizeForDetect` does. Digit `0` is not rewritten to `o`.
+Host order: NFKC, delete format characters, UTS #39 skeleton, lowercase, then the spaced single-letter join inside `normalizeForRoute`. Digit `0` is not rewritten. ASCII Latin letters are not rewritten: UTS #39 maps Latin `m` to `rn` and digit `1` to `l`, and applying those would erase the token `atom` that the contract matches. The skeleton applied here is every other character that has a UTS #39 mapping.
 
-Atom entity: `elite atom` or the token `atom`, excluding `atomic`, `anatomy`, `anatomical`, `atomizer`. Packs entity: `elite packs` or the token `pack` / `packs`, not inside `packet`, `package`, or `backpack`.
+Re-derived confusable and zero-width rows. **No `claim.kind` changed.**
 
-`exclusive` only when the Atom entity is present and the Packs entity is absent. Both entities: `kind` is `none`. Shared words do not cancel an exclusive Atom entity and do not select an id.
-
-This set: `exclusive` 401, `none` 11, `shared` 0.
-
-`claim.kind` `none` is a router outcome. `decide` is not called. The row does not say `SEND`.
-
-| router reason | rows | what |
+| row | host string | kind |
 |---|---|---|
-| `both-entities` | 9 | Atom token and pack/packs/elite packs. Router abstain. No module body. |
-| `no-atom-entity` | 2 | `AD349` (`at0m` is not `atom`). `AD352` (U+200B is deleted, so `atom1step` is not the token `atom`). |
+| AD351 | U+0410 skeletons to `A`, then lowercase, so the token is `atom` | exclusive, unchanged |
+| AD349 | `at0m` stays `at0m` | none, obfuscated, unchanged |
+| AD352 | U+200B deleted; `atom1step` is not the token `atom` | none, obfuscated, unchanged |
+| AD353 | spaced letters join to `atom` | exclusive, unchanged |
 
-`AD353` (`A t o m`) joins to `atom`. `claim` is `exclusive`. The module gold, when the flag is on, is `SEND` `atom.1step.news.en`, because that body states news trading is allowed during Atom 1-Step evaluation. Flag off, the end-to-end gold is F1 silence. The row records `route.flagOff: f1-silence`. The same flag-off silence is the end-to-end gold for every exclusive English Atom row. It is not a false refusal.
+Both entities: `kind` is `none`, `noneClass` `both-entities`. Shared words do not cancel an exclusive Atom entity. This set has no `shared` row and no plain `none` row.
 
-## Decide
+## Gold counts
 
-Called only for an exclusive Atom claim, English, flag on.
+Flag-on scored cell. Each row is one cell. Sum 412.
 
-```
-{ action: 'SEND', partId, contentHash, acceptable: [{ partId, contentHash }] }
-| { action: 'ABSTAIN', code, policy }
-```
-
-`contentHash` is the catalog hash of `partId`. `acceptable` is the set, sorted by `partId`. `partId` on `SEND` is the pick, and it is a member of `acceptable`.
-
-| code | policy | when |
+| table row | rows | scored result |
 |---|---|---|
-| `atom-clarification` | `null` | Clarification. The handoff body is not the partId. |
-| `atom-2step-trailing` | `null` | A 2-Step trailing ask. Not `atom.2step.max-loss.en` and not `atom.1step.max-loss.en`. |
-| `unresolved-policy` | one registry id | The registry hit outranks a covering id. |
-| `COVERAGE_DENIED` | `null` | No single body states every intent, and no veto above applies. |
+| `exclusive\|Atom\|general\|runs` | 267 | the one `decide` partId |
+| `exclusive\|Atom\|general\|runs\|silence` | 114 | silence. `decide` abstains |
+| `exclusive\|Atom\|personal\|runs` | 19 | `atom.account-status.refuse.en` |
+| `exclusive\|Atom\|mixed\|runs` | 1 | the same refuse id, no product part (`AD235`) |
+| `none\|both-entities\|main-route` | 9 | main route, no module body, not terminal silence |
+| `none\|obfuscated\|main-route-v12-12` | 2 | main route, 12 sendable V12 rows only (`AD349`, `AD352`) |
 
-Personal status is `SEND` `atom.account-status.refuse.en` (`c2c0549d9209c8dc9ba39f738d9a87a04355899da7a9a137cb87cdb450e41128`). A personal ask mixed with a rule ask is `COVERAGE_DENIED`.
+The 114 silences: `unresolved-policy` 51, `COVERAGE_DENIED` 37, `atom-clarification` 16, `atom-2step-trailing` 10.
 
-### Trailing
+Flag-off scored cell. Sum 412.
 
-`atom.1step.max-loss.en` (`78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`) states that max loss on Atom 1-Step is 6% trailing equity. It is the only sendable body that states trailing. 1-Step trailing, and trailing with no product named, are that id. `AD349` is not this gold: `at0m` is not an entity, so the module is not called.
-
-`atom.2step.max-loss.en` states 10% static and that the floor never moves. It does not state trailing. A 2-Step trailing ask is `ABSTAIN` `atom-2step-trailing`.
-
-`AD202`, `AD205`, and `AD210` ask whether the 2-Step floor chases, ratchets, or lifts. They do not contain `trailing`. The static body covers them. They stay `SEND` `atom.2step.max-loss.en`.
-
-### Registry
-
-| local string | policy |
-|---|---|
-| `atom-fee-policy-owner-decision`, `unresolved:fee-refund` | `policy.fee-refunds` |
-| `unresolved:consistency-equality` | `policy.equality-50` |
-| `unresolved:news-minutes` | `policy.news-minutes` |
-| `unresolved:checkout-sku`, `unresolved:checkout-sku-selection` | `policy.sku` |
-| `unresolved:translation` | `policy.translations` |
-| `unresolved:coupon-stacking` | `policy.coupon-stacking` |
-
-A neighbour stays sendable for its own id. It is not the answer when the policy id is returned. English requests to translate stay `policy.translations`. They are not clearly non-English turns.
-
-## Language
-
-Clearly non-English is not a terminal Atom abstain. The router does not call `claim` or `decide` when the gate language is non-English. This dev set has no clearly non-English paragraph. `AD351` is a confusable folded to `atom` before that gate.
-
-## What the host must do
-
-Atom stays disabled unless `LUNA_ATOM_SELECTOR_ENABLED=1` (or the deployed `opts.enabled === true` switch). Flag off: the router does not call `decide`. An exclusive English Atom claim with the flag off is F1 silence. `shared` and `none` do not silence V12 or spread.
-
-Pause, STOP, aiOff, fin-wait, protected team, ownership, Risk, and locks stay the existing host gates and run before the router.
-
-`resolveExtraPath` stays unwired. A match in this file is not a public send while delivery is absent. This section does not add the path.
-
-## Dev-set counts
-
-| gold | rows |
-|---|---|
-| `SEND` (acceptable set non-empty; `partId` is the pick) | 286 |
-| router abstain, `decide` not called | 11 |
-| `ABSTAIN` `COVERAGE_DENIED` | 38 |
-| `ABSTAIN` `unresolved-policy` | 51 |
-| `ABSTAIN` `atom-clarification` | 16 |
-| `ABSTAIN` `atom-2step-trailing` | 10 |
-| total | 412 |
-
-`unresolved-policy`: `policy.coupon-stacking` 9, `policy.equality-50` 9, `policy.sku` 9, `policy.fee-refunds` 8, `policy.news-minutes` 8, `policy.translations` 8.
-
-`SEND` picks (`decide.partId`):
-
-| partId | picks |
-|---|---|
-| `atom.account-status.refuse.en` | 19 |
-| `atom.overview.en` | 15 |
-| `atom.2step.max-loss.en` | 13 |
-| `atom.checkout.options.en` | 12 |
-| `atom.obsolete.leverage-150-default.en` | 12 |
-| `atom.prices.list.en` | 12 |
-| `atom.1step.max-loss.en` | 11 |
-| `atom.obsolete.first-payout-14.en` | 11 |
-| `atom.obsolete.price-161-permanent.en` | 11 |
-| `atom.payouts.general.en` | 11 |
-| `atom.2step.daily-loss.en` | 10 |
-| `atom.2step.phases.en` | 10 |
-| `atom.1step.daily-loss.en` | 9 |
-| `atom.1step.leverage.en` | 9 |
-| `atom.1step.min-days.en` | 9 |
-| `atom.2step.min-days.en` | 9 |
-| `atom.2step.news.en` | 9 |
-| `atom.1step.consistency.en` | 8 |
-| `atom.1step.funded-profitable-days.en` | 8 |
-| `atom.1step.reward.en` | 8 |
-| `atom.2step.consistency.en` | 8 |
-| `atom.house.eas-copy.en` | 8 |
-| `atom.house.simulated.en` | 8 |
-| `atom.obsolete.10pct-1step.en` | 8 |
-| `atom.1step.phases.en` | 7 |
-| `atom.2step.reward.en` | 7 |
-| `atom.bundles.en` | 7 |
-| `atom.obsolete.sizes-5k-10k.en` | 7 |
-| `atom.1step.news.en` | 6 |
-| `atom.2step.leverage.en` | 4 |
-
-The eight ids that had lost every `SEND` label are members again wherever their body states the asked fact. Membership is wider than the pick count, because another member of the same set can be the pick:
-
-| id | rows whose acceptable set includes it |
-|---|---|
-| `atom.2step.leverage.en` | 17 |
-| `atom.obsolete.leverage-150-default.en` | 17 |
-| `atom.obsolete.first-payout-14.en` | 11 |
-| `atom.obsolete.price-161-permanent.en` | 11 |
-| `atom.1step.funded-profitable-days.en` | 9 |
-| `atom.1step.reward.en` | 9 |
-| `atom.2step.reward.en` | 9 |
-| `atom.obsolete.sizes-5k-10k.en` | 7 |
-
-## Rows changed in this revision
-
-107. Each row, the old gold, the new gold, and the body fact are in the revision `bce740fb` section of `LABEL_CHANGELOG.md`.
-
-| change | rows | why |
+| table row | rows | scored result |
 |---|---|---|
-| `ABSTAIN` `COVERAGE_DENIED` back to an acceptable set | 95 | Two or more bodies state every asked fact and agree. The two-above-threshold abstain is withdrawn. |
-| both-entities `SEND` or module abstain removed | 9 | Pack and Atom entities are both present. Router abstain. `decide` is not called. |
-| `AD349` `SEND` removed | 1 | `at0m` is not the atom token. Router abstain. The 1-Step trailing body is not the end-to-end gold. |
-| `AD352` `SEND` removed | 1 | U+200B is deleted. `atom1step` is not the token `atom`. Router abstain. |
-| `AD353` claim `none` to `exclusive` | 1 | Spaced letters join to `atom`. Module gold stays `atom.1step.news.en`. Flag off is F1 silence. |
+| `exclusive\|flag-off\|f1-silence` | 401 | no reply, no note, no assignment. The refuse id is not sent |
+| `none\|both-entities\|main-route` | 9 | same main route as flag on. Not silenced |
+| `none\|obfuscated\|main-route-v12-12` | 2 | same main route as flag on. Not F1 |
 
-The 95 restored groups are: phase-1 target 8% (phases and checkout); 1-Step 8% not 10% (phases and the obsolete 10% body); the 2-Step leverage menu and the 1:30 default (2-Step leverage, checkout, the obsolete default body, and, for a no-product default ask, the 1-Step leverage body because it states the published default of 1:30); 1-Step "is leverage fixed"; reward menus and a no-product 80% default; first wait of 21 days and the later default of 14; the 3/7/14/21 interval list; the funded 5×0.5% gate and "no minimum profitable days" in evaluation; funded high-impact news (the same sentence in both news bodies); 100k list prices and the permanent $161 figure; 5k/10k and the size list; "are the accounts simulated" (overview and the house body).
+## What stayed a module decide
 
-Calibration scores this file only. Sending any member of `acceptable` is correct. It is not acceptance. Do not treat 412/412 as a pass.
+On the exclusive general send cell, the partId is the deterministic pick already on the row. 1-Step trailing and trailing with no product stay `atom.1step.max-loss.en` (`78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`). 2-Step trailing stays silence `atom-2step-trailing`. `AD202`, `AD205`, and `AD210` stay `atom.2step.max-loss.en` because they do not say trailing and that body states the floor never moves.
+
+`AD235` changed. It asks for the daily-loss rule and whether the customer passed. Neither body states both facts. The ask is exclusive mixed, so the scored send when `decide` runs is the refuse id and no product part. Flag off is F1 silence.
+
+Atom stays disabled unless `LUNA_ATOM_SELECTOR_ENABLED=1`. This file is not a public send and not a PASS.
