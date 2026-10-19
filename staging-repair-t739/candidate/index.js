@@ -89,6 +89,7 @@ const lunaEpisode = require('./lunaEpisode');
 const control = require('./control');
 const writeOpStore = require('./writeOpStore');
 const publicCredentialHold = require('./publicCredentialHold'); /* PUBLIC_CREDENTIAL_HOLD_V1 (t739) */
+const f1AbstainMark = require('./f1AbstainMark'); /* T742 F1: flag-off exclusive stays silent on later writes */
 const faqModuleGates = require('./faqModuleGates'); /* FAQ_MODULE_GATES_V1 (t739): hook for Packs/Atom detectors */
 /* LOG_TEXT_REDACTION_V1 (t739): customer and model text never go to logs. Reason codes, lengths and
  * non-sensitive ids only. */
@@ -257,6 +258,12 @@ async function replayAuthDeferred(reason) {
 async function icRequest(method, url, data, tag, opScope, retryPermission) {
   const faqVeto = faqAssistance.privilegedVeto((String(url).match(/conversations\/(\d+)/) || [])[1], data && data.message_type || 'other-write');
   if (!['get','head','options'].includes(String(method).toLowerCase()) && faqVeto) return faqVeto;
+  if (!['get','head','options'].includes(String(method).toLowerCase()) && data && data.message_type === 'comment') {
+    const __f1Cid = (String(url).match(/conversations\/(\d+)/) || [])[1] || '';
+    if (__f1Cid && f1AbstainMark.blocksConversation(__f1Cid)) {
+      return { ok: false, skipped: true, held: true, unknown: false, reason: 'f1-english-module-off', delivery: 'not-attempted' };
+    }
+  }
   // PUBLIC_CREDENTIAL_HOLD_V1: nothing credential-bearing reaches the fast-ack store or the transport.
   const __credHold = credentialHoldForWrite(method, url, data);
   if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
@@ -7778,11 +7785,11 @@ const handleWebhook = async (req, res) => {
       }
       if (__faqHandled && __faqHandled.deferred && __faqHandled.prepare && __faqHandled.prepare.plan) {
         deferredHumanOwnedFaq.set(conversationId, __faqHandled.prepare);
-      } else if (__faqHandled && __faqHandled.handled) {
-        // P1: overlay FAQ silence on Risk/Esc must not abort the webhook before
-        // handleRiskSilentNoteOnly / handleEscalationsSilentNoteOnly. Public FAQ is
-        // still not sent (no plan; ownershipFailClosed remains).
-        if (__faqHandled.reason !== 'risk-escalations-silence') return res.sendStatus(200);
+      } else       if (__faqHandled && __faqHandled.handled) {
+        // P1 notes still post. A flag-off exclusive turn posts no customer comment.
+        const __riskDuty = (typeof isSilentTeamboxNoteDuty === 'function' && isSilentTeamboxNoteDuty(__fetched))
+          || (typeof isRiskOwnedConversation === 'function' && isRiskOwnedConversation(__fetched));
+        if (__faqHandled.reason !== 'risk-escalations-silence' && !__riskDuty) return res.sendStatus(200);
       }
     }
     let __ownVerdict;

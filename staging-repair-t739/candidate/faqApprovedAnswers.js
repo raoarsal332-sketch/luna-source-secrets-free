@@ -141,8 +141,36 @@ function load(filePath) {
   return data;
 }
 
+function extraEnabled() {
+  return true;
+}
+
+/**
+ * Extra-catalog paths for Packs and Atom. The files are the sibling JSON
+ * already in this tree. V12 list() does not include them. get() loads a
+ * sendable extra row by id when decide has already chosen that id.
+ */
+function resolveExtraPath(kind) {
+  if (!extraEnabled()) return null;
+  if (kind === 'packs') return path.join(__dirname, 'packs', 'faq-approved-answers-packs-v1.json');
+  if (kind === 'atom') return path.join(__dirname, 'atom', 'faq-approved-answers-atom-v1.json');
+  return null;
+}
+
+function extraGet(id) {
+  for (const kind of ['packs', 'atom']) {
+    const file = resolveExtraPath(kind);
+    if (!file || !fs.existsSync(file)) continue;
+    const row = load(file).allById.get(id);
+    if (row && row.sendable === true) return row;
+  }
+  return null;
+}
+
 function get(id, filePath) {
-  return load(filePath).byId.get(id) || null;
+  const hit = load(filePath).byId.get(id);
+  if (hit || filePath) return hit || null;
+  return extraGet(id);
 }
 
 function getAny(id, filePath) {
@@ -309,6 +337,7 @@ module.exports = {
   isSendableStatus,
   isSendableRow,
   isWelcomeOrBoilerplate,
+  resolveExtraPath,
   clearCache,
   sentenceSetForAnswers,
   PURE_GREETING_ALLOWLIST,

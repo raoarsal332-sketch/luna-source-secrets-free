@@ -1,0 +1,27 @@
+{
+  "status": "frozen",
+  "algorithm": "coverage-gated-cosine-rank",
+  "T": 0,
+  "M": null,
+  "scoreFloor": false,
+  "rule": "A row is in the acceptable set only when its body states every substantive intent. Cosine orders that set (highest score, then smallest partId). A positive score floor is not applied. The same T and the same M apply to Packs and Atom.",
+  "devSetSha256": {
+    "atom": "d0fd43f77d10e2e2012815f3b8babbd89b702cc27436cf9ec142adca85debb4f",
+    "packs": "19df3874c2272134390122f8b75e0e90dc22bd61a355ffdcd80d67a4dee0b693"
+  },
+  "catalogSha256": {
+    "v12": "9c1b9385b67b8a2904588305cac0481ddfdeb877b568a96f740aa91844bfbde3",
+    "packs": "bed88e6ab45c74a378273f301a197ee56b8276c312bb4bca081c7c9efb6b2318",
+    "atom": "df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6"
+  },
+  "measurement": {
+    "sealed": "not-read",
+    "atomDevExclusive": "401/401",
+    "atomDevFalseRefusals": "0/287",
+    "atomGridBest": "348/401 at T=0.15, false refusals 53/287, no grid T qualifies",
+    "packsDevExclusive": "55/94 at T=0 and at T=0.15",
+    "packsDevFalseRefusals": "39/69",
+    "packsGoldCosineBelow015": "6/52 product sends",
+    "packsGridQualifies": false
+  }
+}

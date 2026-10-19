@@ -222,7 +222,8 @@ function historyCheck(full, parts, d) {
   if (userForTeammate) {
     try {
       const opts = typeof d.teammateScopeOpts === 'function' ? d.teammateScopeOpts() : d.teammateScopeOpts || {};
-      if (teammateTopicOwnership.teammateAnsweredPendingClient(parts, userForTeammate, opts)) return 'teammate-answered-latest';
+      if (typeof teammateTopicOwnership.teammateAnsweredPendingClient === 'function'
+        && teammateTopicOwnership.teammateAnsweredPendingClient(parts, userForTeammate, opts)) return 'teammate-answered-latest';
     } catch (_) {
       return 'teammate-reply-check-unavailable';
     }
@@ -432,39 +433,60 @@ function safeBool(fn, onThrow) {
  *     on; this default does not apply).
  *   - clause non-English -> not claimed (non-English main route unchanged).
  */
-async function moduleScope(text, parts, d) {
-  const gates = moduleGateList(d);
-  if (!gates.length) return null;
-  const priors = priorClientTexts(parts);
-  const ctx = { priorClientTexts: priors };
-  const clauses = [...new Set([text, ...splitCandidateAsks(text)])];
-  let uncertain = false;
-  for (const g of gates) {
-    const on = safeBool(() => g.enabled(), false);
-    for (const c of clauses) {
-      if (!safeBool(() => g.detect(c, ctx), true)) continue;
-      const own = selectMod.languageGate(c, []);
-      const gate = own.lang === 'uncertain' ? selectMod.languageGateForTurn(c, text, priors) : own;
-      if (gate.lang === 'non-en') continue;
-      if (gate.lang === 'uncertain') {
-        // OWNER-REVIEWABLE DEFAULT (F1-8): claimed + flag OFF + uncertain is terminal-silent.
-        if (!on) return { reason: 'language-uncertain-module-off', terminal: true, module: g.id };
-        uncertain = true;
-        continue;
-      }
-      if (!on) return { reason: 'module-off-fail-closed', terminal: true, module: g.id };
-      let moduleResult = { abstain: true, reason: 'module-select-unavailable' };
-      if (typeof g.select === 'function') {
-        try {
-          moduleResult = await g.select(text, selectMod.languageGateForTurn(text, text, priors), ctx);
-        } catch (_) {
-          moduleResult = { abstain: true, reason: 'module-select-error' };
-        }
-      }
-      return { reason: 'module-on-delivery-not-wired', terminal: true, module: g.id, moduleResult };
-    }
+async function modulePlan(full, user, d, text, row, topic) {
+  const cid = String((full && full.id) || '');
+  const answerIds = [row.id];
+  const contentHashes = [row.contentHash];
+  const questionHash = hash(text);
+  const intentKey = hash(row.id);
+  const turnId = String((user && user.id) || 'source');
+  const key = hash(cid + '\n' + turnId + '\n' + hash(user && user.body) + '\n' + questionHash + '\n' + intentKey);
+  let ownedNow = { blocked: false };
+  try { ownedNow = d.ownership(full, d.parts(full)); } catch (_) { ownedNow = { blocked: false }; }
+  return {
+    plan: Object.freeze({
+      cid,
+      turnId,
+      rawHash: hash(user && user.body),
+      questionHash,
+      intentKey,
+      key,
+      faq: Object.freeze([text]),
+      answerIds: Object.freeze(answerIds),
+      contentHashes: Object.freeze(contentHashes),
+      selections: Object.freeze([Object.freeze({ answerId: row.id, contentHash: row.contentHash, confidence: 1, query: text })]),
+      backend: Object.freeze([]),
+      user,
+      ownership: ownedNow,
+      team: full.team_assignee_id || null,
+      admin: full.admin_assignee_id || null,
+      expiresAt: Date.now() + 120000,
+      topic: topic || 'conversation.user.replied',
+    }),
+    reason: 'module-send',
+  };
+}
+
+async function moduleScope(text, parts, d, full, user, topic) {
+  let router;
+  try {
+    router = require('./publicRouter');
+  } catch (_) {
+    return { reason: 'module-select-unavailable', terminal: true };
   }
-  return uncertain ? { reason: 'language-uncertain-module-off', terminal: false } : null;
+  const routed = await router.route({
+    text,
+    prior: priorClientTexts(parts),
+    conversationId: full && full.id,
+    eventId: user && user.id,
+  });
+  if (!routed || (routed.mainRoute && !routed.terminal)) return null;
+  if (routed.send && routed.decide && routed.decide.action === 'SEND' && routed.decide.partId) {
+    const row = approved.get(routed.decide.partId);
+    if (!row || row.sendable === false) return { reason: 'NON_SENDABLE', terminal: true, module: routed.entity || null };
+    return modulePlan(full, user, d, text, row, topic);
+  }
+  return { reason: routed.reason || 'module-off-fail-closed', terminal: !!routed.terminal, module: routed.entity || null };
 }
 
 async function prepare(full, parts, topic, d) {
@@ -482,7 +504,7 @@ async function prepare(full, parts, topic, d) {
   const ownedNow = d.ownership(full, parts);
   const humanOwns = !!(ownedNow.blocked || (full.team_assignee_id && String(full.team_assignee_id) !== '0'));
   if (!humanOwns) {
-    const scoped = await moduleScope(text, parts, d);
+    const scoped = await moduleScope(text, parts, d, full, user, topic);
     if (scoped) return scoped;
   }
 

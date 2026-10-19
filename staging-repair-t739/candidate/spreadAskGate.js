@@ -95,6 +95,20 @@ function hasSpreadTerm(text) {
 }
 
 /**
+ * The personal-account boolean explain() uses at its line-124 branch, without
+ * the hasTerm guard. Callers run this only when spread state is offered.
+ * It does not call explain().
+ */
+function personalAccountCue(text) {
+  const f = foldForCues(normalize(text));
+  return ACCOUNT_ID_NEAR_RE.test(f)
+    || OWN_CRED_RE.test(f)
+    || (OWN_REF_RE.test(f) && PROBLEM_RE.test(f))
+    || (CRED_CUE_RE.test(f) && PROBLEM_RE.test(f))
+    || (/\bmy\b/.test(f) && CRED_CUE_RE.test(f));
+}
+
+/**
  * Returns a structured explanation, useful for logs and tests.
  * Never throws.
  */
@@ -264,4 +278,7 @@ module.exports = {
   explain,
   extractText,
   gateLegacy,
+  personalAccountCue,
+  foldForCues,
+  normalize,
 };
