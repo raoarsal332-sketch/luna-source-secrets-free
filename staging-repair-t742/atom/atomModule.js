@@ -11,12 +11,12 @@
  * decide returns SEND(partId) or ABSTAIN(code). No prose.
  * Bodies, ids, and sendability are not modified.
  *
- * The shared matcher and matcher-params.json belong to t742-impl
- * (bc-fde119ce). This module loads them when they exist and does not
- * write them. Until that branch is published, scores use the frozen
- * algorithm in design section (g): IDF-weighted tokens plus character
- * trigrams, cosine, then highest score and smallest partId.
- * PROVISIONAL_T is an Atom-local stand-in, not a frozen shared param.
+ * Scores and T/M come from the shared matcher on t742-impl (bc-fde119ce).
+ * This module does not write approvedMatcher.js, routeNormalizer.js,
+ * unresolvedPolicy.js, or matcher-params.json.
+ * Frozen params: T=0, M=null. Cosine only ranks bodies that cover.
+ * statementCovers inside the shared matcher false-refuses paraphrases;
+ * membership stays the body-fact check until that file is fixed.
  *
  * Requested model: grok-4.7. Actual model: grok-4.7.
  */
@@ -24,26 +24,19 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { matchApproved, loadParams, twoStepTrailing } = require('../../staging-repair-t739/candidate/approvedMatcher');
 
 const CATALOG_PATH = path.join(
   __dirname,
   '..',
   '..',
   'staging-repair-t739',
+  'candidate',
   'atom',
   'faq-approved-answers-atom-v1.json'
 );
 
-const LEAD_MATCHER = path.join(
-  __dirname,
-  '..',
-  '..',
-  'staging-repair-t739',
-  'candidate',
-  'approvedMatcher.js'
-);
-
-const LEAD_PARAMS = path.join(
+const PARAMS_PATH = path.join(
   __dirname,
   '..',
   '..',
@@ -53,11 +46,7 @@ const LEAD_PARAMS = path.join(
 );
 
 const REFUSE_ID = 'atom.account-status.refuse.en';
-// Design section (g) sweeps T in {0.15, 0.20, …, 0.60}. On this dev set no
-// value in that grid keeps false refusals ≤ 5%. The lead has not published
-// matcher-params.json, so the score floor is not applied. Cosine still picks
-// among bodies that cover. This is not a frozen shared T.
-const PROVISIONAL_T = 0;
+const HANDOFF_ID = 'atom.handoff.unverified.en';
 
 function sha256(s) {
   return crypto.createHash('sha256').update(String(s), 'utf8').digest('hex');
@@ -631,108 +620,31 @@ function coversAll(row, intents, product) {
   return intents.every((id) => facts.has(id));
 }
 
-function tokensOf(s) {
-  return String(s).match(/[\p{L}\p{N}]{2,}/gu) || [];
-}
-
-function trigramsOf(s) {
-  const t = String(s).replace(/\s+/g, ' ').trim();
-  const g = [];
-  for (let i = 0; i + 3 <= t.length; i++) g.push(t.slice(i, i + 3));
-  return g;
-}
-
-function buildIndex(rows) {
-  const N = rows.length;
-  const texts = rows.map((r) => String(r.body || '').toLowerCase());
-  function idfOf(extractor) {
-    const df = new Map();
-    for (const t of texts) {
-      const seen = new Set(extractor(t));
-      for (const w of seen) df.set(w, (df.get(w) || 0) + 1);
-    }
-    const m = new Map();
-    for (const [w, c] of df) m.set(w, Math.log((N + 1) / (c + 1)));
-    return m;
-  }
-  const tokenIdf = idfOf(tokensOf);
-  const triIdf = idfOf(trigramsOf);
-  function vec(text) {
-    const v = new Map();
-    for (const w of new Set(tokensOf(text))) {
-      const wgt = tokenIdf.get(w);
-      if (wgt) v.set('t:' + w, wgt);
-    }
-    for (const g of new Set(trigramsOf(text))) {
-      const wgt = triIdf.get(g);
-      if (wgt) v.set('g:' + g, wgt);
-    }
-    return v;
-  }
-  const vectors = rows.map((r, i) => ({ row: r, vec: vec(texts[i]) }));
-  return { vec, vectors };
-}
-
-const INDEX = buildIndex(CATALOG.sendableEn);
-
-function cosine(a, b) {
-  let dot = 0;
-  let na = 0;
-  let nb = 0;
-  for (const [k, v] of a) {
-    na += v * v;
-    if (b.has(k)) dot += v * b.get(k);
-  }
-  for (const [, v] of b) nb += v * v;
-  if (!na || !nb) return 0;
-  return dot / Math.sqrt(na * nb);
-}
-
-function localScores(normalized) {
-  const q = INDEX.vec(String(normalized || '').toLowerCase());
-  return INDEX.vectors
-    .map(({ row, vec }) => ({
-      partId: row.id,
-      contentHash: row.contentHash,
-      score: cosine(q, vec),
-    }))
-    .sort((a, b) => (b.score - a.score) || a.partId.localeCompare(b.partId));
-}
-
-function leadMatcher() {
-  if (!fs.existsSync(LEAD_MATCHER)) return null;
-  return require(LEAD_MATCHER);
-}
-
-function leadParams() {
-  if (!fs.existsSync(LEAD_PARAMS)) return null;
-  return JSON.parse(fs.readFileSync(LEAD_PARAMS, 'utf8'));
-}
+const MATCH_POOL = CATALOG.sendableEn.filter((row) => row.id !== REFUSE_ID && row.id !== HANDOFF_ID);
 
 function sharedStatus() {
+  const params = loadParams();
+  let paramsSha256 = null;
+  try {
+    paramsSha256 = sha256(fs.readFileSync(PARAMS_PATH));
+  } catch (_) { paramsSha256 = null; }
   return {
-    matcherPath: LEAD_MATCHER,
-    matcherPresent: fs.existsSync(LEAD_MATCHER),
-    paramsPath: LEAD_PARAMS,
-    paramsPresent: fs.existsSync(LEAD_PARAMS),
-    provisionalT: PROVISIONAL_T,
+    matcher: 'candidate/approvedMatcher.js',
+    paramsPath: PARAMS_PATH,
+    paramsSha256,
+    T: params ? params.T : null,
+    M: params ? params.M : null,
+    paramsFrozen: !!(params && params.status === 'frozen'),
+    matchPool: MATCH_POOL.length,
   };
 }
 
-function scoreRows(normalized, params) {
-  const lead = leadMatcher();
-  if (lead && typeof lead.matchApproved === 'function') {
-    const out = lead.matchApproved({
-      normalized,
-      rows: CATALOG.sendableEn,
-      params: params || leadParams() || { T: PROVISIONAL_T },
-    });
-    const list = Array.isArray(out) ? out : (out && (out.candidates || out.ranked || out.rows)) || [];
-    if (list.length && list[0].partId && typeof list[0].score === 'number') {
-      return list.slice().sort((a, b) => (b.score - a.score) || String(a.partId).localeCompare(String(b.partId)));
-    }
-  }
-  return localScores(normalized);
+function scoreRows(normalized) {
+  const params = loadParams();
+  if (!params) return [];
+  const out = matchApproved({ normalized, rows: MATCH_POOL, params, clarify: false });
+  const list = out && Array.isArray(out.candidates) ? out.candidates : [];
+  return list.slice().sort((a, b) => (b.score - a.score) || String(a.partId).localeCompare(String(b.partId)));
 }
 
 function send(partId) {
@@ -755,16 +667,17 @@ function decide({ normalized, gate, claim: claimIn, params }) {
   if (isPersonalOrMixed(n)) return send(REFUSE_ID);
   const policy = unresolvedPolicy(n);
   if (policy) return abstain('unresolved-policy', policy);
-  if (is2StepTrailing(n)) return abstain('atom-2step-trailing', null);
+  if (is2StepTrailing(n) || twoStepTrailing(n)) return abstain('atom-2step-trailing', null);
   if (needsClarification(n)) return abstain('atom-clarification', null);
   const intents = intentsOf(n);
   const product = productOf(n);
-  const covered = CATALOG.sendableEn.filter((row) => coversAll(row, intents, product));
+  const covered = MATCH_POOL.filter((row) => coversAll(row, intents, product));
   if (!covered.length) return abstain('COVERAGE_DENIED', null);
   const coveredIds = new Set(covered.map((row) => row.id));
-  const shared = leadParams();
-  const T = params && params.T != null ? params.T : (shared && shared.T != null ? shared.T : PROVISIONAL_T);
-  const ranked = scoreRows(n, params).filter((row) => coveredIds.has(row.partId) && row.score >= T);
+  const frozen = loadParams();
+  const T = params && params.T != null ? params.T : (frozen ? frozen.T : null);
+  if (T == null) return abstain('calibration-blocked', null);
+  const ranked = scoreRows(n).filter((row) => coveredIds.has(row.partId) && row.score >= T);
   if (!ranked.length) return abstain('COVERAGE_DENIED', null);
   return send(ranked[0].partId);
 }
@@ -789,7 +702,6 @@ module.exports = {
   verifyCatalog,
   explain,
   sharedStatus,
-  PROVISIONAL_T,
   REFUSE_ID,
   CATALOG_PATH,
 };

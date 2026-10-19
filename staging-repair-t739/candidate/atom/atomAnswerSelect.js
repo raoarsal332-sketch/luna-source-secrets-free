@@ -803,4 +803,10 @@ module.exports = {
   accountSpecific,
   VOCAB,
   BASE,
+  claim(input) {
+    return require('../../../staging-repair-t742/atom/atomModule').claim(input);
+  },
+  decide(input) {
+    return require('../../../staging-repair-t742/atom/atomModule').decide(input);
+  },
 };
