@@ -78,6 +78,7 @@ function atomFeeReturn(t) {
   return (
     /\b(?:refund(?:ed|s)?|reimburse\w*|rebates?|repaid|repay\w*)\b/.test(t) ||
     /\bhanded back\b/.test(t) ||
+    /\bfees?\s+backs?\b/.test(t) ||
     /\bcredited back\b/.test(t) ||
     /\bcome back\b/.test(t) ||
     /\breturned after\b/.test(t) ||

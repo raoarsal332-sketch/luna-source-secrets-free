@@ -120,7 +120,7 @@ function resolve(input) {
   else if (accountAsks.length && generalAsks.length) kind = 'mixed';
   else if (accountAsks.length || isAccount(knowledgeQuery)) kind = 'account';
   else if (generalAsks.length || isGeneral(knowledgeQuery) || isRelated(knowledgeQuery) || productFollowUp || imageAnswerable) kind = 'general-faq';
-  else if (regen.isContentlessMessage(latestText)) kind = 'contentless';
+  else if (typeof regen.isContentlessMessage === 'function' && regen.isContentlessMessage(latestText)) kind = 'contentless';
   else if (intent.intent === 'GENUINE_OFF_TOPIC') kind = 'out-of-scope';
   // CONTEXTUAL_EPISODE_V1: a follow-up resolved against the active topic is support
   // work. Generic clarify is only for GENUINE_UNCLEAR.

@@ -66,3 +66,58 @@ The frozen rule in (g): when two covering bodies state incompatible facts and on
 AD049 text: "Which leverage steps can be chosen on Atom 2-Step at checkout, besides the default?" Acceptable set: `atom.2step.leverage.en`, `atom.checkout.options.en`, `atom.obsolete.leverage-150-default.en`. Gold `decide.partId` is the obsolete id. The dev scorer in the Atom harness (`matches`) requires `got.partId === gold.partId`. It does not treat another acceptable-set member as correct.
 
 The obsolete row's body does not state a 1:150 default. It states the same facts as the current 2-Step row: default 1:30, and 1:50 or 1:100 is an Atom 2-Step checkout option. `atom.checkout.options.en` lists that same leverage menu. The incompatible-fact condition for dropping the obsolete id is not met, so "keep the non-obsolete id" does not by itself remove this primary. The deterministic rank does: highest score, then smallest id, is `atom.2step.leverage.en`. That id is also in the acceptable set. The gold primary is not that rank. No label was changed.
+
+## language-uncertain-module-on (AD259)
+
+Option A. Author test on the integrated tree, not a sealed run. Text `Atom 289.` Flag `LUNA_ATOM_SELECTOR_ENABLED=1`. Delivery is wired.
+
+`publicRouter.route` returns `reason: language-uncertain-module-on`, `mainRoute: true`, `terminal: false`, `f1: false`, `suppressPublicComposition: true`, no `send`, no `decide`. The language gate stays `uncertain`. Decide does not run. The F1 mark is cleared. This is not F1 and not a module claim of an English body.
+
+The webhook returns 200 before `lunaEpisode.begin`. Author test `language-uncertain-module-on AD259` in `tests/t6_modules.js`: status 200, public writes 0, notes 0, assignments 0, model calls 0. The log line is `LANGUAGE_UNCERTAIN_MODULE_ON <cid> compose=0 post=0 note=0 assign=0`. A queued model paragraph is not composed and is not posted. Nothing public is composed or posted. No note is written. No assignment is made.
+
+Flag off for the same text stays `language-uncertain-module-off` (terminal, no public write).
+
+Atom's dev scorer still records this row as the one router mismatch: gold `COVERAGE_DENIED`, router `language-uncertain-module-on`. It is not a gold SEND, so false refusals stay 0/287. The label was not changed.
+
+## Integrated author remeasure
+
+Packs `beda581ee89d45d21eab2b0dff752b04235337ac` and Atom `fa25da007783ce688e828d48f73fb59d50a1bfee` are in `t742-impl`. Dev sets only. Sealed set not opened. Label AUTHOR-TESTED.
+
+| Path | Result |
+| --- | --- |
+| Packs router flag on | 94/94, false refusals 0/69 |
+| Packs router flag off | F1 94/94 |
+| Atom router flag on | 400/401, false refusals 0/287, catalog plans 287/287 |
+| Atom router flag off | F1 401/401 |
+| Atom module-direct | 401/401, false refusals 0/287 |
+| Atom language-uncertain | 1/401 (AD259) |
+| Atom policy short-circuit on a gold SEND | 0/287 |
+
+The Atom harness now scores any acceptable-set member as a correct SEND. AD049 therefore counts correct. The remaining router miss is AD259's code, above. `matcher-params.json` was not rewritten; its sha256 stays `05e542ada2b4f3a937c6422c308b4f72070a7fa6a25c7cfd1fe3b9e53ad8df3f`. `T` is 0. `M` is null.
+
+`atomFeeReturn` also matches `fee back`, the same token the Atom baseline detector used. "Can I get my Atom challenge fee back after the first payout?" abstains `unresolved-policy` / `policy.fee-refunds` and does not send `atom.obsolete.first-payout-14.en`.
+
+## Public-write boundary and the twelve origins
+
+Every customer comment passes `assertApprovedPublicOutput` in `icRequest` (before fast-ack) and in `icRequestUnguarded` (before axios, including a retry). Notes, assignment, open, and close are not matched. A deny posts the fixed staff sentence only for `NOT_APPROVED_OUTPUT`, `ATTACHMENT_DENIED`, `URL_DENIED`, `NON_SENDABLE`, `MULTI_BODY_DENIED`, `COVERAGE_DENIED`, or `NAME_SLOT_DENIED`, and only when that post is a staff-command path whose delivery is known not to have occurred. `CRED_*` posts no note. The name slot uses `firstNameFromClient` of the name passed into `postClientCommentOnce`.
+
+Twelve public-send origins, eleven tested paths, because R1 and R2 re-enter origin 1:
+
+| Origin | Path | Comment allowlist |
+| --- | --- | --- |
+| 1 | `postClientCommentOnce` | yes, via `postReply` |
+| 2 | `postDeterministicFlowReply` | yes, via `postReply` |
+| 3 | `completeNonAccountEscalation` | yes, through origin 1 |
+| 4 | FAQ `deps.send` | yes, via `postReply` |
+| 5 | test doubles | not a transport proof |
+| 6 | `icRequest` direct | yes |
+| 7 | direct axios reads | reads only |
+| 8a | owner `REPLY` | yes, via `postReply` |
+| 8b | owner exact / FOLLOW exact | yes, via `postReply` |
+| 9 | persisted plan | yes, through origin 8a |
+| R1 | `scheduleBurstRerun` | re-enters origin 1 |
+| R2 | `replayAuthDeferred` | re-enters origin 1 |
+
+`spreadPublicGuard.js` is unchanged. Both copies sha256 `2158c43f3fbb4c6470983065613864f477d8959e46b79c7bed2a520788bdca8c`. Prefix `846c225f` is not present.
+
+`spreadTestState.js` is the atomic-JSON machine (idle/offered, 24h TTL, no credentials). It is not yet called from `index.js`. The live spread path is still the in-memory `pendingSpreadTemplateAppend` map, including the finally flush. That flush is a second sender and is not the frozen one-`onTurn` machine. A direct `postClientCommentOnce` of `SAFE_SPREAD_REPLY` with client name `Test Client` passes the name slot. The same test's later uncovered catalog body, sent against the customer text `hello`, is `COVERAGE_DENIED`. That deny is the boundary, not a spread-template edit.

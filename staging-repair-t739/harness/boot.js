@@ -43,6 +43,7 @@ function boot(opts) {
   setControl({});
   for (const k of ['LUNA_PACKS_ENABLED', 'LUNA_ATOM_ENABLED', 'LUNA_FAQ_APPROVED_ANSWERS_EXTRA']) delete process.env[k];
   process.env.NODE_PATH = path.join(root, 'node_modules');
+  process.env.LUNA_T742_ROOT = path.join(root, '..', 'staging-repair-t742');
   require('module').Module._initPaths();
   process.chdir(tmp);
 

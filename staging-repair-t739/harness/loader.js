@@ -40,6 +40,16 @@ function install(opts) {
       return origResolve.call(this, request, parent, isMain, options);
     } catch (e) {
       if (!e || e.code !== 'MODULE_NOT_FOUND' || !/^\.{1,2}\//.test(request)) throw e;
+      // The test tree is a flat copy of candidate/. Author packages live at
+      // /workspace/staging-repair-t742 and are not inside that copy. A relative
+      // require that names that tree must hit the real package, not a stub.
+      const marker = 'staging-repair-t742';
+      const at = request.indexOf(marker);
+      if (at >= 0) {
+        const abs = path.join('/workspace', request.slice(at));
+        const hit = [abs, abs + '.js', path.join(abs, 'index.js')].find((p) => fs.existsSync(p));
+        if (hit) return origResolve.call(this, hit.endsWith('.js') ? hit : abs, parent, isMain, options);
+      }
       const name = path.basename(request).replace(/\.js$/, '');
       if (NEVER_STUB.has(name)) throw e;
       const inTree = path.join(treeDir, name + '.js');

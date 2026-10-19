@@ -10,11 +10,15 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const DEFAULT_PATH =
-  process.env.LUNA_ATOM_APPROVED_ANSWERS ||
-  (fs.existsSync(path.join(__dirname, 'kb', 'elite_atom', 'faq-approved-answers-atom-v1.json'))
-    ? path.join(__dirname, 'kb', 'elite_atom', 'faq-approved-answers-atom-v1.json')
-    : path.join(__dirname, '..', 'kb', 'elite_atom', 'faq-approved-answers-atom-v1.json'));
+function resolveDefaultPath() {
+  const fromEnv = process.env.LUNA_ATOM_APPROVED_ANSWERS;
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
+  const beside = path.join(__dirname, 'faq-approved-answers-atom-v1.json');
+  if (fs.existsSync(beside)) return beside;
+  return fromEnv || beside;
+}
+
+const DEFAULT_PATH = resolveDefaultPath();
 
 const NON_SENDABLE_STATUS = new Set(['needs_owner_decision', 'provisional', 'expired']);
 

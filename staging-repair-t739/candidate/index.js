@@ -16,7 +16,7 @@ const STATE_PATH_GUARD = { checked: false, enforced: [] };
     const app = (eco.apps || []).find((a) => a && a.name === 'intercom-bot');
     declared = app && app.env;
   } catch (e) {
-    console.error('STATE_PATH_GUARD cannot read ecosystem.config.js:', e && e.message);
+    console.error('STATE_PATH_GUARD cannot read ecosystem.config.js:', 'class=' + (e && e.name || 'Error'));
     return;
   }
   if (!declared) return;
@@ -62,7 +62,7 @@ const webhookFastAck = require('./webhookFastAck');
 // Observation only. Never mutates the reply, never throws, and does nothing
 // when MAINTAINER_ENABLED=false. See luna-maintainer/README.md.
 let __maintainer = { observe: () => [], sweepAnalytics: () => [] };
-try { __maintainer = require('./luna-maintainer').create(); } catch (__e) { console.error('[maintainer] disabled:', __e && __e.message); }
+try { __maintainer = require('./luna-maintainer').create(); } catch (__e) { console.error('[maintainer] disabled:', 'class=' + (__e && __e.name || 'Error')); }
 /* LUNA_MAINTAINER_V1:END:require */
 
 /**
@@ -209,7 +209,7 @@ const intercomAuth = {
     console.log('INTERCOM_AUTH_UP after', Math.round((Date.now() - this.downSince) / 1000) + 's');
     this.downSince = 0;
     this.lastStatus = 0;
-    setImmediate(() => { replayAuthDeferred('auth-recovered').catch((e) => console.error('AUTH_REPLAY_ERR', e && e.message)); });
+    setImmediate(() => { replayAuthDeferred('auth-recovered').catch((e) => console.error('AUTH_REPLAY_ERR', 'class=' + (e && e.name || 'Error'))); });
   },
   isDown() { return this.downSince > 0; },
 };
@@ -227,7 +227,7 @@ function deferForAuth(conversationId) {
     const keys = Object.keys(all).sort((a, b) => (all[a].lastAt || 0) - (all[b].lastAt || 0));
     while (keys.length > AUTH_DEFERRED_MAX) delete all[keys.shift()];
     atomicJsonFile.writeJsonAtomic(AUTH_DEFERRED_FILE, all, { lastGood: false });
-  } catch (e) { console.error('AUTH_DEFER_WRITE_FAIL', conversationId, e && e.message); }
+  } catch (e) { console.error('AUTH_DEFER_WRITE_FAIL', conversationId, 'class=' + (e && e.name || 'Error')); }
 }
 let __authReplayRunning = false;
 /** Re-run the normal handler once for every conversation deferred during an auth outage. Every gate
@@ -247,12 +247,22 @@ async function replayAuthDeferred(reason) {
       if (Date.now() - (all[id].lastAt || 0) > AUTH_DEFERRED_MAX_AGE_MS) { console.log('AUTH_REPLAY skip stale', id); continue; }
       const req = { body: { topic: 'conversation.user.replied', data: { item: { id } } }, headers: {}, __authReplay: true };
       const res = { sendStatus() { return this; }, status() { return this; }, json() { return this; }, send() { return this; } };
-      try { await handleWebhook(req, res); replayed += 1; } catch (e) { console.error('AUTH_REPLAY_ERR', id, e && e.message); }
+      try { await handleWebhook(req, res); replayed += 1; } catch (e) { console.error('AUTH_REPLAY_ERR', id, 'class=' + (e && e.name || 'Error')); }
       await new Promise((r) => setTimeout(r, Number(process.env.LUNA_AUTH_REPLAY_GAP_MS || 2000)));
     }
     console.log('AUTH_REPLAY done', replayed);
   } finally { __authReplayRunning = false; }
   return { replayed };
+}
+
+function approvedCommentHold(method, data) {
+  if (['get', 'head', 'options'].includes(String(method || 'get').toLowerCase())) return null;
+  if (!data || data.message_type !== 'comment') return null;
+  const boundary = require('./publicWriteBoundary');
+  const verdict = boundary.assertApprovedPublicOutput(data, {});
+  boundary.logDecision(verdict, data);
+  if (verdict && verdict.ok) return null;
+  return boundary.denyResult(verdict);
 }
 
 async function icRequest(method, url, data, tag, opScope, retryPermission) {
@@ -267,6 +277,8 @@ async function icRequest(method, url, data, tag, opScope, retryPermission) {
   // PUBLIC_CREDENTIAL_HOLD_V1: nothing credential-bearing reaches the fast-ack store or the transport.
   const __credHold = credentialHoldForWrite(method, url, data);
   if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
+  const __approvedHold = approvedCommentHold(method, data);
+  if (__approvedHold) return __approvedHold;
   // Fast-ack worker only. Direct handleWebhook / pollers / sync mode have no event
   // context, so this returns the existing request unchanged.
   if (!webhookFastAck.currentStore()) return icRequestUnguarded(method, url, data, tag, opScope, retryPermission);
@@ -355,6 +367,11 @@ async function icRequestUnguarded(method, url, data, tag, opScope, retryPermissi
           if (opId) writeOpStore.set(opId, { status: 'failed', reason: 'credential-hold', scoped: !!opScope });
           return publicCredentialHold.holdResult(__attemptHold);
         }
+        const __approvedAttempt = approvedCommentHold(method, data);
+        if (__approvedAttempt) {
+          if (opId) writeOpStore.set(opId, { status: 'failed', reason: __approvedAttempt.holdCode, scoped: !!opScope });
+          return __approvedAttempt;
+        }
       }
       const r = await axios({
         method,
@@ -383,8 +400,8 @@ async function icRequestUnguarded(method, url, data, tag, opScope, retryPermissi
       }
     } catch (e) {
       // No response at all: for a write the outcome is genuinely unknown.
-      last = { status: 0, data: null, message: e && e.message };
-      console.error('IC_REQ_ERR', tag, url, e && e.message);
+      last = { status: 0, data: null, message: e && e.name };
+      console.error('IC_REQ_ERR', tag, 'status=0', 'class=' + (e && e.name || 'Error'));
       if (isWrite) { ambiguous = true; break; }
     }
     if (attempt < IC_MAX_RETRY) {
@@ -551,7 +568,7 @@ async function enrichNoteMentionsHtml(body) {
   try {
     admins = await fetchAdminsForMentionResolve();
   } catch (e) {
-    console.log('enrichNoteMentionsHtml admins fail', e && e.message);
+    console.log('enrichNoteMentionsHtml admins fail', 'class=' + (e && e.name || 'Error'));
   }
   const atRe = /@([A-Za-z][A-Za-z0-9_.-]{0,60})/g;
   const parts = [];
@@ -832,7 +849,7 @@ async function resolveNoteEmail(conversation, ids) {
     const em = r && r.data && r.data.email;
     if (isUsableClientEmail(em)) return String(em).trim();
   } catch (e) {
-    console.error('resolveNoteEmail contact fetch fail', e && e.message);
+    console.error('resolveNoteEmail contact fetch fail', 'class=' + (e && e.name || 'Error'));
   }
   return '';
 }
@@ -1019,7 +1036,7 @@ async function ensureInternalNoteEnglish(text, label) {
     const out = (((ai.choices[0] || {}).message || {}).content || '').trim();
     if (out) return out;
   } catch (e) {
-    console.error('NOTE_EN_OVERLAY fail', label || '', e && e.message);
+    console.error('NOTE_EN_OVERLAY fail', label || '', 'class=' + (e && e.name || 'Error'));
   }
   return raw;
 }
@@ -1079,7 +1096,7 @@ async function polishInternalProblemSummary(problemText, opts) {
       return polished;
     }
   } catch (e) {
-    console.error('PROBLEM_SUMMARY_POLISH fail', e && e.message);
+    console.error('PROBLEM_SUMMARY_POLISH fail', 'class=' + (e && e.name || 'Error'));
   }
   const fallback = escalateProblemPolish.repairEscalateProblemSummary(raw, { account, clientTexts });
   return fallback.problem || raw;
@@ -1551,7 +1568,7 @@ function resolvePromoReply(text, conv) {
       result = septemberPromos.answerPromotionQuestion(text, history);
     }
   } catch (e) {
-    console.error('PROMO_RESOLVE_FAIL', e && e.message);
+    console.error('PROMO_RESOLVE_FAIL', 'class=' + (e && e.name || 'Error'));
     return null;
   }
   if (result == null) return null;
@@ -2359,7 +2376,7 @@ async function routePartnershipBusiness({ conversationId, full, text, latestUser
       forceNonAccount: true,
     });
   } catch (e) {
-    console.error('PARTNERSHIP_ROUTE build fail', e && e.message);
+    console.error('PARTNERSHIP_ROUTE build fail', 'class=' + (e && e.name || 'Error'));
   }
 
   const mark = (noteOk, assignOk, assigneeId, routed) => {
@@ -2379,7 +2396,7 @@ async function routePartnershipBusiness({ conversationId, full, text, latestUser
         last = await postReply(conversationId, 'note', html);
       } catch (e) {
         last = { ok: false };
-        console.error('PARTNERSHIP_ROUTE note-attempt-error', conversationId, attempt, e && e.message);
+        console.error('PARTNERSHIP_ROUTE note-attempt-error', conversationId, attempt, 'class=' + (e && e.name || 'Error'));
       }
       if (last && last.ok) return last;
       console.error('PARTNERSHIP_ROUTE note-attempt-failed', conversationId, attempt);
@@ -2447,7 +2464,7 @@ async function completeNonAccountEscalation({ conversationId, full, latestUser, 
       forceNonAccount: true,
     });
   } catch (e) {
-    console.error('ESCALATE_NOTE_NON_ACCOUNT build fail', where, e && e.message);
+    console.error('ESCALATE_NOTE_NON_ACCOUNT build fail', where, 'class=' + (e && e.name || 'Error'));
   }
   const sendFallback = async () => {
     finishHandoffAction(conversationId, false, false);
@@ -2567,7 +2584,7 @@ async function ensureIdentityBeforeAccountEscalate({
         needEmail = resolvedId.needEmail;
       }
     } catch (e) {
-      console.error('IDENTITY_BEFORE_ESCALATE refetch fail', conversationId, e && e.message);
+      console.error('IDENTITY_BEFORE_ESCALATE refetch fail', conversationId, 'class=' + (e && e.name || 'Error'));
     }
   }
 
@@ -2788,7 +2805,7 @@ async function summarizeEscalationsClientBatch(messages) {
       return await ensureInternalNoteEnglish(cleaned, 'Escalations summary');
     }
   } catch (e) {
-    console.error('ESCALATIONS summarize fail', e && e.message);
+    console.error('ESCALATIONS summarize fail', 'class=' + (e && e.name || 'Error'));
   }
   // Last resort: still avoid dumping a raw paste wall — keep it short.
   const fallback = (messages || [])
@@ -3312,7 +3329,7 @@ function pruneTicketState() {
       console.log('TICKET_STATE_PRUNE removed', removed);
     }
   } catch (e) {
-    console.error('TICKET_STATE_PRUNE_ERR', e && e.message);
+    console.error('TICKET_STATE_PRUNE_ERR', 'class=' + (e && e.name || 'Error'));
   }
 }
 
@@ -3864,7 +3881,7 @@ function collectImageAttachments(part) {
     const url = String(a.url || '');
     if (!url) continue;
     const upload = (url.match(/\/i\/o\/[^/]+\/(\d{3,})\//) || [])[1];
-    if (upload && quotedOnly.has(upload)) { console.log('IMAGE_SKIP quoted-history', String(a.name || '').slice(0, 40)); continue; }
+    if (upload && quotedOnly.has(upload)) { console.log('IMAGE_SKIP quoted-history', 'nameLen=' + String(a.name || '').length); continue; }
     const ct = String(a.content_type || a.contentType || '').toLowerCase();
     const name = String(a.name || '');
     const isImg =
@@ -4051,7 +4068,7 @@ async function imageAttachmentToDataUrl(att) {
     }
     return 'data:' + detected + ';base64,' + buf.toString('base64');
   } catch (e) {
-    console.error('IMAGE_FETCH_ERR', e && e.message);
+    console.error('IMAGE_FETCH_ERR', 'class=' + (e && e.name || 'Error'));
     return null;
   }
 }
@@ -4463,7 +4480,7 @@ function recordEscalationState(conversationId, problemText, noteText, full) {
     stPack.state.deferredRelatedReply = null;
     saveConvState(stPack.id, stPack.state);
   } catch (e) {
-    console.error('ESCALATE_STATE_RECORD_FAIL', conversationId, e && e.message);
+    console.error('ESCALATE_STATE_RECORD_FAIL', conversationId, 'class=' + (e && e.name || 'Error'));
   }
 }
 
@@ -5703,7 +5720,7 @@ function shouldWaitForFin(full, latestUserText, topic) {
       return false;
     }
   } catch (e) {
-    console.error('testMode fin-wait check failed', e && e.message);
+    console.error('testMode fin-wait check failed', 'class=' + (e && e.name || 'Error'));
   }
 
   // Fin-wait applies ONLY to messenger / in-app chat where Fin/Elite AI speaks first.
@@ -6321,7 +6338,7 @@ function scheduleBurstRerun(conversationId) {
     console.log('BURST_RERUN', key, 'chain', n);
     const req = { body: { topic: 'conversation.user.replied', data: { item: { id: key } } }, headers: {}, __burstRerun: true };
     const res = { sendStatus() { return this; }, status() { return this; }, json() { return this; }, send() { return this; } };
-    Promise.resolve().then(() => handleWebhook(req, res)).catch((e) => console.error('BURST_RERUN_ERR', key, e && e.message));
+    Promise.resolve().then(() => handleWebhook(req, res)).catch((e) => console.error('BURST_RERUN_ERR', key, 'class=' + (e && e.name || 'Error')));
   });
 }
 
@@ -6535,7 +6552,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
         }
       }
     } catch (e) {
-      console.error('PRODUCT_BOTH_FAMILY_GUARD_ERR', conversationId, e && e.message);
+      console.error('PRODUCT_BOTH_FAMILY_GUARD_ERR', conversationId, 'class=' + (e && e.name || 'Error'));
     }
   }
   // Inherited product-thread anaphora must never leave a scope-decline template in the
@@ -6580,7 +6597,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
           repeatTextUtils.normalize(previousBot) !== repeatTextUtils.normalize(candidate) &&
           !nearCopiedWording(previousBot, candidate)) finalBody = candidate;
       else { console.log('REPEATED_DIRECT_REPLY_HELD', conversationId); return null; }
-    } catch (e) { console.error('REPEATED_DIRECT_REPLY_RETRY_FAILED', conversationId, e && e.message); return null; }
+    } catch (e) { console.error('REPEATED_DIRECT_REPLY_RETRY_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); return null; }
     gate = await checkSendBoundary(conversationId, userPart, clientName);
     if (!gate.ok) {
       console.log('SKIP post-rephrase', gate.why, conversationId);
@@ -6663,7 +6680,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
           !(previouslyApproved && ['UNSUPPORTED_NUMBER', 'UNSUPPORTED_FACT', 'KNOWLEDGE_GAP_UNSAFE'].includes(f.code)));
         return __lastPostgateFails.map((f) => f.code);
       } catch (e) {
-        console.error('POSTGATE_REVALIDATE_ERROR', conversationId, e && e.message);
+        console.error('POSTGATE_REVALIDATE_ERROR', conversationId, 'class=' + (e && e.name || 'Error'));
         return ['REVALIDATE_ERROR'];
       }
     };
@@ -6682,7 +6699,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
             hits = [];
           }
         }
-      } catch (e) { console.error('POSTGATE_PROMISE_STRIP_ERROR', conversationId, e && e.message); }
+      } catch (e) { console.error('POSTGATE_PROMISE_STRIP_ERROR', conversationId, 'class=' + (e && e.name || 'Error')); }
     }
     if (hits.length) {
       const fallback = identitySafeBody;
@@ -6721,7 +6738,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
             if (!cHits.length) { safe = String(c); break; }
           }
         } catch (e) {
-          console.error('POSTGATE_SAFE_FALLBACK_ERROR', conversationId, e && e.message);
+          console.error('POSTGATE_SAFE_FALLBACK_ERROR', conversationId, 'class=' + (e && e.name || 'Error'));
         }
         if (!safe) {
           console.log('POSTGATE_SUPPRESSED quiet (no safe stock line)', conversationId);
@@ -6769,7 +6786,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
       }
     }
   } catch (e) {
-    console.error('identical-body dedupe fail', conversationId, e && e.message);
+    console.error('identical-body dedupe fail', conversationId, 'class=' + (e && e.name || 'Error'));
   }
 
   // HANDOFF_CLAIM_GATE_V2 final send gate: re-check this turn's note/assign facts and
@@ -6792,7 +6809,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
       return null;
     }
   } catch (e) {
-    console.error('PUBLIC_RESTATEMENT_SEND_CHECK_FAIL', conversationId, e && e.message);
+    console.error('PUBLIC_RESTATEMENT_SEND_CHECK_FAIL', conversationId, 'class=' + (e && e.name || 'Error'));
   }
 
   if (!faqAssistance.current(conversationId) && replyContext && replyContext.intent && replyContext.intent.kind === 'general-faq') {
@@ -6804,6 +6821,12 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
       return adopted&&adopted.result||null;
     }
   }
+  try {
+    const __nameBoundary = require('./publicWriteBoundary');
+    const __nameTurn = __nameBoundary.currentTurn() || {};
+    const __first = firstNameFromClient(clientName);
+    if (__first) __nameBoundary.bindTurn({ ...__nameTurn, expectedFirstName: __first });
+  } catch (_) {}
   const __posted = await postReply(conversationId, 'comment', finalBody, userPart && userPart.id ? 'turn:' + userPart.id : undefined);
   return __posted;
 }
@@ -7155,7 +7178,8 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain, command
   }
   if (action === 'REPLY') {
     if (plan && plan.held) {
-      await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(plan.held), 'command:' + commandPartId);
+      const __holdNote = publicCredentialHold.staffHoldNote(plan.held);
+      if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + commandPartId);
       return 'HELD';
     }
     if (!body) {
@@ -7170,7 +7194,8 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain, command
     let out = postProcessModelReply(body, conversationId);
     const r = await postReply(conversationId, 'comment', out);
     if (r && r.held) {
-      await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(r.holdCode), 'command:' + commandPartId);
+      const __holdNote = publicCredentialHold.staffHoldNote(r.holdCode);
+      if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + commandPartId);
     } else if (r && r.status >= 200 && r.status < 300) {
       await postReply(conversationId, 'note', 'Sent to client.', 'command:' + commandPartId);
     } else {
@@ -7456,7 +7481,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
         authorizedCommandContext.exit(() => setImmediate(() => {
           const request = { body: { topic: 'conversation.user.replied', data: { item: full } } };
           const response = { sendStatus: () => {} };
-          handleWebhook(request, response).catch((e) => console.error('ASSIST_KICK_ERR', conversationId, e && e.message));
+          handleWebhook(request, response).catch((e) => console.error('ASSIST_KICK_ERR', conversationId, 'class=' + (e && e.name || 'Error')));
         }));
       } else if (cmd === 'CLOSE') {
         applyAuthorizedCommandControl('setAiOff', conversationId);
@@ -7478,7 +7503,8 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       }, { conversationId });
       if (__srcHold) {
         credentialHoldLog('conversations/' + conversationId, __srcHold);
-        await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(__srcHold.code), 'command:' + partId);
+        const __holdNote = publicCredentialHold.staffHoldNote(__srcHold.code);
+        if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + partId);
         console.log('AUTH_NOTE REPLY_HELD', conversationId, authorId, partId);
         acted = 'REPLY';
       } else {
@@ -7486,7 +7512,8 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       let out = postProcessModelReply(cmdBody, conversationId);
       const r = await postReply(conversationId, 'comment', out);
       if (r && r.held) {
-        await postReply(conversationId, 'note', publicCredentialHold.staffHoldNote(r.holdCode), 'command:' + partId);
+        const __holdNote = publicCredentialHold.staffHoldNote(r.holdCode);
+        if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + partId);
       } else if (r && r.status >= 200 && r.status < 300) {
         await postReply(conversationId, 'note', 'Sent to client.', 'command:' + partId);
       } else {
@@ -7548,7 +7575,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
         acted = 'FOLLOW:' + done;
       } catch (e) {
         if (e && e.code === 'AUTH_COMMAND_RETRY') throw e;
-        console.error('OWNER_CMD_FAIL', conversationId, e && e.message);
+        console.error('OWNER_CMD_FAIL', conversationId, 'class=' + (e && e.name || 'Error'));
         await postReply(
           conversationId,
           'note',
@@ -7610,7 +7637,7 @@ async function maybeSendDeterministicReviewFlow(conversationId, full, parts, lat
   try {
     stPack = getConvState(conversationId);
   } catch (e) {
-    console.error('REVIEW_FLOW state', conversationId, e && e.message);
+    console.error('REVIEW_FLOW state', conversationId, 'class=' + (e && e.name || 'Error'));
     return { handled: false };
   }
   const partId = String((latestUser && (latestUser.id || latestUser.created_at)) || '');
@@ -7634,7 +7661,7 @@ async function maybeSendDeterministicReviewFlow(conversationId, full, parts, lat
       controlDeps: reviewControlDeps,
     });
   } catch (e) {
-    console.error('REVIEW_FLOW decide-error (normal reply continues)', conversationId, e && e.message);
+    console.error('REVIEW_FLOW decide-error (normal reply continues)', conversationId, 'class=' + (e && e.name || 'Error'));
     return { handled: false };
   }
   if (decision.staleStops) {
@@ -7749,6 +7776,20 @@ const handleWebhook = async (req, res) => {
     // Resolve ownership from the authoritative event order before any model, summary,
     // assignment or public action. Unknown shared-seat actions fail toward human ownership.
     const __ownParts = authoritativeConversationParts(__fetched);
+    // The public-comment allowlist checks coverage against this customer turn.
+    try {
+      const __bindBoundary = require('./publicWriteBoundary');
+      const __bindNorm = require('./routeNormalizer');
+      const __bindParts = __ownParts || (conversation && conversation.conversation_parts && conversation.conversation_parts.conversation_parts) || [];
+      const __bindPart = findLatestUserPart(__bindParts, full);
+      const __bindText = stripHtml((__bindPart && __bindPart.body) || '');
+      __bindBoundary.bindTurn({
+        normalized: __bindNorm.normalizeForRoute(__bindText),
+        text: __bindText,
+        conversationId: String(conversationId || ''),
+        expectedFirstName: '',
+      });
+    } catch (_) {}
     let __humanOwnedLegacyFaqBypass = false;
     if (__fetched && __ownParts && String(__fetched.id) === String(conversationId)) {
       const __latestEarly = findLatestUserPart(__ownParts, __fetched);
@@ -8160,14 +8201,14 @@ const handleWebhook = async (req, res) => {
     // guard only learned about a conversation's FIRST image at IMAGE_IN (after replyDecision) and
     // isImageAnswerableIssue()/hasRecentImage() were false while the turn was being classified.
     const imageAtts = collectImageAttachments(latestUser);
-    try { __imageAskGuard.hookA(conversationId, imageAtts); } catch (__e) { console.error('[imageAskGuard.hookA] guard hook failed', __e && __e.message); }
+    try { __imageAskGuard.hookA(conversationId, imageAtts); } catch (__e) { console.error('[imageAskGuard.hookA] guard hook failed', 'class=' + (__e && __e.name || 'Error')); }
     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookA */
     const repeatedClientQuestion = isRepeatedClientQuestion(text, collectClientMessageTexts(full).slice(0, -1));
     /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookB */
-    try { __imageAskGuard.hookB(conversationId, text); } catch (__e) { console.error('[imageAskGuard.hookB] guard hook failed', __e && __e.message); }
+    try { __imageAskGuard.hookB(conversationId, text); } catch (__e) { console.error('[imageAskGuard.hookB] guard hook failed', 'class=' + (__e && __e.name || 'Error')); }
     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookB */
     /* LUNA_STATE_PRESEND_V1:BEGIN:hookT */
-    try { __statePresend.noteInbound(conversationId, text, latestUser); } catch (__e) { console.error('[statePresend.hookT] failed', __e && __e.message); }
+    try { __statePresend.noteInbound(conversationId, text, latestUser); } catch (__e) { console.error('[statePresend.hookT] failed', 'class=' + (__e && __e.name || 'Error')); }
     /* LUNA_STATE_PRESEND_V1:END:hookT */
     if (!text && !imageAtts.length) {
       console.log('SKIP empty user text', conversationId);
@@ -8284,7 +8325,7 @@ const handleWebhook = async (req, res) => {
             isAccountSpecific: (t) => isClearlyAccountSpecificIssue(t) || presendNeedsBackendLook(t),
           });
         } catch (e) {
-          route = { action: 'SKIP', reason: 'scope_route_error', log: { error: e && e.message } };
+          route = { action: 'SKIP', reason: 'scope_route_error', log: { errorClass: e && e.name || 'Error' } };
         }
         if (route.action !== 'ANSWER_SUBSET') {
           console.log('SKIP teammate-handoff', route.reason || defer.reason, conversationId, JSON.stringify(route.log || {}));
@@ -8517,6 +8558,27 @@ const handleWebhook = async (req, res) => {
      * ignored, deferred and duplicate events still exit before any model work. Everything
      * downstream — FAST, a FAST→FULL promotion, tool rounds, the exhaustion final, presend
      * regeneration and the duplicate-reply rewrite — spends THIS budget and cannot reset it. */
+    // Option A, language-uncertain-module-on: the main route has already run
+    // its earlier gates. A protected comment origin does not compose a public
+    // paragraph, post one, write a note, or assign.
+    try {
+      const __langPrior = [];
+      for (const __p of parts || []) {
+        if (!__p || !['user', 'lead'].includes(String((__p.author || {}).type || ''))) continue;
+        const __body = stripHtml(String(__p.body || ''));
+        if (__body) __langPrior.push(__body);
+      }
+      const __langRouted = await require('./publicRouter').route({
+        text,
+        prior: __langPrior,
+        conversationId,
+        eventId: latestUser && latestUser.id,
+      });
+      if (__langRouted && __langRouted.suppressPublicComposition) {
+        console.log('LANGUAGE_UNCERTAIN_MODULE_ON', conversationId, 'compose=0 post=0 note=0 assign=0');
+        return res.sendStatus(200);
+      }
+    } catch (_) { /* a router failure does not invent a public paragraph */ }
     const __episode = lunaEpisode.begin(conversationId, {
       messageId: latestUser && latestUser.id,
     });
@@ -8708,7 +8770,7 @@ const handleWebhook = async (req, res) => {
             JSON.stringify([...new Set((String(hit.block || '').match(/articles\/(\d{6,})/g) || []).map((x) => x.slice(9)))].slice(0, 8))); /* TURN_DIAG_V1: evidence article ids */
         }
       } catch (e) {
-        console.error('FAQ_RETRIEVE_FAIL', e && e.message);
+        console.error('FAQ_RETRIEVE_FAIL', 'class=' + (e && e.name || 'Error'));
       }
     }
 
@@ -8733,7 +8795,7 @@ const handleWebhook = async (req, res) => {
             console.log('PRODUCT_COMPARISON_TABLE', conversationId, __comparison.pair.map((p) => p.id).join(' vs '), __comparison.fields.filter((f) => f.different).map((f) => f.key).join(','));
           }
         }
-      } catch (e) { console.error('PRODUCT_COMPARISON_BUILD_FAILED', conversationId, e && e.message); }
+      } catch (e) { console.error('PRODUCT_COMPARISON_BUILD_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); }
     }
 
     const history = buildHistory(full, 50);
@@ -8808,7 +8870,7 @@ const handleWebhook = async (req, res) => {
         try { __statePresend.noteInbound(conversationId, t, latestUser); } catch (_) {}
         if (g && g.send && g.body) { __mixedPrefixMemo = g.body; console.log('MIXED_GENERAL_PART answered with account flow', conversationId, 'general', general.length); }
         else console.log('MIXED_GENERAL_PART held', conversationId, (g && g.reason) || '');
-      } catch (e) { console.error('MIXED_GENERAL_PART_ERR', conversationId, e && e.message); }
+      } catch (e) { console.error('MIXED_GENERAL_PART_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
       return __mixedPrefixMemo;
     };
     {
@@ -8853,7 +8915,7 @@ const handleWebhook = async (req, res) => {
           }
         }
       } catch (e) {
-        console.error('PROMO_INJECT_FAIL', e && e.message);
+        console.error('PROMO_INJECT_FAIL', 'class=' + (e && e.name || 'Error'));
       }
     }
     if (imageAtts.length) {
@@ -8957,7 +9019,7 @@ const handleWebhook = async (req, res) => {
       const imgParts = Array.isArray(userContent) ? userContent.filter((c) => c && c.type === 'image_url').length : 0;
       console.log('IMAGE_IN', conversationId, 'atts', imageAtts.length, 'loaded', imgParts);
       /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookC */
-      try { __imageAskGuard.hookC(conversationId, imgParts, imageAtts.length); } catch (__e) { console.error('[imageAskGuard.hookC] guard hook failed', __e && __e.message); }
+      try { __imageAskGuard.hookC(conversationId, imgParts, imageAtts.length); } catch (__e) { console.error('[imageAskGuard.hookC] guard hook failed', 'class=' + (__e && __e.name || 'Error')); }
       /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookC */
       if (!imgParts) {
         console.log('IMAGE_LOAD_NONE , escalate path preferred if model unsure', conversationId);
@@ -9044,7 +9106,7 @@ const handleWebhook = async (req, res) => {
       const __ep = (__lunaChat && __lunaChat.episode) || __episode;
       const __why = __ep && __ep.fallbackReason;
       if (!String(rawOut || '').trim() && __why) {
-        console.log('TOOL_BUDGET_EMPTY_FALLBACK', conversationId, __why);
+        console.log('TOOL_BUDGET_EMPTY_FALLBACK', conversationId, 'len=' + String(__why || '').length);
         const __whyS = String(__why || '');
         // AUTH_RUNTIME_NO_SCOPE_DECLINE_V1 (215476169761054): auth/runtime empty drafts must never
         // become [[SCOPE_DECLINE]] ("I only handle FundedElite"). Short wait-acks stay silent.
@@ -9052,19 +9114,15 @@ const handleWebhook = async (req, res) => {
         let __waitAck = false;
         try { __waitAck = !!(isShortClientAck(text) || (escalateRelatedOnly && typeof escalateRelatedOnly.isShortAck === 'function' && escalateRelatedOnly.isShortAck(text))); } catch (_) { __waitAck = !!isShortClientAck(text); }
         if (__waitAck && (__authOrRuntime || (escState && escState.escalateAwaitingFirstTeammate))) {
-          console.log('TOOL_BUDGET_EMPTY_FALLBACK wait-ack silence', conversationId, __whyS.slice(0, 60));
+          console.log('TOOL_BUDGET_EMPTY_FALLBACK wait-ack silence', conversationId, 'len=' + __whyS.length);
           rawOut = 'ACTION: SKIP\nBODY:';
         } else if (__authOrRuntime) {
           if (isClearlyAccountSpecificIssue(text) || clientWantsHumanTeammate(text)) {
             rawOut =
-              'ACTION: ESCALATE\nKIND: ACCOUNT\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message (' +
-              __whyS.slice(0, 80) +
-              ').\nACTION_NEEDED: Please answer the client\'s latest message.';
+              'ACTION: ESCALATE\nKIND: ACCOUNT\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message.\nACTION_NEEDED: Please answer the client\'s latest message.';
           } else {
             rawOut =
-              'ACTION: ESCALATE\nKIND: FAQ_CONFIRM\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message (' +
-              __whyS.slice(0, 80) +
-              ').\nACTION_NEEDED: Please answer the client\'s latest message.';
+              'ACTION: ESCALATE\nKIND: FAQ_CONFIRM\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message.\nACTION_NEEDED: Please answer the client\'s latest message.';
           }
         } else if (
           // Do not force KIND: ACCOUNT on off-topic / general empty drafts — that asked for an
@@ -9078,14 +9136,10 @@ const handleWebhook = async (req, res) => {
             'ACTION: REPLY\nBODY: [[SCOPE_DECLINE]] Thanks for reaching out — I only handle FundedElite support here.';
         } else if (isClearlyAccountSpecificIssue(text) || clientWantsHumanTeammate(text)) {
           rawOut =
-            'ACTION: ESCALATE\nKIND: ACCOUNT\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message (' +
-            __whyS.slice(0, 80) +
-            ').\nACTION_NEEDED: Please answer the client\'s latest message.';
+            'ACTION: ESCALATE\nKIND: ACCOUNT\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message.\nACTION_NEEDED: Please answer the client\'s latest message.';
         } else {
           rawOut =
-            'ACTION: ESCALATE\nKIND: FAQ_CONFIRM\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message (' +
-            __whyS.slice(0, 80) +
-            ').\nACTION_NEEDED: Please answer the client\'s latest message.';
+            'ACTION: ESCALATE\nKIND: FAQ_CONFIRM\nCLIENT: I will ask a support teammate to check this for you.\nBODY: Luna could not produce a reply to the latest client message.\nACTION_NEEDED: Please answer the client\'s latest message.';
         }
       }
     }
@@ -9127,7 +9181,7 @@ const handleWebhook = async (req, res) => {
         parsed.body = applied.body;
       }
     } catch (e) {
-      console.error('POLICY_FACT_GUARD fail', conversationId, e && e.message);
+      console.error('POLICY_FACT_GUARD fail', conversationId, 'class=' + (e && e.name || 'Error'));
     }
     if (__comparison && parsed.action !== 'REPLY') {
       // Only force the canonical table when THIS turn is itself an explicit
@@ -9220,7 +9274,7 @@ const handleWebhook = async (req, res) => {
           console.log('TEAMMATE_SCOPE ESCALATE->REPLY', conversationId);
         }
       } catch (e) {
-        console.error('TEAMMATE_SCOPE force fail', conversationId, e && e.message);
+        console.error('TEAMMATE_SCOPE force fail', conversationId, 'class=' + (e && e.name || 'Error'));
       }
     }
     if (__teammateScope && parsed.action !== 'REPLY') {
@@ -9259,7 +9313,7 @@ const handleWebhook = async (req, res) => {
           Object.assign(parsed, __pr);
           console.log('PHANTOM_TEAMMATE_SKIP ->', __pr.action, conversationId);
         }
-      } catch (e) { console.error('PHANTOM_TEAMMATE_SKIP_ERR', conversationId, e && e.message); }
+      } catch (e) { console.error('PHANTOM_TEAMMATE_SKIP_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
     }
     if (parsed.action === 'SKIP') {
       const skipBody = String(parsed.body || '');
@@ -9408,7 +9462,7 @@ const handleWebhook = async (req, res) => {
             }
           }
         } catch (e) {
-          console.error('ESCALATE->REPLY force fail', e && e.message);
+          console.error('ESCALATE->REPLY force fail', 'class=' + (e && e.name || 'Error'));
         }
       }
 
@@ -9536,7 +9590,7 @@ const handleWebhook = async (req, res) => {
             needEmail = resolvedId.needEmail;
           }
         } catch (e) {
-          console.error('identity re-fetch fail', e && e.message);
+          console.error('identity re-fetch fail', 'class=' + (e && e.name || 'Error'));
         }
       }
       if (!skipIdentityGate && (needAccount || needEmail)) {
@@ -9839,7 +9893,7 @@ const handleWebhook = async (req, res) => {
           console.log('ATTRIBUTE_FOLLOWUP_SCOPE_REPAIRED', conversationId);
         }
       }
-    } catch (e) { console.error('ATTRIBUTE_FOLLOWUP_SCOPE_REPAIR_ERR', conversationId, e && e.message); }
+    } catch (e) { console.error('ATTRIBUTE_FOLLOWUP_SCOPE_REPAIR_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
     /* IMAGE_EVIDENCE_V1:BEGIN:scope-repair
      * The model declined a turn whose screenshot is FundedElite content (or could not be judged unrelated). One
      * bounded regeneration answers from the image + approved knowledge instead of the canned out-of-scope line.
@@ -9869,7 +9923,7 @@ const handleWebhook = async (req, res) => {
           console.log('IMAGE_SCOPE_DECLINE_REPAIR_FAILED', conversationId, __corrected.action || 'none');
         }
       }
-    } catch (e) { console.error('IMAGE_SCOPE_REPAIR_ERR', conversationId, e && e.message); }
+    } catch (e) { console.error('IMAGE_SCOPE_REPAIR_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
     /* IMAGE_EVIDENCE_V1:END:scope-repair */
     if (
       __isScopeDecline &&
@@ -9903,7 +9957,7 @@ const handleWebhook = async (req, res) => {
             if (__candidateCheck.ok) { body = __body; __check = __candidateCheck; }
             else console.log('PRODUCT_COMPARISON_REGEN_INVALID', conversationId, __candidateCheck.errors.join(','));
           }
-        } catch (e) { console.error('PRODUCT_COMPARISON_REGEN_FAILED', conversationId, e && e.message); }
+        } catch (e) { console.error('PRODUCT_COMPARISON_REGEN_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); }
       }
       if (!__check.ok) {
         body = postProcessModelReply(productComparison.render(__comparison, /exact options|which options/i.test(text)), conversationId);
@@ -9957,7 +10011,7 @@ const handleWebhook = async (req, res) => {
             console.log('PENDING_ASK regenerated answer', conversationId);
           }
         }
-      } catch (e) { console.error('PENDING_ASK regenerate failed', conversationId, e && e.message); }
+      } catch (e) { console.error('PENDING_ASK regenerate failed', conversationId, 'class=' + (e && e.name || 'Error')); }
     }
 
     // Collect-first does not depend on which ACTION the model happened to emit.
@@ -10166,7 +10220,7 @@ const handleWebhook = async (req, res) => {
     const __unrelatedImageDecline = __imageTurn && !__imageRelated &&
       (__isScopeDecline || /\[\[SCOPE_DECLINE\]\]|outside what I (?:can help|cover)|only (?:handle|cover) FundedElite|not something I can (?:help with|cover)|FundedElite (?:topics )?(?:is|are) all I can|I can't get into that/i.test(String(body || '')));
     if (__unrelatedImageDecline) console.log('IMAGE_UNRELATED scope boundary kept (hookD skipped)', conversationId);
-    else { try { body = __imageAskGuard.hookD(conversationId, body); } catch (__e) { console.error('[imageAskGuard.hookD] guard hook failed', __e && __e.message); } }
+    else { try { body = __imageAskGuard.hookD(conversationId, body); } catch (__e) { console.error('[imageAskGuard.hookD] guard hook failed', 'class=' + (__e && __e.name || 'Error')); } }
     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookD */
     /* LUNA_STATE_PRESEND_V1:BEGIN:hookP */
     body = challengeVariantGuard.explainVariantFollowup(
@@ -10265,7 +10319,7 @@ const handleWebhook = async (req, res) => {
             if (__tp.action === 'REPLY' && __tp.body) return postProcessModelReply(__tp.body, conversationId);
             console.log('PRESEND_REGENERATE_WITH_TOOLS_NO_REPLY', conversationId, __tp.action || 'none');
           } catch (e) {
-            console.error('PRESEND_REGENERATE_WITH_TOOLS_FAILED', conversationId, e && e.message);
+            console.error('PRESEND_REGENERATE_WITH_TOOLS_FAILED', conversationId, 'class=' + (e && e.name || 'Error'));
           }
           // fall through to the plain retry below
         }
@@ -10296,7 +10350,7 @@ const handleWebhook = async (req, res) => {
         /* LUNA_IMAGE_UNDERSTAND_V1:END:plain-regen-images */
         const retryParsed = parseAction((((retry.choices[0] || {}).message || {}).content) || '');
         if (retryParsed.action === 'REPLY' && retryParsed.body) return postProcessModelReply(retryParsed.body, conversationId);
-      } catch (e) { console.error('PRESEND_REGENERATE_FAILED', conversationId, e && e.message); }
+      } catch (e) { console.error('PRESEND_REGENERATE_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); }
       return null;
     };
     /* TEAMMATE_TOPIC_OWNERSHIP_V1: in scoped mode the pending client parts are replaced by the scoped
@@ -10304,7 +10358,7 @@ const handleWebhook = async (req, res) => {
     const __presendHistory = __teammateScope
       ? (() => { const __pid = new Set((__teammateScope.pending || []).map((m) => m.id)); return parts.filter((p) => !__pid.has(String((p && p.id) || ''))); })()
       : parts;
-    try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: __presendHistory, knowledge: __presendKnowledge, comparison: __comparison, regenerate: __presendRegenerate, scopeDecline: __isScopeDecline, route: __pureSocial ? 'FAST' : undefined }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] gate threw — fail-closed (holding send)', __e && __e.message); __presend = { body: body, send: false, reason: 'gate-error-fail-closed' }; }
+    try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: __presendHistory, knowledge: __presendKnowledge, comparison: __comparison, regenerate: __presendRegenerate, scopeDecline: __isScopeDecline, route: __pureSocial ? 'FAST' : undefined }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] gate threw — fail-closed (holding send)', 'class=' + (__e && __e.name || 'Error')); __presend = { body: body, send: false, reason: 'gate-error-fail-closed' }; }
     if (__comparison && !__presend.send) {
       // One canonical recovery after the general presend gate has exhausted its
       // targeted repair. Do not enter older variant or generic status fallbacks.
@@ -10317,7 +10371,7 @@ const handleWebhook = async (req, res) => {
             body = __safeGate.body;
             console.log('PRODUCT_COMPARISON_PRESEND_RECOVERED', conversationId);
           }
-        } catch (e) { console.error('PRODUCT_COMPARISON_PRESEND_RECOVERY_FAILED', conversationId, e && e.message); }
+        } catch (e) { console.error('PRODUCT_COMPARISON_PRESEND_RECOVERY_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); }
       }
       if (!__presend.send) {
         console.log('PRODUCT_COMPARISON_HELD', conversationId, __presend.reason || 'presend rejected canonical answer',
@@ -10396,7 +10450,7 @@ const handleWebhook = async (req, res) => {
               }
             } else console.log('REPEATED_QUESTION_FACT_MISMATCH_HELD', conversationId);
           }
-        } catch (e) { console.error('REPEATED_QUESTION_RETRY_FAILED', conversationId, e && e.message); }
+        } catch (e) { console.error('REPEATED_QUESTION_RETRY_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); }
       }
     }
     /* LUNA_STATE_PRESEND_V1:END:hookP */
@@ -10502,7 +10556,7 @@ const handleWebhook = async (req, res) => {
                 else console.log('GENERAL_ACCOUNT_ASK regenerate held', conversationId, __g.reason || '');
               }
             } catch (e) {
-              console.error('GENERAL_ACCOUNT_ASK regenerate failed', conversationId, e && e.message);
+              console.error('GENERAL_ACCOUNT_ASK regenerate failed', conversationId, 'class=' + (e && e.name || 'Error'));
             }
           }
           if (!__fixed) {
@@ -10705,7 +10759,7 @@ const handleWebhook = async (req, res) => {
                       __partialExtraFacts += '\n\nAPPROVED CURRENT-PROMOTIONS OVERVIEW (summary not catalogue: one bullet per ACTIVE code — OCT35, FLASH5, NEW50. Do not dump $50k/$100k/$200k/$300k/$400k or every eligible product):\n' + String(__promoTxt).trim();
                     }
                   }
-                } catch (e) { console.error('PARTIAL_ANSWER_FACTS_ERR', conversationId, e && e.message); }
+                } catch (e) { console.error('PARTIAL_ANSWER_FACTS_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
                 if (__episode.canRegenerate()) {
                   __episode.chargeRegeneration();
                   const r = await lunaModel.create(openai, {
@@ -10808,7 +10862,7 @@ const handleWebhook = async (req, res) => {
                     const __okS = await __gateIt(__salv);
                     if (__okS) { console.log('PARTIAL_ANSWER shared-facts', conversationId, where); return __okS; }
                   }
-                } catch (e) { console.error('PARTIAL_ANSWER_SHARED_ERR', conversationId, e && e.message); }
+                } catch (e) { console.error('PARTIAL_ANSWER_SHARED_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
                 try {
                   const __cv = require('./challengeVariantGuard');
                   const __asks = require('./statePresend/multiAskCompleteness').extractAsks([{ role: 'client', text: text }]);
@@ -10861,7 +10915,7 @@ const handleWebhook = async (req, res) => {
                 console.log('PARTIAL_ANSWER repair-incomplete', conversationId, where);
                 return '';
               } catch (e) {
-                console.error('PARTIAL_ANSWER_ERR', conversationId, e && e.message);
+                console.error('PARTIAL_ANSWER_ERR', conversationId, 'class=' + (e && e.name || 'Error'));
                 return '';
               }
             };
@@ -10893,7 +10947,7 @@ const handleWebhook = async (req, res) => {
                     if (__g.send && __g.body) { __draft = __g.body; console.log('PROMISE_STRIP held-draft kept supported answer', conversationId); }
                     else console.log('PROMISE_STRIP held-draft still unsafe', conversationId, __g.reason || '');
                   }
-                } catch (e) { console.error('PROMISE_STRIP held-draft failed', conversationId, e && e.message); }
+                } catch (e) { console.error('PROMISE_STRIP held-draft failed', conversationId, 'class=' + (e && e.name || 'Error')); }
               }
               // GENERAL_ACCOUNT_ASK_GUARD_V1: a held draft that asks for account/email on a general
               // question is not a safe fallback either.
@@ -11027,7 +11081,7 @@ const handleWebhook = async (req, res) => {
                             if (__g3.send && __g3.body) { __reply = __g3.body; console.log('PRESEND_HOLD_FAQ_FORCE_REPLY_PROMISE_STRIPPED', conversationId); }
                             else { __base = __ps; __fails = (__g3.result && __g3.result.hardFails) || []; }
                           }
-                        } catch (e) { console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_STRIP_ERR', conversationId, e && e.message); }
+                        } catch (e) { console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_STRIP_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
                       }
                       if (!__reply && __fails.length && __fails.every((f) => f && f.code === 'MISSED_QUESTION')) {
                         const __c = await __completePartialAnswer(__base, __fails, 'force-reply');
@@ -11043,11 +11097,11 @@ const handleWebhook = async (req, res) => {
                       }
                     }
                   } catch (e) {
-                    console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_GATE_ERR', conversationId, e && e.message);
+                    console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_GATE_ERR', conversationId, 'class=' + (e && e.name || 'Error'));
                   }
                 }
               } catch (e) {
-                console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_FAILED', conversationId, e && e.message);
+                console.error('PRESEND_HOLD_FAQ_FORCE_REPLY_FAILED', conversationId, 'class=' + (e && e.name || 'Error'));
               }
             }
           }
@@ -11075,7 +11129,7 @@ const handleWebhook = async (req, res) => {
                 if (__g.send && __g.body) { __reply = __g.body; console.log('NOT_PUBLISHED_ANSWER last-resort', conversationId); }
                 else console.log('NOT_PUBLISHED_ANSWER last-resort held', conversationId, __g.reason || '');
               }
-            } catch (e) { console.error('NOT_PUBLISHED_ANSWER_ERR', conversationId, e && e.message); }
+            } catch (e) { console.error('NOT_PUBLISHED_ANSWER_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
           }
           if (!__reply && __kind === 'general-faq') {
             try {
@@ -11096,7 +11150,7 @@ const handleWebhook = async (req, res) => {
                   console.log('MISSED_QUESTION_FALLBACK duplicate skipped', conversationId);
                 }
               }
-            } catch (e) { console.error('MISSED_QUESTION_FALLBACK_ERR', conversationId, e && e.message); }
+            } catch (e) { console.error('MISSED_QUESTION_FALLBACK_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
           }
           if (__reply) __reply = applyGeneralAccountAskGuardSync(conversationId, parts, text, __reply, 'hold'); /* GENERAL_ACCOUNT_ASK_GUARD_V1 */
           // HELD_SEND_SAME_EVIDENCE_V1 (2026-09-25, live 215476101110604): the held-path reply was validated against
@@ -11251,7 +11305,7 @@ const handleWebhook = async (req, res) => {
                   return res.sendStatus(200);
                 }
                 console.log('DELEGATED_GENERAL_ANSWER_HELD', conversationId, __dFails.join(','));
-              } catch (e) { console.error('DELEGATED_GENERAL_ANSWER_ERR', conversationId, e && e.message); }
+              } catch (e) { console.error('DELEGATED_GENERAL_ANSWER_ERR', conversationId, 'class=' + (e && e.name || 'Error')); }
             }
           }
           if (escBlockHeld.block) {
@@ -11365,7 +11419,7 @@ const handleWebhook = async (req, res) => {
           }
         }
       } catch (e) {
-        console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
+        console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', 'class=' + (e && e.name || 'Error'));
       }
       return res.sendStatus(200);
     }
@@ -11380,6 +11434,7 @@ const handleWebhook = async (req, res) => {
     }
     return res.sendStatus(200);
     } finally {
+      try { require('./publicWriteBoundary').bindTurn(null); } catch (_) {}
       clientReplyInflight.delete(inflightKey);
       // A mixed spread ask arms this map before the other answer is composed. If that
       // answer is held or never posted, the contained template still has to go out.
@@ -11390,7 +11445,7 @@ const handleWebhook = async (req, res) => {
           const __spreadBody = postProcessModelReply(buildSpreadTestReply(), inflightKey);
           await postClientCommentOnce(inflightKey, __spreadBody, __unsentSpread.userPart || null, __unsentSpread.clientName || '');
           console.log('SPREAD_TEST_REPLY_MIXED_FLUSH', inflightKey);
-        } catch (e) { console.error('SPREAD_TEST_REPLY_MIXED_FLUSH_ERR', inflightKey, e && e.message); }
+        } catch (e) { console.error('SPREAD_TEST_REPLY_MIXED_FLUSH_ERR', inflightKey, 'class=' + (e && e.name || 'Error')); }
       }
       scheduleBurstRerun(inflightKey);
       /* LUNA_RESPONSES_V1: close the episode on EVERY exit path from the AI section (reply
@@ -11399,7 +11454,7 @@ const handleWebhook = async (req, res) => {
       try { lunaEpisode.end(conversationId); } catch (_) {}
     }
   } catch (e) {
-    console.error('WEBHOOK_ERR', e && e.message, e && e.stack);
+    console.error('WEBHOOK_ERR', 'class=' + (e && e.name || 'Error'));
     try { webhookFastAck.noteSwallowedError(e); } catch (_) {}
     return res.sendStatus(200);
   }
@@ -11512,7 +11567,7 @@ async function divertIfRiskOwnedNoPublic(conversationId, full) {
   try {
     await handleRiskSilentNoteOnly(conversationId, fresh || full);
   } catch (e) {
-    console.error('RISK_OWNED divert failed', conversationId, e && e.message);
+    console.error('RISK_OWNED divert failed', conversationId, 'class=' + (e && e.name || 'Error'));
   }
   return { diverted: true, full: fresh || full };
 }
@@ -11743,11 +11798,11 @@ async function pollDeferredRelatedReplies() {
         saveTicketState(cur);
         console.log('ESCALATE defer matured , allow bot related answer', cid);
       } catch (e) {
-        console.error('DEFER_POLL_ITEM', cid, e && e.message);
+        console.error('DEFER_POLL_ITEM', cid, 'class=' + (e && e.name || 'Error'));
       }
     }
   } catch (e) {
-    console.error('DEFER_POLL_ERR', e && e.message);
+    console.error('DEFER_POLL_ERR', 'class=' + (e && e.name || 'Error'));
   } finally {
     deferPollRunning = false;
   }
@@ -11762,7 +11817,7 @@ async function pollAutoCloseSilentTickets() {
     try {
       list = await searchOpenConversationsAutoClose();
     } catch (e) {
-      console.error('AUTO_CLOSE_SEARCH_ERR', e && e.message);
+      console.error('AUTO_CLOSE_SEARCH_ERR', 'class=' + (e && e.name || 'Error'));
       return;
     }
     console.log('AUTO_CLOSE_POLL open', list.length);
@@ -11782,7 +11837,7 @@ async function pollAutoCloseSilentTickets() {
         const res = await handleAutoCloseIfDue(String(id), full);
         if (res && res.close) closed++;
       } catch (e) {
-        console.error('AUTO_CLOSE_ITEM_ERR', id, e && e.message);
+        console.error('AUTO_CLOSE_ITEM_ERR', id, 'class=' + (e && e.name || 'Error'));
       }
     }
     if (closed) console.log('AUTO_CLOSE_POLL closed', closed);
@@ -11874,7 +11929,7 @@ async function pollSilentTeamboxNotes() {
       try {
         list = await searchOpenTeamConversations(job.teamId);
       } catch (e) {
-        console.error('TEAMBOX_SEARCH_ERR', job.label, e && e.message);
+        console.error('TEAMBOX_SEARCH_ERR', job.label, 'class=' + (e && e.name || 'Error'));
         continue;
       }
       console.log('TEAMBOX_POLL', job.label, 'open', list.length);
@@ -11885,7 +11940,7 @@ async function pollSilentTeamboxNotes() {
           const full = (await fetchConversation(id)) || c;
           await job.run(String(id), full);
         } catch (e) {
-          console.error('TEAMBOX_POLL_ITEM_ERR', job.label, id, e && e.message);
+          console.error('TEAMBOX_POLL_ITEM_ERR', job.label, id, 'class=' + (e && e.name || 'Error'));
         }
       }
     }
@@ -11894,7 +11949,7 @@ async function pollSilentTeamboxNotes() {
     try {
       jerryList = await searchOpenJerryConversations();
     } catch (e) {
-      console.error('JERRY_SEARCH_ERR', e && e.message);
+      console.error('JERRY_SEARCH_ERR', 'class=' + (e && e.name || 'Error'));
       jerryList = [];
     }
     console.log('TEAMBOX_POLL JERRY open', jerryList.length);
@@ -11907,7 +11962,7 @@ async function pollSilentTeamboxNotes() {
         if (isEscalationsTeambox(full) || isRiskTeambox(full)) continue;
         await handleJerryOrEscalationsLongMessageNote(String(id), full);
       } catch (e) {
-        console.error('TEAMBOX_POLL_ITEM_ERR', 'JERRY', id, e && e.message);
+        console.error('TEAMBOX_POLL_ITEM_ERR', 'JERRY', id, 'class=' + (e && e.name || 'Error'));
       }
     }
   } finally {
@@ -11972,18 +12027,18 @@ if (require.main === module) {
     console.log('Bot running (fresh engine)');
     // INTERCOM_AUTH_SHORTCIRCUIT_V1: events deferred during an auth outage (a restart is how a new token
     // is loaded) are replayed once the process is up and Intercom answers again.
-    setTimeout(() => { replayAuthDeferred('startup').catch((e) => console.error('AUTH_REPLAY_START_ERR', e && e.message)); }, 30000);
+    setTimeout(() => { replayAuthDeferred('startup').catch((e) => console.error('AUTH_REPLAY_START_ERR', 'class=' + (e && e.name || 'Error'))); }, 30000);
     // Catch Escalations/Risk tickets that already passed the 15m gate but got no new webhook
     setTimeout(() => {
-      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_START_ERR', e && e.message));
-      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_START_ERR', e && e.message));
-      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_START_ERR', e && e.message));
+      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_START_ERR', 'class=' + (e && e.name || 'Error')));
+      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_START_ERR', 'class=' + (e && e.name || 'Error')));
+      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_START_ERR', 'class=' + (e && e.name || 'Error')));
     }, 8000);
     let ticketStatePruneTicks = 0;
     setInterval(() => {
-      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_ERR', e && e.message));
-      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_POLL_ERR', e && e.message));
-      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_POLL_ERR', e && e.message));
+      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_ERR', 'class=' + (e && e.name || 'Error')));
+      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_POLL_ERR', 'class=' + (e && e.name || 'Error')));
+      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_POLL_ERR', 'class=' + (e && e.name || 'Error')));
       ticketStatePruneTicks += 1;
       if (ticketStatePruneTicks >= 60) {
         ticketStatePruneTicks = 0;

@@ -177,7 +177,21 @@ async function route(input) {
     return { terminal: true, reason: 'module-on-delivery-not-wired', mainRoute: false, normalized, gate, kind: 'exclusive', entity: resolved.entity };
   }
   if (gate.lang !== 'en') {
-    return { terminal: true, reason: 'language-uncertain-module-on', mainRoute: false, normalized, gate, kind: 'exclusive', entity: resolved.entity };
+    // Option A. Flag-on uncertain is not F1 and decide does not run.
+    // The main route stays in force. Its suppression is that a protected
+    // comment origin does not let the model compose a public paragraph.
+    if (input.conversationId) f1.clear(input.conversationId);
+    return {
+      terminal: false,
+      f1: false,
+      reason: 'language-uncertain-module-on',
+      mainRoute: true,
+      suppressPublicComposition: true,
+      normalized,
+      gate,
+      kind: 'exclusive',
+      entity: resolved.entity,
+    };
   }
   const decided = await hostDecide({ text, normalized, prior: priorNorm, gate, claim: resolved.claim, params: input.params });
   if (!decided || decided.action !== 'SEND') {

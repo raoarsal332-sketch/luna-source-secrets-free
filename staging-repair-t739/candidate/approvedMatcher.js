@@ -16,6 +16,12 @@ const { unresolvedPolicy } = require('./unresolvedPolicy');
 
 const PARAMS_PATH = path.join(__dirname, 'matcher-params.json');
 
+function t742Root() {
+  const fromEnv = process.env.LUNA_T742_ROOT;
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
+  return path.join(__dirname, '..', '..', 'staging-repair-t742');
+}
+
 function tokens(text) {
   return String(text || '').toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || [];
 }
@@ -228,8 +234,8 @@ function concealedSpelling(normalized) {
   return false;
 }
 
-const PACKS_FACTS_PATH = path.join(__dirname, '..', '..', 'staging-repair-t742', 'packs', 'impl', 'packs-propositions.json');
-const ATOM_MODULE_PATH = path.join(__dirname, '..', '..', 'staging-repair-t742', 'atom', 'atomModule.js');
+const PACKS_FACTS_PATH = path.join(t742Root(), 'packs', 'impl', 'packs-propositions.json');
+const ATOM_MODULE_PATH = path.join(t742Root(), 'atom', 'atomModule.js');
 
 let packsFactsCache = null;
 const atomCoverCache = new Map();

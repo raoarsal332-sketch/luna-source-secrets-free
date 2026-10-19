@@ -816,13 +816,25 @@ function holdResult(hold) {
   };
 }
 
+const STAFF_NOTE_CODES = new Set([
+  'NOT_APPROVED_OUTPUT',
+  'ATTACHMENT_DENIED',
+  'URL_DENIED',
+  'NON_SENDABLE',
+  'MULTI_BODY_DENIED',
+  'COVERAGE_DENIED',
+  'NAME_SLOT_DENIED',
+]);
+
 function safeCode(code) {
   return /^[A-Z0-9_]{1,48}$/.test(String(code || '')) ? String(code) : 'CRED_HOLD';
 }
 
-/** Fixed, body-free wording for staff-visible notes. OWNER WORDING CONFIRMATION pending. */
+/** Fixed staff note. Only the seven public-write deny codes. CRED_* posts nothing. */
 function staffHoldNote(code) {
-  return 'Reply held by safety check (reason: ' + safeCode(code) + '). Nothing was sent to the customer.';
+  const c = String(code || '');
+  if (!STAFF_NOTE_CODES.has(c)) return null;
+  return 'Reply held by safety check (reason: ' + c + '). Nothing was sent to the customer.';
 }
 
 function logLine(conversationId, hold) {

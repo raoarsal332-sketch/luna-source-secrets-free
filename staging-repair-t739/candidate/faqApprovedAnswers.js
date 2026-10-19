@@ -249,19 +249,25 @@ function chunkMatchesAllowlistedTemplate(chunk, filePath) {
 /**
  * @returns {{ ok:boolean, reason:string, coreHashes:string[], answerIds:string[] }}
  */
+function rowForAllowlist(id, filePath) {
+  if (filePath) return load(filePath).byId.get(id) || null;
+  return get(id) || null;
+}
+
 function assertAllowlistedFinal(body, answerIds, filePath) {
   const data = load(filePath);
-  // Pending / non-sendable ids never enter the allowlist.
-  const ids = (answerIds || []).filter((id) => data.byId.has(id));
+  // Pending / non-sendable ids never enter the allowlist. An extra Packs or
+  // Atom row is sendable when get() returns it; V12 list() still omits it.
+  const ids = (answerIds || []).filter((id) => rowForAllowlist(id, filePath));
   if (!ids.length) return { ok: false, reason: 'no-approved-answer-ids', coreHashes: [], answerIds: [] };
 
   const allowed = sentenceSetForAnswers(ids, filePath);
-  const coreHashes = ids.map((id) => data.byId.get(id).contentHash);
+  const coreHashes = ids.map((id) => rowForAllowlist(id, filePath).contentHash);
 
   const norm = normalizeBody(body);
   for (const id of ids) {
-    const a = data.byId.get(id);
-    if (norm === a.body) return { ok: true, reason: 'exact', coreHashes, answerIds: ids };
+    const a = rowForAllowlist(id, filePath);
+    if (norm === a.body || norm === normalizeBody(a.body)) return { ok: true, reason: 'exact', coreHashes, answerIds: ids };
   }
 
   const chunks = norm
@@ -280,7 +286,7 @@ function assertAllowlistedFinal(body, answerIds, filePath) {
         break;
       }
       for (const id of ids) {
-        const b = data.byId.get(id).body;
+        const b = rowForAllowlist(id, filePath).body;
         if (rest === b || rest.startsWith(b + ' ') || rest.startsWith(b + '\n')) {
           rest = normalizeBody(rest.slice(b.length));
           progressed = true;

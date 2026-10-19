@@ -433,7 +433,7 @@ function safeBool(fn, onThrow) {
  *     on; this default does not apply).
  *   - clause non-English -> not claimed (non-English main route unchanged).
  */
-async function modulePlan(full, user, d, text, row, topic) {
+async function modulePlan(full, user, d, text, row, topic, entity) {
   const cid = String((full && full.id) || '');
   const answerIds = [row.id];
   const contentHashes = [row.contentHash];
@@ -464,6 +464,8 @@ async function modulePlan(full, user, d, text, row, topic) {
       topic: topic || 'conversation.user.replied',
     }),
     reason: 'module-send',
+    terminal: true,
+    module: entity || null,
   };
 }
 
@@ -484,7 +486,7 @@ async function moduleScope(text, parts, d, full, user, topic) {
   if (routed.send && routed.decide && routed.decide.action === 'SEND' && routed.decide.partId) {
     const row = approved.get(routed.decide.partId);
     if (!row || row.sendable === false) return { reason: 'NON_SENDABLE', terminal: true, module: routed.entity || null };
-    return modulePlan(full, user, d, text, row, topic);
+    return modulePlan(full, user, d, text, row, topic, routed.entity || null);
   }
   return { reason: routed.reason || 'module-off-fail-closed', terminal: !!routed.terminal, module: routed.entity || null };
 }
@@ -508,7 +510,7 @@ async function prepare(full, parts, topic, d) {
     if (scoped) return scoped;
   }
 
-  const decision = d.intent(text, parts);
+  const decision = typeof d.intent === 'function' ? d.intent(text, parts) : null;
   if (!decision) return { reason: 'intent-unavailable' };
   const asciiOnly = !hasNonLatin(text);
   if (asciiOnly && ['smalltalk', 'support-meta', 'personal', 'contentless', 'out-of-scope', 'human-request'].includes(decision.kind))
