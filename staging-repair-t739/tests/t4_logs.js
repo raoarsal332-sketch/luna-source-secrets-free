@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const E = require('./env');
 const { test, run } = require('./runner');
-const { h, T, fake, lm, sc, reset, newConv, index } = E;
+const { h, T, fake, lm, sc, reset, newConv, index, L, P } = E;
 
 const S = 'ZQSENTINELCUSTOMERTEXTQZ';
 const TAGS = ['IC_REQ_FAIL', 'PROBLEM_SUMMARY_REPAIRED', 'PROBLEM_SUMMARY_POLISHED', 'PROBLEM_PRE_REPAIR', 'ESCALATE_HANDOFF_SOFTENED', 'POSTGATE_FAIL_DETAIL', 'OWNER_CMD_LLM_RAW', 'SKIP model', 'PARTIAL_ANSWER_UNITS'];
@@ -67,6 +67,37 @@ test('F4 static: the nine historical sites no longer interpolate raw text (diff 
     assert.ok(c.every((l) => /logLen\(/.test(l)), 'candidate line does not use logLen: ' + tag);
     assert.ok(b.every((l) => !/logLen\(/.test(l)), 'baseline unexpectedly redacted: ' + tag);
   }
+});
+test('F4 a synthetic login and password in the customer turn never reach a log sink', async () => {
+  reset();
+  const { id, user } = newConv('My login is ' + L + ' and the password is ' + P);
+  lm.state.queue.push('ACTION: REPLY\nBODY: I will ask a support teammate to check this for you.');
+  const req = { body: { topic: 'conversation.user.replied', data: { item: { id, type: 'conversation', conversation_parts: { conversation_parts: [user] }, source: fake.getConversation(id).source } } }, headers: {} };
+  await index.handleWebhook(req, res);
+  const redact = (line) => String(line).split(L).join('[L]').split(P).join('[P]');
+  const hit = h.logs.filter((l) => l.line.includes(L) || l.line.includes(P));
+  if (hit.length) process.stdout.write('CRED_LOG_HITS ' + hit.map((l) => redact(l.line).slice(0, 180)).join(' || ') + '\n');
+  assert.strictEqual(hit.length, 0, 'credential reached a log sink');
+  if (E.which !== 'candidate') return;
+  const pubs = fake.publicWrites().map((p) => String(p.data && p.data.body || '')).join('\n');
+  assert.ok(!pubs.includes('support teammate'), 'safety row posted a public teammate sentence');
+  assert.ok(!pubs.includes(L) && !pubs.includes(P), 'credential reached a public comment');
+});
+test('t742 reviewer hooks are armed', () => {
+  if (E.which !== 'candidate') return;
+  const hooks = index.t742Hooks;
+  assert.ok(hooks && typeof hooks === 'object');
+  for (const name of ['replayAuthDeferred', 'scheduleBurstRerun', 'deferForAuth', 'armQueuedWebhook', 'armBurstPending', 'f1MarkFile', 'spreadStateFile', 'withOwnershipWriteLock']) {
+    assert.strictEqual(typeof hooks[name], 'function', name);
+  }
+  assert.ok(hooks.duplicateInflight && typeof hooks.duplicateInflight.get === 'function');
+  const req = hooks.armQueuedWebhook({ body: {} });
+  assert.strictEqual(req.__queuedWebhook, true);
+  hooks.armBurstPending('hook-conv');
+  assert.strictEqual(T.burstRerunPending.has('hook-conv'), true);
+  T.burstRerunPending.delete('hook-conv');
+  assert.ok(typeof hooks.f1MarkFile() === 'string' && hooks.f1MarkFile().endsWith('f1-terminal-abstain.json'));
+  assert.ok(typeof hooks.spreadStateFile() === 'string' && hooks.spreadStateFile().endsWith('spread-test-state.json'));
 });
 test('F4 residual: log lines (all routes in this process) that still contain the customer sentinel are listed for the report', () => {
   const rest = leaks();

@@ -24,6 +24,7 @@ const EXPORT = `module.exports.__t = {
   deferForAuth: typeof deferForAuth === 'function' ? deferForAuth : null,
   scheduleBurstRerun: typeof scheduleBurstRerun === 'function' ? scheduleBurstRerun : null,
   burstRerunPending: typeof burstRerunPending !== 'undefined' ? burstRerunPending : null,
+  t742Hooks: typeof t742Hooks === 'object' && t742Hooks ? t742Hooks : null,
   pendingSpreadTemplateAppend: typeof pendingSpreadTemplateAppend !== 'undefined' ? pendingSpreadTemplateAppend : null,
   ownershipBoundary,
 };
