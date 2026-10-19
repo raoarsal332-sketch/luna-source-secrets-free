@@ -18,6 +18,17 @@ Revision: pre-freeze, addressing the independent review of `def7329c8bd5cf134e46
 | 10 `stripHtml` recovers plaintext parts from `toHtml`, with a test | (c) |
 | 11 Non-English default adopted as provisional language gold, marked OWNER-PENDING | (f), (j), (m) |
 
+Second revision, reviewer re-check of `d209f1b0` / `4ceaba95`. The shared sections below are the authority. Packs and Atom authors change their sections and dev-set labels to match the contract at the end. This author does not edit those branches.
+
+| Conflict | Authority |
+| --- | --- |
+| 1 Trailing veto also blocked `atom.1step.max-loss.en` | (g), (h), (j) |
+| 2 Three policy registries | (h) one canonical registry |
+| 3 Clearly non-English fail-closed inside both modules | (b), (f), contract |
+| 4 Claim and decide shapes differ | (b), (h), contract |
+| 5 Packs personal, mixed, and near-neighbour gold missing; two sendable rows blocked from the Packs index | (c), (j), contract |
+| 6 Dev labels use lowest specificity; the matcher abstains when two rows clear `T` | (g), contract |
+
 Source tree the design cites: `3b4acc1fbba05f5d936924326fb22374535e4c6b` on `t739-mt5-shared` (freeze `t739-integrated-r2-full`). All line numbers are from that tree under `staging-repair-t739/candidate/` unless a path is written out.
 
 Requested model: `claude-sonnet-5-5`. Actual model for this document: `grok-4.7`. Implementation model after freeze: Grok 4.7. Blinded reviewer: `bc-ad6955b1`. This author does not review the sealed set and does not claim model diversity.
@@ -133,7 +144,7 @@ These two entity definitions are the only surface forms that may produce `exclus
 | --- | --- |
 | one `exclusive`, the other `none` or `shared` | that module owns the turn |
 | two `exclusive` | abstain, no public text |
-| `exclusive` but the other module's entity span is also present | abstain, no public text |
+| `exclusive` but the other module's entity span is also present | abstain, no public text. Atom does not keep the turn when the Packs entity is also present, and Packs does not keep it when the Atom entity is also present |
 | no `exclusive` | nobody owns the turn; V12 matcher and spread state may still run |
 
 A throw from `claim` is an `exclusive` claim for that module (fail closed), same as today's detector `onThrow: true` in `faqAssistance.js` `safeBool`.
@@ -145,7 +156,7 @@ Flags stay default-off. Packs on only when `LUNA_PACKS_ENABLED=1`. Atom on only 
 | Turn | Flag | Public result |
 | --- | --- | --- |
 | `exclusive` Packs or Atom, language `en` or `uncertain` | OFF | terminal silence, reason `module-off-fail-closed` or `language-uncertain-module-off` |
-| `exclusive`, language `non-en` | OFF or ON | not a claim; non-English main route (f) |
+| `exclusive` would have been the kind, language `non-en` | OFF or ON | not a claim. The module is not called. Main route (f) is unchanged. A module-local non-English abstain is not terminal |
 | `shared` or `none` | OFF | not a claim; V12 and spread are not silenced |
 | `exclusive`, flag ON, delivery deps present | ON | matcher may return one sendable id |
 | `exclusive`, flag ON, delivery deps absent | ON | terminal reason `module-on-delivery-not-wired`; no invented body |
@@ -400,6 +411,8 @@ Catalog `candidate/packs/faq-approved-answers-packs-v1.json` sha256 `bed88e6ab45
 | `packs.handoff.unverified.en` | `711e367ff423b475860478dbd2e5b66d1b8c0b3372efd0298558876cc0f940f0` |
 | `packs.simulated.en` | `a744add2f83e38d98fd870f5b07b616a7cd93df5d507077c26566d468b478bb7` |
 
+`packs.account-status.refuse.en` and `packs.handoff.unverified.en` are sendable. They stay approved parts. They are role rows, not product-pool rows: `scopeAllows` (`packsApprovedAnswers.js` lines 73–80) keeps `accountStatusBoundary` and `handoff` out of the product role. The product matcher does not score them. They are not dropped from the catalog index. Gold for when each is sent is in (j).
+
 Packs templates, same hashes as the identical V12 string where the text matches:
 
 | id | hash |
@@ -543,6 +556,8 @@ Order inside the gate stays: non-English evidence first (line 97), then reliable
 
 Effects:
 
+One rule. An uncertain-language module-specific turn (an `exclusive` claim, flag OFF) is fail-closed silence. A clearly non-English turn is not a module claim, the module is not called, and the main route is unchanged. A module that abstains locally on non-English text does not own the turn and does not replace the main route.
+
 - Clearly non-English: not a module claim (`moduleScope` already `continue`s on `non-en`, line 448). Not answered with an English row (`selectApprovedAnswer` abstains when `lang !== 'en'`, lines 277–278). That is the preserved main-route behaviour.
 - Uncertain plus an `exclusive` module claim plus flag OFF: terminal silence (decision 6).
 - Uncertain plus no module claim: V12 matcher does not run (it requires `en`). No model sentence.
@@ -576,14 +591,20 @@ Inputs: normalized customer text `T`, sendable rows only.
 
 ### Coverage check
 
-`coversAllIntents(normalized, candidateId)` is required before any catalog id is emitted. A single cosine win on the whole turn is not proof that one body covers every intent. Sending `atom.2step.max-loss.en` (`contentHash` `e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526`) for a trailing ask is wrong even when that row is the matcher winner. The current Atom selector maps trailing max-loss onto the 1-step product (`atomAnswerSelect.js` lines 543–547, `productForRow = P1` when `\btrailing\b` and not `\bstatic\b`). Decision 4 replaces that mapping with abstain. The coverage check discards the candidate id.
+`coversAllIntents(normalized, candidateId)` is required before any catalog id is emitted. A single cosine win on the whole turn is not proof that one body covers every intent. Sending `atom.2step.max-loss.en` (`contentHash` `e0c9aa0935441852b6670411b8ae739ecc55ea8294802b0e6abd58c5cf229526`) for a 2-Step trailing ask is wrong even when that row is the matcher winner. That body states static max loss and does not state trailing. Decision 4 abstains on 2-Step trailing. It does not abstain on 1-Step trailing.
+
+The only sendable Atom body that states trailing is `atom.1step.max-loss.en`, contentHash `78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`. Its text says max loss on Atom 1-Step is trailing equity. `atom.2step.max-loss.en` does not contain that word. So:
+
+- A 2-Step trailing max-loss or drawdown ask is vetoed. No id is sent, including `atom.2step.max-loss.en` and `atom.1step.max-loss.en`.
+- A 1-Step trailing max-loss ask is covered by `atom.1step.max-loss.en` only.
+- A trailing max-loss ask that names no product is covered by `atom.1step.max-loss.en` only, because that is the only approved body that states trailing. The 2-Step static body does not cover it.
 
 Order:
 
 1. Vetoes, which ignore the score.
    - Atom clarification. The Atom module's `clarify` result (`atomAnswerSelect.js` line 168, `action: 'clarify'`) vetoes every candidate id. Reason `atom-clarification`.
-   - Atom 2-Step trailing. If the normalized text contains `\btrailing\b` and a max-loss or drawdown topic (`\b(?:max|maximum)\s+(?:loss|drawdown)\b` or `\bdrawdown\b`, the same topic test the selector uses at line 318), coverage is false for every id, including `atom.2step.max-loss.en` and `atom.1step.max-loss.en`. Reason `atom-2step-trailing`.
-   - `unresolvedPolicy(normalized)` returns one of the six registry names. Reason `unresolved-policy`.
+   - Atom 2-Step trailing only. The normalized text contains a 2-Step product (`2-step`, `2 step`, `two-step`, `two step`, or `atom 2-step`) and `\btrailing\b` and a max-loss or drawdown topic (`\b(?:max|maximum)\s+(?:loss|drawdown)\b` or `\bdrawdown\b`). Coverage is false for every id. Reason `atom-2step-trailing`. A 1-Step ask, and a trailing ask with no product, are not this veto.
+   - `unresolvedPolicy(normalized)` returns a canonical id from the registry in (h). Reason `unresolved-policy`.
 2. Clauses. `splitCandidateAsks` (`faqAssistance.js` lines 388–395) on the normalized text.
 3. A clause is substantive when it has at least two tokens and `isWelcomeOrBoilerplate` is false.
 4. Each substantive clause is scored on its own. Coverage is true only when every substantive clause's winner equals `candidateId` and no substantive clause abstains.
@@ -600,6 +621,12 @@ The product-entity check in the router is a separate, closed definition of two p
 ### Calibration
 
 1. Authors write a development set of synthetic turns, each labelled with one sendable id or `ABSTAIN`, before any sealed item exists. The file is committed and its sha256 is recorded in `matcher-params.json`. The blinded reviewer writes the sealed set after that hash exists. Dev-set wording is not a source for the sealed set: a sealed item that copies a dev item is contaminated and is not scored. This author does not read the sealed set.
+
+Gold labeling rule, which both dev sets must follow or they are not a calibration set for this matcher. The matcher abstains when two rows both score at least `T` (step 6). It does not break the tie by product match or by lowest specificity.
+
+- If one approved body covers every intent in the turn, the label is that id. Coverage is read from that body's text, not from which row is more specific.
+- Otherwise the label is `ABSTAIN`. A near-neighbour, two product rows, or a lowest-specificity pick is `ABSTAIN`.
+- A label change away from an older rule is justified by quoting the body fact that shows the old id does not cover an intent, or that the kept id does cover every intent. A question whose single approved body already covers it is not relabelled `ABSTAIN` to make the set easier.
 2. Sweep on the dev set only. `T` in `{0.15, 0.20, …, 0.60}`, `M` in `{0.02, 0.04, …, 0.20}`. Freeze a pair only if, on the dev set: no non-sendable id is returned, every registry item abstains, false refusals on items labelled with a sendable id are ≤ 5%, and correct decisions are ≥ 95%. If no pair qualifies, do not start the sealed run. Report `BLOCKED calibration`.
 3. Write `matcher-params.json` with `algorithm`, `T`, `M`, catalog file hashes, and `devSetSha256`. Hash that file. The sealed run loads it and refuses to score if the hash differs. Params do not move after the sealed set exists.
 
@@ -609,40 +636,52 @@ The product-entity check in the router is a separate, closed definition of two p
 
 Authors write their module sections against this contract. They do not add catalog rows, edit bodies, edit ids, or edit sendability.
 
+The router calls `claim`. It calls `decide` only after `claim` returns the one `exclusive` owner and the language is `en`. It does not call `decide` on `non-en`.
+
 ```
 claim({ text, normalized, prior }) ->
   { kind: 'exclusive'|'shared'|'none', entity: 'packs'|'atom'|null, evidenceSpans: [{start, end}] }
 
-select({ text, normalized, gate, claim }) ->
-  { abstain: boolean, answerId: string|null, contentHash: string|null,
-    reason: string, policy: string|null }
+decide({ text, normalized, prior, gate, claim }) ->
+  { action: 'SEND', partId: string, contentHash: string }
+  | { action: 'ABSTAIN', code: string, policy: string|null }
 
-unresolvedPolicy(normalized) ->
-  null | 'fee refunds' | '50% equality' | 'news minutes' | 'SKU' | 'translations' | 'coupon stacking'
+unresolvedPolicy(normalized) -> null | <canonical policy id from the registry>
 ```
+
+There is no `PERSONAL` action and no scope enum `atom|packs|other|none`. Personal and mixed Packs turns are `SEND` of the sendable refuse id in (j). Both product entities in one turn are not `exclusive` for either module; the router abstains (b).
 
 Rules:
 
-- `claim` follows (b). Vocabulary does not return `exclusive`.
-- `select` returns a sendable id from that module's catalog, or abstain. It never returns prose. It calls `matchApproved` for the score. It may abstain on top of a winning score.
-- If `unresolvedPolicy` returns a name, `select` abstains with `reason: 'unresolved-policy'` and that `policy`, even when the matcher returned an id.
-- Atom `select` returns abstain with `reason: 'atom-clarification'` on a clarification ask (decision 3) and `reason: 'atom-2step-trailing'` on a 2-Step trailing ask (decision 4). Those reasons are the vetoes in (g). A matcher win does not override them. `atom.2step.max-loss.en` on a trailing ask is a wrong answer.
-- Multi-intent inside the module abstains unless `coversAllIntents` is true for one sendable id (decision 5). The module does not treat its own winning id as coverage.
-- `contentHash` is the catalog hash of `answerId`. The transport recomputes it. A mismatch denies the write.
-- Flag off: the router never calls `select`.
+- `claim` follows (b). Vocabulary does not return `exclusive`. If the other module's entity is also present, this module returns `kind: 'none'`.
+- `decide` returns `SEND` of a sendable id, or `ABSTAIN`. It never returns prose. It calls `matchApproved` for the score. A matcher win does not override a veto.
+- If `unresolvedPolicy` returns a canonical id, `decide` returns `ABSTAIN` with `code: 'unresolved-policy'` and that `policy`, even when the matcher returned an id.
+- Atom `decide` returns `ABSTAIN` `atom-clarification` on a clarification ask (decision 3) and `ABSTAIN` `atom-2step-trailing` on a 2-Step trailing ask (decision 4). A 1-Step trailing ask and a trailing ask with no product are `SEND` of `atom.1step.max-loss.en` when that is the covering body. `atom.2step.max-loss.en` on a trailing ask is wrong.
+- Multi-intent inside the module is `ABSTAIN` `COVERAGE_DENIED` unless `coversAllIntents` is true for one sendable id (decision 5).
+- `contentHash` is the catalog hash of `partId`. The transport recomputes it. A mismatch denies the write.
+- Flag off: the router never calls `decide`.
+- `gate.lang === 'non-en'`: the router never calls `claim` or `decide`.
 
 ### Unresolved-policy registry
 
-Named only. No policy text.
+One registry. Names already in the owner decisions or already in a module section. No new policy text. `unresolvedPolicy` returns the stable id, not a module-local string.
 
-| name | answerId | do not treat these ids as the answer |
-| --- | --- | --- |
-| fee refunds | none | `packs.refunds-legal.en` and `packs.refunds-legal.{ur-latn,ur,hi,es,pt}` (translations are already non-sendable). The EN row stays sendable for its own catalog id. It is not a substitute when `unresolvedPolicy` returns this name. |
-| 50% equality | none | no id in any catalog. `atom.obsolete.leverage-150-default.en` contains `150` and is a different row. It must not be returned for this name. |
-| news minutes | none | `atom.news.minutes.unverified.*` are `pending` and non-sendable. `atom.2step.news.en` and `atom.1step.news.en` are different sendable rows and must not be returned for this name. |
-| SKU | none | no id in any catalog. |
-| translations | none | every non-English row stays non-sendable. Do not send the English row for a `non-en` turn. |
-| coupon stacking | none | `packs.discount-stacking.en` stays sendable for its own id. Translations `packs.discount-stacking.{ur-latn,ur,hi,es,pt}` are `provisional`. The EN row is not a substitute when `unresolvedPolicy` returns this name. |
+A row listed under "not a substitute" stays sendable for its own id. It is not the answer when `unresolvedPolicy` returns the policy id.
+
+| stable id | name | applies to | not a substitute |
+| --- | --- | --- | --- |
+| `policy.fee-refunds` | fee refunds | Packs, Atom | `packs.refunds-legal.en` (`e39b5fe616372c3c7eaaf2a36ca849d6491266f6981e1f260173d564b16ae00c`) and its non-sendable translations. Atom's local string `atom-fee-policy-owner-decision` maps here. |
+| `policy.equality-50` | 50% equality | Atom | no catalog id. `atom.obsolete.leverage-150-default.en` is a different row. Atom's `unresolved:consistency-equality` maps here. |
+| `policy.news-minutes` | news minutes | Atom | `atom.news.minutes.unverified.*` (non-sendable), `atom.2step.news.en`, `atom.1step.news.en`. Atom's `unresolved:news-minutes` maps here. |
+| `policy.sku` | SKU | Atom | no catalog id. Atom's `unresolved:checkout-sku-selection` maps here. |
+| `policy.translations` | translations | Packs, Atom | every non-English row. Do not send the English row for a `non-en` turn. Atom's `unresolved:translation` maps here. |
+| `policy.coupon-stacking` | coupon stacking | Packs, Atom | `packs.discount-stacking.en` (`e97f34e85a768bb6b3fcb1ac70f4329a4b4721614c00cc662ba7bfe39f34be3e`) and its non-sendable translations. Atom's `unresolved:coupon-stacking` maps here. |
+| `policy.free-pack-tier-conflict` | free-pack-tier-conflict | Packs | `packs.free-packs-general.en`. The conflict id is not a sendable row. |
+| `policy.the-million-every-rule-conflict` | the-million-every-rule-conflict | Packs | `packs.the-million.en`. `packs.the-million-every-rule-conflict.en` stays non-sendable. |
+| `policy.live-bundle-sizes` | live-bundle-sizes | Packs | none named. No sendable id is the answer. |
+| `policy.live-offer-freshness` | live-offer-freshness | Packs | none named. No sendable id is the answer. |
+| `policy.dashboard-only-meter-thresholds` | dashboard-only-meter-thresholds | Packs | `packs.dashboard-tabs.en`. |
+| `policy.opened-pack-statutory-right` | opened-pack-statutory-right | Packs | `packs.refunds-legal.en`. |
 
 ---
 
@@ -690,7 +729,11 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | `flags-off-nonclaim` | `shared` or `none`, flags off. Gold: the labelled V12 id or the spread template when that is the labelled send. A shared word must not silence the row | 0 silences of labelled sends, exact id on every labelled send |
 | `preserved-faq-exact` | the 22 `existing-unowned-faq-path` items. Gold: the labelled sendable id, exact hash. Abstain, a different id, or a "not isolated" label is a fail | 100% exact-id |
 | `atom-clarification` | Atom clarification ask. Gold: silence. Any catalog id is wrong | 100% abstain, 0 sends |
-| `atom-2step-trailing` | 2-Step trailing ask. Gold: silence. `atom.2step.max-loss.en` is wrong, including when it is the matcher winner. `atom.1step.max-loss.en` is also wrong | 100% abstain, 0 sends |
+| `atom-2step-trailing` | a 2-Step trailing max-loss or drawdown ask. Gold: silence. `atom.2step.max-loss.en` is wrong. `atom.1step.max-loss.en` is also wrong on a 2-Step ask | 100% abstain, 0 sends |
+| `atom-1step-trailing` | a 1-Step trailing max-loss ask, or a trailing max-loss ask that names no product. Gold: `atom.1step.max-loss.en`, hash `78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`. The body states trailing equity. That is the only sendable Atom body that does | 100% exact-id |
+| `packs-personal` | a Packs personal-account ask. Gold: `SEND` `packs.account-status.refuse.en`, hash `084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea`. The row is sendable. Abstain is a fail | 100% exact-id |
+| `packs-mixed` | a Packs turn that is both personal and a product question. Gold: `SEND` the same refuse id. No product body is added. One sendable body covers the account-status boundary | 100% exact-id, 0 product bodies |
+| `packs-near-neighbour` | two Packs product rows are close and neither body's text covers every intent. Gold: `ABSTAIN`. `packs.handoff.unverified.en` is not the filler. That id stays sendable for its own handoff role only | 100% abstain, 0 product sends, 0 handoff sends |
 | `multi-intent-uncovered` | `coversAllIntents` is false, including the 2 `no-isolatable-faq` items. Gold: no policy body. Spread template only when state is `offered` or this turn is the entry class | 0 policy-body sends, 100% of labelled cases omit the uncovered body |
 | `review-status-and-handoff` | the four candidates in (c). Gold: silence | 0 sends |
 | `language-non-en` | OWNER-PENDING provisional gold from (f): no English body, no model paragraph, not a module claim | 100% of the stratum match that gold. An owner reversal changes only this row |
@@ -698,7 +741,7 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | `mandatory-controls` | STOP, aiOff, Risk/Escalations, human ownership, duplicate prevention, locks, Fin-wait still suppress the automated public comment. The P1 note path still posts its internal note | 0 public-comment bypasses, 0 P1 notes dropped by the comment matcher |
 | `spread-entry` | `explain()` reason `spread-test-credential` sends the spread template | 100% of labelled entry cases |
 | `envelope` | admitted greeting plus one approved body, as `comp.envelope-plus-body` | 0 new regressions against the agreed baseline |
-| `unresolved-policy` | the six names abstain | 0 emissions |
+| `unresolved-policy` | every canonical id in the (h) registry abstains. A listed substitute id is a fail | 0 emissions |
 | Overall | labelled correct action across strata, with the per-stratum thresholds above still required | ≥ 95% correct, ≤ 5% false refusal |
 
 False refusal means the labelled correct action was an approved send and the run sent nothing or sent a different approved id. Silence on `flags-off-exclusive-silence`, `atom-clarification`, `atom-2step-trailing`, `multi-intent-uncovered`, `review-status-and-handoff`, and `spread-offered-personal-nospread` is the labelled correct action, not a false refusal. Non-isolation of a preserved FAQ is not a pass.
@@ -849,6 +892,40 @@ The earlier 15–20 engineer-day reassessment is not this window's plan.
 #### Stub only
 
 `staging-repair-t739/harness/stubs/` is the only copy of: `accountCheckRequest.js`, `atomicJsonFile.js`, `contextualFollowUp.js`, `continuousOwnership.js`, `escalateProblemPolish.js`, `faqDeliveryRecovery.js`, `handoffClaimGate.js`, `humanRequest.js`, `imageEvidence.js`, `internalNoteFormat.js`, `lunaEpisode.js`, `lunaResponsesTransport.js`, `modelConfig.js`, `modelTestGuard.js`, `partnershipIntent.js`, `policyFactGuard.js`, `prePurchaseGate.js`, `productComparison.js`, `publicResponseContract.js`, `publicRestatementGuard.js`, `replyDecision.js`, `reviewRequestFlow.js`, `riskNoteGate.js`, `teammateAdmins.js`, `teammateAudit.js`, `teammateTopicOwnership.js`, `tradingStagePolicy.js`, `variantComparisonCompleteness.js`, `webhookFastAck.js`, `writeOpStore.js`, `typoNormalizer.js` (required as `./statePresend/typoNormalizer`).
+
+---
+
+## MODULE ALIGNMENT CONTRACT
+
+This section is the list for the Packs author and the Atom author. The shared design in (b), (f), (g), (h), and (j) is the authority. Their sections and their dev-set labels change to match it. This author does not edit their branches. Bodies, ids, and sendability do not change.
+
+### Both modules
+
+1. Export `claim` and `decide` exactly as (h). Delete any other ownership return.
+2. `claim.kind` is only `exclusive`, `shared`, or `none`. If both the Packs entity and the Atom entity are in the normalized text, `kind` is `none`. The router then abstains. Neither module keeps the turn.
+3. `decide` returns `SEND(partId)` or `ABSTAIN(code)`. No prose. No third action.
+4. Language. Uncertain plus an exclusive module claim plus the flag off is fail-closed silence, and the router does that without a public body. Clearly non-English is not a module claim: do not fail closed, do not return a terminal abstain, and do not call the turn handled. The main route stays as (f), provisional gold OWNER-PENDING.
+5. `unresolvedPolicy` returns a stable id from the one registry in (h). Local strings are aliases only. They are not a second registry.
+6. Dev-set labels follow the gold labeling rule in (g). One approved body covers every intent, judged from that body's text: label that id. Otherwise label `ABSTAIN`. Two rows at or above `T` is `ABSTAIN`, not the more specific row. Do not relabel a question to `ABSTAIN` when its single approved body already covers it. Every changed label cites the body fact that justifies it.
+
+### Packs section and Packs dev set
+
+1. Add `claim`. Today the module exports no ownership signal (`selectPacksAnswer` in `packs/packsAnswerSelect.js` and `packs/INTERFACE_REQUEST.md`). `packsProductHint` does not set `exclusive`.
+2. Delete `PERSONAL` as an action. Personal is `SEND` `packs.account-status.refuse.en`. Mixed personal-plus-product is the same `SEND`, with no product part.
+3. Stop blocking `packs.account-status.refuse.en` and `packs.handoff.unverified.en` out of the index. Both are sendable (`084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea` and `711e367ff423b475860478dbd2e5b66d1b8c0b3372efd0298558876cc0f940f0`). Keep them out of the product overlap pool (`scopeAllows` product role already excludes those tags). `packs.handoff.unverified.en` is `SEND` only for its handoff role. It is not the near-neighbour answer.
+4. Near-neighbour, where neither product body covers the turn: `ABSTAIN`. Not the handoff id.
+5. Add vetoes the Packs section does not have today: `policy.fee-refunds` and `policy.coupon-stacking`. Do not `SEND` `packs.refunds-legal.en` for fee refunds. Do not `SEND` `packs.discount-stacking.en` for coupon stacking. Those rows stay sendable for their own ids.
+6. Map the six Packs-only names onto the canonical ids in (h): `policy.free-pack-tier-conflict`, `policy.the-million-every-rule-conflict`, `policy.live-bundle-sizes`, `policy.live-offer-freshness`, `policy.dashboard-only-meter-thresholds`, `policy.opened-pack-statutory-right`. Each is `ABSTAIN`. Do not substitute the sendable neighbour named in that table.
+7. Dev labels. Personal rows are the refuse id, not `ABSTAIN`. Mixed rows are the refuse id, not a product id and not both. Near-neighbour rows are `ABSTAIN`, not `packs.handoff.unverified.en`. Fee-refund and coupon-stacking rows are `ABSTAIN` with the canonical policy id, not `packs.refunds-legal.en` or `packs.discount-stacking.en`.
+
+### Atom section and Atom dev set
+
+1. Replace the scope return `atom|packs|other|none` with `claim`. Today a turn that also says elite packs stays on Atom. That becomes `kind: 'none'` when the Packs entity is present, and the router abstains.
+2. `decide` is `SEND` or `ABSTAIN`. Clarification is `ABSTAIN` `atom-clarification`, not a customer sentence. A handoff suggestion is not a `SEND` unless the registry names a sendable partId, which it does not.
+3. Map local unresolved strings onto the canonical ids: `atom-fee-policy-owner-decision` → `policy.fee-refunds`; `unresolved:consistency-equality` → `policy.equality-50`; `unresolved:news-minutes` → `policy.news-minutes`; `unresolved:checkout-sku-selection` → `policy.sku`; `unresolved:translation` → `policy.translations`; `unresolved:coupon-stacking` → `policy.coupon-stacking`.
+4. Trailing. Scope the veto to 2-Step asks. Dev labels: 2-Step trailing is `ABSTAIN` `atom-2step-trailing`, not `atom.2step.max-loss.en` and not `atom.1step.max-loss.en`. 1-Step trailing, and trailing with no product named, are `atom.1step.max-loss.en` (`78e0fafd4eac93690529409335f3cd8a0f72c645f7dadd2e4e97cd57f27055cc`), because that body states trailing equity and no other sendable Atom body does.
+5. Drop "product match, then lowest specificity, then abstain" as a labeling rule. Where that rule picked the more specific of two rows and neither body covers every intent, the label becomes `ABSTAIN`. Where one body's text covers the turn, the label stays that id. Do not move a supported single-body question to `ABSTAIN` to simplify the set. Each changed row cites the body fact.
+6. Do not treat a clearly non-English turn as a terminal Atom abstain. Leave it off the module claim.
 
 ---
 
