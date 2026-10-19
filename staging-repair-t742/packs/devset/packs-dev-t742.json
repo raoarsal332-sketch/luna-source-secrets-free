@@ -1,12 +1,12 @@
 {
   "setId": "packs-dev-t742",
-  "version": 2,
+  "version": 4,
   "scope": "matcher-calibration-development",
   "synthetic": true,
   "language": "en",
-  "authorityCommit": "31b07389e4fef10d433c306ed7de2850f254c468",
+  "authorityCommit": "bce740fb6955e9fc60b3a87809b94bfb67246d7f",
   "authorityFile": "staging-repair-t739/docs/T742_DESIGN_AND_ACCEPTANCE.md",
-  "authoritySha256": "0aeb4ea6e1bac8366a0b45b502c9d3eeab0d5be1b7b63209bbf7d9f08c5fc1b0",
+  "authoritySha256": "fedb3bc6a7b58172ad3af4cca6f47b2504361883ed901fa407662fa3e352783b",
   "catalogFile": "staging-repair-t739/packs/faq-approved-answers-packs-v1.json",
   "catalogSha256": "bed88e6ab45c74a378273f301a197ee56b8276c312bb4bca081c7c9efb6b2318",
   "disjointFrom": [
@@ -17,10 +17,11 @@
   "sealedSet": null,
   "requestedModel": null,
   "actualModel": "grok-4.7",
-  "labelRule": "One approved body covers every intent, judged from that body text: SEND that id and its contentHash. Otherwise ABSTAIN. Two rows at or above T: ABSTAIN code two-above-threshold, not the more specific row. A supported single-body question is not relabelled ABSTAIN. Personal and mixed Packs turns are SEND packs.account-status.refuse.en. Both product entities: claim.kind none. Clearly non-English is not a module claim and is not a terminal module abstain. unresolvedPolicy uses canonical policy.* ids.",
+  "labelRule": "One or more approved bodies that each state every asked fact and do not conflict: when claim.kind is exclusive or shared, the gold is that acceptable set. Any member is correct. decide returns the highest score, then the lexicographically smallest id. Abstain only when no body covers or the covering bodies conflict. Two rows at or above T is not an abstain. claim.kind none is not a module SEND. Both-entity rows are the router outcome claim none with publicResult router-abstain. Other kind-none rows are the router outcome claim none with publicResult not-a-claim: the covering set is recorded and is not emitted, and V12 and spread are not silenced. Personal and mixed turns are SEND packs.account-status.refuse.en only when claim.kind is exclusive or shared. Clearly non-English is not a module claim.",
   "outcomeEnum": [
     "SEND",
-    "ABSTAIN"
+    "ABSTAIN",
+    "ROUTER"
   ],
   "rows": [
     {
@@ -54,7 +55,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Product definition. Auto-apply body has no three-card or Pack Credits definition."
+      "note": "Product definition. Auto-apply body has no three-card or Pack Credits definition.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-002",
@@ -78,7 +83,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Overview effect list. Auto-apply does not catalogue effects."
+      "note": "Overview effect list. Auto-apply does not catalogue effects.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-003",
@@ -102,7 +111,11 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "Auto-apply is the yes/no. Overview lacks the pick-the-account clause."
+      "note": "Auto-apply is the yes/no. Overview lacks the pick-the-account clause.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-004",
@@ -126,7 +139,11 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "Discount-at-checkout sentence is only in the auto-apply body."
+      "note": "Discount-at-checkout sentence is only in the auto-apply body.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-005",
@@ -137,10 +154,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.overview.en",
+      "contentHash": "f5e1a59e8520aed277a0169cb5a2e53c7a69fb3be6c099b6fb1a4722adb4fcff",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.overview.en",
@@ -151,7 +168,22 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state that cards are not automatic and the trader applies them."
+      "note": "packs.overview.en says cards never change an account automatically and the trader applies a compatible card. packs.card-auto-apply.en says no, a card changes an account only when the trader applies it and picks the account. Both state the asked fact.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en",
+        "packs.overview.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.overview.en",
+          "score": 0.221583
+        },
+        {
+          "id": "packs.card-auto-apply.en",
+          "score": 0.170467
+        }
+      ]
     },
     {
       "id": "PD-006",
@@ -184,7 +216,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Pack Credits plus self-open. The three-card body has neither."
+      "note": "Pack Credits plus self-open. The three-card body has neither.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-007",
@@ -213,7 +249,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Overview product sentence without asking for the integer count."
+      "note": "Overview product sentence without asking for the integer count.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-008",
@@ -242,7 +282,11 @@
         "packs.cards-per-pack.en"
       ],
       "needsAll": null,
-      "note": "Only the three-card body has both the count and the independent draw."
+      "note": "Only the three-card body has both the count and the independent draw.",
+      "acceptableSet": [
+        "packs.cards-per-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-009",
@@ -271,7 +315,11 @@
         "packs.cards-per-pack.en"
       ],
       "needsAll": null,
-      "note": "Same unique conjunction, second wording."
+      "note": "Same unique conjunction, second wording.",
+      "acceptableSet": [
+        "packs.cards-per-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-010",
@@ -287,10 +335,10 @@
           }
         ]
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.cards-per-pack.en",
+      "contentHash": "b02f0c1ed306b325d2829c5e0ab7410f9738e98339a565b1c1d7069f29a305f3",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.overview.en",
@@ -301,7 +349,22 @@
         "packs.cards-per-pack.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state three cards. The independent-draw clause is not asked."
+      "note": "packs.overview.en says packs of three reward cards. packs.cards-per-pack.en says every Elite Pack holds exactly three cards. Both state three. The independent-draw clause is not asked.",
+      "acceptableSet": [
+        "packs.cards-per-pack.en",
+        "packs.overview.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.cards-per-pack.en",
+          "score": 0.065692
+        },
+        {
+          "id": "packs.overview.en",
+          "score": 0.034037
+        }
+      ]
     },
     {
       "id": "PD-011",
@@ -325,7 +388,11 @@
         "packs.simulated.en"
       ],
       "needsAll": null,
-      "note": "Only the simulated body names accounts a card applies to or opens."
+      "note": "Only the simulated body names accounts a card applies to or opens.",
+      "acceptableSet": [
+        "packs.simulated.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-012",
@@ -349,7 +416,11 @@
         "packs.simulated.en"
       ],
       "needsAll": null,
-      "note": "The phrase \"every account a card opens\" is only in the simulated body."
+      "note": "The phrase \"every account a card opens\" is only in the simulated body.",
+      "acceptableSet": [
+        "packs.simulated.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-013",
@@ -373,7 +444,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Overview definition. Simulated body does not define the product."
+      "note": "Overview definition. Simulated body does not define the product.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-014",
@@ -402,7 +477,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Overview hold-until-apply. Not in the simulated body."
+      "note": "Overview hold-until-apply. Not in the simulated body.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-015",
@@ -413,10 +492,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.simulated.en",
+      "contentHash": "a744add2f83e38d98fd870f5b07b616a7cd93df5d507077c26566d468b478bb7",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.overview.en",
@@ -427,7 +506,22 @@
         "packs.simulated.en"
       ],
       "needsAll": null,
-      "note": "Overview says all FundedElite accounts are simulated. The simulated body says all services relate to simulated accounts."
+      "note": "packs.overview.en says all FundedElite accounts are simulated trading accounts. packs.simulated.en says all services relate to simulated trading accounts. Both state that.",
+      "acceptableSet": [
+        "packs.overview.en",
+        "packs.simulated.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.simulated.en",
+          "score": 0.404748
+        },
+        {
+          "id": "packs.overview.en",
+          "score": 0.334903
+        }
+      ]
     },
     {
       "id": "PD-016",
@@ -451,7 +545,11 @@
         "packs.pack-costs-floors.en"
       ],
       "needsAll": null,
-      "note": "Only the cost table has all five prices."
+      "note": "Only the cost table has all five prices.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-017",
@@ -475,7 +573,11 @@
         "packs.pack-costs-floors.en"
       ],
       "needsAll": null,
-      "note": "Ignition, Breakout, and Market Maker prices are not in the Whale follow-up."
+      "note": "Ignition, Breakout, and Market Maker prices are not in the Whale follow-up.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-018",
@@ -504,7 +606,11 @@
         "packs.followup.whale-pack.en"
       ],
       "needsAll": null,
-      "note": "Only the Whale follow-up has price, floor, and the 0.050% Exotic rate together."
+      "note": "Only the Whale follow-up has price, floor, and the 0.050% Exotic rate together.",
+      "acceptableSet": [
+        "packs.followup.whale-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-019",
@@ -512,6 +618,37 @@
       "text": "Which tier number is Whale, and what Exotic rate does that follow-up print beside the price?",
       "claim": {
         "kind": "none",
+        "entity": null,
+        "evidenceSpans": []
+      },
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
+      "code": null,
+      "policy": null,
+      "neighbourPair": [
+        "packs.pack-costs-floors.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "coveredBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "needsAll": null,
+      "note": "Tier number plus Exotic rate is not in the all-tier price list. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.whale-pack.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
+    },
+    {
+      "id": "PD-020",
+      "slice": "near-neighbour",
+      "text": "What is the Whale credit price and what rarity floor does Whale have?",
+      "claim": {
+        "kind": "shared",
         "entity": null,
         "evidenceSpans": []
       },
@@ -525,35 +662,26 @@
         "packs.followup.whale-pack.en"
       ],
       "coveredBy": [
-        "packs.followup.whale-pack.en"
-      ],
-      "needsAll": null,
-      "note": "Tier number plus Exotic rate is not in the all-tier price list."
-    },
-    {
-      "id": "PD-020",
-      "slice": "near-neighbour",
-      "text": "What is the Whale credit price and what rarity floor does Whale have?",
-      "claim": {
-        "kind": "shared",
-        "entity": null,
-        "evidenceSpans": []
-      },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
-      "policy": null,
-      "neighbourPair": [
-        "packs.pack-costs-floors.en",
-        "packs.followup.whale-pack.en"
-      ],
-      "coveredBy": [
         "packs.pack-costs-floors.en",
         "packs.followup.whale-pack.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state 12,500 credits and an Uncommon-or-better floor."
+      "note": "packs.pack-costs-floors.en says Whale is 12,500 credits, Uncommon or better. packs.followup.whale-pack.en says 12,500 credits with an Uncommon-or-better floor. Both state the price and the floor.",
+      "acceptableSet": [
+        "packs.followup.whale-pack.en",
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.followup.whale-pack.en",
+          "score": 0.158793
+        },
+        {
+          "id": "packs.pack-costs-floors.en",
+          "score": 0.147761
+        }
+      ]
     },
     {
       "id": "PD-021",
@@ -577,7 +705,11 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "Only the Oracle follow-up contains all four facts."
+      "note": "Only the Oracle follow-up contains all four facts.",
+      "acceptableSet": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-022",
@@ -588,9 +720,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.oracle-pack.en",
-      "contentHash": "35923ac48f3d28dc8b085f37f416f8c9403d836da06a3bbe65e8da19e87b7f24",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -601,7 +733,14 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "The reason \"because it is the top tier\" is only in the Oracle follow-up."
+      "note": "The reason \"because it is the top tier\" is only in the Oracle follow-up. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-023",
@@ -625,7 +764,11 @@
         "packs.pack-costs-floors.en"
       ],
       "needsAll": null,
-      "note": "Those three prices exist only in the cost table."
+      "note": "Those three prices exist only in the cost table.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-024",
@@ -649,7 +792,11 @@
         "packs.pack-costs-floors.en"
       ],
       "needsAll": null,
-      "note": "The full price ladder is only the cost table."
+      "note": "The full price ladder is only the cost table.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-025",
@@ -660,10 +807,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "contentHash": "35923ac48f3d28dc8b085f37f416f8c9403d836da06a3bbe65e8da19e87b7f24",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.pack-costs-floors.en",
@@ -674,7 +821,22 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state 15,000 credits and a Rare-or-better floor."
+      "note": "packs.pack-costs-floors.en says Oracle is 15,000 credits, Rare or better. packs.followup.oracle-pack.en says 15,000 credits with a Rare-or-better floor. Both state the price and the floor.",
+      "acceptableSet": [
+        "packs.followup.oracle-pack.en",
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.followup.oracle-pack.en",
+          "score": 0.170742
+        },
+        {
+          "id": "packs.pack-costs-floors.en",
+          "score": 0.164296
+        }
+      ]
     },
     {
       "id": "PD-026",
@@ -703,7 +865,11 @@
         "packs.rarity-floor.en"
       ],
       "needsAll": null,
-      "note": "Only the floor body defines the word."
+      "note": "Only the floor body defines the word.",
+      "acceptableSet": [
+        "packs.rarity-floor.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-027",
@@ -727,7 +893,11 @@
         "packs.rarity-floor.en"
       ],
       "needsAll": null,
-      "note": "The wording \"never contains Common\" is the floor body, not the price table."
+      "note": "The wording \"never contains Common\" is the floor body, not the price table.",
+      "acceptableSet": [
+        "packs.rarity-floor.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-028",
@@ -751,7 +921,11 @@
         "packs.pack-costs-floors.en"
       ],
       "needsAll": null,
-      "note": "Prices plus floors for every tier are the cost table."
+      "note": "Prices plus floors for every tier are the cost table.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-029",
@@ -775,7 +949,11 @@
         "packs.pack-costs-floors.en"
       ],
       "needsAll": null,
-      "note": "Those prices are absent from the floor definition."
+      "note": "Those prices are absent from the floor definition.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-030",
@@ -786,10 +964,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "two-above-threshold",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.pack-costs-floors.en",
@@ -801,7 +979,30 @@
         "packs.which-pack-best.en"
       ],
       "needsAll": null,
-      "note": "Cost table, floor body, and which-pack body all state the Whale and Oracle floors."
+      "note": "packs.pack-costs-floors.en, packs.rarity-floor.en (\"Whale never contains Common; every Oracle card is Rare or better\"), and packs.which-pack-best.en (\"Uncommon+ floor\" and \"Rare+ floor\") each state the Whale and Oracle floors. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.pack-costs-floors.en",
+        "packs.rarity-floor.en",
+        "packs.which-pack-best.en"
+      ],
+      "pickRule": null,
+      "scores": [
+        {
+          "id": "packs.rarity-floor.en",
+          "score": 0.295699
+        },
+        {
+          "id": "packs.pack-costs-floors.en",
+          "score": 0.24507
+        },
+        {
+          "id": "packs.which-pack-best.en",
+          "score": 0.202024
+        }
+      ],
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-031",
@@ -812,9 +1013,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.drop-rates.en",
-      "contentHash": "9b1b8f36f6ad2a0642e9c476a419eb111c5e98500f5c844721664e9764787b19",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -825,7 +1026,14 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "The 67.3% Ignition Common cell exists only in the drop-rate table."
+      "note": "The 67.3% Ignition Common cell exists only in the drop-rate table. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-032",
@@ -849,7 +1057,11 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "Only the drop-rate body says the figures may be rounded."
+      "note": "Only the drop-rate body says the figures may be rounded.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-033",
@@ -873,7 +1085,11 @@
         "packs.followup.whale-pack.en"
       ],
       "needsAll": null,
-      "note": "Tier number is not in the drop-rate table. The percent alone would be shared."
+      "note": "Tier number is not in the drop-rate table. The percent alone would be shared.",
+      "acceptableSet": [
+        "packs.followup.whale-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-034",
@@ -897,7 +1113,11 @@
         "packs.followup.whale-pack.en"
       ],
       "needsAll": null,
-      "note": "The price is not in the drop-rate body."
+      "note": "The price is not in the drop-rate body.",
+      "acceptableSet": [
+        "packs.followup.whale-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-035",
@@ -908,10 +1128,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.followup.whale-pack.en",
+      "contentHash": "7f002f91aa0c552461745ac0ccc27cdcbc6efb9a31c88033cb98fd5d3387ad3c",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.drop-rates.en",
@@ -922,7 +1142,22 @@
         "packs.followup.whale-pack.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state 0.050% per card for Whale."
+      "note": "packs.drop-rates.en and packs.followup.whale-pack.en each state Whale Exotic odds of 0.050% per card.",
+      "acceptableSet": [
+        "packs.drop-rates.en",
+        "packs.followup.whale-pack.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.followup.whale-pack.en",
+          "score": 0.13152
+        },
+        {
+          "id": "packs.drop-rates.en",
+          "score": 0.069589
+        }
+      ]
     },
     {
       "id": "PD-036",
@@ -933,9 +1168,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.drop-rates.en",
-      "contentHash": "9b1b8f36f6ad2a0642e9c476a419eb111c5e98500f5c844721664e9764787b19",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -946,7 +1181,14 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "0.45% Breakout Legendary is only in the drop-rate table."
+      "note": "0.45% Breakout Legendary is only in the drop-rate table. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-037",
@@ -957,9 +1199,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.drop-rates.en",
-      "contentHash": "9b1b8f36f6ad2a0642e9c476a419eb111c5e98500f5c844721664e9764787b19",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -970,7 +1212,14 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "0.055% Market Maker Mythic is only in the drop-rate table."
+      "note": "0.055% Market Maker Mythic is only in the drop-rate table. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-038",
@@ -981,9 +1230,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.oracle-pack.en",
-      "contentHash": "35923ac48f3d28dc8b085f37f416f8c9403d836da06a3bbe65e8da19e87b7f24",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -994,7 +1243,14 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "The top-tier reason is not in the drop-rate table."
+      "note": "The top-tier reason is not in the drop-rate table. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-039",
@@ -1005,9 +1261,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.oracle-pack.en",
-      "contentHash": "35923ac48f3d28dc8b085f37f416f8c9403d836da06a3bbe65e8da19e87b7f24",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1018,7 +1274,14 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "Tier number plus percent is not a drop-rate-table sentence."
+      "note": "Tier number plus percent is not a drop-rate-table sentence. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-040",
@@ -1029,10 +1292,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.followup.oracle-pack.en",
+      "contentHash": "35923ac48f3d28dc8b085f37f416f8c9403d836da06a3bbe65e8da19e87b7f24",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.drop-rates.en",
@@ -1043,7 +1306,22 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state 0.080% per card for Oracle."
+      "note": "packs.drop-rates.en and packs.followup.oracle-pack.en each state Oracle Exotic odds of 0.080% per card.",
+      "acceptableSet": [
+        "packs.drop-rates.en",
+        "packs.followup.oracle-pack.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.followup.oracle-pack.en",
+          "score": 0.364737
+        },
+        {
+          "id": "packs.drop-rates.en",
+          "score": 0.082499
+        }
+      ]
     },
     {
       "id": "PD-041",
@@ -1072,7 +1350,11 @@
         "packs.rarity-floor.en"
       ],
       "needsAll": null,
-      "note": "Definition is only in the floor body."
+      "note": "Definition is only in the floor body.",
+      "acceptableSet": [
+        "packs.rarity-floor.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-042",
@@ -1096,7 +1378,11 @@
         "packs.rarity-floor.en"
       ],
       "needsAll": null,
-      "note": "Floor body states the Oracle rule without a percent table."
+      "note": "Floor body states the Oracle rule without a percent table.",
+      "acceptableSet": [
+        "packs.rarity-floor.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-043",
@@ -1120,7 +1406,11 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "10.2% Whale Epic is only in the drop-rate table."
+      "note": "10.2% Whale Epic is only in the drop-rate table.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-044",
@@ -1144,7 +1434,11 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "Drop-rate body says Primordial is not normally in ordinary odds. The floor body does not discuss Primordial."
+      "note": "Drop-rate body says Primordial is not normally in ordinary odds. The floor body does not discuss Primordial.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-045",
@@ -1155,10 +1449,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.rarity-floor.en",
+      "contentHash": "dfb98799ebbdae425cd4734803df4eac7e9883effcedf5b31a8253a4f1334e87",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.drop-rates.en",
@@ -1169,7 +1463,22 @@
         "packs.rarity-floor.en"
       ],
       "needsAll": null,
-      "note": "Drop rates say Common is not in Whale. The floor body says Whale never contains Common."
+      "note": "packs.drop-rates.en says Common is not in Whale. packs.rarity-floor.en says Whale never contains Common. Both answer no.",
+      "acceptableSet": [
+        "packs.drop-rates.en",
+        "packs.rarity-floor.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.rarity-floor.en",
+          "score": 0.209146
+        },
+        {
+          "id": "packs.drop-rates.en",
+          "score": 0.09522
+        }
+      ]
     },
     {
       "id": "PD-046",
@@ -1198,7 +1507,11 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Cannot-buy-challenges, resellable, and no monetary value are the two-balance body."
+      "note": "Cannot-buy-challenges, resellable, and no monetary value are the two-balance body.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-047",
@@ -1227,7 +1540,11 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Expiry and \"only the converted part\" are the two-balance body."
+      "note": "Expiry and \"only the converted part\" are the two-balance body.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-048",
@@ -1251,7 +1568,11 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "That pair of issues is named only in the withdraw body."
+      "note": "That pair of issues is named only in the withdraw body.",
+      "acceptableSet": [
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-049",
@@ -1275,7 +1596,11 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "The withdraw body lists refund disputes and unexpected charges for the human team. The legal body does not mention unexpected charges."
+      "note": "The withdraw body lists refund disputes and unexpected charges for the human team. The legal body does not mention unexpected charges.",
+      "acceptableSet": [
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-050",
@@ -1291,10 +1616,10 @@
           }
         ]
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.withdraw-credits.en",
+      "contentHash": "14689cf865e7a41cb69bd51cc00d015682fb80a11489e3552329620a431210e4",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.credits-vs-payout-credits.en",
@@ -1305,7 +1630,22 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "Both bodies say Pack Credits cannot be cashed out or transferred."
+      "note": "packs.credits-vs-payout-credits.en says Pack Credits are not withdrawable or transferable. packs.withdraw-credits.en says they cannot be cashed out or transferred. Both state that.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.withdraw-credits.en",
+          "score": 0.381151
+        },
+        {
+          "id": "packs.credits-vs-payout-credits.en",
+          "score": 0.118171
+        }
+      ]
     },
     {
       "id": "PD-051",
@@ -1329,7 +1669,11 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "One payout credit per one dollar, and Convert and buy, are only in the convert body."
+      "note": "One payout credit per one dollar, and Convert and buy, are only in the convert body.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-052",
@@ -1340,9 +1684,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.convert-payout-credits.en",
-      "contentHash": "830240469dc826a88c116962ba4ae7b753f7fe09d44fde911e6976157660d4da",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1353,7 +1697,14 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Those words are only in the convert body."
+      "note": "Those words are only in the convert body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-053",
@@ -1382,7 +1733,11 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "The convert body does not state those prohibitions."
+      "note": "The convert body does not state those prohibitions.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-054",
@@ -1393,9 +1748,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.credits-vs-payout-credits.en",
-      "contentHash": "86d225907fa74daf84334299f1e529347057f8244b64e72844e38e6765aca236",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1406,7 +1761,14 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Expiry with the account is the two-balance body, not the convert steps."
+      "note": "Expiry with the account is the two-balance body, not the convert steps. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-055",
@@ -1417,10 +1779,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "two-above-threshold",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.credits-vs-payout-credits.en",
@@ -1431,7 +1793,25 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Both bodies say conversion is an explicit customer choice."
+      "note": "packs.credits-vs-payout-credits.en says conversion is always an explicit customer choice. packs.convert-payout-credits.en says nothing converts unless the customer chooses it. Both state that. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en",
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": null,
+      "scores": [
+        {
+          "id": "packs.credits-vs-payout-credits.en",
+          "score": 0.268992
+        },
+        {
+          "id": "packs.convert-payout-credits.en",
+          "score": 0.131476
+        }
+      ],
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-056",
@@ -1455,7 +1835,11 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "The withdraw list is not the convert procedure."
+      "note": "The withdraw list is not the convert procedure.",
+      "acceptableSet": [
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-057",
@@ -1479,7 +1863,11 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "Cash-out-until-convert plus unexpected charges. Convert has neither charge path."
+      "note": "Cash-out-until-convert plus unexpected charges. Convert has neither charge path.",
+      "acceptableSet": [
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-058",
@@ -1503,7 +1891,11 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Procedure and rate are only the convert body."
+      "note": "Procedure and rate are only the convert body.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-059",
@@ -1527,7 +1919,11 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Convert and buy is only the convert body."
+      "note": "Convert and buy is only the convert body.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-060",
@@ -1543,10 +1939,10 @@
           }
         ]
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "contentHash": "86d225907fa74daf84334299f1e529347057f8244b64e72844e38e6765aca236",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.withdraw-credits.en",
@@ -1558,7 +1954,27 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Withdraw says until you voluntarily convert. Convert says nothing converts unless chosen. The two-balance body says the same."
+      "note": "packs.withdraw-credits.en says Payout Credits stay withdrawable until a voluntary conversion. packs.convert-payout-credits.en says nothing converts unless chosen. packs.credits-vs-payout-credits.en says conversion is an explicit customer choice. All three state that the move is voluntary.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en",
+        "packs.credits-vs-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.credits-vs-payout-credits.en",
+          "score": 0.16863
+        },
+        {
+          "id": "packs.convert-payout-credits.en",
+          "score": 0.102074
+        },
+        {
+          "id": "packs.withdraw-credits.en",
+          "score": 0.093805
+        }
+      ]
     },
     {
       "id": "PD-061",
@@ -1582,7 +1998,11 @@
         "packs.buy-credits.en"
       ],
       "needsAll": null,
-      "note": "The method list is only in the buy body."
+      "note": "The method list is only in the buy body.",
+      "acceptableSet": [
+        "packs.buy-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-062",
@@ -1606,7 +2026,11 @@
         "packs.buy-credits.en"
       ],
       "needsAll": null,
-      "note": "Never purchases or tops up is the buy body. Monthly says never subscribes or cancels, which is a different refusal."
+      "note": "Never purchases or tops up is the buy body. Monthly says never subscribes or cancels, which is a different refusal.",
+      "acceptableSet": [
+        "packs.buy-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-063",
@@ -1617,9 +2041,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.monthly-subscription.en",
-      "contentHash": "3e68be02120f6005e94f31be43bc7ec112e28c104a8adabf8ae77d394a85f0ac",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1630,7 +2054,14 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "Only the monthly body compares quantities."
+      "note": "Only the monthly body compares quantities. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-064",
@@ -1654,7 +2085,11 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "Billing-date arrival is only the monthly body."
+      "note": "Billing-date arrival is only the monthly body.",
+      "acceptableSet": [
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-065",
@@ -1670,10 +2105,10 @@
           }
         ]
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.buy-credits.en",
+      "contentHash": "524e93570855a4325a7afe3406a7c154a919a87ce0c2afb164fc40cda6d8c8ef",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.buy-credits.en",
@@ -1684,7 +2119,22 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "Buy says the picker offers Monthly. The monthly body describes Monthly plans. Both answer yes."
+      "note": "packs.buy-credits.en says the bundle picker offers Monthly. packs.monthly-subscription.en describes Monthly credit plans. Both answer yes.",
+      "acceptableSet": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.buy-credits.en",
+          "score": 0.122053
+        },
+        {
+          "id": "packs.monthly-subscription.en",
+          "score": 0.102828
+        }
+      ]
     },
     {
       "id": "PD-066",
@@ -1708,7 +2158,11 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "Schedule is the monthly body. The cancel body does not state it."
+      "note": "Schedule is the monthly body. The cancel body does not state it.",
+      "acceptableSet": [
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-067",
@@ -1719,9 +2173,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.monthly-subscription.en",
-      "contentHash": "3e68be02120f6005e94f31be43bc7ec112e28c104a8adabf8ae77d394a85f0ac",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1732,7 +2186,14 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "Larger quantities plus never-subscribes is the monthly body. Cancel says Luna does not cancel, but not the quantity comparison."
+      "note": "Larger quantities plus never-subscribes is the monthly body. Cancel says Luna does not cancel, but not the quantity comparison. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-068",
@@ -1756,7 +2217,11 @@
         "packs.cancel-subscription.en"
       ],
       "needsAll": null,
-      "note": "Two clicks is only the cancel body."
+      "note": "Two clicks is only the cancel body.",
+      "acceptableSet": [
+        "packs.cancel-subscription.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-069",
@@ -1767,9 +2232,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.cancel-subscription.en",
-      "contentHash": "52fbe8903b0c503832e33b1c0a11122b9914f6605bca45f622725d5d9c3241b8",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1780,7 +2245,14 @@
         "packs.cancel-subscription.en"
       ],
       "needsAll": null,
-      "note": "End of the paid month is the cancel wording. Monthly says the paid period stays until it ends, without that month-end sentence."
+      "note": "End of the paid month is the cancel wording. Monthly says the paid period stays until it ends, without that month-end sentence. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.cancel-subscription.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-070",
@@ -1791,10 +2263,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.monthly-subscription.en",
+      "contentHash": "3e68be02120f6005e94f31be43bc7ec112e28c104a8adabf8ae77d394a85f0ac",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.monthly-subscription.en",
@@ -1805,7 +2277,22 @@
         "packs.cancel-subscription.en"
       ],
       "needsAll": null,
-      "note": "Both bodies say cancel leaves the paid period active until it ends."
+      "note": "packs.monthly-subscription.en says cancel leaves the paid period active until it ends. packs.cancel-subscription.en says the plan stays active until the end of the month already paid. Both state that the paid period continues.",
+      "acceptableSet": [
+        "packs.cancel-subscription.en",
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.monthly-subscription.en",
+          "score": 0.406683
+        },
+        {
+          "id": "packs.cancel-subscription.en",
+          "score": 0.390849
+        }
+      ]
     },
     {
       "id": "PD-071",
@@ -1816,9 +2303,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.my-packs-keys.en",
-      "contentHash": "f5597b7c62ab30a103c03ec2dd5099c26a80298da6620b4b68f450360427efd0",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -1829,7 +2316,14 @@
         "packs.my-packs-keys.en"
       ],
       "needsAll": null,
-      "note": "Key handling refusals are only the My Packs body."
+      "note": "Key handling refusals are only the My Packs body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.my-packs-keys.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-072",
@@ -1862,7 +2356,11 @@
         "packs.my-packs-keys.en"
       ],
       "needsAll": null,
-      "note": "Tab contents are the My Packs body. Pack Pass does not define the tab."
+      "note": "Tab contents are the My Packs body. Pack Pass does not define the tab.",
+      "acceptableSet": [
+        "packs.my-packs-keys.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-073",
@@ -1899,7 +2397,11 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "Free packs do not count, and the award is a free Ignition. My Packs does not state the meter rule."
+      "note": "Free packs do not count, and the award is a free Ignition. My Packs does not state the meter rule.",
+      "acceptableSet": [
+        "packs.pack-pass.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-074",
@@ -1932,7 +2434,11 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "Meter inputs and dashboard-only threshold are the Pack Pass body."
+      "note": "Meter inputs and dashboard-only threshold are the Pack Pass body.",
+      "acceptableSet": [
+        "packs.pack-pass.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-075",
@@ -1955,7 +2461,7 @@
       "outcome": "ABSTAIN",
       "answerId": null,
       "contentHash": null,
-      "code": "two-above-threshold",
+      "code": "COVERAGE_DENIED",
       "policy": null,
       "neighbourPair": [
         "packs.my-packs-keys.en",
@@ -1966,7 +2472,8 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "My Packs says it holds Pack Pass free packs. Pack Pass says the full meter grants a free pack. The Ignition name is not required here."
+      "note": "packs.pack-pass.en says a full meter grants a free Ignition Pack and does not say that pack waits unopened. packs.my-packs-keys.en says My Packs holds unopened Pack Pass packs and does not say the meter produces them. Neither body states both asked facts.",
+      "acceptableSet": null
     },
     {
       "id": "PD-076",
@@ -1990,7 +2497,11 @@
         "packs.inventory-use-card.en"
       ],
       "needsAll": null,
-      "note": "Headings and click order are only the inventory body."
+      "note": "Headings and click order are only the inventory body.",
+      "acceptableSet": [
+        "packs.inventory-use-card.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-077",
@@ -2014,7 +2525,11 @@
         "packs.inventory-use-card.en"
       ],
       "needsAll": null,
-      "note": "Save for checkout as a step is the inventory procedure."
+      "note": "Save for checkout as a step is the inventory procedure.",
+      "acceptableSet": [
+        "packs.inventory-use-card.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-078",
@@ -2038,7 +2553,11 @@
         "packs.eligibility-labels.en"
       ],
       "needsAll": null,
-      "note": "The label vocabulary is only the eligibility body."
+      "note": "The label vocabulary is only the eligibility body.",
+      "acceptableSet": [
+        "packs.eligibility-labels.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-079",
@@ -2049,9 +2568,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.eligibility-labels.en",
-      "contentHash": "3129c3b642183bd85e484900bb62609bc7a3f8dff8def8b572cb41403dba3f99",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2062,7 +2581,14 @@
         "packs.eligibility-labels.en"
       ],
       "needsAll": null,
-      "note": "Those family names are only in the eligibility body."
+      "note": "Those family names are only in the eligibility body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.eligibility-labels.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-080",
@@ -2076,7 +2602,7 @@
       "outcome": "ABSTAIN",
       "answerId": null,
       "contentHash": null,
-      "code": "two-above-threshold",
+      "code": "COVERAGE_DENIED",
       "policy": null,
       "neighbourPair": [
         "packs.inventory-use-card.en",
@@ -2087,7 +2613,8 @@
         "packs.eligibility-labels.en"
       ],
       "needsAll": null,
-      "note": "Inventory says Save for checkout. Eligibility includes Checkout as a label and names checkout discount cards. Neither extra fact is asked."
+      "note": "packs.inventory-use-card.en says a discount card is saved with Use card then Save for checkout. packs.eligibility-labels.en says labels include Checkout and names checkout discount cards. Those are different facts, so neither body states the whole open question.",
+      "acceptableSet": null
     },
     {
       "id": "PD-081",
@@ -2111,7 +2638,11 @@
         "packs.inventory-use-card.en"
       ],
       "needsAll": null,
-      "note": "The four headings are only the inventory body."
+      "note": "The four headings are only the inventory body.",
+      "acceptableSet": [
+        "packs.inventory-use-card.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-082",
@@ -2135,7 +2666,11 @@
         "packs.inventory-use-card.en"
       ],
       "needsAll": null,
-      "note": "The click sequence is only the inventory body."
+      "note": "The click sequence is only the inventory body.",
+      "acceptableSet": [
+        "packs.inventory-use-card.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-083",
@@ -2159,7 +2694,11 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "The flat no plus pick-the-account is the auto-apply body."
+      "note": "The flat no plus pick-the-account is the auto-apply body.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-084",
@@ -2183,7 +2722,11 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "Automatic negation plus discount checkout is the auto-apply body. Inventory lacks the automatic negation."
+      "note": "Automatic negation plus discount checkout is the auto-apply body. Inventory lacks the automatic negation.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-085",
@@ -2194,10 +2737,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.card-auto-apply.en",
+      "contentHash": "25d3104f839fd2e7973deceb4a8cbfe8942326cc671dcee872bb7ec1a60362f9",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.inventory-use-card.en",
@@ -2208,7 +2751,22 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state Save for checkout."
+      "note": "packs.inventory-use-card.en and packs.card-auto-apply.en each say a discount card is saved with Save for checkout.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en",
+        "packs.inventory-use-card.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.card-auto-apply.en",
+          "score": 0.343579
+        },
+        {
+          "id": "packs.inventory-use-card.en",
+          "score": 0.177711
+        }
+      ]
     },
     {
       "id": "PD-086",
@@ -2232,7 +2790,11 @@
         "packs.discount-stacking.en"
       ],
       "needsAll": null,
-      "note": "Ordinary-card stacking is only the stacking body."
+      "note": "Ordinary-card stacking is only the stacking body.",
+      "acceptableSet": [
+        "packs.discount-stacking.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-087",
@@ -2256,7 +2818,11 @@
         "packs.discount-stacking.en"
       ],
       "needsAll": null,
-      "note": "The exception-versus-ordinary contrast is only the stacking body."
+      "note": "The exception-versus-ordinary contrast is only the stacking body.",
+      "acceptableSet": [
+        "packs.discount-stacking.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-088",
@@ -2280,7 +2846,11 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "The four-name list is only the Exotic body."
+      "note": "The four-name list is only the Exotic body.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-089",
@@ -2291,9 +2861,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.exotic-cards.en",
-      "contentHash": "258eee1da6ccc61dff2f574d519952600b9c63840adb067ec50e658d3e177df8",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2304,7 +2874,14 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "Three 400K Instant Elite accounts, one per use, credentials within 24h. Not in the stacking body."
+      "note": "Three 400K Instant Elite accounts, one per use, credentials within 24h. Not in the stacking body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-090",
@@ -2315,10 +2892,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.discount-stacking.en",
+      "contentHash": "e97f34e85a768bb6b3fcb1ac70f4329a4b4721614c00cc662ba7bfe39f34be3e",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.discount-stacking.en",
@@ -2329,7 +2906,22 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state the Founder's Key percent, duration, and non-combination rule."
+      "note": "packs.discount-stacking.en and packs.exotic-cards.en each say Founder's Key is 60% off eligible platform purchases for one year and does not combine with other website discounts.",
+      "acceptableSet": [
+        "packs.discount-stacking.en",
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.discount-stacking.en",
+          "score": 0.658941
+        },
+        {
+          "id": "packs.exotic-cards.en",
+          "score": 0.418174
+        }
+      ]
     },
     {
       "id": "PD-091",
@@ -2353,7 +2945,11 @@
         "packs.discount-stacking.en"
       ],
       "needsAll": null,
-      "note": "Ordinary-versus-key rule is not the timed chain schedule."
+      "note": "Ordinary-versus-key rule is not the timed chain schedule.",
+      "acceptableSet": [
+        "packs.discount-stacking.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-092",
@@ -2377,7 +2973,11 @@
         "packs.discount-stacking.en"
       ],
       "needsAll": null,
-      "note": "The ordinary-card permission is only the stacking body."
+      "note": "The ordinary-card permission is only the stacking body.",
+      "acceptableSet": [
+        "packs.discount-stacking.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-093",
@@ -2406,7 +3006,11 @@
         "packs.chain-upgrade-discounts.en"
       ],
       "needsAll": null,
-      "note": "15%, 20%, and 10% are only the chain body."
+      "note": "15%, 20%, and 10% are only the chain body.",
+      "acceptableSet": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-094",
@@ -2439,7 +3043,11 @@
         "packs.chain-upgrade-discounts.en"
       ],
       "needsAll": null,
-      "note": "5% and 10% for 90 seconds are only the chain body."
+      "note": "5% and 10% for 90 seconds are only the chain body.",
+      "acceptableSet": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-095",
@@ -2477,9 +3085,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.chain-upgrade-discounts.en",
-      "contentHash": "f10d36387e35b0a5c8d39d87fa79a74894d592a318a747088b12186a0e350005",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2490,7 +3098,14 @@
         "packs.chain-upgrade-discounts.en"
       ],
       "needsAll": null,
-      "note": "The schedule is only the chain body."
+      "note": "The schedule is only the chain body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-097",
@@ -2523,7 +3138,11 @@
         "packs.chain-upgrade-discounts.en"
       ],
       "needsAll": null,
-      "note": "Free-pack 5% and 10% for 90 seconds, plus Oracle having no upgrade, are the chain body. The Oracle follow-up lacks the percents."
+      "note": "Free-pack 5% and 10% for 90 seconds, plus Oracle having no upgrade, are the chain body. The Oracle follow-up lacks the percents.",
+      "acceptableSet": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-098",
@@ -2552,7 +3171,11 @@
         "packs.special-packs.en"
       ],
       "needsAll": null,
-      "note": "Time-limited deal that expires when the timer ends is only the Special Pack body."
+      "note": "Time-limited deal that expires when the timer ends is only the Special Pack body.",
+      "acceptableSet": [
+        "packs.special-packs.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-099",
@@ -2581,7 +3204,11 @@
         "packs.special-packs.en"
       ],
       "needsAll": null,
-      "note": "Countdown on the Packs tab is the Special Pack body."
+      "note": "Countdown on the Packs tab is the Special Pack body.",
+      "acceptableSet": [
+        "packs.special-packs.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-100",
@@ -2597,10 +3224,10 @@
           }
         ]
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.special-packs.en",
+      "contentHash": "93bbfadb0a75d5e6d5f0bbc7435c19018159ae4dea37c70e4e5a60007af9c35b",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.chain-upgrade-discounts.en",
@@ -2611,7 +3238,22 @@
         "packs.special-packs.en"
       ],
       "needsAll": null,
-      "note": "Both bodies say the better offer wins and that an offer must not be promised still active."
+      "note": "packs.chain-upgrade-discounts.en and packs.special-packs.en each say the better offer wins and that an offer must not be promised still active.",
+      "acceptableSet": [
+        "packs.chain-upgrade-discounts.en",
+        "packs.special-packs.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.special-packs.en",
+          "score": 0.497511
+        },
+        {
+          "id": "packs.chain-upgrade-discounts.en",
+          "score": 0.279317
+        }
+      ]
     },
     {
       "id": "PD-101",
@@ -2622,9 +3264,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.exotic-cards.en",
-      "contentHash": "258eee1da6ccc61dff2f574d519952600b9c63840adb067ec50e658d3e177df8",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2635,7 +3277,14 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "The four Exotic names are not in the payout-boost body."
+      "note": "The four Exotic names are not in the payout-boost body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-102",
@@ -2646,9 +3295,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.exotic-cards.en",
-      "contentHash": "258eee1da6ccc61dff2f574d519952600b9c63840adb067ec50e658d3e177df8",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2659,7 +3308,14 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "Twelve months on qualifying Challenge, Instant, and funded accounts is only the Exotic body."
+      "note": "Twelve months on qualifying Challenge, Instant, and funded accounts is only the Exotic body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-103",
@@ -2670,9 +3326,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.payout-boost-100.en",
-      "contentHash": "7d38976df023cde290afbf3879065d2e1f58d1ea64d9d1d8f761c83d4593c443",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2683,7 +3339,14 @@
         "packs.followup.payout-boost-100.en"
       ],
       "needsAll": null,
-      "note": "Legendary, funded accounts, once per payout cycle. Not in the Exotic body."
+      "note": "Legendary, funded accounts, once per payout cycle. Not in the Exotic body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-104",
@@ -2707,7 +3370,11 @@
         "packs.followup.payout-boost-100.en"
       ],
       "needsAll": null,
-      "note": "That distinction is only the payout-boost body."
+      "note": "That distinction is only the payout-boost body.",
+      "acceptableSet": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-105",
@@ -2740,9 +3407,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.the-million.en",
-      "contentHash": "a15d10b4df9e89b4e239f21805767f8cdb0266055e2ff61570b854402a7014d3",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2753,7 +3420,14 @@
         "packs.the-million.en"
       ],
       "needsAll": null,
-      "note": "Those parameters are only the Primordial body."
+      "note": "Those parameters are only the Primordial body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.the-million.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-107",
@@ -2764,9 +3438,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.the-million.en",
-      "contentHash": "a15d10b4df9e89b4e239f21805767f8cdb0266055e2ff61570b854402a7014d3",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2777,7 +3451,14 @@
         "packs.the-million.en"
       ],
       "needsAll": null,
-      "note": "Non-transferable plus remaining drawdown and minimum-day rules are the Primordial body."
+      "note": "Non-transferable plus remaining drawdown and minimum-day rules are the Primordial body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.the-million.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-108",
@@ -2801,7 +3482,11 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "Four Exotics, once per trader. The Primordial body is a different card."
+      "note": "Four Exotics, once per trader. The Primordial body is a different card.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-109",
@@ -2812,9 +3497,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.exotic-cards.en",
-      "contentHash": "258eee1da6ccc61dff2f574d519952600b9c63840adb067ec50e658d3e177df8",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": [
@@ -2825,7 +3510,14 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "Both effects are in the Exotic body and not in The Million parameters."
+      "note": "Both effects are in the Exotic body and not in The Million parameters. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-110",
@@ -2871,7 +3563,11 @@
         "packs.card-count.en"
       ],
       "needsAll": null,
-      "note": "76 and the 9/13/13/14/13/14 split are only the count body."
+      "note": "76 and the 9/13/13/14/13/14 split are only the count body.",
+      "acceptableSet": [
+        "packs.card-count.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-112",
@@ -2895,7 +3591,11 @@
         "packs.card-count.en"
       ],
       "needsAll": null,
-      "note": "80 total and 4 Exotic are the count body."
+      "note": "80 total and 4 Exotic are the count body.",
+      "acceptableSet": [
+        "packs.card-count.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-113",
@@ -2919,7 +3619,11 @@
         "packs.collection.en"
       ],
       "needsAll": null,
-      "note": "Discovered cards and recent pulls are the Collection body, not the count."
+      "note": "Discovered cards and recent pulls are the Collection body, not the count.",
+      "acceptableSet": [
+        "packs.collection.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-114",
@@ -2943,7 +3647,11 @@
         "packs.collection.en"
       ],
       "needsAll": null,
-      "note": "That sentence is only the Collection body."
+      "note": "That sentence is only the Collection body.",
+      "acceptableSet": [
+        "packs.collection.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-115",
@@ -2994,7 +3702,11 @@
         "packs.lucky-streak.en"
       ],
       "needsAll": null,
-      "note": "The Epic guarantee and reset are only Lucky Streak."
+      "note": "The Epic guarantee and reset are only Lucky Streak.",
+      "acceptableSet": [
+        "packs.lucky-streak.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-117",
@@ -3018,7 +3730,11 @@
         "packs.lucky-streak.en"
       ],
       "needsAll": null,
-      "note": "The Epic-or-better guarantee is not Pack Pass."
+      "note": "The Epic-or-better guarantee is not Pack Pass.",
+      "acceptableSet": [
+        "packs.lucky-streak.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-118",
@@ -3055,7 +3771,11 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "Credit-purchased packs, free packs excluded, free Ignition. Not Lucky Streak."
+      "note": "Credit-purchased packs, free packs excluded, free Ignition. Not Lucky Streak.",
+      "acceptableSet": [
+        "packs.pack-pass.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-119",
@@ -3084,7 +3804,11 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "Qualifying purchases are credit-purchased packs. Lucky Streak uses openings without Epic+."
+      "note": "Qualifying purchases are credit-purchased packs. Lucky Streak uses openings without Epic+.",
+      "acceptableSet": [
+        "packs.pack-pass.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-120",
@@ -3098,7 +3822,7 @@
       "outcome": "ABSTAIN",
       "answerId": null,
       "contentHash": null,
-      "code": "two-above-threshold",
+      "code": "COVERAGE_DENIED",
       "policy": null,
       "neighbourPair": [
         "packs.lucky-streak.en",
@@ -3109,7 +3833,8 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "Both bodies say the exact threshold is dashboard-only and that a full meter grants a reward. The question names neither Epic nor Ignition."
+      "note": "packs.lucky-streak.en fills toward an Epic-or-better guarantee. packs.pack-pass.en fills toward a free Ignition Pack. Both withhold the digit, but they name different meters. The asked fact is which meter, and those identities conflict. Code COVERAGE_DENIED.",
+      "acceptableSet": null
     },
     {
       "id": "PD-121",
@@ -3142,7 +3867,11 @@
         "packs.free-packs-general.en"
       ],
       "needsAll": null,
-      "note": "The refusal to quote a tier is the free-pack general body. The Atom body does not say that."
+      "note": "The refusal to quote a tier is the free-pack general body. The Atom body does not say that.",
+      "acceptableSet": [
+        "packs.free-packs-general.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-122",
@@ -3171,7 +3900,11 @@
         "packs.free-packs-general.en"
       ],
       "needsAll": null,
-      "note": "Check My Packs and Credits is the free-pack general instruction."
+      "note": "Check My Packs and Credits is the free-pack general instruction.",
+      "acceptableSet": [
+        "packs.free-packs-general.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-123",
@@ -3195,7 +3928,11 @@
         "packs.atom-bundle-distinct.en"
       ],
       "needsAll": null,
-      "note": "Free Market Maker pack plus credits on a 3-account order is only the Atom body."
+      "note": "Free Market Maker pack plus credits on a 3-account order is only the Atom body.",
+      "acceptableSet": [
+        "packs.atom-bundle-distinct.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-124",
@@ -3219,7 +3956,11 @@
         "packs.atom-bundle-distinct.en"
       ],
       "needsAll": null,
-      "note": "Unless checkout shows both is only the Atom body."
+      "note": "Unless checkout shows both is only the Atom body.",
+      "acceptableSet": [
+        "packs.atom-bundle-distinct.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-125",
@@ -3230,10 +3971,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "two-above-threshold",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.free-packs-general.en",
@@ -3244,7 +3985,12 @@
         "packs.atom-bundle-distinct.en"
       ],
       "needsAll": null,
-      "note": "Both bodies state that the Atom bundle promo is separate from the launch free-pack promo."
+      "note": "Both bodies state that the Atom bundle promo is separate from the launch free-pack promo. End-to-end gold is the router outcome claim none. No module body is emitted.",
+      "routerOutcome": "claim-none",
+      "acceptableSet": null,
+      "pickRule": null,
+      "decide": null,
+      "publicResult": "router-abstain"
     },
     {
       "id": "PD-126",
@@ -3273,7 +4019,11 @@
         "packs.refunds-legal.en"
       ],
       "needsAll": null,
-      "note": "Italian Consumer Code, generally final, and 18+ are only the legal body."
+      "note": "Italian Consumer Code, generally final, and 18+ are only the legal body.",
+      "acceptableSet": [
+        "packs.refunds-legal.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-127",
@@ -3297,7 +4047,11 @@
         "packs.refunds-legal.en"
       ],
       "needsAll": null,
-      "note": "The refusal to give a legal conclusion is the legal body. Withdraw mentions refund disputes but not legal conclusions."
+      "note": "The refusal to give a legal conclusion is the legal body. Withdraw mentions refund disputes but not legal conclusions.",
+      "acceptableSet": [
+        "packs.refunds-legal.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-128",
@@ -3321,7 +4075,11 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "Those two issues are named in the withdraw body and not in the legal body."
+      "note": "Those two issues are named in the withdraw body and not in the legal body.",
+      "acceptableSet": [
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-129",
@@ -3345,7 +4103,11 @@
         "packs.withdraw-credits.en"
       ],
       "needsAll": null,
-      "note": "The withdraw group is refund disputes, missing credits, unexpected charges, and subscription status. The question asks for that group."
+      "note": "The withdraw group is refund disputes, missing credits, unexpected charges, and subscription status. The question asks for that group.",
+      "acceptableSet": [
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-130",
@@ -3365,10 +4127,10 @@
           }
         ]
       },
-      "outcome": "ABSTAIN",
-      "answerId": null,
-      "contentHash": null,
-      "code": "two-above-threshold",
+      "outcome": "SEND",
+      "answerId": "packs.credits-vs-payout-credits.en",
+      "contentHash": "86d225907fa74daf84334299f1e529347057f8244b64e72844e38e6765aca236",
+      "code": null,
       "policy": null,
       "neighbourPair": [
         "packs.refunds-legal.en",
@@ -3380,7 +4142,27 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Legal body says not cashable. Withdraw says they cannot be cashed out. The two-balance body says they are not cash."
+      "note": "packs.refunds-legal.en says Pack Credits are not cashable. packs.withdraw-credits.en says they cannot be cashed out. packs.credits-vs-payout-credits.en says they are not cash. All three state that.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.refunds-legal.en",
+        "packs.withdraw-credits.en"
+      ],
+      "pickRule": "highest-score-then-smallest-id",
+      "scores": [
+        {
+          "id": "packs.credits-vs-payout-credits.en",
+          "score": 0.128275
+        },
+        {
+          "id": "packs.withdraw-credits.en",
+          "score": 0.103287
+        },
+        {
+          "id": "packs.refunds-legal.en",
+          "score": 0.021925
+        }
+      ]
     },
     {
       "id": "PD-131",
@@ -3406,7 +4188,11 @@
         "packs.dashboard-tabs.en"
       ],
       "needsAll": null,
-      "note": "Only the dashboard body names Packs, My Packs, Inventory, Collection, and Credits."
+      "note": "Only the dashboard body names Packs, My Packs, Inventory, Collection, and Credits.",
+      "acceptableSet": [
+        "packs.dashboard-tabs.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-132",
@@ -3432,7 +4218,11 @@
         "packs.dashboard-tabs.en"
       ],
       "needsAll": null,
-      "note": "Redeem key at the top right of every tab, beside the two balances, is the dashboard sentence."
+      "note": "Redeem key at the top right of every tab, beside the two balances, is the dashboard sentence.",
+      "acceptableSet": [
+        "packs.dashboard-tabs.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-133",
@@ -3458,7 +4248,11 @@
         "packs.which-pack-best.en"
       ],
       "needsAll": null,
-      "note": "No single best pack, plus spend and floor, is the which-pack body."
+      "note": "No single best pack, plus spend and floor, is the which-pack body.",
+      "acceptableSet": [
+        "packs.which-pack-best.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-134",
@@ -3484,7 +4278,11 @@
         "packs.which-pack-best.en"
       ],
       "needsAll": null,
-      "note": "The no-universal-best claim plus the no-specific-card promise is the which-pack body. A guarantee sentence alone would also match drop rates."
+      "note": "The no-universal-best claim plus the no-specific-card promise is the which-pack body. A guarantee sentence alone would also match drop rates.",
+      "acceptableSet": [
+        "packs.which-pack-best.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-135",
@@ -3510,7 +4308,11 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "Deducted at cut seal or Fast open, not at preview, is only the opening body."
+      "note": "Deducted at cut seal or Fast open, not at preview, is only the opening body.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-136",
@@ -3531,12 +4333,16 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "Those three opening rules are only the opening body."
+      "note": "Those three opening rules are only the opening body.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-137",
       "slice": "general-policy",
-      "text": "A card printed ×2, ×3, or ×5 spends each use on a separate account or purchase, one at a time. Can the uses be dumped onto one account together?",
+      "text": "A card printed \u00d72, \u00d73, or \u00d75 spends each use on a separate account or purchase, one at a time. Can the uses be dumped onto one account together?",
       "claim": {
         "kind": "shared",
         "entity": null,
@@ -3552,7 +4358,11 @@
         "packs.uses-multiplier.en"
       ],
       "needsAll": null,
-      "note": "One-at-a-time separate uses are only the multiplier body."
+      "note": "One-at-a-time separate uses are only the multiplier body.",
+      "acceptableSet": [
+        "packs.uses-multiplier.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-138",
@@ -3573,7 +4383,11 @@
         "packs.uses-multiplier.en"
       ],
       "needsAll": null,
-      "note": "Leave-inventory, stay-in-collection, and combine uses are only the multiplier body."
+      "note": "Leave-inventory, stay-in-collection, and combine uses are only the multiplier body.",
+      "acceptableSet": [
+        "packs.uses-multiplier.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-139",
@@ -3594,7 +4408,11 @@
         "packs.followup.purple-card-ambiguous.en"
       ],
       "needsAll": null,
-      "note": "The color body refuses to guess from color alone."
+      "note": "The color body refuses to guess from color alone.",
+      "acceptableSet": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-140",
@@ -3615,7 +4433,11 @@
         "packs.followup.purple-card-ambiguous.en"
       ],
       "needsAll": null,
-      "note": "Official name or rarity label is the color body."
+      "note": "Official name or rarity label is the color body.",
+      "acceptableSet": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-141",
@@ -3636,7 +4458,11 @@
         "packs.crypto-discount.en"
       ],
       "needsAll": null,
-      "note": "Five percent off the bundle price is only the crypto body."
+      "note": "Five percent off the bundle price is only the crypto body.",
+      "acceptableSet": [
+        "packs.crypto-discount.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-142",
@@ -3647,9 +4473,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.crypto-discount.en",
-      "contentHash": "9fb95e7fb7188ee05303ec6142f1cbbc39f9df0d45d736a59bca81bfd8d53266",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -3657,7 +4483,14 @@
         "packs.crypto-discount.en"
       ],
       "needsAll": null,
-      "note": "Luna never processes payments is the crypto body."
+      "note": "Luna never processes payments is the crypto body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.crypto-discount.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-143",
@@ -3683,7 +4516,11 @@
         "packs.missing-reward.en"
       ],
       "needsAll": null,
-      "note": "Pack or card name, an account identifier, and the approximate time."
+      "note": "Pack or card name, an account identifier, and the approximate time.",
+      "acceptableSet": [
+        "packs.missing-reward.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-144",
@@ -3694,9 +4531,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.missing-reward.en",
-      "contentHash": "904db1038b24a96cb33effec9a636f76bc858d6822d8907b82d869e9f44dae71",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -3704,7 +4541,14 @@
         "packs.missing-reward.en"
       ],
       "needsAll": null,
-      "note": "Never send passwords, OTPs, or sensitive credentials is the missing-reward body."
+      "note": "Never send passwords, OTPs, or sensitive credentials is the missing-reward body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.missing-reward.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-145",
@@ -3725,20 +4569,24 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "Destination Inventory plus not-at-preview is the opening body. The three-card body does not mention preview or Inventory."
+      "note": "Destination Inventory plus not-at-preview is the opening body. The three-card body does not mention preview or Inventory.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-146",
       "slice": "general-policy",
-      "text": "Skip · Fast open is an alternative to cutting the seal. Does that shortcut change the odds?",
+      "text": "Skip \u00b7 Fast open is an alternative to cutting the seal. Does that shortcut change the odds?",
       "claim": {
         "kind": "none",
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.opening-and-charges.en",
-      "contentHash": "0f6a4da09246f6b814d6b09248d22c5015fe39c420e09138774cbd208b9e893d",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -3746,7 +4594,14 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "Fast open does not change odds is the opening body."
+      "note": "Fast open does not change odds is the opening body. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-147",
@@ -3767,7 +4622,11 @@
         "packs.buy-credits.en"
       ],
       "needsAll": null,
-      "note": "Live-dashboard bonus plus never purchases is the buy body, without asking for today's number."
+      "note": "Live-dashboard bonus plus never purchases is the buy body, without asking for today's number.",
+      "acceptableSet": [
+        "packs.buy-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-148",
@@ -3788,7 +4647,11 @@
         "packs.buy-credits.en"
       ],
       "needsAll": null,
-      "note": "The entry points are only the buy body."
+      "note": "The entry points are only the buy body.",
+      "acceptableSet": [
+        "packs.buy-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-149",
@@ -3799,9 +4662,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.opening-and-charges.en",
-      "contentHash": "0f6a4da09246f6b814d6b09248d22c5015fe39c420e09138774cbd208b9e893d",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -3809,7 +4672,14 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "First person asks the published Fast-open rule, not a personal result."
+      "note": "First person asks the published Fast-open rule, not a personal result. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-150",
@@ -3830,7 +4700,11 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "The rule is that closing before reveal is not charged."
+      "note": "The rule is that closing before reveal is not charged.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-151",
@@ -3851,7 +4725,11 @@
         "packs.opening-and-charges.en"
       ],
       "needsAll": null,
-      "note": "Free copy before credits is the published order, not a lookup of their copy."
+      "note": "Free copy before credits is the published order, not a lookup of their copy.",
+      "acceptableSet": [
+        "packs.opening-and-charges.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-152",
@@ -3872,7 +4750,11 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Convert and buy for the shortfall is the procedure."
+      "note": "Convert and buy for the shortfall is the procedure.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-153",
@@ -3893,7 +4775,11 @@
         "packs.convert-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "The one-for-one rate is the convert rule."
+      "note": "The one-for-one rate is the convert rule.",
+      "acceptableSet": [
+        "packs.convert-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-154",
@@ -3919,7 +4805,11 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Expiry with the account is the published two-balance rule."
+      "note": "Expiry with the account is the published two-balance rule.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-155",
@@ -3930,9 +4820,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.credits-vs-payout-credits.en",
-      "contentHash": "86d225907fa74daf84334299f1e529347057f8244b64e72844e38e6765aca236",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -3940,7 +4830,14 @@
         "packs.credits-vs-payout-credits.en"
       ],
       "needsAll": null,
-      "note": "Only the converted part stops being withdrawable. Not a request for their remainder."
+      "note": "Only the converted part stops being withdrawable. Not a request for their remainder. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-156",
@@ -3951,9 +4848,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.crypto-discount.en",
-      "contentHash": "9fb95e7fb7188ee05303ec6142f1cbbc39f9df0d45d736a59bca81bfd8d53266",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -3961,7 +4858,14 @@
         "packs.crypto-discount.en"
       ],
       "needsAll": null,
-      "note": "Percent plus never-processes. First person is the generic payer."
+      "note": "Percent plus never-processes. First person is the generic payer. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.crypto-discount.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-157",
@@ -3982,7 +4886,11 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "The billing schedule is the rule."
+      "note": "The billing schedule is the rule.",
+      "acceptableSet": [
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-158",
@@ -3993,9 +4901,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.monthly-subscription.en",
-      "contentHash": "3e68be02120f6005e94f31be43bc7ec112e28c104a8adabf8ae77d394a85f0ac",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4003,7 +4911,14 @@
         "packs.monthly-subscription.en"
       ],
       "needsAll": null,
-      "note": "Quantity comparison is the monthly rule."
+      "note": "Quantity comparison is the monthly rule. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.monthly-subscription.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-159",
@@ -4024,7 +4939,11 @@
         "packs.cancel-subscription.en"
       ],
       "needsAll": null,
-      "note": "Two clicks plus end of the paid month is the cancel body."
+      "note": "Two clicks plus end of the paid month is the cancel body.",
+      "acceptableSet": [
+        "packs.cancel-subscription.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-160",
@@ -4045,12 +4964,16 @@
         "packs.cancel-subscription.en"
       ],
       "needsAll": null,
-      "note": "Two clicks plus Luna does not cancel. The monthly body lacks the click count."
+      "note": "Two clicks plus Luna does not cancel. The monthly body lacks the click count.",
+      "acceptableSet": [
+        "packs.cancel-subscription.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-161",
       "slice": "first-person-policy",
-      "text": "If I use a card marked ×5, must each of my uses go to a different account or purchase, one at a time?",
+      "text": "If I use a card marked \u00d75, must each of my uses go to a different account or purchase, one at a time?",
       "claim": {
         "kind": "shared",
         "entity": null,
@@ -4066,7 +4989,11 @@
         "packs.uses-multiplier.en"
       ],
       "needsAll": null,
-      "note": "The multiplier rule, not a count of uses remaining on their card."
+      "note": "The multiplier rule, not a count of uses remaining on their card.",
+      "acceptableSet": [
+        "packs.uses-multiplier.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-162",
@@ -4087,7 +5014,11 @@
         "packs.uses-multiplier.en"
       ],
       "needsAll": null,
-      "note": "Duplicate pulls combine uses. Not a lookup of their card."
+      "note": "Duplicate pulls combine uses. Not a lookup of their card.",
+      "acceptableSet": [
+        "packs.uses-multiplier.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-163",
@@ -4113,7 +5044,11 @@
         "packs.the-million.en"
       ],
       "needsAll": null,
-      "note": "Whale and Oracle after the full 80-card collection."
+      "note": "Whale and Oracle after the full 80-card collection.",
+      "acceptableSet": [
+        "packs.the-million.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-164",
@@ -4124,9 +5059,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.the-million.en",
-      "contentHash": "a15d10b4df9e89b4e239f21805767f8cdb0266055e2ff61570b854402a7014d3",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4134,7 +5069,14 @@
         "packs.the-million.en"
       ],
       "needsAll": null,
-      "note": "Inventory, Claim The Million, team opens within 24h."
+      "note": "Inventory, Claim The Million, team opens within 24h. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.the-million.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-165",
@@ -4160,7 +5102,11 @@
         "packs.which-pack-best.en"
       ],
       "needsAll": null,
-      "note": "Generic buyer of the rule. No inventory, balance, or eligibility lookup."
+      "note": "Generic buyer of the rule. No inventory, balance, or eligibility lookup.",
+      "acceptableSet": [
+        "packs.which-pack-best.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-166",
@@ -4186,7 +5132,11 @@
         "packs.which-pack-best.en"
       ],
       "needsAll": null,
-      "note": "No-single-best plus no named-card promise. Drop rates lack the no-single-best sentence."
+      "note": "No-single-best plus no named-card promise. Drop rates lack the no-single-best sentence.",
+      "acceptableSet": [
+        "packs.which-pack-best.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-167",
@@ -4212,7 +5162,11 @@
         "packs.dashboard-tabs.en"
       ],
       "needsAll": null,
-      "note": "The five tab names are the dashboard rule."
+      "note": "The five tab names are the dashboard rule.",
+      "acceptableSet": [
+        "packs.dashboard-tabs.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-168",
@@ -4223,9 +5177,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.dashboard-tabs.en",
-      "contentHash": "ca5983b73c18374873532f92bf20ebb10f9764608c569272762c5045fa34aa64",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4233,7 +5187,14 @@
         "packs.dashboard-tabs.en"
       ],
       "needsAll": null,
-      "note": "Placement rule. The values of the balances are not requested."
+      "note": "Placement rule. The values of the balances are not requested. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.dashboard-tabs.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-169",
@@ -4259,7 +5220,11 @@
         "packs.cards-per-pack.en"
       ],
       "needsAll": null,
-      "note": "Count plus independent draw."
+      "note": "Count plus independent draw.",
+      "acceptableSet": [
+        "packs.cards-per-pack.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-170",
@@ -4285,7 +5250,11 @@
         "packs.rarity-floor.en"
       ],
       "needsAll": null,
-      "note": "Definition only."
+      "note": "Definition only.",
+      "acceptableSet": [
+        "packs.rarity-floor.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-171",
@@ -4306,7 +5275,11 @@
         "packs.drop-rates.en"
       ],
       "needsAll": null,
-      "note": "Rounded plus the Whale Common cell. Not a request for their last pull."
+      "note": "Rounded plus the Whale Common cell. Not a request for their last pull.",
+      "acceptableSet": [
+        "packs.drop-rates.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-172",
@@ -4317,9 +5290,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.whale-pack.en",
-      "contentHash": "7f002f91aa0c552461745ac0ccc27cdcbc6efb9a31c88033cb98fd5d3387ad3c",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4327,7 +5300,14 @@
         "packs.followup.whale-pack.en"
       ],
       "needsAll": null,
-      "note": "All four Whale follow-up facts."
+      "note": "All four Whale follow-up facts. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.whale-pack.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-173",
@@ -4338,9 +5318,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.oracle-pack.en",
-      "contentHash": "35923ac48f3d28dc8b085f37f416f8c9403d836da06a3bbe65e8da19e87b7f24",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4348,7 +5328,14 @@
         "packs.followup.oracle-pack.en"
       ],
       "needsAll": null,
-      "note": "Oracle follow-up covers all four. Cost table lacks the Exotic percent and the upgrade sentence."
+      "note": "Oracle follow-up covers all four. Cost table lacks the Exotic percent and the upgrade sentence. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-174",
@@ -4369,7 +5356,11 @@
         "packs.discount-stacking.en"
       ],
       "needsAll": null,
-      "note": "Ordinary stacking rule. \"In front of me\" is the generic actor, not a request to read Inventory."
+      "note": "Ordinary stacking rule. \"In front of me\" is the generic actor, not a request to read Inventory.",
+      "acceptableSet": [
+        "packs.discount-stacking.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-175",
@@ -4399,7 +5390,11 @@
         "packs.chain-upgrade-discounts.en"
       ],
       "needsAll": null,
-      "note": "15% within two minutes is the chain schedule."
+      "note": "15% within two minutes is the chain schedule.",
+      "acceptableSet": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-176",
@@ -4425,7 +5420,11 @@
         "packs.special-packs.en"
       ],
       "needsAll": null,
-      "note": "Expires when the timer ends, countdown on the Packs tab."
+      "note": "Expires when the timer ends, countdown on the Packs tab.",
+      "acceptableSet": [
+        "packs.special-packs.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-177",
@@ -4446,7 +5445,11 @@
         "packs.eligibility-labels.en"
       ],
       "needsAll": null,
-      "note": "Label vocabulary. Not their eligibility."
+      "note": "Label vocabulary. Not their eligibility.",
+      "acceptableSet": [
+        "packs.eligibility-labels.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-178",
@@ -4467,7 +5470,11 @@
         "packs.inventory-use-card.en"
       ],
       "needsAll": null,
-      "note": "The procedure, not which card they hold."
+      "note": "The procedure, not which card they hold.",
+      "acceptableSet": [
+        "packs.inventory-use-card.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-179",
@@ -4478,9 +5485,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.my-packs-keys.en",
-      "contentHash": "f5597b7c62ab30a103c03ec2dd5099c26a80298da6620b4b68f450360427efd0",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4488,7 +5495,14 @@
         "packs.my-packs-keys.en"
       ],
       "needsAll": null,
-      "note": "Key rule. Not whether their key is valid."
+      "note": "Key rule. Not whether their key is valid. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.my-packs-keys.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-180",
@@ -4522,7 +5536,11 @@
         "packs.pack-pass.en"
       ],
       "needsAll": null,
-      "note": "Meter rule. Not whether their meter is full."
+      "note": "Meter rule. Not whether their meter is full.",
+      "acceptableSet": [
+        "packs.pack-pass.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-181",
@@ -4548,7 +5566,11 @@
         "packs.lucky-streak.en"
       ],
       "needsAll": null,
-      "note": "Epic-or-better guarantee. Not their meter value."
+      "note": "Epic-or-better guarantee. Not their meter value.",
+      "acceptableSet": [
+        "packs.lucky-streak.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-182",
@@ -4578,7 +5600,11 @@
         "packs.free-packs-general.en"
       ],
       "needsAll": null,
-      "note": "The general free-pack rule refuses a settled tier. Not a lookup of what they received."
+      "note": "The general free-pack rule refuses a settled tier. Not a lookup of what they received.",
+      "acceptableSet": [
+        "packs.free-packs-general.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-183",
@@ -4589,9 +5615,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.atom-bundle-distinct.en",
-      "contentHash": "dd63dc2f96573334e58efd438fa66d015ecdbe6cee5411cf415119856d262bc6",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4599,7 +5625,12 @@
         "packs.atom-bundle-distinct.en"
       ],
       "needsAll": null,
-      "note": "The distinction, not whether their order deposited a pack. Coverage gold stays this id. claim.kind is none because both product entities are present, so the router does not call decide and this id is not emitted."
+      "note": "The distinction, not whether their order deposited a pack. Coverage gold stays this id. claim.kind is none because both product entities are present, so the router does not call decide and this id is not emitted. End-to-end gold is the router outcome claim none. No module body is emitted.",
+      "routerOutcome": "claim-none",
+      "acceptableSet": null,
+      "pickRule": null,
+      "decide": null,
+      "publicResult": "router-abstain"
     },
     {
       "id": "PD-184",
@@ -4625,7 +5656,11 @@
         "packs.refunds-legal.en"
       ],
       "needsAll": null,
-      "note": "General legal posture. Not their order."
+      "note": "General legal posture. Not their order.",
+      "acceptableSet": [
+        "packs.refunds-legal.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-185",
@@ -4636,9 +5671,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.missing-reward.en",
-      "contentHash": "904db1038b24a96cb33effec9a636f76bc858d6822d8907b82d869e9f44dae71",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4646,7 +5681,14 @@
         "packs.missing-reward.en"
       ],
       "needsAll": null,
-      "note": "The reporting procedure. Not whether their reward was restored."
+      "note": "The reporting procedure. Not whether their reward was restored. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.missing-reward.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-186",
@@ -4667,7 +5709,11 @@
         "packs.simulated.en"
       ],
       "needsAll": null,
-      "note": "Accounts a card opens are simulated. Not whether one was opened for them."
+      "note": "Accounts a card opens are simulated. Not whether one was opened for them.",
+      "acceptableSet": [
+        "packs.simulated.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-187",
@@ -4688,7 +5734,11 @@
         "packs.followup.purple-card-ambiguous.en"
       ],
       "needsAll": null,
-      "note": "Color refusal. Not an inventory read."
+      "note": "Color refusal. Not an inventory read.",
+      "acceptableSet": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-188",
@@ -4699,9 +5749,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.followup.payout-boost-100.en",
-      "contentHash": "7d38976df023cde290afbf3879065d2e1f58d1ea64d9d1d8f761c83d4593c443",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4709,7 +5759,14 @@
         "packs.followup.payout-boost-100.en"
       ],
       "needsAll": null,
-      "note": "The boost definition."
+      "note": "The boost definition. claim.kind is none (no Packs entity and no shared word), so this is not a module SEND. The covering id stays recorded and is not emitted. V12 and spread are not silenced.",
+      "acceptableSet": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-189",
@@ -4730,7 +5787,11 @@
         "packs.card-count.en"
       ],
       "needsAll": null,
-      "note": "The 76 and the rarity split."
+      "note": "The 76 and the rarity split.",
+      "acceptableSet": [
+        "packs.card-count.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-190",
@@ -4751,7 +5812,11 @@
         "packs.collection.en"
       ],
       "needsAll": null,
-      "note": "Tab behavior. Not their discovery list."
+      "note": "Tab behavior. Not their discovery list.",
+      "acceptableSet": [
+        "packs.collection.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-191",
@@ -4781,7 +5846,11 @@
         "packs.overview.en"
       ],
       "needsAll": null,
-      "note": "Overview definition in the first person as the generic actor."
+      "note": "Overview definition in the first person as the generic actor.",
+      "acceptableSet": [
+        "packs.overview.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-192",
@@ -4802,7 +5871,11 @@
         "packs.card-auto-apply.en"
       ],
       "needsAll": null,
-      "note": "The no-automatic rule. Not whether theirs is applied."
+      "note": "The no-automatic rule. Not whether theirs is applied.",
+      "acceptableSet": [
+        "packs.card-auto-apply.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-193",
@@ -4823,7 +5896,11 @@
         "packs.exotic-cards.en"
       ],
       "needsAll": null,
-      "note": "Two Exotic definitions. Not ownership."
+      "note": "Two Exotic definitions. Not ownership.",
+      "acceptableSet": [
+        "packs.exotic-cards.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-194",
@@ -4844,7 +5921,11 @@
         "packs.buy-credits.en"
       ],
       "needsAll": null,
-      "note": "Payment methods plus never-purchases."
+      "note": "Payment methods plus never-purchases.",
+      "acceptableSet": [
+        "packs.buy-credits.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-195",
@@ -4870,7 +5951,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks for the customer balance. Gold is the refuse body only."
+      "note": "Asks for the customer balance. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-196",
@@ -4896,7 +5981,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks whether their key was delivered. Gold is the refuse body only."
+      "note": "Asks whether their key was delivered. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-197",
@@ -4907,9 +5996,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4917,7 +6006,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their Exotic ownership state. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-198",
@@ -4943,7 +6039,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks the contents of their opening. Gold is the refuse body only."
+      "note": "Asks the contents of their opening. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-199",
@@ -4954,9 +6054,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4964,7 +6064,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks where their card is. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-200",
@@ -4975,9 +6082,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -4985,7 +6092,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks the status of their missing item. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-201",
@@ -5011,7 +6125,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their meter value. The threshold rule is not the question. Gold is the refuse body only."
+      "note": "Asks their meter value. The threshold rule is not the question. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-202",
@@ -5022,9 +6140,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5032,7 +6150,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their lifetime receipt state. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-203",
@@ -5053,7 +6178,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks whether their subscription charged. Gold is the refuse body only."
+      "note": "Asks whether their subscription charged. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-204",
@@ -5064,9 +6193,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5074,7 +6203,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their pull, not the Oracle floor rule. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-205",
@@ -5085,9 +6221,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5095,12 +6231,19 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their Exotic application state. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-206",
       "slice": "personal-account-state",
-      "text": "How many uses remain on the ×3 card in my Inventory?",
+      "text": "How many uses remain on the \u00d73 card in my Inventory?",
       "claim": {
         "kind": "shared",
         "entity": null,
@@ -5116,7 +6259,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their remaining uses, not the multiplier rule. Gold is the refuse body only."
+      "note": "Asks their remaining uses, not the multiplier rule. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-207",
@@ -5146,7 +6293,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their live offer state. The definition of a Special Pack is not enough. Gold is the refuse body only."
+      "note": "Asks their live offer state. The definition of a Special Pack is not enough. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-208",
@@ -5157,9 +6308,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5167,7 +6318,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks what happened on their open. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-209",
@@ -5188,7 +6346,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their eligibility, which the label body does not decide. Gold is the refuse body only."
+      "note": "Asks their eligibility, which the label body does not decide. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-210",
@@ -5209,7 +6371,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their account state. Gold is the refuse body only."
+      "note": "Asks their account state. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-211",
@@ -5220,9 +6386,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5230,7 +6396,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their claim status. The 24h procedure is not a status read. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-212",
@@ -5241,9 +6414,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5251,7 +6424,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their payout balance. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-213",
@@ -5272,7 +6452,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their purchase delivery. Gold is the refuse body only."
+      "note": "Asks their purchase delivery. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-214",
@@ -5283,9 +6467,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5293,7 +6477,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their key status. Single-use is the rule, not this question. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-215",
@@ -5304,9 +6495,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5314,7 +6505,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their discovery progress. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-216",
@@ -5340,7 +6538,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks whether their order received the offer. Gold is the refuse body only."
+      "note": "Asks whether their order received the offer. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-217",
@@ -5351,9 +6553,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5361,7 +6563,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their receipt. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-218",
@@ -5372,9 +6581,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5382,7 +6591,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their meter, not the guarantee rule. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-219",
@@ -5393,15 +6609,20 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "router-both-entities",
+      "code": null,
       "policy": null,
       "neighbourPair": null,
       "coveredBy": [],
       "needsAll": null,
-      "note": "Receipt on their account. The separation rule does not confirm delivery. Both the Packs entity and the Atom entity are in the text, so claim.kind is none and decide is not called."
+      "note": "Receipt on their account. The separation rule does not confirm delivery. Both the Packs entity and the Atom entity are in the text, so claim.kind is none and decide is not called. End-to-end gold is the router outcome claim none. No module body is emitted.",
+      "routerOutcome": "claim-none",
+      "acceptableSet": null,
+      "pickRule": null,
+      "decide": null,
+      "publicResult": "router-abstain"
     },
     {
       "id": "PD-220",
@@ -5412,9 +6633,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5422,7 +6643,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their billing status. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-221",
@@ -5433,9 +6661,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5443,7 +6671,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their card placement. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-222",
@@ -5469,7 +6704,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their result, not the floor rule. Gold is the refuse body only."
+      "note": "Asks their result, not the floor rule. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-223",
@@ -5480,9 +6719,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5490,7 +6729,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their live bonus. Bundle bonuses are dashboard-only and this asks for theirs. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-224",
@@ -5511,7 +6757,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their dispute outcome. Gold is the refuse body only."
+      "note": "Asks their dispute outcome. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-225",
@@ -5532,7 +6782,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their inventory presence. Gold is the refuse body only."
+      "note": "Asks their inventory presence. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-226",
@@ -5543,9 +6797,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5553,7 +6807,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their ticket state. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-227",
@@ -5564,9 +6825,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5574,7 +6835,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their account parameter, not the card catalogue. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-228",
@@ -5595,7 +6863,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks them to identify their card from color plus possession. The color body refuses to guess, but the question is their card. Gold is the refuse body only."
+      "note": "Asks them to identify their card from color plus possession. The color body refuses to guess, but the question is their card. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-229",
@@ -5606,9 +6878,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5616,7 +6888,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their ownership. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-230",
@@ -5642,7 +6921,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Asks their expiry exposure, not the general expiry rule. Gold is the refuse body only."
+      "note": "Asks their expiry exposure, not the general expiry rule. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-231",
@@ -5653,9 +6936,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5663,7 +6946,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Oracle floor is published. Their opening is account state. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-232",
@@ -5689,7 +6979,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The award rule is general. The meter reading is theirs. Gold is the refuse body only."
+      "note": "The award rule is general. The meter reading is theirs. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-233",
@@ -5715,7 +7009,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The cash-out rule is general. Their balance is not. Gold is the refuse body only."
+      "note": "The cash-out rule is general. Their balance is not. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-234",
@@ -5726,9 +7024,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5736,7 +7034,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The card definition plus their receipt. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-235",
@@ -5762,7 +7067,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The count is general. Their pull is not. Gold is the refuse body only."
+      "note": "The count is general. Their pull is not. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-236",
@@ -5773,9 +7082,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5783,7 +7092,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The button rule plus their key status. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-237",
@@ -5794,9 +7110,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5804,7 +7120,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The percent is general. Their charge is not. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-238",
@@ -5825,7 +7148,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The timing rule plus their charge. Gold is the refuse body only."
+      "note": "The timing rule plus their charge. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-239",
@@ -5851,7 +7178,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The definition plus their live timer. Gold is the refuse body only."
+      "note": "The definition plus their live timer. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-240",
@@ -5862,9 +7193,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5872,7 +7203,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The reset rule plus their meter. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-241",
@@ -5898,7 +7236,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The tab list plus their balance. Gold is the refuse body only."
+      "note": "The tab list plus their balance. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-242",
@@ -5919,7 +7261,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The stacking rule plus their saved card. Gold is the refuse body only."
+      "note": "The stacking rule plus their saved card. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-243",
@@ -5940,7 +7286,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "Parameters plus their ownership. Gold is the refuse body only."
+      "note": "Parameters plus their ownership. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-244",
@@ -5974,7 +7324,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The rule plus their meter history. Gold is the refuse body only."
+      "note": "The rule plus their meter history. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-245",
@@ -5985,9 +7339,9 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "SEND",
-      "answerId": "packs.account-status.refuse.en",
-      "contentHash": "084d4da1970176508bcf2f994e003c466cfe2a44f1226070c2c335dc43a580ea",
+      "outcome": "ROUTER",
+      "answerId": null,
+      "contentHash": null,
       "code": null,
       "policy": null,
       "neighbourPair": null,
@@ -5995,7 +7349,14 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The procedure plus their ticket. Gold is the refuse body only."
+      "note": "packs.account-status.refuse.en says \"I cannot confirm whether your account received a pack, card, Exotic, The Million, credits, a subscription charge, or any personal eligibility/ownership status.\" That body covers the account-status boundary. claim.kind is none because the text has no Packs entity and no shared word, so decide is not called and the refuse id is not emitted. V12 and spread are not silenced. This is not an ABSTAIN of a Packs-owned personal ask.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": null,
+      "routerOutcome": "claim-none",
+      "publicResult": "not-a-claim",
+      "decide": null
     },
     {
       "id": "PD-246",
@@ -6016,7 +7377,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The simulated rule plus their account event. Gold is the refuse body only."
+      "note": "The simulated rule plus their account event. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-247",
@@ -6037,7 +7402,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The card rule plus their checkout state. Gold is the refuse body only."
+      "note": "The card rule plus their checkout state. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-248",
@@ -6058,7 +7427,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The cancel procedure plus their period. Gold is the refuse body only."
+      "note": "The cancel procedure plus their period. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-249",
@@ -6084,7 +7457,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The rate plus their drop. Gold is the refuse body only."
+      "note": "The rate plus their drop. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-250",
@@ -6095,15 +7472,20 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "router-both-entities",
+      "code": null,
       "policy": null,
       "neighbourPair": null,
       "coveredBy": [],
       "needsAll": null,
-      "note": "The distinction plus their receipt. Both the Packs entity and the Atom entity are in the text, so claim.kind is none and decide is not called."
+      "note": "The distinction plus their receipt. Both the Packs entity and the Atom entity are in the text, so claim.kind is none and decide is not called. End-to-end gold is the router outcome claim none. No module body is emitted.",
+      "routerOutcome": "claim-none",
+      "acceptableSet": null,
+      "pickRule": null,
+      "decide": null,
+      "publicResult": "router-abstain"
     },
     {
       "id": "PD-251",
@@ -6124,12 +7506,16 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The 80-card total plus their progress. Gold is the refuse body only."
+      "note": "The 80-card total plus their progress. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-252",
       "slice": "mixed",
-      "text": "Do uses on a ×3 card combine when a duplicate is pulled, and how many uses do I have left?",
+      "text": "Do uses on a \u00d73 card combine when a duplicate is pulled, and how many uses do I have left?",
       "claim": {
         "kind": "shared",
         "entity": null,
@@ -6145,7 +7531,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The combine rule plus their remainder. Gold is the refuse body only."
+      "note": "The combine rule plus their remainder. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-253",
@@ -6171,7 +7561,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The 18+ rule plus their profile. Gold is the refuse body only."
+      "note": "The 18+ rule plus their profile. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-254",
@@ -6205,7 +7599,11 @@
         "packs.account-status.refuse.en"
       ],
       "needsAll": null,
-      "note": "The tab rule plus their inventory. Gold is the refuse body only."
+      "note": "The tab rule plus their inventory. Gold is the refuse body only.",
+      "acceptableSet": [
+        "packs.account-status.refuse.en"
+      ],
+      "pickRule": "only-covering-id"
     },
     {
       "id": "PD-255",
@@ -6216,15 +7614,20 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "COVERAGE_DENIED",
+      "code": null,
       "policy": null,
       "neighbourPair": null,
       "coveredBy": [],
       "needsAll": null,
-      "note": "Atom account rule. The Atom body only separates bundle promos from launch free packs."
+      "note": "The text contains both the Atom entity and the token pack. packs.atom-bundle-distinct.en separates Elite Atom same-order bundle promos from Elite Packs launch free-pack promos and does not state a daily loss limit. No approved Packs body states that limit. Both entities mean claim.kind is none, the router abstains, and decide is not called. COVERAGE_DENIED is not the end-to-end gold.",
+      "routerOutcome": "claim-none",
+      "publicResult": "router-abstain",
+      "decide": null,
+      "acceptableSet": null,
+      "pickRule": null
     },
     {
       "id": "PD-256",
@@ -7429,10 +8832,10 @@
         "entity": null,
         "evidenceSpans": []
       },
-      "outcome": "ABSTAIN",
+      "outcome": "ROUTER",
       "answerId": null,
       "contentHash": null,
-      "code": "COVERAGE_DENIED",
+      "code": null,
       "policy": null,
       "neighbourPair": null,
       "coveredBy": [],
@@ -7440,7 +8843,12 @@
         "packs.atom-bundle-distinct.en",
         "packs.cards-per-pack.en"
       ],
-      "note": "The Atom example and the independent draw are different bodies."
+      "note": "The text contains both the Atom entity and the token pack. packs.atom-bundle-distinct.en states the three-account example (free Market Maker pack plus credits) and does not say each card is drawn on its own. packs.cards-per-pack.en says \"Each card is drawn on its own\" and does not state the Atom example. Neither body states every asked fact. Both entities mean the router abstains and decide is not called.",
+      "routerOutcome": "claim-none",
+      "publicResult": "router-abstain",
+      "decide": null,
+      "acceptableSet": null,
+      "pickRule": null
     },
     {
       "id": "PD-315",
