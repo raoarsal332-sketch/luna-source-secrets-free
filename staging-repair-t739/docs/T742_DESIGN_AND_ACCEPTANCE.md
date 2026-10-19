@@ -641,7 +641,7 @@ One function, `normalizeForRoute(text)`, new shared module `candidate/routeNorma
 
 1. `String.prototype.normalize('NFKC')`.
 2. Delete Unicode format characters (`\p{Cf}`), which includes zero-width joiners and the zero-width space.
-3. Confusable skeleton: apply Unicode UTS #39 skeleton to each character that has a skeleton mapping, then lowercase. The hand map in `faqModuleDetectors.js` lines 68–75 is not the skeleton and is not reused.
+3. Confusable skeleton, then lowercase. An unrestricted UTS #39 skeleton maps Latin `m` to `rn` and digit `0` to `O`, so both `atom` and `at0m` become `atorn`. The skeleton is applied except to ASCII Latin letters and ASCII digits. That is the exception the Atom section already uses. Digit `0` is not rewritten. Latin `m` stays `m`. The token `atom` survives, and `at0m` stays not-a-claim. The hand map in `faqModuleDetectors.js` lines 68–75 is not the skeleton and is not reused.
 
 Applied once, to the customer text, before the language gate, before `claim`, and before the matcher. `faqAssistance.js` lines 446–448 run `languageGate` on the raw clause and `continue` on `non-en`, which drops a confusable or format-character ask before the detector's own normalizer can fold it. That order is why unicode asks fell through.
 
@@ -649,7 +649,7 @@ The normalizer does not rewrite a catalog body, a template, or a public comment.
 
 After the skeleton and lowercase, `normalizeForRoute` itself joins a spaced single-letter run: a run of single letters separated by space, dot, hyphen, underscore, asterisk, or middle dot, not touching a letter or digit on either side, becomes one token. `A t o m` becomes `atom`. `claim` does not call `normalizeForDetect`. The hand map at `faqModuleDetectors.js` lines 68–75 is not applied. Deleting `\p{Cf}` is what joins a zero-width space. If the letters that remain are the token `atom`, the turn is an Atom entity. If they are not, the turn is obfuscated not-a-claim.
 
-Digit `0` is not rewritten to `o`. `at0m` stays `at0m` and is not the Atom token. No leetspeak pass is added.
+Digit `0` is not rewritten, and Latin `m` is not rewritten, because ASCII digits and ASCII Latin letters are outside the skeleton. `at0m` stays `at0m` and is not the Atom token. No leetspeak pass is added.
 
 `claim` reads the `normalized` argument the host already produced. It does not fold again. A confusable that the UTS #39 skeleton maps onto `atom` or `packs` is exclusive when the other entity is absent. That is how `unicode-fallthrough` is caught. A module that folds with the detector hand map instead will miss those asks.
 
@@ -1061,7 +1061,7 @@ The budget for the implementation that follows this design is one implementation
 | require from `candidate/` | real path |
 | --- | --- |
 | `./writeOpStore` (`index.js` line 90) | `luna-current/01_runtime/writeOpStore.js` (API gap: `opKey` ignores `opScope`) |
-| `./accountNumberPrefer` | `luna-current/01_runtime/accountNumberPrefer.js` |
+| `./accountNumberPrefer` | owner-pending. Live sha256 prefix `795c58d7`. Coordinator-box prefix `f24b8425`. Results that depend on this file stay labelled `historical live deps 8/12 Oct` |
 | `./assistantIdentityGuard` | `luna-current/01_runtime/assistantIdentityGuard.js` (also `luna-current/09_failfix_staging/assistantIdentityGuard.js`) |
 | `./challengeVariantGuard` | `luna-current/01_runtime/challengeVariantGuard.js` |
 | `./control` | `luna-current/01_runtime/control.js` |
@@ -1082,23 +1082,23 @@ The budget for the implementation that follows this design is one implementation
 | `./statePresend/statePresend` | `luna-current/02_statePresend/statePresend.js` |
 | `./statePresend/textUtils` | `luna-current/02_statePresend/textUtils.js` |
 
-`faqAssistance.js` specifically needs `./statePresend/textUtils`, `./statePresend/multiAskCompleteness`, `./faqDeliveryRecovery` (stub only), `./teammateTopicOwnership` (stub only), plus `faqOutboundSafety.js`, `faqApprovedAnswers.js`, and `faqAnswerSelect.js` which are in `candidate/`.
+`faqAssistance.js` specifically needs `./statePresend/textUtils`, `./statePresend/multiAskCompleteness`, `./faqDeliveryRecovery` (owner-retrieved live copy in the table below, not the stub), `./teammateTopicOwnership` (stub only), plus `faqOutboundSafety.js`, `faqApprovedAnswers.js`, and `faqAnswerSelect.js` which are in `candidate/`.
 
 #### Stub only
 
-`staging-repair-t739/harness/stubs/` is the only copy in this clone of: `accountCheckRequest.js`, `atomicJsonFile.js`, `contextualFollowUp.js`, `continuousOwnership.js`, `escalateProblemPolish.js`, `faqDeliveryRecovery.js`, `handoffClaimGate.js`, `humanRequest.js`, `imageEvidence.js`, `internalNoteFormat.js`, `lunaEpisode.js`, `lunaResponsesTransport.js`, `modelConfig.js`, `modelTestGuard.js`, `partnershipIntent.js`, `policyFactGuard.js`, `prePurchaseGate.js`, `productComparison.js`, `publicResponseContract.js`, `publicRestatementGuard.js`, `replyDecision.js`, `reviewRequestFlow.js`, `riskNoteGate.js`, `teammateAdmins.js`, `teammateAudit.js`, `teammateTopicOwnership.js`, `tradingStagePolicy.js`, `variantComparisonCompleteness.js`, `webhookFastAck.js`, `writeOpStore.js`, `typoNormalizer.js` (required as `./statePresend/typoNormalizer`).
+`staging-repair-t739/harness/stubs/` is the only copy in this clone of: `accountCheckRequest.js`, `atomicJsonFile.js`, `contextualFollowUp.js`, `continuousOwnership.js`, `escalateProblemPolish.js`, `faqDeliveryRecovery.js`, `handoffClaimGate.js`, `humanRequest.js`, `imageEvidence.js`, `internalNoteFormat.js`, `lunaEpisode.js`, `lunaResponsesTransport.js`, `modelConfig.js`, `modelTestGuard.js`, `partnershipIntent.js`, `policyFactGuard.js`, `prePurchaseGate.js`, `productComparison.js`, `publicResponseContract.js`, `publicRestatementGuard.js`, `replyDecision.js`, `reviewRequestFlow.js`, `riskNoteGate.js`, `teammateAdmins.js`, `teammateAudit.js`, `teammateTopicOwnership.js`, `tradingStagePolicy.js`, `variantComparisonCompleteness.js`, `webhookFastAck.js`, `writeOpStore.js`, `typoNormalizer.js` (required as `./statePresend/typoNormalizer`). The stub bytes of `prePurchaseGate.js`, `handoffClaimGate.js`, and `faqDeliveryRecovery.js` are not the implementation copies. Those are the owner-retrieved files in the table below.
 
-#### Live dependencies, historical until current hashes arrive
+#### Live dependencies
 
-Every result that needs these files is labelled `historical live deps 8/12 Oct` until a current hash is supplied. The label stays on the result even when a stub lets a harness boot.
+66 of 67 closure hashes are verified current against live `index.js` (sha256 prefix `bf9e1fc2`). `accountNumberPrefer.js` is the one that is not: live prefix `795c58d7`, coordinator-box prefix `f24b8425`, owner-pending. Results that depend on that file stay labelled `historical live deps 8/12 Oct`. The other closure files are not under that label.
 
 | file | what this design uses |
 | --- | --- |
 | `teammateHandoffGates.js` | reopen-release copy, sha256 prefix `3651c2da`. Coordinator-supplied at implementation. Not `luna-current` `64e44724` |
 | `continuousOwnership.js` | reopen-release copy, sha256 prefix `0c5dc007`. Coordinator-supplied at implementation. Not the harness stub |
-| `prePurchaseGate.js` | stub only. Requested from the owner (request v2 sent) |
-| `handoffClaimGate.js` | the Oct-12 file. Stub only in this clone. Requested from the owner (request v2 sent) |
-| `faqDeliveryRecovery.js` | stub only. Requested from the owner (request v2 sent) |
+| `prePurchaseGate.js` | owner-retrieved live copy, read-only t744, coordinator-supplied. sha256 `c064c235610b45954cd6fabaafe9209663891add0a0b7341a292c9076efbd9ce`. Not the stub |
+| `handoffClaimGate.js` | owner-retrieved live copy, read-only t744, coordinator-supplied. sha256 `a0f8d7fc94caad83b091eebadf30ddf927e84b146d895a04ac7ff6bb65ef7687`. Not the stub |
+| `faqDeliveryRecovery.js` | owner-retrieved live copy, read-only t744, coordinator-supplied. sha256 `8ea32800fbf0ac088825d5afb6724121623aa06a534fa728694e5462e29884d3`. Not the stub |
 
 ---
 
