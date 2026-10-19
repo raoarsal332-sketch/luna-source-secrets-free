@@ -6,18 +6,13 @@
  * 1. non-en: do not send an English body
  * 2. not exclusive: do not send
  * 3. personal or mixed account-state: SEND the refuse id
- * 4. Packs registry veto: ABSTAIN unresolved-policy
- * 5. shared matchApproved scores the sendable pool (T and M from
- *    matcher-params.json). Cosine only ranks.
- * 6. proposition coverage is the membership gate
- * 7. one id: highest score, then smallest partId
+ *    (before the shared matcher, which applies unresolvedPolicy first)
+ * 4. shared matchApproved: policy veto, proposition membership, cosine rank
  */
 
 const approved = require('../../../staging-repair-t739/candidate/packs/packsApprovedAnswers');
 const { matchApproved, loadParams } = require('../../../staging-repair-t739/candidate/approvedMatcher');
 const { isPersonalOrMixed } = require('./packsAccount');
-const { unresolvedPolicy } = require('./packsPolicy');
-const { coversPart } = require('./packsPropositions');
 
 const REFUSE_ID = 'packs.account-status.refuse.en';
 const HANDOFF_ID = 'packs.handoff.unverified.en';
@@ -64,32 +59,17 @@ function decide(input) {
     return { action: 'SEND', partId: row.id, contentHash: row.contentHash };
   }
 
-  const policy = unresolvedPolicy(normalized);
-  if (policy) return abstain('unresolved-policy', policy);
-
-  const params = loadParams();
+  const params = (input && input.params) || loadParams();
   if (!params) return abstain('calibration-blocked', null);
-  const rows = productRows(data);
-  const matched = matchApproved({ normalized, rows, params });
-  const ranked = matched.candidates || [];
-  const kept = [];
-  for (const cand of ranked) {
-    if (cand.partId === HANDOFF_ID || cand.partId === REFUSE_ID) continue;
-    const row = data.byId.get(cand.partId);
-    if (!row || !row.sendable) continue;
-    if (!coversPart(normalized, row.id)) continue;
-    kept.push(row);
+  const matched = matchApproved({ normalized, rows: productRows(data), params });
+  if (matched && matched.action === 'SEND') {
+    const row = data.byId.get(matched.partId);
+    if (!row || !row.sendable || row.id === HANDOFF_ID || row.id === REFUSE_ID) {
+      return abstain('COVERAGE_DENIED', null);
+    }
+    return { action: 'SEND', partId: row.id, contentHash: row.contentHash };
   }
-  if (!kept.length) return abstain('COVERAGE_DENIED', null);
-  kept.sort((a, b) => {
-    const sa = ranked.find((c) => c.partId === a.id);
-    const sb = ranked.find((c) => c.partId === b.id);
-    const ds = (sb ? sb.score : 0) - (sa ? sa.score : 0);
-    if (ds) return ds;
-    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-  });
-  const pick = kept[0];
-  return { action: 'SEND', partId: pick.id, contentHash: pick.contentHash };
+  return abstain((matched && matched.code) || 'COVERAGE_DENIED', matched && matched.policy);
 }
 
 module.exports = {
