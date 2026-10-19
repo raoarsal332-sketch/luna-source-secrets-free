@@ -350,15 +350,25 @@ test('F1 side effects (trace): terminal reason is not deferred, handled:true, no
 });
 
 // ---------------- 4. ON paths (isolated test config only) ----------------
-test('ON1 Packs ON: delivery is wired; an exclusive ask that triggers no proposition abstains and posts nothing', async () => {
+test('ON1 Packs ON: an ordinary exclusive catalog question sends the overview body and does not post the model paragraph', async () => {
   await withFlags({ LUNA_PACKS_ENABLED: '1' }, async () => {
     const p = await prep('How do Elite Packs work?');
-    assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'COVERAGE_DENIED', t: true, m: 'packs' });
+    assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'module-send', t: true, m: 'packs' });
+    assert.deepStrictEqual(p.plan.answerIds, ['packs.overview.en']);
+    const personal = await prep('Did the Elite Pack I purchased show up on my account?');
+    assert.deepStrictEqual(personal.plan && personal.plan.answerIds, ['packs.account-status.refuse.en']);
+    const neighbour = await prep('Can I gift a special Elite Pack to another trader?');
+    assert.strictEqual(neighbour.plan, undefined);
+    assert.strictEqual(neighbour.terminal, true);
     reset();
     const { id, user } = newConv('How do Elite Packs work?');
-    lm.state.queue.push('ACTION: REPLY\nBODY: x');
+    lm.state.queue.push('ACTION: REPLY\nBODY: Elite Packs are whatever I invent.');
     await index.handleWebhook(webhookReq(id, user), res);
-    noWrites('packs ON abstain');
+    const pubs = fake.publicWrites();
+    assert.strictEqual(pubs.length, 1, JSON.stringify(fake.writes().map((w) => ({ t: w.data && w.data.message_type, reason: w.reason }))));
+    assert.ok(String(pubs[0].data && pubs[0].data.body || '').includes('packs of three reward cards'));
+    assert.ok(!String(pubs[0].data && pubs[0].data.body || '').includes('whatever I invent'));
+    assert.strictEqual(lm.state.calls.length, 0);
   });
 });
 test('ON2 Atom ON: a covering exclusive ask sends the one approved id; a fee-return ask abstains', async () => {
