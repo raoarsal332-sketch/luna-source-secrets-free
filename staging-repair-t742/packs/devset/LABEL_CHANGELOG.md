@@ -548,3 +548,12 @@ Authority remains t742-design `ad6169bb`, sha256 `5529a4878d4ef6adbce88875021a5f
 | PD-256 | MAIN_ROUTE v12-or-spread no-module-body | atom-owned; scored in Atom module, not Packs main route; atom-decide | F1-silence | atom.1step.phases.en says "Atom 1-Step has 1 evaluation phase, then a simulated funded account." atom.2step.phases.en says "Atom 2-Step has 2 phases, then a simulated funded account." The ask names neither product, and those counts conflict, so no single Atom partId is derivable. Packs-local claim.kind stays shared. Section (b): Atom owns. Flag-on is atom-decide, not the Packs main route. Flag-off is F1 silence. |
 | PD-257 | MAIN_ROUTE v12-or-spread no-module-body | atom-owned; scored in Atom module, not Packs main route; SEND atom.1step.news.en | F1-silence | atom.1step.news.en says "On Atom 1-Step, news trading is allowed during evaluation." atom.2step.news.en says "On Atom 2-Step, news trading is allowed in Phase 1 and Phase 2." Both state that evaluation news trading is allowed. The scored Atom partId is atom.1step.news.en, highest score then smallest id. Packs-local claim.kind stays shared. Section (b): Atom owns. Flag-on is that Atom SEND, not the Packs main route. Flag-off is F1 silence. |
 | PD-258 | MAIN_ROUTE v12-or-spread no-module-body | atom-owned; scored in Atom module, not Packs main route; atom-decide | F1-silence | No sendable approved Atom body states where a credential email is downloaded. Packs-local claim.kind stays shared. Section (b): Atom owns. Flag-on is atom-decide, not the Packs main route. Flag-off is F1 silence. |
+
+## Reviewer re-check 5 — PD-256 and PD-258 Atom abstain
+
+Rows changed: 2. Packs-local claim stays shared. Flag-off stays F1 silence.
+
+| Row | Old flag-on | Flag-on | Flag-off | Body fact |
+| --- | --- | --- | --- | --- |
+| PD-256 | atom-owned; scored in Atom module, not Packs main route; atom-decide | atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED | F1-silence | atom.1step.phases.en says "Atom 1-Step has 1 evaluation phase, then a simulated funded account." atom.2step.phases.en says "Atom 2-Step has 2 phases, then a simulated funded account." The ask names neither product, and those counts conflict. |
+| PD-258 | atom-owned; scored in Atom module, not Packs main route; atom-decide | atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED | F1-silence | No sendable Atom body covers a credential-email download. |

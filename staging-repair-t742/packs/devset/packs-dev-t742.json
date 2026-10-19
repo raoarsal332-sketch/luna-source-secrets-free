@@ -17,7 +17,7 @@
   "sealedSet": null,
   "requestedModel": null,
   "actualModel": "grok-4.7",
-  "labelRule": "Scored gold is the end-to-end gold table in t742-design ad6169bb section (j): claim x module x ask -> scored public result. decide runs only for an exclusive Packs claim, language en, flag on, delivery wired. The scored send is then the one deterministic partId, or the refuse id for exclusive personal and mixed, or ABSTAIN when decide abstains. acceptableSet is metadata and is not a scored send. shared personal or mixed: main route, no module body, refuse id not sent. shared general: main route, V12 and spread may send their own approved output, no module body. none both-entities: main route, no module body, not terminal silence. none plain general: main route. none plain personal or mixed: main route, refuse id not sent. Flag-off for exclusive is F1 silence. Flag-off for shared and none is the same main route, not F1. claim reads host normalizeForRoute output (section e) and does not apply the detector hand map. Where the host-normalized text has the Atom token and no Packs token, Packs-local claim.kind stays, and section (b) gives the turn to Atom. PD-123, PD-256, PD-257, and PD-258: flag-on is the Atom decide cell (a derivable approved Atom partId, otherwise atom-decide), and flag-off is F1 silence.",
+  "labelRule": "Scored gold is the end-to-end gold table in t742-design ad6169bb section (j): claim x module x ask -> scored public result. decide runs only for an exclusive Packs claim, language en, flag on, delivery wired. The scored send is then the one deterministic partId, or the refuse id for exclusive personal and mixed, or ABSTAIN when decide abstains. acceptableSet is metadata and is not a scored send. shared personal or mixed: main route, no module body, refuse id not sent. shared general: main route, V12 and spread may send their own approved output, no module body. none both-entities: main route, no module body, not terminal silence. none plain general: main route. none plain personal or mixed: main route, refuse id not sent. Flag-off for exclusive is F1 silence. Flag-off for shared and none is the same main route, not F1. claim reads host normalizeForRoute output (section e) and does not apply the detector hand map. Where the host-normalized text has the Atom token and no Packs token, Packs-local claim.kind stays, and section (b) gives the turn to Atom. PD-123 and PD-257: flag-on is the derivable approved Atom partId. PD-256 and PD-258: flag-on is atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED. Flag-off is F1 silence.",
   "outcomeEnum": [
     "SEND",
     "ABSTAIN",
@@ -14182,14 +14182,14 @@
       },
       "tableRow": "atom-owned (section b) / Atom decide / flag-off F1",
       "flagOn": {
-        "decide": "atom-decide",
+        "decide": "ABSTAIN",
         "owner": "atom",
-        "result": "ATOM_DECIDE",
+        "result": "ABSTAIN",
         "partId": null,
         "contentHash": null,
-        "code": null,
+        "code": "COVERAGE_DENIED",
         "policy": null,
-        "public": "atom-owned; scored in Atom module, not Packs main route; atom-decide",
+        "public": "atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED",
         "route": "atom-owned"
       },
       "flagOff": {
@@ -14213,7 +14213,7 @@
       "neighbourPair": null,
       "coverageCode": "COVERAGE_DENIED",
       "coveragePolicy": null,
-      "note": "atom.1step.phases.en says \"Atom 1-Step has 1 evaluation phase, then a simulated funded account.\" atom.2step.phases.en says \"Atom 2-Step has 2 phases, then a simulated funded account.\" The ask names neither product, and those counts conflict, so no single Atom partId is derivable. Packs-local claim.kind stays shared. Section (b): Atom owns. Flag-on is atom-decide, not the Packs main route. Flag-off is F1 silence."
+      "note": "atom.1step.phases.en says \"Atom 1-Step has 1 evaluation phase, then a simulated funded account.\" atom.2step.phases.en says \"Atom 2-Step has 2 phases, then a simulated funded account.\" The ask names neither product, and those counts conflict. Packs-local claim.kind stays shared. Flag-on scored result is atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED. Flag-off stays F1 silence."
     },
     {
       "id": "PD-257",
@@ -14280,14 +14280,14 @@
       },
       "tableRow": "atom-owned (section b) / Atom decide / flag-off F1",
       "flagOn": {
-        "decide": "atom-decide",
+        "decide": "ABSTAIN",
         "owner": "atom",
-        "result": "ATOM_DECIDE",
+        "result": "ABSTAIN",
         "partId": null,
         "contentHash": null,
-        "code": null,
+        "code": "COVERAGE_DENIED",
         "policy": null,
-        "public": "atom-owned; scored in Atom module, not Packs main route; atom-decide",
+        "public": "atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED",
         "route": "atom-owned"
       },
       "flagOff": {
@@ -14311,7 +14311,7 @@
       "neighbourPair": null,
       "coverageCode": "COVERAGE_DENIED",
       "coveragePolicy": null,
-      "note": "No sendable approved Atom body states where a credential email is downloaded. Packs-local claim.kind stays shared. Section (b): Atom owns. Flag-on is atom-decide, not the Packs main route. Flag-off is F1 silence."
+      "note": "No sendable Atom body covers a credential-email download. Packs-local claim.kind stays shared. Flag-on scored result is atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED. Flag-off stays F1 silence."
     },
     {
       "id": "PD-259",

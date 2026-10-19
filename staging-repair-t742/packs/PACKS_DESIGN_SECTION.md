@@ -41,7 +41,7 @@ A canonical `policy.*` veto is the scored `ABSTAIN` only when `decide` runs. On 
 
 `staging-repair-t742/packs/devset/packs-dev-t742.json`
 
-sha256 `8f7db1ab1df06a3f07ba3bcbf60ca30d5c36d15a8e8fe0667e382c705906babb`
+sha256 `19df3874c2272134390122f8b75e0e90dc22bd61a355ffdcd80d67a4dee0b693`
 
 336 rows. Freeze re-check 4 changes four rows only: `PD-123`, `PD-256`, `PD-257`, and `PD-258`. Each has the Atom token and no Packs token. Packs-local claim kind stays. Section (b) gives the turn to Atom, so the flag-on cell is the Atom decide cell and flag-off is F1 silence.
 
@@ -58,7 +58,7 @@ sha256 `8f7db1ab1df06a3f07ba3bcbf60ca30d5c36d15a8e8fe0667e382c705906babb`
 | `none`, obfuscated not-a-claim | 0 | no dev row left without an entity token after (e) in the `at0m` or zero-width sense |
 | atom-owned, section (b) | 4 | Atom decide cell, not the Packs main route |
 
-`PD-123` flag-on is `SEND` `atom.bundles.en` (`c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a`): that body states the free Market Maker Pack plus 6,000 credits on a three-account order. `PD-257` flag-on is `SEND` `atom.1step.news.en` (`8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee`): both news bodies state that evaluation news trading is allowed, and that id is the deterministic pick. `PD-256` and `PD-258` are `atom-decide`: the phase counts conflict, and no sendable Atom body states a credential-email download.
+`PD-123` flag-on is `SEND` `atom.bundles.en` (`c863a8cb57783b367916b550f0e308d15e8a042aca72e34a8cf7589612cac62a`): that body states the free Market Maker Pack plus 6,000 credits on a three-account order. `PD-257` flag-on is `SEND` `atom.1step.news.en` (`8c2bb7076db6391614dd42befb979dc513f017f2f38d7f688e39791c7a5e02ee`): both news bodies state that evaluation news trading is allowed, and that id is the deterministic pick. `PD-256` and `PD-258` flag-on is `atom-owned; scored in Atom module; ABSTAIN COVERAGE_DENIED`. `PD-256` names no product, and 1-Step states one evaluation phase while 2-Step states two. `PD-258` has no sendable Atom body that covers a credential-email download. Flag-off stays F1 silence. Packs-local claim stays `shared`.
 
 Flag-off: 98 rows are F1 silence (94 exclusive Packs, plus these 4 Atom-owned rows). 238 `shared` and `none` rows keep the same main-route cell.
 
