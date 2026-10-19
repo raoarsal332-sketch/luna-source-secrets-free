@@ -17,6 +17,11 @@
  * map in atom-body-facts.json. Frozen params: T=0, M=null.
  *
  * Requested model: grok-4.7. Actual model: grok-4.7.
+ *
+ * Remediation cycle 1: a current covering body outranks an obsolete one;
+ * account-state asks send the refuse id; a 2-Step trailing mechanism
+ * abstains; a product-split ask with no product abstains. T stays 0.
+ * M stays null. Shared matcher files are not edited.
  */
 
 const fs = require('fs');
@@ -109,18 +114,33 @@ function claim({ normalized }) {
   return { kind: 'none', entity: null, evidenceSpans: [] };
 }
 
+const ONE_RE = /\b(?:1\s*-?\s*step|one\s*-?\s*step|onestep|1step)\b/g;
+const TWO_RE = /\b(?:2\s*-?\s*step|two\s*-?\s*step|twostep|2step)\b/g;
+
+function affirmed(n, re) {
+  const r = new RegExp(re.source, 'g');
+  let m;
+  let hit = false;
+  while ((m = r.exec(n))) {
+    const before = n.slice(Math.max(0, m.index - 48), m.index);
+    if (/\b(?:not the|not|no|without|never|didn'?t|don'?t|rather than|instead of)(?:\s+(?:the|a|an|picking|naming|saying)){0,2}\s*$/.test(before)) continue;
+    hit = true;
+    break;
+  }
+  return hit;
+}
+
 function productOf(n) {
-  if (/\b(?:nobody named|without picking|no variant|product unspecified|product not (?:said|stated|named)|variant not named|variant missing|did not name|have not picked|did not say trailing or static or a variant|no 1-step or 2-step|no product named)\b/.test(n)) {
+  if (/\b(?:nobody named|without picking|no variant|product unspecified|product not (?:said|stated|named)|variant not named|variant missing|did not name|have not picked|did not say trailing or static or a variant|no 1-step or 2-step|no product named|which product|what product|variant missing)\b/.test(n)) {
     return null;
   }
-  const oneRe = /\b(?:1\s*-\s*step|1\s+step|one\s*-\s*step|one\s+step)\b/;
-  const twoRe = /\b(?:2\s*-\s*step|2\s+step|two\s*-\s*step|two\s+step)\b/;
-  const one = oneRe.test(n);
-  const two = twoRe.test(n);
+  const one = affirmed(n, ONE_RE);
+  const two = affirmed(n, TWO_RE);
   if (one && two) {
     if (/\b(?:compar\w*|both variants|together with|and also|versus)\b/.test(n)) return 'both';
-    const i1 = n.search(oneRe);
-    const i2 = n.search(twoRe);
+    if (/\b(?:either|not sure if|not sure whether|unsure whether)\b/.test(n)) return null;
+    const i1 = n.search(new RegExp(ONE_RE.source));
+    const i2 = n.search(new RegExp(TWO_RE.source));
     return i1 >= 0 && (i2 < 0 || i1 < i2) ? '1' : '2';
   }
   if (one) return '1';
@@ -129,24 +149,17 @@ function productOf(n) {
 }
 
 function isPersonalOrMixed(n) {
-  if (/\bpersonally\b/.test(n)) return true;
-  if (/\bin my name\b/.test(n)) return true;
-  if (/\bmy individual\b/.test(n)) return true;
-  if (/\bmy personal\b/.test(n)) return true;
-  if (/\b(?:did|have)\s+i\b/.test(n) && /\b(?:pass\w*|clear\w*|fail\w*|breach\w*|funded)\b/.test(n)) return true;
-  if (/\b(?:am|was)\s+i\b/.test(n)) return true;
-  if (/\bwhat phase am i\b/.test(n)) return true;
-  if (/\bmy(?:\s+own)?(?:\s+atom)?\s+(?:kyc|equity|balance|dashboard|verification|login|order)\b/.test(n)) return true;
-  if (/\bis my atom\b/.test(n) && /\bbreach/.test(n)) return true;
-  if (/\bmy own\b/.test(n) && /\b(?:payout|pass)\b/.test(n)) return true;
-  if (/\blook at my\b/.test(n)) return true;
-  if (/\bmy trailing figure\b/.test(n)) return true;
-  if (/\bapprove my atom\b/.test(n)) return true;
-  if (/\bstatus of my\b/.test(n)) return true;
-  if (/\bbreach me\b/.test(n)) return true;
-  if (/\bconfirm my atom balance\b/.test(n)) return true;
-  if (/\bmy atom dashboard\b/.test(n)) return true;
-  return false;
+  const s = String(n || '');
+  if (/\b(?:did|have|has|am|are|was|were)\s+(?:i|we)\b/.test(s)) return true;
+  if (/\b(?:i|we)\s+(?:already\s+)?(?:passed|failed|breached|cleared)\b/.test(s)) return true;
+  if (/\b(?:i|we)\s+(?:got|am|are|was|were)\s+funded\b/.test(s)) return true;
+  if (/\bpersonally\b/.test(s)) return true;
+  if (!/\b(?:my|our|mine)\b/.test(s)) return false;
+  if (/\b(?:in my opinion|my question|my understanding|my view)\b/.test(s)) return false;
+  if (/^\s*if\b/.test(s) && !/\b(?:today|right now|already|dashboard|kyc|login|this morning|status|balance|equity|order|verification|passed|failed|breached)\b/.test(s)) {
+    return false;
+  }
+  return true;
 }
 
 function negatedTrail(n) {
@@ -155,22 +168,41 @@ function negatedTrail(n) {
 
 function asksTrail(n) {
   if (negatedTrail(n)) return false;
-  return /\btrailing\b/.test(n) || /\btrail\b/.test(n);
+  return /\btrail\w*\b/.test(n);
+}
+
+function twoStepTrailingAsk(n) {
+  if (twoStepTrailing(n)) return true;
+  if (productOf(n) !== '2') return false;
+  if (/\btogether with\b/.test(n)) return false;
+  if (negatedTrail(n)) return false;
+  const loss = /\b(?:max(?:imum)?\s+(?:loss|drawdown)|drawdown|floor|overall\s+loss|equity stop|loss limit)\b/.test(n);
+  if (/\btrail\w*\b/.test(n) && (loss || /\b(?:lock|mechanism|follow|open profit|equity|high)\b/.test(n))) return true;
+  if (!loss) return false;
+  if (/\b(?:high[\s-]?water|hwm)\b/.test(n)) return true;
+  if (/\b(?:moves?|moving)\s+with\b/.test(n) && /\b(?:equity|peak|high|profit|balance)\b/.test(n)) return true;
+  if (/\bfollows?\b/.test(n) && /\b(?:peak|high|equity|open profit)\b/.test(n)) return true;
+  if (/\bfloating\b/.test(n) && /\b(?:drawdown|floor|loss)\b/.test(n)) return true;
+  if (/\bdynamic\b/.test(n) && /\b(?:drawdown|floor)\b/.test(n)) return true;
+  if (/\blocks?\b/.test(n) && /\b(?:open profit|in profit)\b/.test(n)) return true;
+  return false;
 }
 
 function needsClarification(n) {
   if (/\bminute of the day\b/.test(n) || /\bclock time\b/.test(n)) return false;
-  if (productOf(n)) return false;
-  if (asksTrail(n)) return false;
-  if (/\b(?:daily|intraday)\b/.test(n) && /\b(?:loss|limit)\b/.test(n)) return true;
-  if (/\bhow many phases\b/.test(n) || /\bphases does atom\b/.test(n)) return true;
-  if (/\bprofit target\b/.test(n) || /\bpass mark\b/.test(n)) return true;
-  if (/\bconsistency\b/.test(n) || /\bbest-day\b/.test(n)) return true;
-  if (/\bnews\b/.test(n) && /\b(?:before the account is funded|challenge versus funded)\b/.test(n)) return true;
-  if (/\breward percents\b/.test(n) || /\bwhich reward\b/.test(n)) return true;
-  if (/\bmaximum loss\b/.test(n) || /\bthe atom floor\b/.test(n)) return true;
-  if (/\bprofitable days\b/.test(n) || /\bup-days\b/.test(n)) return true;
-  if (/\babove 1\s*:\s*30\b/.test(n) || /\bgearing choices\b/.test(n) || /\braise atom leverage\b/.test(n)) return true;
+  if (/\b(?:third payout|after the third|dollar split|500 profit|swap-free|islamic|if i ask nicely|beyond the house line)\b/.test(n)) return false;
+  const p = productOf(n);
+  if (asksTrail(n) && p !== '2') return false;
+  if (p === '1' || p === '2' || p === 'both') return false;
+  if (/\b(?:daily|intraday|per day|each day)\b/.test(n) && /\b(?:loss|limit|drawdown)\b/.test(n)) return true;
+  if (/\b(?:how many phases|phases does|profit targets?|pass marks?|evaluation target)\b/.test(n)) return true;
+  if (/\bconsistenc\w*\b/.test(n) || /\bbest[\s-]?day\b/.test(n)) return true;
+  if (/\bnews\b/.test(n) || /\bhigh[\s-]?impact\b/.test(n)) return true;
+  if (/\b(?:reward percents|which reward|which split|reward menu|profit[\s-]?shares?)\b/.test(n) && !/\bdefault\b/.test(n)) return true;
+  if (/\b(?:max(?:imum)? loss|overall loss|loss limit|drawdown|atom floor)\b/.test(n)) return true;
+  if (/\bprofitable[\s-]?days?\b/.test(n) || /\bup[\s-]?days?\b/.test(n)) return true;
+  if (/\b(?:above 1\s*:\s*30|gearing choices|raise atom leverage|leverage options|change leverage)\b/.test(n)) return true;
+  if (/\b(?:leverage|gearing)\b/.test(n) && !/\b(?:default|start(?:s|ing)?|150|1\s*:\s*150)\b/.test(n)) return true;
   return false;
 }
 
@@ -252,7 +284,7 @@ function intentsOf(n) {
     if (/\b409\b/.test(n)) add('price-409');
     if (/\b519\b/.test(n)) add('price-519');
     if (/\b(?:5\s?k|10\s?k|five k|ten-thousand|10k)\b/.test(n)) add('size-old');
-    if (/\bwhich\s+(?:\w+\s+){0,3}sizes\b/.test(n) || /\bcatalog (?:actually name|advertises)\b/.test(n) || /\badvertised (?:sizes|range)\b/.test(n) || (/\bpublished list\b/.test(n) && /\bsizes\b/.test(n)) || /\bten-thousand\b/.test(n)) add('size-list');
+    if (/\bwhich\s+(?:\w+\s+){0,3}sizes\b/.test(n) || /\bwhat sizes\b/.test(n) || (/\bsizes\b/.test(n) && /\badvertis/.test(n)) || /\bcatalog (?:actually name|advertises)\b/.test(n) || /\badvertised (?:sizes|range)\b/.test(n) || (/\bpublished list\b/.test(n) && /\bsizes\b/.test(n)) || /\bten-thousand\b/.test(n)) add('size-list');
     if (/\bprice table\b/.test(n)) add('price-table');
     if (!intents.some((id) => id.startsWith('price') || id.startsWith('size') || id === 'not-161') && /\bprices\b/.test(n)) add('price-table');
   }
@@ -287,7 +319,7 @@ function intentsOf(n) {
   if (p === '1' && /\b70\b/.test(n) && /\b100\b/.test(n)) add('reward-menu-1');
   if (p === '1' && /\b95\b/.test(n) && /\bshare\b/.test(n)) add('reward-menu-1');
 
-  if (/\b(?:leverage|gearing)\b/.test(n) || /\b1\s*:\s*(?:30|50|100|150)\b/.test(n) || /\b150\s*:\s*1\b/.test(n) || /\b150 to 1\b/.test(n) || /\b\b150\b/.test(n)) {
+  if (/\b(?:leverage|gearing)\b/.test(n) || /\b1\s*:\s*(?:30|50|100|150)\b/.test(n) || /\b150\s*:\s*1\b/.test(n) || /\b150 to 1\b/.test(n) || /\b150\b/.test(n)) {
     if (/\b(?:1\s*:\s*150|150\s*:\s*1|150 to 1|\b150\b)\b/.test(n)) add('lev-default-30');
     if (/\bfixed\b/.test(n) && p === '1') add('lev-fixed');
     if (p === '1' && (/\b1\s*:\s*30\b/.test(n) || /\b1 to 30\b/.test(n) || /\bcannot be moved\b/.test(n) || /\bchange\b/.test(n))) add('lev-fixed-number');
@@ -295,6 +327,11 @@ function intentsOf(n) {
     if (/\bdefault\b/.test(n) && !/\bfixed\b/.test(n)) add('lev-default-30');
     if (p == null && /\bstart on\b/.test(n)) add('lev-default-30');
     if (p === '1' && /\b1\s*:\s*50\b/.test(n)) add('lev-fixed');
+    if (!intents.some((id) => id.startsWith('lev-'))) {
+      if (p === '1') add('lev-fixed');
+      else if (p === '2') add('lev-menu');
+      else if (/\b(?:default|start\w*|150)\b/.test(n)) add('lev-default-30');
+    }
   }
 
   if (/\bnews\b/.test(n) || /\bhigh-impact\b/.test(n) || /\brelease\b/.test(n)) {
@@ -316,7 +353,7 @@ function intentsOf(n) {
     if (/\btwice the best day\b/.test(n) && p === '1') add('cons-1-both');
   }
 
-  const daily = (/\b(?:daily|intraday)\b/.test(n) && /\b(?:loss|limit|percent|cap|line)\b/.test(n)) || /\b(?:three|four) percent day\b/.test(n) || /\bday reset\b/.test(n) || /\bbalance or equity\b/.test(n) || /\bsnapshot\b/.test(n);
+  const daily = (/\b(?:daily|intraday|per day|each day|a day|in a day)\b/.test(n) && /\b(?:loss|limit|percent|cap|line|drawdown)\b/.test(n)) || /\b(?:three|four) percent day\b/.test(n) || /\bday reset\b/.test(n) || /\bbalance or equity\b/.test(n) || /\bsnapshot\b/.test(n);
   if (daily && !/\bminute of the day\b/.test(n)) {
     if (/\bopen trades?\b/.test(n) || /\bfloating\b/.test(n)) add('open-trades');
     if (/\b(?:higher of|balance and equity|prior daily close|snapshot)\b/.test(n)) add('daily-anchor');
@@ -325,7 +362,7 @@ function intentsOf(n) {
     else add('daily-unspecified');
   }
 
-  const lossAsk = /\b(?:max(?:imum)? loss|overall loss|drawdown|floor|trailing|trail|static)\b/.test(n);
+  const lossAsk = /\b(?:max(?:imum)? loss|overall loss|loss limit|drawdown|draw down|\bdd\b|floor|trail\w*|static)\b/.test(n);
   if (lossAsk && !daily && !intents.includes('maxloss-menu') && !negatedTrail(n)) {
     const trail = asksTrail(n);
     if ((trail && p !== '2') || (p === '1' && !/\bstatic\b/.test(n))) {
@@ -398,7 +435,113 @@ function intentsOf(n) {
     }
   }
 
+  fillMissingFacts(n, p, intents);
   return intents.filter((id) => id !== 'daily-unspecified');
+}
+
+function familyHits(n) {
+  const found = [];
+  const add = (name) => { if (!found.includes(name)) found.push(name); };
+  if (/\b(?:leverage|gearing)\b/.test(n) || /\b1\s*:\s*(?:30|50|100|150)\b/.test(n)) add('lev');
+  if (/\b(?:payouts?|withdrawals?|cash[\s-]?outs?|paid out)\b/.test(n)) add('payout');
+  if (/\$|\b(?:prices?|sticker|list price|how much (?:is|does|for)|costs?)\b/.test(n)) add('price');
+  if (/\b(?:sizes?|5\s?k|10\s?k)\b/.test(n) && /\b(?:advertis\w*|catalog|published|still appear|account)\b/.test(n)) add('size');
+  if (/\b(?:phases?|profit targets?|pass marks?|evaluation targets?)\b/.test(n) || (/\bto pass\b/.test(n) && /\b(?:percent|target|profit|goal)\b/.test(n))) add('phase');
+  if (/\b(?:daily|intraday|per day|each day)\b/.test(n) && /\b(?:loss|lose|limit|drawdown)\b/.test(n)) add('daily');
+  if (!/\b(?:daily|intraday|per day|each day)\b/.test(n) && (/\b(?:max(?:imum)? loss|overall loss|loss limit|drawdown|atom floor)\b/.test(n) || /\btrail\w*\b/.test(n) || /\blose\b/.test(n))) add('loss');
+  if (/\bconsistenc\w*\b/.test(n) || /\bbest[\s-]?day\b/.test(n)) add('cons');
+  if (/\bnews\b/.test(n) || /\bhigh[\s-]?impact\b/.test(n)) add('news');
+  if (/\b(?:rewards?|profit[\s-]?shares?|splits?)\b/.test(n)) add('reward');
+  if (/\b(?:trading[\s-]?days?|time limit|deadline|inactivity|profitable[\s-]?days?|up[\s-]?days?)\b/.test(n)) add('days');
+  if (/\b(?:expert advisors?|trade copiers?|hedging|account sharing|minimum hold)\b/.test(n)) add('house');
+  if (/\b(?:simulated|simulation|live capital|guaranteed rewards?)\b/.test(n)) add('sim');
+  if (/\b(?:bundle|second account)\b/.test(n) && /\b(?:discount|credit|account)\b/.test(n)) add('bundle');
+  if (/\bcheckout\b/.test(n) || /\border form\b/.test(n) || /\bpurchase screen\b/.test(n)) add('checkout');
+  return found;
+}
+
+function fillMissingFacts(n, p, intents) {
+  if (intents.some((id) => id !== 'uncovered')) return;
+  if (intents.includes('uncovered')) return;
+  const families = familyHits(n);
+  if (!families.length) return;
+  if (families.length > 1) {
+    addIntent(intents, 'uncovered');
+    return;
+  }
+  const family = families[0];
+  const split = new Set(['lev', 'phase', 'daily', 'loss', 'cons', 'news', 'reward', 'days']);
+  if (p === 'both' && split.has(family)) {
+    addIntent(intents, 'uncovered');
+    return;
+  }
+  const add = (id) => addIntent(intents, id);
+  if (family === 'lev') {
+    if (p === '1') add('lev-fixed');
+    else if (p === '2') add('lev-menu');
+    else if (/\b(?:default|start\w*|150)\b/.test(n)) add('lev-default-30');
+    return;
+  }
+  if (family === 'payout') {
+    if (/\b(?:14|fourteen|two weeks)\b/.test(n)) add('not-14');
+    add('first-21');
+    return;
+  }
+  if (family === 'price') {
+    if (/\b161\b/.test(n)) add('not-161');
+    add('price-table');
+    return;
+  }
+  if (family === 'size') {
+    add('size-list');
+    return;
+  }
+  if (family === 'phase') {
+    if (p === '1') add('target-8-not-10');
+    else if (p === '2') {
+      add('phase1-8');
+      add('phase2-5');
+    }
+    return;
+  }
+  if (family === 'daily') {
+    if (p === '1' || /\bfour percent\b/.test(n)) add('daily-4');
+    else if (p === '2' || /\bthree percent\b/.test(n)) add('daily-3');
+    return;
+  }
+  if (family === 'loss') {
+    if (asksTrail(n) && p !== '2') add('trailing-6');
+    else if (p === '2' || /\bstatic\b/.test(n)) add('static-10');
+    else if (p === '1') add('trailing-6');
+    return;
+  }
+  if (family === 'cons') {
+    if (p === '1') add('cons-1-both');
+    else if (p === '2') add('cons-2-funded');
+    return;
+  }
+  if (family === 'news') {
+    if (p === '1') add('news-eval-1');
+    else if (p === '2') add('news-phase-2');
+    else if (/\bfunded\b/.test(n) && !/\b(?:challenge|evaluation|phase)\b/.test(n)) add('news-funded-ban');
+    return;
+  }
+  if (family === 'reward') {
+    if (p === '1') add('reward-menu-1');
+    else if (p === '2') add('reward-menu-2');
+    else if (/\bdefault\b/.test(n) || /\b80\b/.test(n)) add('reward-default-80');
+    return;
+  }
+  if (family === 'days') {
+    if (p === '1') add('no-min-trading-1');
+    else if (p === '2') add('no-min-trading-2');
+    else add('no-time-general');
+    return;
+  }
+  if (family === 'house') add('ea-allowed');
+  else if (family === 'sim') add('simulated');
+  else if (family === 'bundle') add('bundle-2');
+  else if (family === 'checkout') add('checkout-page');
 }
 
 const CROSS_PRODUCT_OK = new Set(['news-funded-ban', 'simulated', 'reward-default-80', 'lev-default-30']);
@@ -455,6 +598,19 @@ function abstain(code, policy) {
   return { action: 'ABSTAIN', code, policy: policy == null ? null : policy };
 }
 
+function preferCurrent(matched) {
+  const ids = (matched && matched.acceptableSet) || [];
+  const current = ids.filter((id) => !/\.obsolete\./.test(id));
+  if (!current.length) return matched.partId;
+  const score = new Map((matched.candidates || []).map((c) => [c.partId, c.score]));
+  current.sort((a, b) => {
+    const ds = (score.get(b) || 0) - (score.get(a) || 0);
+    if (ds) return ds;
+    return a < b ? -1 : a > b ? 1 : 0;
+  });
+  return current[0];
+}
+
 function decide({ normalized, gate, claim: claimIn, params }) {
   if (gate && gate.lang === 'non-en') return abstain('not-a-claim', null);
   const c = claimIn || claim({ normalized });
@@ -470,10 +626,14 @@ function decide({ normalized, gate, claim: claimIn, params }) {
     params: use,
     clarify: needsClarification(n),
   });
+  if (matched && matched.code === 'unresolved-policy') {
+    return abstain('unresolved-policy', matched.policy || null);
+  }
+  if (twoStepTrailingAsk(n)) return abstain('atom-2step-trailing', null);
   if (!matched || matched.action !== 'SEND') {
     return abstain((matched && matched.code) || 'COVERAGE_DENIED', matched ? matched.policy : null);
   }
-  return send(matched.partId);
+  return send(preferCurrent(matched));
 }
 
 function explain(normalized) {
@@ -484,7 +644,7 @@ function explain(normalized) {
     product,
     personal: isPersonalOrMixed(n),
     policy: unresolvedPolicy(n),
-    trailing: twoStepTrailing(n),
+    trailing: twoStepTrailingAsk(n),
     clarify: needsClarification(n),
     intents,
     covered: MATCH_POOL.filter((row) => coversAll(row, intents, product)).map((row) => row.id),
