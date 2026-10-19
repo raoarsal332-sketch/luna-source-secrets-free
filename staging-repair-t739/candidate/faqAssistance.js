@@ -559,7 +559,24 @@ async function prepare(full, parts, topic, d) {
     const selProbe = await selectMod.selectApprovedAnswer(text, selectOptsBase);
     if (!selProbe.abstain) faq = [text];
   }
-  if (!faq.length) return { reason: 'no-isolatable-faq' };
+  if (!faq.length) {
+    let terminal = false;
+    try {
+      const f1 = require('./f1AbstainMark');
+      const boundary = require('./publicWriteBoundary');
+      const turn = boundary.currentTurn() || {};
+      if (f1.blocksConversation(cid) || turn.publicSilence || turn.inboundCredential) terminal = true;
+      else {
+        const routed = await require('./publicRouter').route({
+          text, prior: priorClientTexts(parts), conversationId: cid, eventId: user && user.id,
+        });
+        terminal = !!(routed && routed.f1 && routed.terminal && !routed.send);
+      }
+    } catch (_) {
+      terminal = false;
+    }
+    return { reason: 'no-isolatable-faq', terminal };
+  }
 
   if (!ownedNow.blocked && (!full.team_assignee_id || String(full.team_assignee_id) === '0') && !backend.length)
     return { reason: 'existing-unowned-faq-path' };
@@ -835,6 +852,29 @@ async function execute(plan, full, parts, d, preparedDraft, validationProof, rec
         });
       }
     } catch (_) {}
+    try {
+      const routed = await require('./publicRouter').route({
+        text: (plan.faq && plan.faq[0]) || '',
+        prior: [],
+        conversationId: plan.cid,
+        eventId: plan.turnId,
+      });
+      if (routed && (routed.f1 || routed.suppressPublicComposition || (routed.terminal && !routed.send))) {
+        log(plan.cid, routed.reason || 'protected-abstain');
+        return { handled: true, reason: routed.reason || 'protected-abstain' };
+      }
+    } catch (_) {
+      let protectedLook = false;
+      try {
+        const boundary = require('./publicWriteBoundary');
+        const sample = (plan.faq && plan.faq[0]) || '';
+        protectedLook = boundary.moduleTurnProtected(sample) || !!(boundary.currentTurn() && (boundary.currentTurn().inboundCredential || boundary.currentTurn().publicSilence));
+      } catch (_) { protectedLook = true; }
+      if (protectedLook) {
+        log(plan.cid, 'protected-abstain-unavailable');
+        return { handled: true, reason: 'protected-abstain-unavailable' };
+      }
+    }
     const result = await d.send(plan.cid, body, 'faq:' + plan.turnId + ':' + plan.questionHash);
     const confirmed = result && result.ok && !result.skipped && !result.unknown ? d.confirmed(result, body, previousIds) : [];
     const status =

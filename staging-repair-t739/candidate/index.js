@@ -3771,7 +3771,7 @@ function authoritativeConversationParts(conv) {
   return box.conversation_parts;
 }
 
-async function checkSendBoundary(conversationId, userPart, clientName) {
+async function checkSendBoundary(conversationId, userPart, clientName, opts) {
   try {
     if (control.isPaused()) return { ok: false, why: 'paused' };
   } catch (_) {
@@ -3802,7 +3802,7 @@ async function checkSendBoundary(conversationId, userPart, clientName) {
   }
 
   if (userPart) {
-    if (arsalAlreadyRepliedAfter(parts, userPart)) return { ok: false, why: 'already-replied' };
+    if (arsalAlreadyRepliedAfter(parts, userPart) && !(opts && opts.spreadTemplate)) return { ok: false, why: 'already-replied' };
     const answeredAt = Number(userPart.created_at || 0);
     for (const p of parts) {
       if (Number(p.created_at || 0) <= answeredAt) continue;
@@ -3824,7 +3824,7 @@ async function checkSendBoundary(conversationId, userPart, clientName) {
       if (a.type !== 'user') continue;
       if (String(p.id || '') === String(userPart.id || '')) continue;
       if (Number(p.created_at || 0) > answeredAt && stripHtml(p.body || '')) {
-        return { ok: false, why: 'stale-draft' };
+        if (!(opts && opts.spreadTemplate)) return { ok: false, why: 'stale-draft' };
       }
     }
   }
@@ -4010,7 +4010,7 @@ async function imageAttachmentToDataUrl(att) {
     for (let hop = 0; hop <= IMAGE_MAX_REDIRECTS; hop += 1) {
       const check = attachmentUrlAllowed(target);
       if (!check.ok) {
-        console.log('IMAGE_FETCH_BLOCKED', check.why, (att && att.name) || '');
+        console.log('IMAGE_FETCH_BLOCKED', check.why, 'nameLen=' + String((att && att.name) || '').length);
         return null;
       }
       const r = await axios.get(target, {
@@ -4029,14 +4029,14 @@ async function imageAttachmentToDataUrl(att) {
       }
       if (r.status >= 400) {
         if (r.data && typeof r.data.destroy === 'function') r.data.destroy();
-        console.log('IMAGE_FETCH_FAIL', r.status, (att && att.name) || '');
+        console.log('IMAGE_FETCH_FAIL', r.status, 'nameLen=' + String((att && att.name) || '').length);
         return null;
       }
 
       contentType = String((r.headers && r.headers['content-type']) || '').split(';')[0].trim();
       if (contentType && !/^image\//i.test(contentType)) {
         if (r.data && typeof r.data.destroy === 'function') r.data.destroy();
-        console.log('IMAGE_FETCH_BLOCKED not-an-image', contentType, (att && att.name) || '');
+        console.log('IMAGE_FETCH_BLOCKED not-an-image', contentType, 'nameLen=' + String((att && att.name) || '').length);
         return null;
       }
       const declared = Number((r.headers && r.headers['content-length']) || 0);
@@ -4071,7 +4071,7 @@ async function imageAttachmentToDataUrl(att) {
     if (!buf || !buf.length) return null;
     const detected = detectImageMime(buf);
     if (!detected) {
-      console.log('IMAGE_FETCH_BLOCKED not-an-image-bytes', (att && att.name) || '');
+      console.log('IMAGE_FETCH_BLOCKED not-an-image-bytes', 'nameLen=' + String((att && att.name) || '').length);
       return null;
     }
     return 'data:' + detected + ';base64,' + buf.toString('base64');
@@ -6440,7 +6440,8 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     console.error('PROMO_CLIENT_REPORT_HOLD', conversationId);
     return null;
   }
-  let gate = await checkSendBoundary(conversationId, userPart, clientName);
+  const __spreadTemplateSend = __spreadSquash(String(body || '')).includes(__spreadSquash(SPREAD_TEST_REPLY));
+  let gate = await checkSendBoundary(conversationId, userPart, clientName, { spreadTemplate: __spreadTemplateSend });
   if (!gate.ok) {
     console.log('SKIP pre-send', gate.why, conversationId);
     return null;
@@ -6757,9 +6758,12 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
         if (!last) continue;
         // The contained spread reply is the same text on purpose. A bare follow-up
         // ("send again", "the login", "investor password") must deliver it again.
+        let __offeredResend = false;
+        try { __offeredResend = require('./spreadTestState').load(conversationId).state === 'offered'; } catch (_) { __offeredResend = false; }
         const __resendSpread = __spreadSquash(finalBody).includes(__spreadSquash(SPREAD_TEST_REPLY))
-          && __spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
-          && __spreadAskGate.isBareSpreadFollowUpAsk(stripHtml((userPart && userPart.body) || ''));
+          && (__offeredResend
+            || (__spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
+              && __spreadAskGate.isBareSpreadFollowUpAsk(stripHtml((userPart && userPart.body) || ''))));
         if (last === want && !__resendSpread) {
           console.log('SKIP identical last public body', conversationId);
           return null;
@@ -7824,11 +7828,17 @@ const handleWebhook = async (req, res) => {
       const __bindParts = __ownParts || (conversation && conversation.conversation_parts && conversation.conversation_parts.conversation_parts) || [];
       const __bindPart = findLatestUserPart(__bindParts, full);
       const __bindText = stripHtml((__bindPart && __bindPart.body) || '');
+      let __inboundCredential = false;
+      try {
+        const __ins = publicCredentialHold.inspect(__bindText);
+        __inboundCredential = !!((__ins && __ins.hold) || false);
+      } catch (_) { __inboundCredential = true; }
       __bindBoundary.bindTurn({
         normalized: __bindNorm.normalizeForRoute(__bindText),
         text: __bindText,
         conversationId: String(conversationId || ''),
         expectedFirstName: '',
+        inboundCredential: __inboundCredential,
       });
     } catch (_) {}
     let __humanOwnedLegacyFaqBypass = false;
@@ -7852,6 +7862,19 @@ const handleWebhook = async (req, res) => {
       const __earlyText = stripHtml((__latestEarly && __latestEarly.body) || '');
       // One onTurn. Entry is spread-test-credential only. FAQ must not swallow that send.
       const __spreadNow = __spreadTurn(__earlyText, __latestEarly, false, '');
+      if (__spreadNow && !__spreadNow.send && !__spreadNow.silence && !__spreadNow.blockPublic
+          && __spreadNow.loadReason === 'absent'
+          && priorBotWasContainedSpreadReply(__ownParts)
+          && __spreadAskGate.personalAccountCue(__earlyText) !== true) {
+        try {
+          spreadTestState.noteHistoryOffer(conversationId, __latestEarly && __latestEarly.id, __latestEarly && __latestEarly.created_at);
+        } catch (_) {}
+        __spreadDecision.send = true;
+        __spreadDecision.state = 'offered';
+        __spreadDecision.reason = 'offered-resend';
+        __spreadDecision.entry = false;
+        __spreadNow.send = true;
+      }
       const __faqHandled = (__spreadNow && (__spreadNow.send || __spreadNow.blockPublic))
         ? null
         : await faqAssistance.offer(__fetched, __ownParts, topic, faqAssistanceDeps(), {
@@ -7864,6 +7887,9 @@ const handleWebhook = async (req, res) => {
         deferredHumanOwnedFaq.set(conversationId, __faqHandled.prepare);
       } else       if (__faqHandled && __faqHandled.handled) {
         // P1 notes still post. A flag-off exclusive turn posts no customer comment.
+        if (__faqHandled.reason === 'language-uncertain-module-on') {
+          console.log('LANGUAGE_UNCERTAIN_MODULE_ON', conversationId, 'compose=0 post=0 note=0 assign=0');
+        }
         const __riskDuty = (typeof isSilentTeamboxNoteDuty === 'function' && isSilentTeamboxNoteDuty(__fetched))
           || (typeof isRiskOwnedConversation === 'function' && isRiskOwnedConversation(__fetched));
         if (__faqHandled.reason !== 'risk-escalations-silence' && !__riskDuty) return res.sendStatus(200);
@@ -7956,8 +7982,12 @@ const handleWebhook = async (req, res) => {
       console.log('SKIP team inbox', conversationId, team);
       return res.sendStatus(200);
     }
-    if (__spreadDecision && __spreadDecision.blockPublic) {
-      console.log('SPREAD_OFFERED_PERSONAL_CLEAR', conversationId);
+    if (__spreadDecision && (__spreadDecision.blockPublic || __spreadDecision.silence)) {
+      try {
+        const __b = require('./publicWriteBoundary');
+        __b.bindTurn(Object.assign({}, __b.currentTurn() || {}, { publicSilence: true, silenceReason: __spreadDecision.reason || 'spread-silence' }));
+      } catch (_) {}
+      console.log(__spreadDecision.reason === 'personal-clear' ? 'SPREAD_OFFERED_PERSONAL_CLEAR' : 'SPREAD_STATE_SILENCE', conversationId, __spreadDecision.reason || '');
       return res.sendStatus(200);
     }
 
@@ -8064,7 +8094,7 @@ const handleWebhook = async (req, res) => {
     // read `text` in the temporal dead zone (WEBHOOK_ERR, live 215476265562543).
     // The image-only placeholder is applied later, after hook A collects attachments.
     let text = stripHtml(latestUser.body || '');
-    if (arsalAlreadyRepliedAfter(parts, latestUser)) {
+    if (arsalAlreadyRepliedAfter(parts, latestUser) && !(__spreadDecision && __spreadDecision.send)) {
       // Race recovery: we asked for account/email, client already supplied both (possibly
       // across messages / while AI was running), but the ask landed after their message so
       // the normal skip would leave them stuck. Escalate instead of re-asking.
@@ -8080,16 +8110,16 @@ const handleWebhook = async (req, res) => {
           console.log('IDENTITY_RECOVERY wait pending ask', conversationId, {
             needAccountRec,
             needEmailRec,
-            account: recIds.account || null,
-            email: recIds.email || null,
+            accountLen: String(recIds.account || '').length,
+            emailLen: String(recIds.email || '').length,
             reason: resolvedRec.decision.reason,
           });
           return res.sendStatus(200);
         }
         if (!hasUsableEscalateIdentity(recIds, resolvedRec.declinedAccount, resolvedRec.declinedEmail)) {
           console.log('IDENTITY_RECOVERY block empty identity', conversationId, {
-            account: recIds.account || null,
-            email: recIds.email || null,
+            accountLen: String(recIds.account || '').length,
+            emailLen: String(recIds.email || '').length,
             ready: !!resolvedRec.ready,
             reason: resolvedRec.decision && resolvedRec.decision.reason,
           });
@@ -8098,7 +8128,7 @@ const handleWebhook = async (req, res) => {
         // Account alone is enough , do not require email for recovery escalate.
         // HARD BLOCK: never escalate / never send "sent to teammate" with empty or placeholder identity.
         if (!needAccountRec && !needEmailRec && hasUsableEscalateIdentity(recIds, resolvedRec.declinedAccount, resolvedRec.declinedEmail)) {
-        console.log('IDENTITY_RECOVERY escalate', conversationId, recIds.account, recIds.email);
+        console.log('IDENTITY_RECOVERY escalate', conversationId, 'acctLen=' + String(recIds.account || '').length, 'emailLen=' + String(recIds.email || '').length);
         {
           const escBlockId = teammateHandoffGates.shouldBlockEscalateForTeammateHandoff(parts, full, {
             arsalId: ARSAL_ID,
@@ -8267,6 +8297,18 @@ const handleWebhook = async (req, res) => {
     // Fin / Elite AI wait , hard gate before FAQ/AI/deterministic public replies
     if (shouldWaitForFin(full, text, topic)) {
       __spreadTurn(text, latestUser, true, 'fin-wait');
+      return res.sendStatus(200);
+    }
+
+    // Eligible spread sends before review-flow, teammate defer, and the model.
+    // A later non-personal turn while offered is the template, not a paragraph.
+    if (__spreadDecision && __spreadDecision.send) {
+      const spreadBody = buildSpreadTestReply();
+      const posted = await postClientCommentOnce(conversationId, spreadBody, latestUser, clientName);
+      if (posted && posted.ok && !posted.held && !posted.skipped) {
+        try { spreadTestState.commitActed(conversationId); } catch (_) {}
+      }
+      console.log(__spreadDecision.entry ? 'SPREAD_TEST_REPLY' : 'SPREAD_TEST_REPLY_OFFERED', conversationId);
       return res.sendStatus(200);
     }
 
@@ -8444,8 +8486,12 @@ const handleWebhook = async (req, res) => {
       const __sd = (__spreadDecision && __spreadDecision.__ran)
         ? __spreadDecision
         : __spreadTurn(text, latestUser, false, '');
-      if (__sd && __sd.blockPublic) {
-        console.log('SPREAD_OFFERED_PERSONAL_CLEAR', conversationId);
+      if (__sd && (__sd.blockPublic || __sd.silence)) {
+        try {
+          const __b = require('./publicWriteBoundary');
+          __b.bindTurn(Object.assign({}, __b.currentTurn() || {}, { publicSilence: true, silenceReason: __sd.reason || 'spread-silence' }));
+        } catch (_) {}
+        console.log(__sd.reason === 'personal-clear' ? 'SPREAD_OFFERED_PERSONAL_CLEAR' : 'SPREAD_STATE_SILENCE', conversationId, __sd.reason || '');
         return res.sendStatus(200);
       }
       if (__sd && __sd.send) {
@@ -8462,9 +8508,7 @@ const handleWebhook = async (req, res) => {
 
     // Review/verification notification PROCESS ask , direct reply, never escalate (Arsal lock)
     if (isReviewNotificationProcessAsk(text)) {
-      const body = postProcessModelReply(pickReviewStatusDirectReply(), conversationId);
-      await postClientCommentOnce(conversationId, body, latestUser, clientName);
-      console.log('REVIEW_STATUS_DIRECT', conversationId);
+      console.log('REVIEW_STATUS_DIRECT_HELD', conversationId);
       return res.sendStatus(200);
     }
 
@@ -8616,8 +8660,20 @@ const handleWebhook = async (req, res) => {
         conversationId,
         eventId: latestUser && latestUser.id,
       });
-      if (__langRouted && __langRouted.suppressPublicComposition) {
-        console.log('LANGUAGE_UNCERTAIN_MODULE_ON', conversationId, 'compose=0 post=0 note=0 assign=0');
+      const __protectedAbstain = __langRouted && (
+        __langRouted.suppressPublicComposition
+        || __langRouted.f1
+        || (__langRouted.terminal && !__langRouted.send)
+      );
+      if (__protectedAbstain) {
+        try {
+          const __b = require('./publicWriteBoundary');
+          __b.bindTurn(Object.assign({}, __b.currentTurn() || {}, { publicSilence: true, silenceReason: __langRouted.reason || 'abstain' }));
+        } catch (_) {}
+        if (__langRouted.suppressPublicComposition) {
+          console.log('LANGUAGE_UNCERTAIN_MODULE_ON', conversationId, 'compose=0 post=0 note=0 assign=0');
+        }
+        console.log('PROTECTED_ABSTAIN', conversationId, __langRouted.reason || '', 'compose=0 post=0');
         return res.sendStatus(200);
       }
     } catch (_) { /* a router failure does not invent a public paragraph */ }
@@ -8685,7 +8741,7 @@ const handleWebhook = async (req, res) => {
       const __tu = require('./statePresend/textUtils');
       console.log('TURN_DIAG', conversationId, JSON.stringify({
         at: new Date().toISOString(), kind: __decision.kind,
-        units: (__decision.asks || []).slice(0, 4).map((u) => ({ u: String(u).slice(0, 60), acct: __decision.accountAsks.includes(u), gen: __decision.generalAsks.includes(u) })),
+        units: (__decision.asks || []).slice(0, 4).map((u) => ({ len: String(u || '').length, acct: __decision.accountAsks.includes(u), gen: __decision.generalAsks.includes(u) })),
         pastContextScoped: __tu.withoutConcludedPastContext(text) !== String(text || ''),
         teammateOwner: !!(continuousOwnershipOf(parts) || {}).active,
       }));
@@ -8717,7 +8773,7 @@ const handleWebhook = async (req, res) => {
     let __clientMeaning = { text: text, changed: false, changes: [] };
     try { __clientMeaning = require('./statePresend/typoNormalizer').normalize(text); } catch (_) {}
     if (__clientMeaning.changed) {
-      console.log('TYPO_READTHROUGH', conversationId, __clientMeaning.changes.map((c) => c[0] + '->' + c[1]).join(','));
+      console.log('TYPO_READTHROUGH', conversationId, 'n=' + __clientMeaning.changes.length, 'lens=' + __clientMeaning.changes.map((c) => String(c[0] || '').length + '>' + String(c[1] || '').length).join(','));
     }
 
     /* IMAGE_EVIDENCE_V1:BEGIN:await */
@@ -9321,7 +9377,7 @@ const handleWebhook = async (req, res) => {
     }
     if (__teammateScope && parsed.action !== 'REPLY') {
       console.log('TEAMMATE_SCOPE_SILENT non-reply action', parsed.action, conversationId,
-        JSON.stringify(String(parsed.body || '').slice(0, 200)));
+        'len=' + String(parsed.body || '').length);
       if (__teammateScope && __teammateScope.statusFallback) await postEscalateHoldingStatus(conversationId, __teammateScopeOriginalText, latestUser, clientName, getConvState(conversationId).state, 'MIXED_AWAITING_ANSWER fallback status'); /* MIXED_AWAITING_ANSWER_V1 */
       return res.sendStatus(200);
     }
@@ -9530,9 +9586,8 @@ const handleWebhook = async (req, res) => {
         }
       }
       if (parsed.action === 'ESCALATE' && isReviewNotificationProcessAsk(text)) {
-        parsed.action = 'REPLY';
-        parsed.body = pickReviewStatusDirectReply();
-        console.log('ESCALATE->REPLY review-status-direct', conversationId);
+        console.log('REVIEW_STATUS_DIRECT_HELD', conversationId);
+        return res.sendStatus(200);
       }
 
       // FAQ rescue must run before the teammate note gate. Otherwise a general
@@ -10430,8 +10485,8 @@ const handleWebhook = async (req, res) => {
         } catch (e) { console.error('PRODUCT_COMPARISON_PRESEND_RECOVERY_FAILED', conversationId, 'class=' + (e && e.name || 'Error')); }
       }
       if (!__presend.send) {
-        console.log('PRODUCT_COMPARISON_HELD', conversationId, __presend.reason || 'presend rejected canonical answer',
-          JSON.stringify(((__presend.result && __presend.result.hardFails) || []).map((f) => ({ code: f.code, detail: f.detail, message: f.message })).slice(0, 3)).slice(0, 600));
+        console.log('PRODUCT_COMPARISON_HELD', conversationId, 'len=' + String(__presend.reason || '').length,
+          JSON.stringify(((__presend.result && __presend.result.hardFails) || []).map((f) => f && f.code).slice(0, 3)));
         // TOOL_BUDGET_FINAL_V1 / COMPARISON_HOLD_NO_SILENCE (2026-09-28): a multi-topic message that also asks for a
         // comparison failed presend (typically MISSED_QUESTION: the canonical table only covers the comparison).
         // Returning here was silent. Fall through to the existing presend-hold handling below (partial-answer
@@ -10536,9 +10591,8 @@ const handleWebhook = async (req, res) => {
       const __grounded = Array.isArray(__presendKnowledge) && __presendKnowledge.length > 0;
       const __violation = teammateTopicOwnership.scopedBodyViolation(body);
       if (!__presend.send) {
-        console.log('TEAMMATE_SCOPE_SILENT presend-held', conversationId, __presend.reason || '',
-          ((__presend.result && __presend.result.hardFails) || []).map((f) => f && f.code).join(','),
-          JSON.stringify(((__presend.result && __presend.result.hardFails) || []).map((f) => f && (f.detail || f.message || f.reason || '')).slice(0, 3)).slice(0, 400));
+        console.log('TEAMMATE_SCOPE_SILENT presend-held', conversationId, 'len=' + String(__presend.reason || '').length,
+          ((__presend.result && __presend.result.hardFails) || []).map((f) => f && f.code).join(','));
         if (__teammateScope && __teammateScope.statusFallback) await postEscalateHoldingStatus(conversationId, __teammateScopeOriginalText, latestUser, clientName, getConvState(conversationId).state, 'MIXED_AWAITING_ANSWER fallback status'); /* MIXED_AWAITING_ANSWER_V1 */
         return res.sendStatus(200);
       }
@@ -12099,6 +12153,20 @@ if (require.main === module) {
 // Captured before any test double can replace them.
 const __realIcRequest = icRequest;
 const __realFetchConversation = fetchConversation;
+const t742Hooks = {
+  replayAuthDeferred,
+  scheduleBurstRerun,
+  deferForAuth,
+  armQueuedWebhook(req) {
+    if (req && typeof req === 'object') req.__queuedWebhook = true;
+    return req;
+  },
+  armBurstPending(conversationId) { burstRerunPending.add(String(conversationId || '')); },
+  f1MarkFile() { return require('./f1AbstainMark').filePath(); },
+  spreadStateFile() { return require('./spreadTestState').filePath(); },
+  withOwnershipWriteLock,
+  duplicateInflight: clientReplyInflight,
+};
 
 module.exports = {
   riskNoteGate,
@@ -12187,6 +12255,7 @@ module.exports = {
   __intercomAuth: intercomAuth, /* INTERCOM_AUTH_SHORTCIRCUIT_V1 */
   replayAuthDeferred,
   AUTH_DEFERRED_FILE,
+  t742Hooks,
   postProcessModelReply,
   toHtml,
   __reviewControlDeps: reviewControlDeps, /* REVIEW_CONTROL_STATE_V2: exported for tests only */

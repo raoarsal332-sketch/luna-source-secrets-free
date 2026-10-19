@@ -37,6 +37,15 @@ const GREETING_IDS = Object.freeze({
   'Hope you are well.': 'env.hope.well',
 });
 
+const DENIED_PUBLIC = new Set([
+  "Once your review is complete, our team will update you on Intercom or via email, you don't need to check back manually.",
+  "When the review finishes, we'll reach out on Intercom or by email - no need to keep checking in yourself.",
+  "You'll get an update from our team on Intercom or email once the review is done, you won't need to follow up manually.",
+  "I've forwarded this to a human support teammate. You'll receive an update soon.",
+].map((s) => normalizeBody(s)));
+const FALLBACK_PUBLIC = normalizeBody('Thanks for the details. I am checking this now and will update you here shortly.');
+const TEAM_PUBLIC = normalizeBody('I will ask a support teammate to check this for you.');
+
 let staffDepth = 0;
 let turn = null;
 let partIndex = null;
@@ -256,6 +265,18 @@ function assertApprovedPublicOutput(data, opts) {
   const html = String(data.body || '');
   if (hrefCount(html) > 0) return deny('URL_DENIED');
   const plain = stripHtml(html);
+  const normPlain = normalizeBody(plain);
+  const boundNow = currentTurn() || {};
+  if (DENIED_PUBLIC.has(normPlain)) return deny('NOT_APPROVED_OUTPUT');
+  if (boundNow.publicSilence) return deny('NOT_APPROVED_OUTPUT');
+  if (normPlain === FALLBACK_PUBLIC || normPlain === TEAM_PUBLIC) {
+    let protectedTurn = !!(boundNow.publicSilence || boundNow.inboundCredential);
+    if (!protectedTurn) {
+      try { protectedTurn = plainMainRouteModelTextDenied({ plain: '', conversationId: opts.conversationId, opScope: opts.opScope, data }); }
+      catch (_) { protectedTurn = true; }
+    }
+    if (protectedTurn) return deny('NOT_APPROVED_OUTPUT');
+  }
   const paras = paragraphsOf(plain);
   if (!paras.length) return deny('NOT_APPROVED_OUTPUT');
   const index = loadIndex();
@@ -374,6 +395,7 @@ module.exports = {
   bindTurn,
   currentTurn,
   plainMainRouteModelTextDenied,
+  moduleTurnProtected,
   loadIndex,
   hrefCount,
   attachmentCount,
