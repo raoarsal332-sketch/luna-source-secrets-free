@@ -1,0 +1,209 @@
+{
+  "note": "Cycle 2 far paraphrases. Not a sealed set. Hold split is sha256(id) first byte mod 10 < 3. Written before the cycle-2 selector edit. Contract-conflict rows record the frozen cosine-vs-current disagreement and are not a license to retune rank.",
+  "rows": [
+    {
+      "id": "FP01",
+      "referent": "account-state",
+      "text": "Did I already clear phase one on the Atom account I am trading?",
+      "gold": { "action": "SEND", "partId": "atom.account-status.refuse.en", "acceptable": ["atom.account-status.refuse.en"] }
+    },
+    {
+      "id": "FP02",
+      "referent": "account-state",
+      "text": "Has my Atom 2-Step login already been marked breached?",
+      "gold": { "action": "SEND", "partId": "atom.account-status.refuse.en", "acceptable": ["atom.account-status.refuse.en"] }
+    },
+    {
+      "id": "FP03",
+      "referent": "account-state",
+      "text": "What is Atom 1-Step's daily loss percent, and did I personally pass the evaluation today?",
+      "gold": { "action": "SEND", "partId": "atom.account-status.refuse.en", "acceptable": ["atom.account-status.refuse.en"] }
+    },
+    {
+      "id": "FP04",
+      "referent": "fee-refund",
+      "text": "I paid Atom's opening charge. After withdrawals begin, is that charge given back?",
+      "gold": { "action": "ABSTAIN", "code": "unresolved-policy", "policy": "policy.fee-refunds" }
+    },
+    {
+      "id": "FP05",
+      "referent": "fee-refund",
+      "text": "Once Atom payouts start, is the purchase price returned to the buyer?",
+      "gold": { "action": "ABSTAIN", "code": "unresolved-policy", "policy": "policy.fee-refunds" }
+    },
+    {
+      "id": "FP06",
+      "referent": "price",
+      "text": "What dollar amounts does the Atom price sheet show for the 50k size?",
+      "gold": { "action": "SEND", "partId": "atom.prices.list.en", "acceptable": ["atom.prices.list.en"] }
+    },
+    {
+      "id": "FP07",
+      "referent": "fees",
+      "text": "The published Atom challenge fee for a 50k account, the list price, what is it?",
+      "gold": { "action": "SEND", "partId": "atom.prices.list.en", "acceptable": ["atom.prices.list.en"] }
+    },
+    {
+      "id": "FP08",
+      "referent": "payout-timing",
+      "text": "How many days is the first Atom payout wait, and how long is the gap after that?",
+      "gold": { "action": "SEND", "partId": "atom.payouts.general.en", "acceptable": ["atom.payouts.general.en"] }
+    },
+    {
+      "id": "FP09",
+      "referent": "payout-amount",
+      "text": "What cap does Atom put on a withdrawal in one cycle?",
+      "gold": { "action": "SEND", "partId": "atom.payouts.general.en", "acceptable": ["atom.payouts.general.en"] }
+    },
+    {
+      "id": "FP10",
+      "referent": "split",
+      "text": "What profit share does an ordinary Atom account use by default?",
+      "gold": {
+        "action": "SEND",
+        "partId": "atom.payouts.general.en",
+        "acceptable": ["atom.payouts.general.en", "atom.1step.reward.en", "atom.2step.reward.en"]
+      }
+    },
+    {
+      "id": "FP11",
+      "referent": "drawdown",
+      "text": "How large is Atom's overall loss allowance when the variant was left unstated?",
+      "gold": { "action": "ABSTAIN", "code": "atom-clarification", "policy": null }
+    },
+    {
+      "id": "FP12",
+      "referent": "targets",
+      "text": "What profit target must be hit for Atom to pass, with the variant unnamed?",
+      "gold": { "action": "ABSTAIN", "code": "atom-clarification", "policy": null }
+    },
+    {
+      "id": "FP13",
+      "referent": "variants",
+      "text": "Atom's per-day loss percent, and nobody named 1-Step or 2-Step.",
+      "gold": { "action": "ABSTAIN", "code": "atom-clarification", "policy": null }
+    },
+    {
+      "id": "FP14",
+      "referent": "1-step",
+      "text": "With no variant stated, how does Atom's trailing loss floor behave after a new equity high?",
+      "gold": { "action": "SEND", "partId": "atom.1step.max-loss.en", "acceptable": ["atom.1step.max-loss.en"] }
+    },
+    {
+      "id": "FP15",
+      "referent": "2-step",
+      "text": "Does Atom 2-Step use a trailing drawdown that follows the peak?",
+      "gold": { "action": "ABSTAIN", "code": "atom-2step-trailing", "policy": null }
+    },
+    {
+      "id": "FP16",
+      "referent": "2-step",
+      "text": "On Atom 2-Step, how is the loss limit that tracks the equity peak defined?",
+      "gold": { "action": "ABSTAIN", "code": "atom-2step-trailing", "policy": null }
+    },
+    {
+      "id": "FP17",
+      "referent": "2-step",
+      "text": "On Atom 2-Step, does the loss floor chase the equity high or stay glued?",
+      "gold": { "action": "SEND", "partId": "atom.2step.max-loss.en", "acceptable": ["atom.2step.max-loss.en"] }
+    },
+    {
+      "id": "FP18",
+      "referent": "targets",
+      "text": "What is the Atom 1-Step profit target, in percent?",
+      "gold": {
+        "action": "SEND",
+        "partId": "atom.1step.phases.en",
+        "acceptable": ["atom.1step.phases.en", "atom.obsolete.10pct-1step.en"]
+      }
+    },
+    {
+      "id": "FP19",
+      "referent": "targets",
+      "text": "Atom 2-Step phase 1 and phase 2 profit targets.",
+      "gold": { "action": "SEND", "partId": "atom.2step.phases.en", "acceptable": ["atom.2step.phases.en"] }
+    },
+    {
+      "id": "FP20",
+      "referent": "leverage",
+      "text": "Can Atom 1-Step leverage be changed from 1:30?",
+      "gold": { "action": "SEND", "partId": "atom.1step.leverage.en", "acceptable": ["atom.1step.leverage.en"] }
+    },
+    {
+      "id": "FP21",
+      "referent": "leverage",
+      "contractConflict": true,
+      "text": "Is Atom 2-Step leverage still 1:150 by default?",
+      "gold": {
+        "action": "SEND",
+        "partId": "atom.2step.leverage.en",
+        "acceptable": ["atom.2step.leverage.en", "atom.obsolete.leverage-150-default.en"],
+        "contractConflict": true
+      }
+    },
+    {
+      "id": "FP22",
+      "referent": "drawdown",
+      "text": "What is the Atom 1-Step maximum loss, including whether the floor trails?",
+      "gold": { "action": "SEND", "partId": "atom.1step.max-loss.en", "acceptable": ["atom.1step.max-loss.en"] }
+    },
+    {
+      "id": "FP23",
+      "referent": "drawdown",
+      "text": "What is the Atom 2-Step maximum loss percent, and does the floor stay static?",
+      "gold": { "action": "SEND", "partId": "atom.2step.max-loss.en", "acceptable": ["atom.2step.max-loss.en"] }
+    },
+    {
+      "id": "FP24",
+      "referent": "payout-timing",
+      "text": "Atom payout timing is not a refund question. What is the later withdrawal gap?",
+      "gold": { "action": "SEND", "partId": "atom.payouts.general.en", "acceptable": ["atom.payouts.general.en"] }
+    },
+    {
+      "id": "FP25",
+      "referent": "split",
+      "text": "Which profit-share choices does Atom 1-Step list?",
+      "gold": { "action": "SEND", "partId": "atom.1step.reward.en", "acceptable": ["atom.1step.reward.en"] }
+    },
+    {
+      "id": "FP26",
+      "referent": "variants",
+      "text": "Compare Atom 1-Step and 2-Step maximum loss.",
+      "gold": { "action": "ABSTAIN", "code": "COVERAGE_DENIED", "policy": null }
+    },
+    {
+      "id": "FP27",
+      "referent": "keep-ad259",
+      "text": "Atom 289.",
+      "gold": { "action": "ROUTER", "reason": "language-uncertain-module-on" }
+    },
+    {
+      "id": "FP28",
+      "referent": "price",
+      "contractConflict": true,
+      "text": "Is $161 still the permanent Atom price for 100k?",
+      "gold": {
+        "action": "SEND",
+        "partId": "atom.prices.list.en",
+        "acceptable": ["atom.prices.list.en", "atom.obsolete.price-161-permanent.en"],
+        "contractConflict": true
+      }
+    },
+    {
+      "id": "FP29",
+      "referent": "account-state",
+      "text": "The Atom login opened last Tuesday, has that evaluation already cleared?",
+      "gold": { "action": "SEND", "partId": "atom.account-status.refuse.en", "acceptable": ["atom.account-status.refuse.en"] }
+    },
+    {
+      "id": "FP30",
+      "referent": "split",
+      "text": "What percent of an Atom payout does the firm keep by default?",
+      "gold": {
+        "action": "SEND",
+        "partId": "atom.payouts.general.en",
+        "acceptable": ["atom.payouts.general.en", "atom.1step.reward.en", "atom.2step.reward.en"]
+      }
+    }
+  ]
+}
