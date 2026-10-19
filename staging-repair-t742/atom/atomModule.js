@@ -18,10 +18,14 @@
  *
  * Requested model: grok-4.7. Actual model: grok-4.7.
  *
- * Remediation cycle 1: a current covering body outranks an obsolete one;
- * account-state asks send the refuse id; a 2-Step trailing mechanism
- * abstains; a product-split ask with no product abstains. T stays 0.
- * M stays null. Shared matcher files are not edited.
+ * Remediation cycle 2: the public coverage check has to see the refuse
+ * id, because the frozen fact map lists none for that sendable row.
+ * A fee being given back is policy.fee-refunds, before account-state
+ * and before any payout row. A 2-Step loss bound that tracks a peak is
+ * not the static floor. Current rows still outrank obsolete ones.
+ * That rank disagrees with frozen cosine-then-smallest-id; it is a
+ * contract conflict and is not reversed here. T stays 0. M stays null.
+ * Shared matcher files are not edited.
  */
 
 const fs = require('fs');
@@ -154,6 +158,7 @@ function isPersonalOrMixed(n) {
   if (/\b(?:i|we)\s+(?:already\s+)?(?:passed|failed|breached|cleared)\b/.test(s)) return true;
   if (/\b(?:i|we)\s+(?:got|am|are|was|were)\s+funded\b/.test(s)) return true;
   if (/\bpersonally\b/.test(s)) return true;
+  if (/\b(?:login|account)\b/.test(s) && /\b(?:passed|failed|breached|cleared)\b/.test(s) && /\b(?:opened|purchased|bought|trading)\b/.test(s)) return true;
   if (!/\b(?:my|our|mine)\b/.test(s)) return false;
   if (/\b(?:in my opinion|my question|my understanding|my view)\b/.test(s)) return false;
   if (/^\s*if\b/.test(s) && !/\b(?:today|right now|already|dashboard|kyc|login|this morning|status|balance|equity|order|verification|passed|failed|breached)\b/.test(s)) {
@@ -171,21 +176,36 @@ function asksTrail(n) {
   return /\btrail\w*\b/.test(n);
 }
 
+function staticFloorQuestion(n) {
+  return /\b(?:chase|ratchet|lift|glued|stay|stays|static|standing)\b/.test(n) && !/\btrail\w*\b/.test(n);
+}
+
+function movingLossBound(n) {
+  if (staticFloorQuestion(n)) return false;
+  if (/\btrail\w*\b/.test(n)) return true;
+  if (/\b(?:high[\s-]?water|hwm)\b/.test(n)) return true;
+  if (/\b(?:follow\w*|track\w*)\b/.test(n) && /\b(?:peak|high|equity|profit|balance)\b/.test(n)) return true;
+  if (/\b(?:moves?|moving)\s+with\b/.test(n) && /\b(?:equity|peak|high|profit|balance)\b/.test(n)) return true;
+  if (/\b(?:floating|dynamic)\b/.test(n) && /\b(?:drawdown|floor|loss)\b/.test(n)) return true;
+  if (/\blocks?\b/.test(n) && /\b(?:open profit|in profit)\b/.test(n)) return true;
+  return false;
+}
+
+function feeRefundReferent(n) {
+  if (/\bnot a refund\b/.test(n)) return false;
+  const paidToOpen = /\b(?:fees?|charges?|entry cost|opening charge|purchase price|paid to (?:start|open))\b/.test(n);
+  const restored = /\b(?:refund\w*|reimburse\w*|rebates?|repaid|repay\w*|given back|handed back|credited back|paid back|returned|restored)\b/.test(n);
+  return paidToOpen && restored;
+}
+
 function twoStepTrailingAsk(n) {
   if (twoStepTrailing(n)) return true;
   if (productOf(n) !== '2') return false;
   if (/\btogether with\b/.test(n)) return false;
   if (negatedTrail(n)) return false;
   const loss = /\b(?:max(?:imum)?\s+(?:loss|drawdown)|drawdown|floor|overall\s+loss|equity stop|loss limit)\b/.test(n);
-  if (/\btrail\w*\b/.test(n) && (loss || /\b(?:lock|mechanism|follow|open profit|equity|high)\b/.test(n))) return true;
-  if (!loss) return false;
-  if (/\b(?:high[\s-]?water|hwm)\b/.test(n)) return true;
-  if (/\b(?:moves?|moving)\s+with\b/.test(n) && /\b(?:equity|peak|high|profit|balance)\b/.test(n)) return true;
-  if (/\bfollows?\b/.test(n) && /\b(?:peak|high|equity|open profit)\b/.test(n)) return true;
-  if (/\bfloating\b/.test(n) && /\b(?:drawdown|floor|loss)\b/.test(n)) return true;
-  if (/\bdynamic\b/.test(n) && /\b(?:drawdown|floor)\b/.test(n)) return true;
-  if (/\blocks?\b/.test(n) && /\b(?:open profit|in profit)\b/.test(n)) return true;
-  return false;
+  if (!loss && !/\btrail\w*\b/.test(n)) return false;
+  return movingLossBound(n);
 }
 
 function needsClarification(n) {
@@ -194,7 +214,7 @@ function needsClarification(n) {
   const p = productOf(n);
   if (asksTrail(n) && p !== '2') return false;
   if (p === '1' || p === '2' || p === 'both') return false;
-  if (/\b(?:daily|intraday|per day|each day)\b/.test(n) && /\b(?:loss|limit|drawdown)\b/.test(n)) return true;
+  if (/\b(?:daily|intraday|per[-\s]?day|each[-\s]?day)\b/.test(n) && /\b(?:loss|limit|drawdown)\b/.test(n)) return true;
   if (/\b(?:how many phases|phases does|profit targets?|pass marks?|evaluation target)\b/.test(n)) return true;
   if (/\bconsistenc\w*\b/.test(n) || /\bbest[\s-]?day\b/.test(n)) return true;
   if (/\bnews\b/.test(n) || /\bhigh[\s-]?impact\b/.test(n)) return true;
@@ -353,7 +373,7 @@ function intentsOf(n) {
     if (/\btwice the best day\b/.test(n) && p === '1') add('cons-1-both');
   }
 
-  const daily = (/\b(?:daily|intraday|per day|each day|a day|in a day)\b/.test(n) && /\b(?:loss|limit|percent|cap|line|drawdown)\b/.test(n)) || /\b(?:three|four) percent day\b/.test(n) || /\bday reset\b/.test(n) || /\bbalance or equity\b/.test(n) || /\bsnapshot\b/.test(n);
+  const daily = (/\b(?:daily|intraday|per[-\s]?day|each[-\s]?day|a day|in a day)\b/.test(n) && /\b(?:loss|limit|percent|cap|line|drawdown)\b/.test(n)) || /\b(?:three|four) percent day\b/.test(n) || /\bday reset\b/.test(n) || /\bbalance or equity\b/.test(n) || /\bsnapshot\b/.test(n);
   if (daily && !/\bminute of the day\b/.test(n)) {
     if (/\bopen trades?\b/.test(n) || /\bfloating\b/.test(n)) add('open-trades');
     if (/\b(?:higher of|balance and equity|prior daily close|snapshot)\b/.test(n)) add('daily-anchor');
@@ -371,6 +391,8 @@ function intentsOf(n) {
       if (/\bopen profit\b/.test(n)) add('open-profit');
       if (/\b94/.test(n)) add('floor-94k');
       if (/\b103/.test(n)) add('floor-103');
+    } else if (p === '2' && movingLossBound(n)) {
+      // The static floor does not state a bound that tracks a peak.
     } else if (p === '2' || /\bstatic\b/.test(n)) {
       add('static-10');
       if (/\b(?:90,?000|ninety thousand)\b/.test(n)) add('floor-90k');
@@ -400,6 +422,7 @@ function intentsOf(n) {
     }
   }
 
+  const payoutTiming = /\b(?:payouts?|withdrawals?)\b/.test(n);
   if (/\b(?:trading[\s-]?days?|time limit|deadline|expire|expiry|inactivity|profitable[\s-]?days?|up[\s-]?days?|half a percent|0\.5|five hundred|\$500|five-day|five day|minimum day|lapse|on a clock|calendar date|how long|size day|payout prerequisite)\b/.test(n)) {
     if (/\bfive hundred\b/.test(n) || /\$500/.test(n)) add('dollar-500');
     if (/\bhalf a percent\b/.test(n) || /\b0\.5\b/.test(n)) add('funded-5');
@@ -412,7 +435,7 @@ function intentsOf(n) {
     if (p === '2' && /\bprofitable/.test(n)) add('no-profit-days-2');
     if (p === '2' && /\b(?:expire|expiry|time limit|lapse)\b/.test(n)) add('no-expire-2');
     if (p === '2' && /\binactivity\b/.test(n)) add('inactivity-2');
-    if (p == null && /\b(?:time limit|deadline|calendar|clock|expire|how long|race against)\b/.test(n)) add('no-time-general');
+    if (p == null && !payoutTiming && /\b(?:time limit|deadline|calendar|clock|expire|how long|race against)\b/.test(n)) add('no-time-general');
     if (p == null && /\btrading[\s-]?days?\b/.test(n)) add('no-min-general');
   }
 
@@ -511,7 +534,9 @@ function fillMissingFacts(n, p, intents) {
   }
   if (family === 'loss') {
     if (asksTrail(n) && p !== '2') add('trailing-6');
-    else if (p === '2' || /\bstatic\b/.test(n)) add('static-10');
+    else if (p === '2' && movingLossBound(n)) {
+      // no static fact
+    } else if (p === '2' || /\bstatic\b/.test(n)) add('static-10');
     else if (p === '1') add('trailing-6');
     return;
   }
@@ -611,11 +636,23 @@ function preferCurrent(matched) {
   return current[0];
 }
 
+function policyOf(n) {
+  return unresolvedPolicy(n) || (feeRefundReferent(n) ? 'policy.fee-refunds' : null);
+}
+
+function productTagged(id) {
+  const row = CATALOG.byId.get(id);
+  const tags = (row && row.intentTags) || [];
+  return tags.includes('product:atom-1step') || tags.includes('product:atom-2step');
+}
+
 function decide({ normalized, gate, claim: claimIn, params }) {
   if (gate && gate.lang === 'non-en') return abstain('not-a-claim', null);
   const c = claimIn || claim({ normalized });
   if (!c || c.kind !== 'exclusive' || c.entity !== 'atom') return abstain('not-owner', null);
   const n = String(normalized == null ? '' : normalized);
+  const policy = policyOf(n);
+  if (policy) return abstain('unresolved-policy', policy);
   if (isPersonalOrMixed(n)) return send(REFUSE_ID);
   const frozen = loadParams();
   const use = params && typeof params.T === 'number' ? { T: params.T, M: null } : frozen;
@@ -633,17 +670,34 @@ function decide({ normalized, gate, claim: claimIn, params }) {
   if (!matched || matched.action !== 'SEND') {
     return abstain((matched && matched.code) || 'COVERAGE_DENIED', matched ? matched.policy : null);
   }
+  if (productOf(n) == null && !asksTrail(n)) {
+    const ids = matched.acceptableSet || [];
+    if (ids.length && ids.every((id) => productTagged(id))) return abstain('atom-clarification', null);
+  }
   return send(preferCurrent(matched));
 }
 
 function explain(normalized) {
   const n = String(normalized || '');
+  const policy = policyOf(n);
+  const personal = !policy && isPersonalOrMixed(n);
+  if (personal) {
+    return {
+      product: productOf(n),
+      personal: true,
+      policy: null,
+      trailing: false,
+      clarify: false,
+      intents: ['account-state'],
+      covered: [REFUSE_ID],
+    };
+  }
   const intents = intentsOf(n);
   const product = productOf(n);
   return {
     product,
-    personal: isPersonalOrMixed(n),
-    policy: unresolvedPolicy(n),
+    personal: false,
+    policy,
     trailing: twoStepTrailingAsk(n),
     clarify: needsClarification(n),
     intents,
