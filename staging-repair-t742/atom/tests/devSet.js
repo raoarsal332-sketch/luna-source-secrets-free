@@ -45,11 +45,31 @@ function goldDecision(row) {
   return { action: 'ABSTAIN', code: row.decide.code, policy: row.decide.policy == null ? null : row.decide.policy };
 }
 
-function matches(got, gold) {
+function acceptableIds(row) {
+  const ids = Array.isArray(row.acceptableSet) ? row.acceptableSet.map((item) => item.partId) : [];
+  if (row.decide && row.decide.action === 'SEND' && row.decide.partId && !ids.includes(row.decide.partId)) ids.push(row.decide.partId);
+  return ids;
+}
+
+function matches(got, row) {
+  const gold = goldDecision(row);
   if (!gold) return got.action !== 'SEND';
-  if (got.action !== gold.action) return false;
-  if (gold.action === 'SEND') return got.partId === gold.partId;
-  return got.code === gold.code && (got.policy || null) === (gold.policy || null);
+  if (gold.action === 'ABSTAIN') {
+    if (got.action !== 'ABSTAIN') return false;
+    return got.code === gold.code && (got.policy || null) === (gold.policy || null);
+  }
+  if (got.action !== 'SEND') return false;
+  return acceptableIds(row).includes(got.partId);
+}
+
+function routerDecision(routed) {
+  if (routed && routed.send && routed.decide && routed.decide.action === 'SEND') {
+    return { action: 'SEND', partId: routed.decide.partId };
+  }
+  if (routed && routed.decide && routed.decide.action === 'ABSTAIN') {
+    return { action: 'ABSTAIN', code: routed.decide.code, policy: routed.decide.policy == null ? null : routed.decide.policy };
+  }
+  return { action: 'ABSTAIN', code: (routed && routed.reason) || 'COVERAGE_DENIED', policy: null };
 }
 
 function hostDeps() {
@@ -112,6 +132,7 @@ async function main() {
   const deps = hostDeps();
   let f1 = 0;
   let f1Exclusive = 0;
+  let offSends = 0;
   let noneSharedRouterSend = 0;
   let catalogPlans = 0;
   let routerSends = 0;
@@ -147,11 +168,12 @@ async function main() {
       continue;
     }
     f1Exclusive += 1;
+    if (off && off.send) offSends += 1;
     if (off && off.terminal && off.f1 && !off.send && off.mainRoute === false) f1 += 1;
     exclusive.push(row);
     const got = atom.decide({ text: row.text, normalized, prior: null, gate: { lang: 'en' }, claim: gotClaim });
     const gold = goldDecision(row);
-    const ok = matches(got, gold);
+    const ok = matches(got, row);
     if (ok) correct += 1;
     else {
       wrong += 1;
@@ -178,6 +200,11 @@ async function main() {
     }
   }
 
+  let routerCorrect = 0;
+  let routerWrong = 0;
+  let routerAbstain = 0;
+  let routerFr = 0;
+  const routerMismatches = [];
   process.env.LUNA_ATOM_SELECTOR_ENABLED = '1';
   let routerIndex = 0;
   for (const row of exclusive) {
@@ -190,6 +217,23 @@ async function main() {
       conversationId: conv.full.id,
       eventId: conv.parts[0].id,
     });
+    const routedGot = routerDecision(routed);
+    const routedOk = matches(routedGot, row);
+    if (routedOk) routerCorrect += 1;
+    else {
+      routerWrong += 1;
+      if (routerMismatches.length < 20) {
+        const gold = goldDecision(row);
+        routerMismatches.push({
+          id: row.id,
+          gold: gold.action === 'SEND' ? gold.partId : gold.code,
+          got: routedGot.action === 'SEND' ? routedGot.partId : routedGot.code,
+          acceptable: acceptableIds(row),
+        });
+      }
+    }
+    if (routedGot.action === 'ABSTAIN') routerAbstain += 1;
+    if (row.decide.action === 'SEND' && !routedOk) routerFr += 1;
     if (routed && routed.reason === 'language-uncertain-module-on') languageUncertain += 1;
     if (routed && routed.reason === 'unresolved-policy' && row.decide.action === 'SEND') policyShortCircuit += 1;
     if (routed && routed.send && routed.decide && routed.decide.action === 'SEND') {
@@ -224,6 +268,18 @@ async function main() {
   else process.env.LUNA_ATOM_SELECTOR_ENABLED = savedFlag;
 
   const kindMiss = claimMiss.filter((m) => m.kind === 'kind').length;
+  const moduleTable = {
+    correct: correct + '/' + exclusive.length,
+    wrong: wrong + '/' + exclusive.length,
+    abstain: abstain + '/' + exclusive.length,
+    falseRefusals: fr + '/' + goldSend,
+    personalExact: personal.exact + '/' + personal.n,
+    mixedExact: mixed.exact + '/' + mixed.n,
+    noneOrSharedSent: noneCalledSend,
+  };
+  function fileSha(rel) {
+    return crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname, '..', '..', '..', rel))).digest('hex');
+  }
   const report = {
     node: process.version,
     devSha256: devSha,
@@ -235,33 +291,46 @@ async function main() {
     claimSpanMiss: (claimMiss.length - kindMiss) + '/' + dev.rows.length,
     claimSpanIds: claimMiss.filter((m) => m.kind === 'span').map((m) => m.id),
     exclusive: exclusive.length,
-    correct: correct + '/' + exclusive.length,
-    wrong: wrong + '/' + exclusive.length,
-    abstain: abstain + '/' + exclusive.length,
-    falseRefusals: fr + '/' + goldSend,
-    personalExact: personal.exact + '/' + personal.n,
-    mixedExact: mixed.exact + '/' + mixed.n,
-    noneOrSharedSent: noneCalledSend,
-    f1FlagOff: f1 + '/' + f1Exclusive,
-    noneSharedRouterSend,
-    catalogPlans: catalogPlans + '/' + routerSends,
-    catalogPlanMiss,
-    languageUncertain: languageUncertain + '/' + exclusive.length,
-    policyShortCircuit: policyShortCircuit + '/' + goldSend,
+    moduleDirect: {
+      flagOn: moduleTable,
+      flagOff: moduleTable,
+      note: 'decide is not flag-gated; both columns are the direct call',
+    },
+    routerFlagOn: {
+      correct: routerCorrect + '/' + exclusive.length,
+      wrong: routerWrong + '/' + exclusive.length,
+      abstain: routerAbstain + '/' + exclusive.length,
+      falseRefusals: routerFr + '/' + goldSend,
+      catalogPlans: catalogPlans + '/' + routerSends,
+      catalogPlanMiss,
+      languageUncertain: languageUncertain + '/' + exclusive.length,
+      policyShortCircuit: policyShortCircuit + '/' + goldSend,
+    },
+    routerFlagOff: {
+      f1: f1 + '/' + f1Exclusive,
+      sends: offSends + '/' + f1Exclusive,
+      correct: f1 + '/' + f1Exclusive,
+      noneSharedRouterSend,
+    },
+    moduleFiles: {
+      'staging-repair-t742/atom/atomModule.js': fileSha('staging-repair-t742/atom/atomModule.js'),
+      'staging-repair-t742/atom/atom-body-facts.json': fileSha('staging-repair-t742/atom/atom-body-facts.json'),
+      'staging-repair-t742/atom/tests/devSet.js': fileSha('staging-repair-t742/atom/tests/devSet.js'),
+      'staging-repair-t739/candidate/atom/atomAnswerSelect.js': fileSha('staging-repair-t739/candidate/atom/atomAnswerSelect.js'),
+    },
   };
   console.log(JSON.stringify(report, null, 2));
-  console.log('MISMATCHES', mismatches.length);
+  console.log('MODULE_MISMATCHES', mismatches.length);
   for (const m of mismatches) console.log(m.id, 'gold', m.gold, 'got', m.got);
+  console.log('ROUTER_MISMATCHES', routerMismatches.length);
+  for (const m of routerMismatches) console.log(m.id, 'gold', m.gold, 'got', m.got);
   if (catalogMisses.length) {
     console.log('CATALOG_PLAN_MISS');
     for (const m of catalogMisses) console.log(JSON.stringify(m));
   }
   if (!catalog.baseOk || !catalog.sendableOk) process.exitCode = 1;
-  const expectedWrong = mismatches.length === 1
-    && mismatches[0].id === 'AD049'
-    && mismatches[0].got === 'atom.2step.leverage.en';
-  if (kindMiss || noneCalledSend || noneSharedRouterSend) process.exitCode = 1;
-  if (wrong && !expectedWrong) process.exitCode = 1;
+  if (kindMiss || noneCalledSend || noneSharedRouterSend || wrong || fr) process.exitCode = 1;
+  if (routerFr) process.exitCode = 1;
   if (personal.exact !== personal.n || mixed.exact !== mixed.n) process.exitCode = 1;
   if (f1 !== f1Exclusive) process.exitCode = 1;
   if (catalogPlanMiss) process.exitCode = 1;

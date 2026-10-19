@@ -11,12 +11,10 @@
  * decide returns SEND(partId) or ABSTAIN(code). No prose.
  * Bodies, ids, and sendability are not modified.
  *
- * Scores and T/M come from the shared matcher on t742-impl (bc-fde119ce).
- * This module does not write approvedMatcher.js, routeNormalizer.js,
- * unresolvedPolicy.js, or matcher-params.json.
- * Frozen params: T=0, M=null. Cosine only ranks bodies that cover.
- * statementCovers inside the shared matcher false-refuses paraphrases;
- * membership stays the body-fact check until that file is fixed.
+ * Scores, policy, 2-Step trailing, and proposition membership come from
+ * the shared matcher on t742-impl (bc-fde119ce). This module does not
+ * edit those files. It feeds explain().covered from the frozen body-fact
+ * map in atom-body-facts.json. Frozen params: T=0, M=null.
  *
  * Requested model: grok-4.7. Actual model: grok-4.7.
  */
@@ -25,6 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { matchApproved, loadParams, twoStepTrailing } = require('../../staging-repair-t739/candidate/approvedMatcher');
+const { unresolvedPolicy } = require('../../staging-repair-t739/candidate/unresolvedPolicy');
 
 const CATALOG_PATH = path.join(
   __dirname,
@@ -150,92 +149,6 @@ function isPersonalOrMixed(n) {
   return false;
 }
 
-function unresolvedPolicy(normalized) {
-  const n = String(normalized == null ? '' : normalized);
-  if (isFeeReturn(n)) return 'policy.fee-refunds';
-  if (isEquality50(n)) return 'policy.equality-50';
-  if (isNewsMinutes(n)) return 'policy.news-minutes';
-  if (isSku(n)) return 'policy.sku';
-  if (isTranslation(n)) return 'policy.translations';
-  if (isCouponStack(n)) return 'policy.coupon-stacking';
-  return null;
-}
-
-function isFeeReturn(n) {
-  if (/\bnot a refund\b/.test(n)) return false;
-  return (
-    /\b(?:refund(?:ed|s)?|reimburse\w*|rebates?|repaid|repay\w*)\b/.test(n) ||
-    /\bhanded back\b/.test(n) ||
-    /\bcredited back\b/.test(n) ||
-    /\bcome back\b/.test(n) ||
-    /\breturned after\b/.test(n) ||
-    /\bpurchase price be returned\b/.test(n) ||
-    /\bcharge repaid\b/.test(n)
-  );
-}
-
-function isEquality50(n) {
-  if (/\bequal split\b/.test(n)) return false;
-  const topic = /\b(?:consistenc\w*|best[\s-]day|50|fifty|half)\b/.test(n);
-  if (!topic) return false;
-  return (
-    /\b(?:exactly|precisely|on the nose|exact equality|right at)\b/.test(n) ||
-    /\bequal to half\b/.test(n) ||
-    /\bequals the halfway\b/.test(n) ||
-    /\bprecisely equal\b/.test(n) ||
-    /\bborderline\b/.test(n) ||
-    (/\bequality\b/.test(n) && /\b(?:50|fifty|half)\b/.test(n))
-  );
-}
-
-function isNewsMinutes(n) {
-  if (/\bminute of the day\b/.test(n) || /\bclock time\b/.test(n)) return false;
-  if (!/\b(?:news|release|print|event|blackout)\b/.test(n)) return false;
-  return (
-    /\bminutes\b/.test(n) ||
-    /\bseconds\b/.test(n) ||
-    /\bgmt\b/.test(n) ||
-    /\bblackout\b/.test(n) ||
-    /\bclock range\b/.test(n) ||
-    /\binstruments?\b/.test(n) ||
-    /\bwindow\b/.test(n) ||
-    /\bminute count\b/.test(n)
-  );
-}
-
-function isSku(n) {
-  return (
-    /\bwhich size should\b/.test(n) ||
-    /\bwhich atom size should\b/.test(n) ||
-    /\bshould (?:a |the )?(?:beginner|customer)\b/.test(n) ||
-    /\brecommend an atom\b/.test(n) ||
-    /\bbest atom plan\b/.test(n) ||
-    /\bpick the right\b/.test(n) ||
-    /\bmost suitable\b/.test(n) ||
-    /\bhelp me choose\b/.test(n) ||
-    /\bought they\b/.test(n) ||
-    /\bchoose between\b/.test(n) ||
-    /\b50k or atom 100k\b/.test(n)
-  );
-}
-
-function isTranslation(n) {
-  return /\b(?:translate|translation|german wording)\b/.test(n) ||
-    /\b(?:into|in)\s+(?:spanish|french|urdu|arabic|portuguese|hindi|german|italian)\b/.test(n);
-}
-
-function isCouponStack(n) {
-  return (
-    /\bstack(?:ing|ed)?\b/.test(n) ||
-    /\bcombine\b/.test(n) ||
-    /\bboth coupons\b/.test(n) ||
-    /\btwo (?:promo|voucher|discounts)\b/.test(n) ||
-    /\bsecond code\b/.test(n) ||
-    /\bcoupons be combined\b/.test(n) ||
-    /\b2 promo codes\b/.test(n)
-  );
-}
-
 function negatedTrail(n) {
   return /\b(?:did not say|without saying|not say) trailing\b/.test(n);
 }
@@ -243,16 +156,6 @@ function negatedTrail(n) {
 function asksTrail(n) {
   if (negatedTrail(n)) return false;
   return /\btrailing\b/.test(n) || /\btrail\b/.test(n);
-}
-
-function is2StepTrailing(n) {
-  if (productOf(n) !== '2') return false;
-  if (/\btogether with\b/.test(n)) return false;
-  const trail = asksTrail(n);
-  const lossTopic = /\b(?:max(?:imum)?\s+(?:loss|drawdown)|drawdown|floor|overall\s+loss|equity stop)\b/.test(n);
-  if (trail && (lossTopic || /\b(?:lock|mechanism|follow|open profit)\b/.test(n) || /\btrail\b/.test(n))) return true;
-  if (/\bdrawdown\b/.test(n) && /\b(?:moves with|peak)\b/.test(n)) return true;
-  return false;
 }
 
 function needsClarification(n) {
@@ -271,109 +174,11 @@ function needsClarification(n) {
   return false;
 }
 
-function has(b, re) {
-  return re.test(b);
-}
-
-function bodyFacts(row) {
-  const b = String(row.body || '').toLowerCase();
-  const f = new Set();
-  if (has(b, /phase 1 profit target is 8%/) || has(b, /phase 1 target 6%/)) f.add('phase1-8');
-  if (has(b, /phase 2 profit target is 5%/)) f.add('phase2-5');
-  if (has(b, /has 2 phases/)) f.add('phases-2');
-  if (has(b, /has 1 evaluation phase/)) f.add('phases-1');
-  if (has(b, /8% \(not 10%\)/) || has(b, /8%, not 10%/)) f.add('target-8-not-10');
-  if (has(b, /older drafts that said 10% are outdated/)) f.add('older-draft-10');
-  if (has(b, /daily loss limit is 3%/)) f.add('daily-3');
-  if (has(b, /daily loss limit is 4%/)) f.add('daily-4');
-  if (has(b, /higher of your balance and equity at the previous daily close/)) f.add('daily-anchor');
-  if (has(b, /open trades count/)) f.add('open-trades');
-  if (has(b, /max loss is 10% static/)) f.add('static-10');
-  if (has(b, /never moves/)) f.add('floor-static');
-  if (has(b, /\$90,000/)) f.add('floor-90k');
-  if (has(b, /6% trailing equity/)) f.add('trailing-6');
-  if (has(b, /follows the highest equity/) && has(b, /never moves down/)) f.add('floor-follows');
-  if (has(b, /\$94,000/)) f.add('floor-94k');
-  if (has(b, /\$103,000/)) f.add('floor-103');
-  if (has(b, /including open profit/)) f.add('open-profit');
-  if (has(b, /no minimum trading days/) && has(b, /atom 2-step/)) f.add('no-min-trading-2');
-  if (has(b, /no minimum profitable days in phase 1/)) f.add('no-profit-days-2');
-  if (has(b, /funded accounts do not expire/) && has(b, /atom 2-step/)) f.add('no-expire-2');
-  if (has(b, /there is no time limit/) && has(b, /atom 2-step/)) f.add('no-time-2');
-  if (has(b, /normal inactivity rules still apply/) && has(b, /atom 2-step/)) f.add('inactivity-2');
-  if (has(b, /no minimum trading days/) && has(b, /atom 1-step/)) f.add('no-min-trading-1');
-  if (has(b, /no minimum profitable days in evaluation/) || has(b, /evaluation has no minimum profitable days/)) f.add('no-profit-eval');
-  if (has(b, /funded accounts do not expire/) && has(b, /atom 1-step/)) f.add('no-expire-1');
-  if (has(b, /no time limit/) && has(b, /atom 1-step has no minimum/)) f.add('no-time-1');
-  if (has(b, /normal inactivity rules still apply/) && has(b, /atom 1-step/)) f.add('inactivity-1');
-  if (has(b, /5 profitable days/) && has(b, /0\.5%/)) f.add('funded-5');
-  if (has(b, /\$500/)) f.add('dollar-500');
-  if (has(b, /50% consistency rule in both evaluation and funded/)) f.add('cons-1-both');
-  if (has(b, /best day \$3,000/)) f.add('cons-1-example');
-  if (has(b, /no consistency rule in the challenge phases/)) f.add('cons-2-none');
-  if (has(b, /once funded, a 50% consistency rule applies/)) f.add('cons-2-funded');
-  if (has(b, /not a breach by itself/)) f.add('not-breach');
-  if (has(b, /news trading is allowed during evaluation/)) f.add('news-eval-1');
-  if (has(b, /news trading is allowed in phase 1 and phase 2/)) f.add('news-phase-2');
-  if (has(b, /trading high-impact news is not allowed/)) f.add('news-funded-ban');
-  if (has(b, /defaults to 1:30/) || has(b, /default leverage is 1:30/) || has(b, /default of 1:30/) || has(b, /leverage 1:30\/1:50\/1:100/)) f.add('lev-default-30');
-  if (has(b, /1:50 or 1:100/) || has(b, /1:30\/1:50\/1:100/)) f.add('lev-menu');
-  if (has(b, /leverage is fixed at the published default of 1:30/)) f.add('lev-fixed-number');
-  if (has(b, /leverage and scalping fixed/) || has(b, /leverage is fixed/)) f.add('lev-fixed');
-  if (has(b, /not the universal default/)) f.add('lev-not-universal');
-  if (has(b, /options include 60%, 70%, 80%, or 95%/) || has(b, /reward 60%\/70%\/80%\/95%/)) f.add('reward-menu-2');
-  if (has(b, /options include 70%, 80%, or 100%/) || has(b, /reward 70%\/80%\/100%/)) f.add('reward-menu-1');
-  if (has(b, /default reward share is 80%/) || has(b, /reward 60%\/70%\/80%\/95% \(default 80%\)/) || has(b, /reward 70%\/80%\/100% \(default 80%\)/)) f.add('reward-default-80');
-  if (has(b, /first payout is 21 days/) || has(b, /first payout wait is 21 days/)) f.add('first-21');
-  if (has(b, /not 14 days/)) f.add('not-14');
-  if (has(b, /later payouts are every 14 days/) || has(b, /default 14 days/) || has(b, /default 14\)/)) f.add('later-14');
-  if (has(b, /3, 7, 14, or 21 days/) || has(b, /3\/7\/14\/21/)) f.add('interval-list');
-  if (has(b, /capped at 3%/)) f.add('cap-3');
-  if (has(b, /above the cap stays/)) f.add('cap-stays');
-  if (has(b, /1\.5%/)) f.add('risk-1.5');
-  if (has(b, /first payout is 21 days/) && has(b, /later payouts are every 14/)) f.add('first-and-later');
-  if (has(b, /first payout wait is 21 days/) && has(b, /later payouts follow/)) f.add('first-and-later');
-  if (has(b, /7k \$19\/\$29/) || has(b, /25k \$59/) || has(b, /50k \$114/) || has(b, /200k \$409/)) f.add('price-table');
-  if (has(b, /100k \$215\/\$289/) || has(b, /100k list prices are \$215/)) f.add('price-100k');
-  if (has(b, /\$161/) || has(b, /\$161/)) f.add('not-161');
-  if (has(b, /\$409/)) f.add('price-409');
-  if (has(b, /\$519/)) f.add('price-519');
-  if (has(b, /\$19\/\$29/)) f.add('price-7k');
-  if (has(b, /\$59\/\$70/)) f.add('price-25k');
-  if (has(b, /\$114\/\$145/)) f.add('price-50k');
-  if (has(b, /5k or 10k/) || has(b, /5k and 10k/)) f.add('size-old');
-  if (has(b, /7k, 25k, 50k, 100k, and 200k/)) f.add('size-list');
-  if (has(b, /weekend holding optional/)) f.add('weekend-2');
-  if (has(b, /weekend holding included/)) f.add('weekend-1');
-  if (has(b, /partial-scalping add-on/)) f.add('scalping-listed');
-  if (has(b, /scalping add-on/)) f.add('scalping-addon');
-  if (has(b, /max loss 6%\/8%\/10%/)) f.add('maxloss-menu');
-  if (has(b, /2nd account 25% off/)) f.add('bundle-2');
-  if (has(b, /3rd 30% off/)) f.add('bundle-3');
-  if (has(b, /4th 35% off/)) f.add('bundle-4');
-  if (has(b, /6,000 credits/) || has(b, /6000 credits/)) f.add('bundle-credits');
-  if (has(b, /not withdrawable/)) f.add('credits-not-withdrawable');
-  if (has(b, /payout credits/)) f.add('not-payout-credits');
-  if (has(b, /free market maker pack/)) f.add('free-pack');
-  if (has(b, /expert advisors are allowed/)) f.add('ea-allowed');
-  if (has(b, /trade copiers only between the trader's own accounts/) || has(b, /copiers only between/)) f.add('copier-own');
-  if (has(b, /3-minute minimum hold/)) f.add('hold-3');
-  if (has(b, /no hedging across accounts/)) f.add('no-hedge');
-  if (has(b, /no account sharing/)) f.add('no-share');
-  if (has(b, /are simulated trading accounts/)) f.add('simulated');
-  if (has(b, /does not promise real trading capital/)) f.add('no-real-capital');
-  if (has(b, /rewards are calculated from simulated profit/)) f.add('rewards-sim');
-  if (has(b, /guaranteed rewards/)) f.add('no-guarantee');
-  if (has(b, /low-cost challenge/)) f.add('what-is');
-  if (has(b, /no time limit/) && has(b, /low-cost challenge/)) f.add('no-time-general');
-  if (has(b, /no minimum trading days/) && has(b, /low-cost challenge/)) f.add('no-min-general');
-  if (has(b, /you pass as soon as you hit the profit target/)) f.add('pass-on-target');
-  if (has(b, /atom checkout options/)) f.add('checkout-page');
-  if (has(b, /default reward share is 80%/) && has(b, /first payout is 21 days/)) f.add('reward-on-payout-sheet');
-  return f;
-}
-
-const FACTS = new Map(CATALOG.sendableEn.map((row) => [row.id, bodyFacts(row)]));
+const BODY_FACTS_PATH = path.join(__dirname, 'atom-body-facts.json');
+const BODY_FACTS_TEXT = fs.readFileSync(BODY_FACTS_PATH);
+const BODY_FACTS_SHA256 = sha256(BODY_FACTS_TEXT);
+const BODY_FACTS = JSON.parse(BODY_FACTS_TEXT);
+const FACTS = new Map(Object.entries(BODY_FACTS.facts).map(([id, list]) => [id, new Set(list)]));
 
 function addIntent(intents, id) {
   if (id && !intents.includes(id)) intents.push(id);
@@ -492,7 +297,7 @@ function intentsOf(n) {
     if (p === '1' && /\b1\s*:\s*50\b/.test(n)) add('lev-fixed');
   }
 
-  if ((/\bnews\b/.test(n) || /\bhigh-impact\b/.test(n) || /\brelease\b/.test(n)) && !isNewsMinutes(n)) {
+  if (/\bnews\b/.test(n) || /\bhigh-impact\b/.test(n) || /\brelease\b/.test(n)) {
     const funded = /\bfunded\b/.test(n);
     const challenge = /\b(?:evaluation|phase[\s-]*1|phase[\s-]*2|challenge|release)\b/.test(n);
     if (funded && !challenge) add('news-funded-ban');
@@ -502,15 +307,13 @@ function intentsOf(n) {
   }
 
   if (/\bconsistenc\w*\b/.test(n) || bestDay) {
-    if (!isEquality50(n)) {
-      if (p === '1') add('cons-1-both');
-      if (p === '2' && /\b(?:challenge|phase|absent|no consistency)\b/.test(n)) add('cons-2-none');
-      if (p === '2' && /\bfunded\b/.test(n)) add('cons-2-funded');
-      if (p === '2' && !intents.includes('cons-2-none') && !intents.includes('cons-2-funded')) add('cons-2-funded');
-      if (/\bnot a breach\b/.test(n) || /\bkeep trading\b/.test(n) || /\bbreach on its own\b/.test(n) || /\bby itself\b/.test(n)) add('not-breach');
-      if (/\bthree thousand\b/.test(n) || /\b3,?000\b/.test(n)) add('cons-1-example');
-      if (/\btwice the best day\b/.test(n) && p === '1') add('cons-1-both');
-    }
+    if (p === '1') add('cons-1-both');
+    if (p === '2' && /\b(?:challenge|phase|absent|no consistency)\b/.test(n)) add('cons-2-none');
+    if (p === '2' && /\bfunded\b/.test(n)) add('cons-2-funded');
+    if (p === '2' && !intents.includes('cons-2-none') && !intents.includes('cons-2-funded')) add('cons-2-funded');
+    if (/\bnot a breach\b/.test(n) || /\bkeep trading\b/.test(n) || /\bbreach on its own\b/.test(n) || /\bby itself\b/.test(n)) add('not-breach');
+    if (/\bthree thousand\b/.test(n) || /\b3,?000\b/.test(n)) add('cons-1-example');
+    if (/\btwice the best day\b/.test(n) && p === '1') add('cons-1-both');
   }
 
   const daily = (/\b(?:daily|intraday)\b/.test(n) && /\b(?:loss|limit|percent|cap|line)\b/.test(n)) || /\b(?:three|four) percent day\b/.test(n) || /\bday reset\b/.test(n) || /\bbalance or equity\b/.test(n) || /\bsnapshot\b/.test(n);
@@ -636,15 +439,8 @@ function sharedStatus() {
     M: params ? params.M : null,
     paramsFrozen: !!(params && params.status === 'frozen'),
     matchPool: MATCH_POOL.length,
+    bodyFactsSha256: BODY_FACTS_SHA256,
   };
-}
-
-function scoreRows(normalized) {
-  const params = loadParams();
-  if (!params) return [];
-  const out = matchApproved({ normalized, rows: MATCH_POOL, params, clarify: false });
-  const list = out && Array.isArray(out.candidates) ? out.candidates : [];
-  return list.slice().sort((a, b) => (b.score - a.score) || String(a.partId).localeCompare(String(b.partId)));
 }
 
 function send(partId) {
@@ -665,33 +461,33 @@ function decide({ normalized, gate, claim: claimIn, params }) {
   if (!c || c.kind !== 'exclusive' || c.entity !== 'atom') return abstain('not-owner', null);
   const n = String(normalized == null ? '' : normalized);
   if (isPersonalOrMixed(n)) return send(REFUSE_ID);
-  const policy = unresolvedPolicy(n);
-  if (policy) return abstain('unresolved-policy', policy);
-  if (is2StepTrailing(n) || twoStepTrailing(n)) return abstain('atom-2step-trailing', null);
-  if (needsClarification(n)) return abstain('atom-clarification', null);
-  const intents = intentsOf(n);
-  const product = productOf(n);
-  const covered = MATCH_POOL.filter((row) => coversAll(row, intents, product));
-  if (!covered.length) return abstain('COVERAGE_DENIED', null);
-  const coveredIds = new Set(covered.map((row) => row.id));
   const frozen = loadParams();
-  const T = params && params.T != null ? params.T : (frozen ? frozen.T : null);
-  if (T == null) return abstain('calibration-blocked', null);
-  const ranked = scoreRows(n).filter((row) => coveredIds.has(row.partId) && row.score >= T);
-  if (!ranked.length) return abstain('COVERAGE_DENIED', null);
-  return send(ranked[0].partId);
+  const use = params && typeof params.T === 'number' ? { T: params.T, M: null } : frozen;
+  if (!use || typeof use.T !== 'number') return abstain('calibration-blocked', null);
+  const matched = matchApproved({
+    normalized: n,
+    rows: MATCH_POOL,
+    params: use,
+    clarify: needsClarification(n),
+  });
+  if (!matched || matched.action !== 'SEND') {
+    return abstain((matched && matched.code) || 'COVERAGE_DENIED', matched ? matched.policy : null);
+  }
+  return send(matched.partId);
 }
 
 function explain(normalized) {
   const n = String(normalized || '');
+  const intents = intentsOf(n);
+  const product = productOf(n);
   return {
-    product: productOf(n),
+    product,
     personal: isPersonalOrMixed(n),
     policy: unresolvedPolicy(n),
-    trailing: is2StepTrailing(n),
+    trailing: twoStepTrailing(n),
     clarify: needsClarification(n),
-    intents: intentsOf(n),
-    covered: CATALOG.sendableEn.filter((row) => coversAll(row, intentsOf(n), productOf(n))).map((row) => row.id),
+    intents,
+    covered: MATCH_POOL.filter((row) => coversAll(row, intents, product)).map((row) => row.id),
   };
 }
 
@@ -704,4 +500,6 @@ module.exports = {
   sharedStatus,
   REFUSE_ID,
   CATALOG_PATH,
+  BODY_FACTS_PATH,
+  BODY_FACTS_SHA256,
 };
