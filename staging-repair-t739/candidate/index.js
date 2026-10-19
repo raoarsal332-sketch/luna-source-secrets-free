@@ -262,11 +262,12 @@ async function replayAuthDeferred(reason) {
   return { replayed };
 }
 
-function approvedCommentHold(method, data) {
+function approvedCommentHold(method, data, opScope, url) {
   if (['get', 'head', 'options'].includes(String(method || 'get').toLowerCase())) return null;
   if (!data || data.message_type !== 'comment') return null;
   const boundary = require('./publicWriteBoundary');
-  const verdict = boundary.assertApprovedPublicOutput(data, {});
+  const conversationId = (String(url || '').match(/conversations\/(\d+)/) || [])[1] || '';
+  const verdict = boundary.assertApprovedPublicOutput(data, { opScope, conversationId });
   boundary.logDecision(verdict, data);
   if (verdict && verdict.ok) return null;
   return boundary.denyResult(verdict);
@@ -284,7 +285,7 @@ async function icRequest(method, url, data, tag, opScope, retryPermission) {
   // PUBLIC_CREDENTIAL_HOLD_V1: nothing credential-bearing reaches the fast-ack store or the transport.
   const __credHold = credentialHoldForWrite(method, url, data);
   if (__credHold) { credentialHoldLog(url, __credHold); return publicCredentialHold.holdResult(__credHold); }
-  const __approvedHold = approvedCommentHold(method, data);
+  const __approvedHold = approvedCommentHold(method, data, opScope, url);
   if (__approvedHold) return __approvedHold;
   // Fast-ack worker only. Direct handleWebhook / pollers / sync mode have no event
   // context, so this returns the existing request unchanged.
@@ -374,7 +375,7 @@ async function icRequestUnguarded(method, url, data, tag, opScope, retryPermissi
           if (opId) writeOpStore.set(opId, { status: 'failed', reason: 'credential-hold', scoped: !!opScope });
           return publicCredentialHold.holdResult(__attemptHold);
         }
-        const __approvedAttempt = approvedCommentHold(method, data);
+        const __approvedAttempt = approvedCommentHold(method, data, opScope, url);
         if (__approvedAttempt) {
           if (opId) writeOpStore.set(opId, { status: 'failed', reason: __approvedAttempt.holdCode, scoped: !!opScope });
           return __approvedAttempt;
@@ -7173,7 +7174,7 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain, command
     applyAuthorizedCommandControl('setReplyAllowed', conversationId, true);
     // Owner-dictated public REPLY: never welcome-intro, never already-replied skip (Escalations often have prior Arsal notes).
     let out = postProcessModelReply(body, conversationId);
-    const r = await postReply(conversationId, 'comment', out);
+    const r = await postReply(conversationId, 'comment', out, 'command:' + commandPartId);
     if (r && r.held) {
       const __holdNote = staffCommandHoldNote(r.holdCode);
       if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + commandPartId);
@@ -7525,7 +7526,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       } else {
       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
       let out = postProcessModelReply(cmdBody, conversationId);
-      const r = await postReply(conversationId, 'comment', out);
+      const r = await postReply(conversationId, 'comment', out, 'command:' + partId);
       if (r && r.held) {
         const __holdNote = staffCommandHoldNote(r.holdCode);
         if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + partId);

@@ -58,12 +58,11 @@ test('B1 in-process block: fetch, https.request, net.connect, dns.lookup and chi
 test('B2 recorder sits BELOW axios: the real icRequest/axios stack runs, headers are built by the real code, the adapter records the request', async () => {
   reset();
   const { id } = newConv();
-  // Design lines 571 and 583: this sentence is model prose. It is denied
-  // before axios while plainMainRouteModelTextDenied() is true.
-  const denied = await index.postReply(id, 'comment', 'The daily loss limit is 5%.');
+  // t745: this sentence is unprotected main-route prose, so it reaches axios.
+  const sent = await index.postReply(id, 'comment', 'The daily loss limit is 5%.');
   if (E.which === 'candidate') {
-    assert.strictEqual(denied.holdCode, 'NOT_APPROVED_OUTPUT', JSON.stringify(denied));
-    assert.ok(!fake.requests.some((q) => q.method === 'post' && /\/reply$/.test(q.url)), 'free-text comment reached axios');
+    assert.ok(sent && sent.ok, JSON.stringify(sent));
+    assert.ok(fake.requests.some((q) => q.method === 'post' && /\/reply$/.test(q.url)), 'unprotected free-text comment did not reach axios');
   }
   const guard = require(require('path').join(E.t.dir, 'spreadPublicGuard'));
   const r = await index.postReply(id, 'comment', guard.SAFE_SPREAD_REPLY);

@@ -1143,3 +1143,29 @@ This section is the list for the Packs author and the Atom author. The shared de
 ## Stop
 
 Phase D ends at this document. No product code is included. Implementation waits for the owner freeze.
+
+## Addendum t745 (owner Option A)
+
+Owner reference t745. This addendum is the only change to the frozen body. Earlier sections are unchanged. Where this addendum narrows a sentence above, this addendum is the rule.
+
+The strict approved-response gate applies only to protected content. Protected content is:
+
+1. An exclusive Packs or Atom claim (the entity token is present).
+2. A turn whose normalized text contains both the Packs entity and the Atom entity (gold row for both-entity `none`).
+3. MT5/spread: spread-test state `offered`, or `spreadAskGate.explain()` with `result === true` or reason `spread-test-credential`, on the bound customer text or the outgoing comment.
+4. A credential-detector hit on the outgoing comment.
+5. Staff `REPLY` / `FOLLOW` customer content. The public comment is posted with `opScope` `command:<partId>`. Unmatched prose is `NOT_APPROVED_OUTPUT`. `note.staff.hold` is posted only when delivery is known not to have occurred, and a `CRED_*` code is still rewritten to `NOT_APPROVED_OUTPUT`. Uncertain delivery posts no staff note.
+
+A shared claim that is only a selector word, with no Packs entity token and no Atom entity token, is ordinary main-route content. Unmatched model prose on that turn is admitted as `comp.main-route-model`. This narrows the "model paragraph is denied" sentence on the shared rows of the gold table. Origin 1 ordinary webhook replies and the FAQ path keep that live behavior.
+
+`plainMainRouteModelTextDenied()` is that decision. It returns true for protected content and false otherwise. Approved catalog rows, the spread template, admitted greetings, URL, attachment, coverage, name-slot, multi-body, and non-sendable checks do not consult it. The credential hold still runs before it. Human ownership, Risk/Escalations suppression, STOP, aiOff, Fin-wait, duplicate prevention, and reply-quality are unchanged.
+
+The same decision runs on every public comment, including fallback, queued, replay, burst, and retry. Those paths re-enter `handleWebhook` or call `approvedCommentHold` again with the same `opScope`. If classification throws and the text looks protected (a Packs or Atom token, a spread or MT5 word, or a credential word), the decision fails closed and denies.
+
+### AD259, exclusive Atom, language uncertain, flag on
+
+Design line 1114 covers flag off only: uncertain plus an exclusive module claim plus the flag off is fail-closed silence. It does not say what flag on does. Line 1117 says exclusive plus flag on plus delivery wired uses the module `decide` gold, and it does not mention language. That is the gap.
+
+F5: uncertain is not English. Do not send an English catalog row and do not relabel the turn as English. Option A: Atom is protected, so the model does not compose a public paragraph.
+
+Rule, source-backed from F5 and this addendum: exclusive Atom, language uncertain, flag on. `decide` does not run. Running it would score an English row, or an English coverage abstain, against a non-English turn. The public result is silence: no comment, no note, no assignment, no model paragraph. The scored reason is `language-uncertain-module-on`. It is not `COVERAGE_DENIED` and it is not F1. Flag off stays the line 1114 F1 silence. The Atom dev scorer reads this cell. Router and scorer agree on that reason.

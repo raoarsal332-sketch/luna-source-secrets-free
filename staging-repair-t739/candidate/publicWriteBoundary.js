@@ -173,13 +173,80 @@ function deny(code) {
 }
 
 /**
- * Single switch for model-composed prose on a plain main-route comment.
- * Design lines 583 and 877. The current answer is deny. Approved catalog
- * rows, the spread template, admitted greetings, and credential holds do
- * not consult this function. Flipping the return is the whole change.
+ * Protected-category decision for unmatched model prose (owner t745, Option A).
+ * Returns true only when the comment is protected content: an exclusive Packs
+ * or Atom claim, both entity tokens, an MT5/spread offer or detector hit, a
+ * credential-detector hit, or a staff REPLY/FOLLOW customer comment.
+ * A shared selector word with no entity token is ordinary main-route content
+ * and is allowed through the existing live gates. Classification that throws
+ * on protected-looking text fails closed. Approved catalog rows, the spread
+ * template, and admitted greetings do not consult this function.
  */
-function plainMainRouteModelTextDenied() {
-  return true;
+function looksProtected(text) {
+  return /\b(?:packs?|atom|spreads?|mt5|metatrader|meta\s*trader|passwords?|logins?|credentials?)\b/i.test(String(text || ''));
+}
+
+function moduleTurnProtected(sample) {
+  const { normalizeForRoute } = require('./routeNormalizer');
+  const { packsEntityPresent, atomEntityPresent } = require('./moduleInterface');
+  const router = require('./publicRouter');
+  const normalized = normalizeForRoute(sample);
+  if (packsEntityPresent(normalized) && atomEntityPresent(normalized)) return true;
+  const input = { text: sample, normalized };
+  const packsClaim = router.askClaim('packs', input);
+  const atomClaim = router.askClaim('atom', input);
+  if ((packsClaim && (packsClaim.thrown || packsClaim.malformed))
+    || (atomClaim && (atomClaim.thrown || atomClaim.malformed))) return true;
+  const resolved = router.resolveClaims(packsClaim, atomClaim, normalized);
+  if (!resolved || resolved.malformed) return true;
+  return resolved.kind === 'exclusive';
+}
+
+function plainMainRouteModelTextDenied(ctx) {
+  ctx = ctx || {};
+  const bound = currentTurn() || {};
+  const plain = String(ctx.plain || '');
+  const opScope = ctx.opScope != null ? ctx.opScope : bound.opScope;
+  const staff = staffActive() || bound.staff === true || String(opScope || '').startsWith('command:');
+  if (staff) return true;
+  const cid = ctx.conversationId || bound.conversationId || '';
+  const samples = [];
+  if (bound.text) samples.push(String(bound.text));
+  if (bound.normalized && bound.normalized !== bound.text) samples.push(String(bound.normalized));
+  if (plain) samples.push(plain);
+  let uncertain = false;
+  try {
+    const cred = require('./publicCredentialHold');
+    const payload = ctx.data && ctx.data.message_type ? ctx.data : { message_type: 'comment', body: plain };
+    const held = cred.holdOutgoingPayload('post', payload, { conversationId: cid });
+    if (held && held.hold) return true;
+  } catch (_) {
+    uncertain = true;
+  }
+  try {
+    const spreadState = require('./spreadTestState');
+    if (cid && spreadState.load(cid).state === 'offered') return true;
+  } catch (_) {
+    uncertain = true;
+  }
+  try {
+    const gate = require('./spreadAskGate');
+    for (const sample of samples) {
+      const explained = gate.explain(sample);
+      if (explained && (explained.result === true || explained.reason === 'spread-test-credential')) return true;
+    }
+  } catch (_) {
+    uncertain = true;
+  }
+  try {
+    for (const sample of samples) {
+      if (moduleTurnProtected(sample)) return true;
+    }
+  } catch (_) {
+    uncertain = true;
+  }
+  if (uncertain && samples.some(looksProtected)) return true;
+  return false;
 }
 
 function assertApprovedPublicOutput(data, opts) {
@@ -228,7 +295,7 @@ function assertApprovedPublicOutput(data, opts) {
     }
     body = lookupExact(index, coreText);
     if (!body) {
-      if (plainMainRouteModelTextDenied()) return deny('NOT_APPROVED_OUTPUT');
+      if (plainMainRouteModelTextDenied({ plain: coreText, opScope: opts.opScope, conversationId: opts.conversationId, data })) return deny('NOT_APPROVED_OUTPUT');
       return {
         ok: true,
         code: 'OK',

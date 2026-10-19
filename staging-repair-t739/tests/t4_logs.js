@@ -15,22 +15,21 @@ test('F4 IC_REQ_FAIL: a rejected write that echoes customer text logs codes and 
   reset();
   const { id } = newConv();
   fake.setResponder((rec) => (rec.method === 'post' ? { status: 400, data: { type: 'error.list', errors: [{ code: 'parameter_invalid', message: 'bad body ' + S }] } } : null));
-  // Free-text comments are denied before axios (design lines 571 and 583).
-  // The line that runs is PUBLIC_WRITE, and the sentinel is absent from it.
+  // t745: this sentence is unprotected, so it reaches axios. The rejection log
+  // is codes and length. The sentinel stays out of every log line.
   await index.postReply(id, 'comment', 'The daily loss limit is 5%. ' + S);
-  const deny = h.logs.map((l) => l.line).filter((l) => l.includes('PUBLIC_WRITE'));
-  assert.ok(deny.length >= 1, 'deny line not reached');
-  assert.ok(deny.every((l) => !l.includes(S) && /NOT_APPROVED_OUTPUT/.test(l)), deny.join('|'));
-  assert.deepStrictEqual(leaks(), []);
-  if (E.which !== 'candidate') return;
-  // An approved comment still reaches axios. The rejection log is codes and length.
-  const guard = require(path.join(E.t.dir, 'spreadPublicGuard'));
-  h.logs.length = 0;
-  await index.postReply(id, 'comment', guard.SAFE_SPREAD_REPLY);
   const lines = h.logs.map((l) => l.line).filter((l) => l.startsWith('IC_REQ_FAIL'));
   assert.strictEqual(lines.length, 1, h.logs.slice(-8).map((l) => l.line).join('|'));
   assert.ok(!lines[0].includes(S), lines[0]);
   assert.ok(/codes=parameter_invalid/.test(lines[0]) && /\[redacted len=\d+\]/.test(lines[0]), lines[0]);
+  assert.deepStrictEqual(leaks(), []);
+  if (E.which !== 'candidate') return;
+  // Protected spread prose is denied before axios. The deny line has no sentinel.
+  h.logs.length = 0;
+  await index.postReply(id, 'comment', 'The spreads on the MetaTrader 5 server are the thing to inspect. ' + S);
+  const deny = h.logs.map((l) => l.line).filter((l) => l.includes('PUBLIC_WRITE'));
+  assert.ok(deny.length >= 1, 'deny line not reached');
+  assert.ok(deny.every((l) => !l.includes(S) && /NOT_APPROVED_OUTPUT/.test(l)), deny.join('|'));
   assert.deepStrictEqual(leaks(), []);
 });
 test('F4 OWNER_CMD_LLM_RAW: raw model output is not logged, only its length', async () => {

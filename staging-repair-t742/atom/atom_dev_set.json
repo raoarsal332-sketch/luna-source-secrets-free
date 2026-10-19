@@ -13694,13 +13694,16 @@
       },
       "e2e": {
         "flagOn": {
-          "tableRow": "exclusive|Atom|general|runs|silence",
-          "decide": "runs",
+          "tableRow": "exclusive|Atom|uncertain|does-not-run|silence",
+          "decide": "does-not-run",
           "delivery": "wired",
           "scored": {
             "result": "silence",
-            "code": "COVERAGE_DENIED",
-            "policy": null
+            "code": "language-uncertain-module-on",
+            "policy": null,
+            "reply": false,
+            "note": false,
+            "assignment": false
           }
         },
         "flagOff": {
@@ -13716,7 +13719,8 @@
       },
       "tags": [
         "no-covering",
-        "abstain"
+        "abstain",
+        "language-uncertain"
       ]
     },
     {

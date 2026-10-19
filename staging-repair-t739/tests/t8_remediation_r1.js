@@ -76,8 +76,7 @@ test('MT5-1 safe replies are delivered through postClientCommentOnce -> icReques
   // Design line 608: the spread template is the approved send. A catalog body
   // is added only when coversAllIntents is true. Customer text "hello" does
   // not cover faq.is-broker.en or a Packs refuse row (design line 273).
-  // Design line 571: a model-composed sentence is NOT_APPROVED_OUTPUT while
-  // plainMainRouteModelTextDenied() stays true (lines 583 and 877).
+  // t745: these sentences name spreads, so the MT5 detector keeps them denied.
   const expectSend = [guard.SAFE_SPREAD_REPLY];
   const expectCoverage = [broker];
   if (refuse) expectCoverage.push(refuse);

@@ -218,7 +218,12 @@ async function main() {
       eventId: conv.parts[0].id,
     });
     const routedGot = routerDecision(routed);
-    const routedOk = matches(routedGot, row);
+    const uncertainCell = row.e2e && row.e2e.flagOn && row.e2e.flagOn.decide === 'does-not-run'
+      && row.e2e.flagOn.scored && row.e2e.flagOn.scored.code === 'language-uncertain-module-on';
+    const routedOk = uncertainCell
+      ? routed && routed.reason === 'language-uncertain-module-on' && !routed.decide && routed.suppressPublicComposition === true
+        && routedGot.action === 'ABSTAIN' && routedGot.code === 'language-uncertain-module-on'
+      : matches(routedGot, row);
     if (routedOk) routerCorrect += 1;
     else {
       routerWrong += 1;

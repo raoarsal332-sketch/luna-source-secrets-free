@@ -202,13 +202,13 @@ for (const [name, payload] of VARIANTS.slice(0, 4)) {
     secretsAbsent({ ...surfaces(), ledgerSeen: ledgerSeen.join('\n') }, name);
   });
 }
-test('owner REPLY: a clean exact send still goes out and posts "Sent to client." (preserved)', async () => {
+test('owner REPLY: unmatched customer prose is protected staff content and is not sent (t745)', async () => {
   reset();
   const { id } = newConv('Please help');
   fake.getConversation(id).conversation_parts.conversation_parts.push(ownerNote('REPLY: The daily loss limit is 5%.'));
   await T.processAuthorizedNoteCommands(id, fake.getConversation(id));
-  assert.strictEqual(fake.publicWrites().length, 1);
-  assert.ok(fake.notes().some((n) => /Sent to client/.test(n.data.body)));
+  assert.strictEqual(fake.publicWrites().length, 0);
+  assert.ok(fake.notes().some((n) => n.data.body === STAFF_NOTE('NOT_APPROVED_OUTPUT')), JSON.stringify(fake.notes().map((n) => n.data.body)));
 });
 for (const [name, payload] of VARIANTS.slice(0, 3)) {
   test(`owner FOLLOW exact "send this message to client [..]": held, ledger body-free: ${name}`, async () => {
@@ -239,7 +239,7 @@ for (const [name, payload] of VARIANTS.slice(0, 3)) {
     assert.ok(fake.notes().some((n) => /^Reply held by safety check \(reason: /.test(n.data.body)));
   });
 }
-test('owner FOLLOW via model plan: a clean plan is persisted with its body for retry, executed once, and deleted after completion (preserved)', async () => {
+test('owner FOLLOW via model plan: unmatched customer prose is protected staff content and is not sent (t745)', async () => {
   reset();
   const { id } = newConv('Please help');
   fake.getConversation(id).conversation_parts.conversation_parts.push(ownerNote('please tell the client about the daily loss limit'));
@@ -247,9 +247,10 @@ test('owner FOLLOW via model plan: a clean plan is persisted with its body for r
   const ledgerSeen = [];
   fake.setResponder(() => { ledgerSeen.push(E.read(T.AUTH_COMMAND_FILE)); return null; });
   await T.processAuthorizedNoteCommands(id, fake.getConversation(id));
-  assert.strictEqual(fake.publicWrites().length, 1);
-  assert.ok(ledgerSeen.some((l) => l.includes('The daily loss limit is 5%.')), 'clean plan body expected in the retry ledger while pending');
-  assert.ok(!E.read(T.AUTH_COMMAND_FILE).includes('daily loss limit'), 'plan body must be deleted after completion');
+  assert.strictEqual(fake.publicWrites().length, 0);
+  assert.ok(fake.notes().some((n) => n.data.body === STAFF_NOTE('NOT_APPROVED_OUTPUT')), JSON.stringify(fake.notes().map((n) => n.data.body)));
+  assert.ok(!E.read(T.AUTH_COMMAND_FILE).includes('daily loss limit'), 'plan body must be deleted after the hold');
+  assert.ok(ledgerSeen.every((l) => !/password|99999001/.test(l)));
 });
 test('persisted/retryable plan written by an older version (body with a pair, phase pending) is held on retry and the body is removed at completion', async () => {
   reset();
@@ -339,6 +340,71 @@ test('failed check: a detector exception holds (never passes)', () => {
   const r = hold.holdOutgoingPayload('post', { message_type: 'comment', get body() { throw new Error('x'); } });
   assert.ok(r && r.hold);
   assert.ok(bad);
+});
+
+test('t745 protected free text stays denied: Packs, Atom, spread, offered state, and retry', async () => {
+  const boundary = require(path.join(E.t.dir, 'publicWriteBoundary'));
+  const spreadState = require(path.join(E.t.dir, 'spreadTestState'));
+  const norm = require(path.join(E.t.dir, 'routeNormalizer'));
+  const denied = async (label, body, turn) => {
+    reset();
+    const { id } = newConv(turn || 'Please help');
+    if (turn) {
+      boundary.bindTurn({ text: turn, normalized: norm.normalizeForRoute(turn), conversationId: id });
+    } else {
+      boundary.bindTurn(null);
+    }
+    const r = await index.postReply(id, 'comment', body);
+    assert.strictEqual(r && r.holdCode, 'NOT_APPROVED_OUTPUT', label + ' ' + JSON.stringify(r));
+    noPublic(label);
+    opStoreEmpty();
+    boundary.bindTurn(null);
+  };
+  await denied('packs-body', 'Elite Packs profit split is eighty percent in this sentence.');
+  await denied('atom-body', 'Elite Atom profit split is eighty percent in this sentence.');
+  await denied('spread-body', 'The spreads on the MetaTrader 5 server are the thing to inspect.');
+  await denied('packs-turn', 'Here is a sentence that is not a catalog row.', 'What is Elite Packs?');
+  await denied('both-entities', 'Here is a sentence that is not a catalog row.', 'How do Elite Packs and Elite Atom differ?');
+  reset();
+  const offered = newConv('Can you send the test login so I can check the spreads?');
+  const entered = spreadState.onTurn({
+    conversationId: offered.id,
+    eventId: 'e-spread',
+    text: 'Can you send the test login so I can check the spreads?',
+  });
+  assert.strictEqual(entered.state, 'offered', JSON.stringify(entered));
+  boundary.bindTurn(null);
+  const held = await index.postReply(offered.id, 'comment', 'The daily loss limit is 5%.');
+  assert.strictEqual(held && held.holdCode, 'NOT_APPROVED_OUTPUT', JSON.stringify(held));
+  noPublic('offered');
+  spreadState.clear(offered.id, 'test');
+  boundary.bindTurn(null);
+  reset();
+  const retry = newConv();
+  fake.failWrites(429, 429);
+  boundary.bindTurn(null);
+  const rr = await index.postReply(retry.id, 'comment', 'Elite Atom profit split is eighty percent in this sentence.');
+  assert.strictEqual(rr && rr.holdCode, 'NOT_APPROVED_OUTPUT', JSON.stringify(rr));
+  assert.strictEqual(fake.publicWrites().length, 0);
+  assert.ok(!fake.requests.some((q) => q.method === 'post' && /\/reply$/.test(q.url)), 'protected retry reached axios');
+  boundary.bindTurn(null);
+});
+test('t745 staff REPLY of Packs free text is denied on the command path', async () => {
+  reset();
+  const { id } = newConv('Please help');
+  fake.getConversation(id).conversation_parts.conversation_parts.push(ownerNote('REPLY: Elite Packs profit split is eighty percent in this sentence.'));
+  await T.processAuthorizedNoteCommands(id, fake.getConversation(id));
+  noPublic('staff-packs');
+  assert.ok(fake.notes().some((n) => n.data.body === STAFF_NOTE('NOT_APPROVED_OUTPUT')), JSON.stringify(fake.notes().map((n) => n.data.body)));
+});
+test('t745 queued webhook still denies Packs free text', async () => {
+  reset();
+  const { id, user } = newConv('What is Elite Packs?');
+  lm.state.queue.push('ACTION: REPLY\nBODY: Elite Packs profit split is eighty percent in this sentence.');
+  const req = { body: { topic: 'conversation.user.replied', data: { item: { id, type: 'conversation', conversation_parts: { conversation_parts: [user] }, source: fake.getConversation(id).source } } }, headers: {}, __queuedWebhook: true };
+  const res = { sendStatus() { return this; }, status() { return this; }, json() { return this; }, send() { return this; } };
+  await index.handleWebhook(req, res);
+  noPublic('queued-packs');
 });
 
 test('no generic stub other than the inert startup ones was called during the run', () => {

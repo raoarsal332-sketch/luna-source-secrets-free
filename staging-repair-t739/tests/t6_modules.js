@@ -242,7 +242,7 @@ test('F1e2e control: a non-module English ask is not an F1 silence, and model pr
     h.say('OBS|discount-main|' + JSON.stringify({ public: fake.publicWrites().length, notes: fake.notes().length, model: lm.state.calls.length }));
   });
 });
-test('none-claim Instant Override stays on the main route and does not post model prose', async () => {
+test('none-claim Instant Override stays on the main route and ordinary model prose is sent (t745)', async () => {
   await withFlags({}, async () => {
     const router = require(path.join(E.t.dir, 'publicRouter'));
     const routed = await router.route({ text: 'Can I redeem a key for Instant Override?', prior: [], conversationId: 'k', eventId: 'ek' });
@@ -254,8 +254,8 @@ test('none-claim Instant Override stays on the main route and does not post mode
     const { id, user } = newConv('Can I redeem a key for Instant Override?');
     lm.state.queue.push('ACTION: REPLY\nBODY: ' + prose);
     await index.handleWebhook(webhookReq(id, user), res);
-    assert.ok(!JSON.stringify(fake.publicWrites()).includes(prose));
-    assert.strictEqual(fake.publicWrites().length, 0);
+    assert.ok(JSON.stringify(fake.publicWrites()).includes(prose));
+    assert.strictEqual(fake.publicWrites().length, 1);
     h.say('OBS|instant-override|' + JSON.stringify({ public: fake.publicWrites().length, notes: fake.notes().length, model: lm.state.calls.length, writes: fake.writes().map((w) => w.data && w.data.message_type) }));
   });
 });
