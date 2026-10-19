@@ -2,35 +2,25 @@
 /**
  * Packs decide. SEND a sendable catalog id, or ABSTAIN. Never prose.
  *
- * Order when the router has already established one exclusive owner:
+ * Order, once the router has one exclusive owner:
  * 1. non-en: do not send an English body
- * 2. not exclusive: do not send (the router should not have called)
- * 3. personal or mixed account-state: SEND packs.account-status.refuse.en
- * 4. canonical policy veto: ABSTAIN unresolved-policy
- * 5. matchApproved on the sendable pool excluding refuse and handoff
- * 6. keep a candidate only when its body covers every intent
- * 7. one id: highest score, then lexicographically smallest partId
- *    otherwise ABSTAIN COVERAGE_DENIED
- *
- * The handoff row stays in the catalog index and is not a candidate.
- * No model-composed text. No new FAQ row.
+ * 2. not exclusive: do not send
+ * 3. personal or mixed account-state: SEND the refuse id
+ * 4. Packs registry veto: ABSTAIN unresolved-policy
+ * 5. shared matchApproved scores the sendable pool (T and M from
+ *    matcher-params.json). Cosine only ranks.
+ * 6. proposition coverage is the membership gate
+ * 7. one id: highest score, then smallest partId
  */
 
-const approved = require('../../../staging-repair-t739/packs/packsApprovedAnswers');
+const approved = require('../../../staging-repair-t739/candidate/packs/packsApprovedAnswers');
+const { matchApproved, loadParams } = require('../../../staging-repair-t739/candidate/approvedMatcher');
 const { isPersonalOrMixed } = require('./packsAccount');
 const { unresolvedPolicy } = require('./packsPolicy');
-const { coversAllIntents, catalogStemSet } = require('./packsCoverage');
-const { matchApproved } = require('./packsMatch');
+const { coversPart } = require('./packsPropositions');
 
 const REFUSE_ID = 'packs.account-status.refuse.en';
 const HANDOFF_ID = 'packs.handoff.unverified.en';
-
-/**
- * Operating point from the dev sweep. No T in {0.15 … 0.60} meets
- * ≥95% correct and ≤5% false refusal, so this value is not frozen
- * and is not written to matcher-params.json. See the dev harness.
- */
-const DEFAULT_T = 0.15;
 
 function abstain(code, policy) {
   return { action: 'ABSTAIN', code, policy: policy || null };
@@ -42,6 +32,7 @@ function productRows(data) {
     const tags = row.intentTags || [];
     if (tags.includes('accountStatusBoundary')) return false;
     if (tags.includes('handoff')) return false;
+    if (row.id === REFUSE_ID || row.id === HANDOFF_ID) return false;
     return true;
   });
 }
@@ -50,17 +41,16 @@ function catalogCensus(data) {
   const all = data.all;
   const english = all.filter((row) => row.locale === 'en' || row.language === 'en');
   const sendable = all.filter((row) => row.sendable);
-  const englishSendable = english.filter((row) => row.sendable);
   return {
     rows: all.length,
     english: english.length,
     sendable: sendable.length,
-    englishSendable: englishSendable.length,
+    englishSendable: english.filter((row) => row.sendable).length,
     productPool: productRows(data).length,
   };
 }
 
-function decide(input, params) {
+function decide(input) {
   const normalized = input && input.normalized != null ? String(input.normalized) : '';
   const gate = (input && input.gate) || {};
   const claim = (input && input.claim) || {};
@@ -77,28 +67,34 @@ function decide(input, params) {
   const policy = unresolvedPolicy(normalized);
   if (policy) return abstain('unresolved-policy', policy);
 
-  const t = params && typeof params.T === 'number' ? params.T : DEFAULT_T;
+  const params = loadParams();
+  if (!params) return abstain('calibration-blocked', null);
   const rows = productRows(data);
-  const matched = matchApproved({ normalized, rows, params: { T: t } });
-  const catalog = catalogStemSet(rows);
+  const matched = matchApproved({ normalized, rows, params });
+  const ranked = matched.candidates || [];
   const kept = [];
-  for (const cand of matched.candidates || []) {
+  for (const cand of ranked) {
     if (cand.partId === HANDOFF_ID || cand.partId === REFUSE_ID) continue;
     const row = data.byId.get(cand.partId);
     if (!row || !row.sendable) continue;
-    if (!coversAllIntents(normalized, row.body, catalog)) continue;
-    kept.push({ partId: row.id, score: cand.score, contentHash: row.contentHash });
+    if (!coversPart(normalized, row.id)) continue;
+    kept.push(row);
   }
   if (!kept.length) return abstain('COVERAGE_DENIED', null);
-  kept.sort((a, b) => b.score - a.score || a.partId.localeCompare(b.partId));
+  kept.sort((a, b) => {
+    const sa = ranked.find((c) => c.partId === a.id);
+    const sb = ranked.find((c) => c.partId === b.id);
+    const ds = (sb ? sb.score : 0) - (sa ? sa.score : 0);
+    if (ds) return ds;
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  });
   const pick = kept[0];
-  return { action: 'SEND', partId: pick.partId, contentHash: pick.contentHash };
+  return { action: 'SEND', partId: pick.id, contentHash: pick.contentHash };
 }
 
 module.exports = {
   REFUSE_ID,
   HANDOFF_ID,
-  DEFAULT_T,
   decide,
   productRows,
   catalogCensus,

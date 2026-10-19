@@ -19,6 +19,7 @@
  */
 const approved = require('./packsApprovedAnswers');
 const pregate = require('./packsOwnershipPregate');
+const packsModule = require('../../../staging-repair-t742/packs/impl');
 
 const CONFIDENCE_THRESHOLD = Number(process.env.LUNA_PACKS_SELECT_THRESHOLD || 0.72);
 
@@ -764,6 +765,9 @@ module.exports = {
   refundIntent,
   missingItemIntent,
   selectPacksAnswer,
+  claim: packsModule.claim,
+  decide: packsModule.decide,
+  unresolvedPolicy: packsModule.unresolvedPolicy,
   SELECTORS,
   evaluateOwnershipPregate: pregate.evaluateOwnershipPregate,
   productSelectPermitted: pregate.productSelectPermitted,

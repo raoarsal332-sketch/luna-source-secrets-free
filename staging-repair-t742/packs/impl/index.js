@@ -1,17 +1,16 @@
 'use strict';
 
-const { normalizeForRoute } = require('./packsNormalize');
 const { claim } = require('./packsClaim');
 const { unresolvedPolicy } = require('./packsPolicy');
-const { decide, DEFAULT_T, REFUSE_ID, HANDOFF_ID, catalogCensus } = require('./packsDecide');
+const { decide, REFUSE_ID, HANDOFF_ID, catalogCensus } = require('./packsDecide');
+const { sha256: propositionsSha256 } = require('./packsPropositions');
 
 module.exports = {
-  normalizeForRoute,
   claim,
   unresolvedPolicy,
   decide,
-  DEFAULT_T,
   REFUSE_ID,
   HANDOFF_ID,
   catalogCensus,
+  propositionsSha256,
 };
