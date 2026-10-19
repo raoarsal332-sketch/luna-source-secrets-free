@@ -200,7 +200,23 @@ async function gate(p) {
     }
 
     const ctx = { state, messages, knowledge, route, guards, conversationId, comparison: p.comparison || null, forbiddenPatterns: p.forbiddenPatterns || [] };
-    const fb = p.fallbackReply !== undefined ? p.fallbackReply : fallbackReply();
+    let fb = p.fallbackReply !== undefined ? p.fallbackReply : fallbackReply();
+    try {
+      const boundary = require('../publicWriteBoundary');
+      const f1 = require('../f1AbstainMark');
+      const turn = boundary.currentTurn() || {};
+      const latest = (p.latestUser && (p.latestUser.body || p.latestUser.text)) || (turn && turn.text) || '';
+      let banned = !!(turn.publicSilence || turn.inboundCredential || (conversationId && f1.blocksConversation(conversationId)));
+      if (!banned) {
+        try { banned = boundary.plainMainRouteModelTextDenied({ plain: '', conversationId }); }
+        catch (_) { banned = true; }
+      }
+      if (!banned && latest) {
+        try { banned = boundary.moduleTurnProtected(String(latest)); }
+        catch (_) { banned = true; }
+      }
+      if (banned) fb = undefined;
+    } catch (_) { fb = undefined; }
     const out = await regen.runWithRegeneration({ draft: original, ctx, regenerate: p.regenerate || null, maxRetries: p.maxRetries, fallbackReply: fb || undefined, key: p.messageId ? `${conversationId}:${p.messageId}` : undefined });
     const first = out.results[0];
     // The final sent draft, not the first rejected draft, is the approved one.
@@ -238,7 +254,7 @@ const FAIL_CLOSED_CODES = new Set(['MISSED_QUESTION', 'WRONG_TOPIC', 'REPEATED_I
     // Any exception here means none of the hard-fail checks (including the mandated
     // fail-closed codes: MISSED_QUESTION, WRONG_TOPIC, REPEATED_IMAGE_ASK, MISSED_ESCALATION)
     // ran to completion. Hold the send rather than shipping an unvalidated draft.
-    log(`gate error (fail-closed, holding send): ${e && e.message}`);
+    log('gate error (fail-closed, holding send): class=' + (e && e.name || 'Error'));
     return finish({ body: original, send: false, reason: 'error-fail-closed' });
   }
 

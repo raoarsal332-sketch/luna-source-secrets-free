@@ -56,17 +56,31 @@ function validRecord(rec, conversationId) {
   return true;
 }
 
-function load(conversationId) {
-  const ttl = ttlMs();
-  if (ttl == null) return { state: 'idle', reason: 'ttl-missing' };
-  const map = readMap();
-  const rec = map[String(conversationId || '')];
-  if (!validRecord(rec, conversationId)) return { state: 'idle', reason: 'corrupt-or-missing' };
+function classifyRecord(rec, conversationId) {
+  if (rec == null) return { state: 'idle', reason: 'absent' };
+  if (typeof rec !== 'object' || Array.isArray(rec)) return { state: 'idle', reason: 'corrupt', silence: true };
+  if (String(rec.conversationId || '') !== String(conversationId || '')) {
+    return { state: 'idle', reason: 'binding', silence: true };
+  }
+  if (rec.v !== 1 || (rec.state !== 'idle' && rec.state !== 'offered') || rec.templateId !== TEMPLATE_ID) {
+    return { state: 'idle', reason: 'corrupt', silence: true };
+  }
   if (rec.state === 'offered') {
+    if (typeof rec.expiresAt !== 'string' || !rec.expiresAt) {
+      return { state: 'idle', reason: 'missing-expires', silence: true };
+    }
     const exp = Date.parse(rec.expiresAt);
-    if (!(exp > Date.now())) return { state: 'idle', reason: 'expired', record: rec };
+    if (!Number.isFinite(exp)) return { state: 'idle', reason: 'missing-expires', silence: true };
+    if (!(exp > Date.now())) return { state: 'idle', reason: 'expired', silence: true };
   }
   return rec;
+}
+
+function load(conversationId) {
+  const ttl = ttlMs();
+  if (ttl == null) return { state: 'idle', reason: 'ttl-missing', silence: true };
+  const map = readMap();
+  return classifyRecord(map[String(conversationId || '')], conversationId);
 }
 
 function save(conversationId, rec) {
@@ -127,16 +141,20 @@ function onTurn(opts) {
     return { send: false, state: 'idle', reason: 'clear-event' };
   }
   const cur = load(cid);
+  if (cur.silence) {
+    try { clear(cid, cur.reason || 'silence'); } catch (_) {}
+    return { send: false, state: 'idle', reason: cur.reason || 'silence', blockPublic: true, silence: true };
+  }
   if (cur.state === 'offered') {
-    if (eventId && cur.eventId === eventId && cur.acted) {
-      return { send: false, state: 'offered', reason: 'duplicate-event', duplicate: true };
-    }
-    if (eventAt && cur.eventAt && eventAt < Number(cur.eventAt)) {
-      return { send: false, state: 'offered', reason: 'out-of-order', stale: true };
-    }
     if (personalAccountWhileOffered(text)) {
       clear(cid, 'personal-account-while-offered');
-      return { send: false, state: 'idle', reason: 'personal-clear', blockPublic: true };
+      return { send: false, state: 'idle', reason: 'personal-clear', blockPublic: true, silence: true };
+    }
+    if (eventId && cur.eventId === eventId && cur.acted) {
+      return { send: false, state: 'offered', reason: 'duplicate-event', duplicate: true, blockPublic: true, silence: true };
+    }
+    if (eventAt && cur.eventAt && eventAt < Number(cur.eventAt)) {
+      return { send: true, state: 'offered', reason: 'offered-resend', entry: false, classId: 'comp.spread-only', stale: true };
     }
     if (!(eventId && cur.eventId === eventId)) {
       cur.eventId = eventId || cur.eventId;
@@ -151,7 +169,7 @@ function onTurn(opts) {
   const personal = spreadAskGate.personalAccountCue(text) === true;
   if (explained.reason === 'spread-test-credential' && !personal) {
     if (eventId && cur.eventId === eventId && cur.acted) {
-      return { send: false, state: 'idle', reason: 'duplicate-event', duplicate: true };
+      return { send: false, state: 'idle', reason: 'duplicate-event', duplicate: true, blockPublic: true, silence: true };
     }
     const now = new Date();
     const rec = {
@@ -169,7 +187,28 @@ function onTurn(opts) {
     save(cid, rec);
     return { send: true, state: 'offered', reason: 'spread-test-credential', entry: true };
   }
-  return { send: false, state: 'idle', reason: explained.reason || 'idle' };
+  return { send: false, state: 'idle', reason: explained.reason || 'idle', loadReason: cur.reason || 'idle' };
+}
+
+function noteHistoryOffer(conversationId, eventId, eventAt) {
+  const cid = String(conversationId || '');
+  const cur = load(cid);
+  if (!cid || cur.reason !== 'absent') return cur;
+  const ttl = ttlMs();
+  if (ttl == null) return cur;
+  const now = new Date();
+  return save(cid, {
+    v: 1,
+    conversationId: cid,
+    eventId: String(eventId || ''),
+    state: 'offered',
+    templateId: TEMPLATE_ID,
+    templateHash: templateHash(),
+    offeredAt: now.toISOString(),
+    expiresAt: new Date(now.getTime() + ttl).toISOString(),
+    eventAt: Number(eventAt || 0) || now.getTime(),
+    acted: false,
+  });
 }
 
 module.exports = {
@@ -183,4 +222,5 @@ module.exports = {
   onTurn,
   commitActed,
   personalAccountWhileOffered,
+  noteHistoryOffer,
 };

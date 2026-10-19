@@ -233,4 +233,49 @@ test('false-hold measurement is separate from leak holds', () => {
   if (E.which === 'candidate') assert.strictEqual(holds, 0, codes.join(','));
 });
 
+test('spread silence rows emit no public text, and an older offered follow-up still sends the template', async () => {
+  if (E.which !== 'candidate') return;
+  const fs = require('fs');
+  const state = require(path.join(E.t.dir, 'spreadTestState'));
+  const atomic = require(path.join(E.t.dir, 'atomicJsonFile'));
+  const future = new Date(Date.now() + 3600000).toISOString();
+  const past = new Date(Date.now() - 3600000).toISOString();
+  const baseRec = (id, extra) => Object.assign({
+    v: 1, conversationId: id, eventId: 'seed', state: 'offered',
+    templateId: 'tpl.spread.safe-reply', templateHash: state.templateHash(),
+    offeredAt: past, expiresAt: future, eventAt: Math.floor(Date.now() / 1000), acted: false,
+  }, extra);
+  const cases = [
+    (id) => ({ rec: { v: 9, conversationId: id, state: 'offered' }, label: 'corrupt' }),
+    (id) => ({ rec: baseRec('other-conv'), label: 'binding' }),
+    (id) => ({ rec: baseRec(id, { expiresAt: past }), label: 'expiry' }),
+    (id) => ({ rec: baseRec(id, { expiresAt: '' }), label: 'missing-expires' }),
+    (id) => ({ rec: baseRec(id, { acted: true, eventId: 'restart-event' }), label: 'restart', eventId: 'restart-event' }),
+  ];
+  for (const build of cases) {
+    reset();
+    const c = newConv('hello there');
+    const built = build(c.id);
+    if (built.eventId) c.user.id = built.eventId;
+    const map = {};
+    map[c.id] = built.rec;
+    atomic.writeJsonAtomic(state.filePath(), map);
+    await index.handleWebhook(webhookReq(c.id, c.user), res);
+    assert.strictEqual(fake.publicWrites().length, 0, built.label + ' posted public text');
+    const blob = h.logs.map((l) => l.line).join('\n');
+    assert.ok(!blob.includes('Thanks for the details. I am checking this now'), built.label + ' fallback');
+  }
+  try { fs.unlinkSync(state.filePath()); } catch (_) {}
+
+  reset();
+  const first = newConv('can I get a demo login to check spreads');
+  await index.handleWebhook(webhookReq(first.id, first.user), res);
+  assert.strictEqual(state.load(first.id).state, 'offered');
+  const follow = sc.userPart('thanks, that helps', Math.floor(Date.now() / 1000) + 30);
+  fake.getConversation(first.id).conversation_parts.conversation_parts.push(follow);
+  await index.handleWebhook(webhookReq(first.id, follow), res);
+  const hits = (fake.publicWrites().map((p) => p.data.body).join('\n').match(/cannot post a test account number or password/gi) || []).length;
+  assert.ok(hits >= 2, 'older non-personal offered turn omitted the template, hits=' + hits);
+});
+
 run('remediation r1 (' + E.which + ')');
