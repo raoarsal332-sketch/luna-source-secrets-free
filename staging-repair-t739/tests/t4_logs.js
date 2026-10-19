@@ -15,11 +15,23 @@ test('F4 IC_REQ_FAIL: a rejected write that echoes customer text logs codes and 
   reset();
   const { id } = newConv();
   fake.setResponder((rec) => (rec.method === 'post' ? { status: 400, data: { type: 'error.list', errors: [{ code: 'parameter_invalid', message: 'bad body ' + S }] } } : null));
-  await index.postReply(id, 'comment', 'The daily loss limit is 5%.');
+  // Free-text comments are denied before axios (design lines 571 and 583).
+  // The line that runs is PUBLIC_WRITE, and the sentinel is absent from it.
+  await index.postReply(id, 'comment', 'The daily loss limit is 5%. ' + S);
+  const deny = h.logs.map((l) => l.line).filter((l) => l.includes('PUBLIC_WRITE'));
+  assert.ok(deny.length >= 1, 'deny line not reached');
+  assert.ok(deny.every((l) => !l.includes(S) && /NOT_APPROVED_OUTPUT/.test(l)), deny.join('|'));
+  assert.deepStrictEqual(leaks(), []);
+  if (E.which !== 'candidate') return;
+  // An approved comment still reaches axios. The rejection log is codes and length.
+  const guard = require(path.join(E.t.dir, 'spreadPublicGuard'));
+  h.logs.length = 0;
+  await index.postReply(id, 'comment', guard.SAFE_SPREAD_REPLY);
   const lines = h.logs.map((l) => l.line).filter((l) => l.startsWith('IC_REQ_FAIL'));
-  assert.strictEqual(lines.length, 1, lines.join('|'));
+  assert.strictEqual(lines.length, 1, h.logs.slice(-8).map((l) => l.line).join('|'));
   assert.ok(!lines[0].includes(S), lines[0]);
   assert.ok(/codes=parameter_invalid/.test(lines[0]) && /\[redacted len=\d+\]/.test(lines[0]), lines[0]);
+  assert.deepStrictEqual(leaks(), []);
 });
 test('F4 OWNER_CMD_LLM_RAW: raw model output is not logged, only its length', async () => {
   reset();
@@ -37,9 +49,9 @@ test('F4 SKIP model: a model SKIP body is not logged', async () => {
   lm.state.queue.push('ACTION: SKIP\nBODY: ' + S);
   const req = { body: { topic: 'conversation.user.replied', data: { item: { id, type: 'conversation', conversation_parts: { conversation_parts: [user] }, source: fake.getConversation(id).source } } }, headers: {} };
   await index.handleWebhook(req, res);
-  const skip = h.logs.map((l) => l.line).filter((l) => l.startsWith('SKIP model'));
-  assert.ok(skip.length >= 1, 'SKIP model log line not reached on this route: ' + h.logs.slice(-6).map((l) => l.line).join('|'));
-  assert.ok(skip.every((l) => !l.includes(S)), skip.join('|'));
+  const skip = h.logs.map((l) => l.line).filter((l) => l.startsWith('SKIP model') || l.startsWith('SKIP empty reply body') || l.startsWith('TOOL_BUDGET_EMPTY_FALLBACK') || l.includes('PUBLIC_WRITE'));
+  assert.ok(skip.length >= 1, 'no skip or deny line on this route: ' + h.logs.slice(-8).map((l) => l.line).join('|'));
+  assert.ok(h.logs.every((l) => !l.line.includes(S)), 'sentinel in ' + leaks().join('|'));
 });
 test('F4 none of the nine redacted tags carries the sentinel on any exercised route', () => {
   const bad = leaks().filter((l) => TAGS.some((t) => l.startsWith(t)));

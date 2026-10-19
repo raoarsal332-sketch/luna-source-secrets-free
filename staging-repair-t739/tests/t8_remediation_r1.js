@@ -73,25 +73,46 @@ test('MT5-1 safe replies are delivered through postClientCommentOnce -> icReques
     const row = packs.get('packs.account-status.refuse.en');
     refuse = row && (row.body || row.text || '');
   }
-  const bodies = [guard.SAFE_SPREAD_REPLY, broker, 'Los spreads se muestran en la plataforma.', 'Os spreads aparecem na plataforma.'];
-  if (refuse) bodies.push(refuse);
-  for (const body of bodies) {
+  // Design line 608: the spread template is the approved send. A catalog body
+  // is added only when coversAllIntents is true. Customer text "hello" does
+  // not cover faq.is-broker.en or a Packs refuse row (design line 273).
+  // Design line 571: a model-composed sentence is NOT_APPROVED_OUTPUT while
+  // plainMainRouteModelTextDenied() stays true (lines 583 and 877).
+  const expectSend = [guard.SAFE_SPREAD_REPLY];
+  const expectCoverage = [broker];
+  if (refuse) expectCoverage.push(refuse);
+  const expectModel = ['Los spreads se muestran en la plataforma.', 'Os spreads aparecem na plataforma.'];
+  const check = async (body, pred) => {
     reset();
     const { id, user } = newConv('hello');
     const r = await index.postClientCommentOnce(id, body, user, 'Test Client');
     if (E.which !== 'candidate') {
       h.say('OBS|baseline-deliver|' + JSON.stringify({ held: !!(r && r.held), writes: fake.publicWrites().length, head: body.slice(0, 24) }));
-      continue;
+      return;
     }
-    assert.ok(r && r.ok && !r.held, JSON.stringify(r) + ' ' + body.slice(0, 40));
-    assert.strictEqual(fake.publicWrites().length, 1, body.slice(0, 40));
-    const sent = fake.publicWrites()[0].data;
-    assert.strictEqual(sent.admin_id, sc.ARSAL);
-    assert.ok(!String(sent.body).includes(P) && !String(sent.body).includes(L), body.slice(0, 40));
-    const via = await T.icRequest('post', 'https://api.intercom.io/conversations/' + id + '/reply', {
-      message_type: 'comment', type: 'admin', admin_id: '10118526', body,
-    }, 'OUT');
-    assert.ok(via && via.ok && !via.held, 'icRequest held a safe body');
+    pred(r, id, body);
+    assert.ok(!fake.publicWrites().some((p) => String(p.data.body).includes(P) || String(p.data.body).includes(L)));
+  };
+  for (const body of expectSend) {
+    await check(body, (r) => {
+      assert.ok(r && r.ok && !r.held, JSON.stringify(r) + ' ' + body.slice(0, 40));
+      assert.strictEqual(fake.publicWrites().length, 1, body.slice(0, 40));
+      assert.strictEqual(fake.publicWrites()[0].data.admin_id, sc.ARSAL);
+    });
+  }
+  if (E.which === 'candidate') {
+    for (const body of expectCoverage) {
+      await check(body, (r) => {
+        assert.strictEqual(r && r.holdCode, 'COVERAGE_DENIED', JSON.stringify(r));
+        assert.strictEqual(fake.publicWrites().length, 0);
+      });
+    }
+    for (const body of expectModel) {
+      await check(body, (r) => {
+        assert.strictEqual(r && r.holdCode, 'NOT_APPROVED_OUTPUT', JSON.stringify(r));
+        assert.strictEqual(fake.publicWrites().length, 0);
+      });
+    }
   }
 });
 
@@ -147,33 +168,44 @@ test('MT5-2 S10 FOLLOW does not persist the plaintext password', async () => {
   assert.ok(/"held":"[A-Z0-9_]+"/.test(blob), 'held marker missing');
 });
 
-test('MT5-3 pending spread append is empty after the turn, and a bare follow-up does not disclose credentials', async () => {
+test('MT5-3 persisted spread state replaces the map, and a credential-class ask does not disclose credentials', async () => {
   if (E.which !== 'candidate') {
     h.say('OBS|baseline-pending|skipped');
     return;
   }
-  assert.ok(T.pendingSpreadTemplateAppend, 'map not exported');
+  // Design line 151: the in-memory map is not the state machine.
+  assert.ok(!T.pendingSpreadTemplateAppend, 'in-memory spread map is still exported');
+  const state = require(path.join(E.t.dir, 'spreadTestState'));
   reset();
-  const { id, user } = newConv('hello, I have a general question about the platform');
-  T.pendingSpreadTemplateAppend.set(id, { customerText: 'stale' });
-  await index.handleWebhook(webhookReq(id, user), res);
-  assert.strictEqual(T.pendingSpreadTemplateAppend.size, 0, 'stale pending entry survived the turn');
+  const plain = newConv('hello, I have a general question about the platform');
+  await index.handleWebhook(webhookReq(plain.id, plain.user), res);
+  assert.notStrictEqual(state.load(plain.id).state, 'offered');
+
+  // Design lines 608 and 614: idle to offered only when explain() reason is
+  // spread-test-credential. "what are the spreads?" is strong-spread-phrase.
+  reset();
+  const general = newConv('what are the spreads?');
+  await index.handleWebhook(webhookReq(general.id, general.user), res);
+  assert.notStrictEqual(state.load(general.id).state, 'offered', 'strong-spread-phrase must not enter offered');
 
   reset();
-  const first = newConv('what are the spreads?');
+  const first = newConv('can I get a demo login to check spreads');
   await index.handleWebhook(webhookReq(first.id, first.user), res);
-  assert.strictEqual(T.pendingSpreadTemplateAppend.size, 0);
+  assert.strictEqual(state.load(first.id).state, 'offered');
   const pubs = fake.publicWrites();
-  assert.ok(pubs.length >= 1, 'spread ask produced no public reply');
+  assert.ok(pubs.length >= 1, 'spread-test-credential ask produced no public reply');
   const sent = pubs.map((p) => p.data.body).join('\n');
   assert.ok(/cannot post a test account number or password/i.test(sent), sent.slice(0, 240));
   assert.ok(!sent.includes(P) && !sent.includes(L));
 
-  const follow = sc.userPart("what's the server");
+  // Design line 610: a later non-personal turn. The part must be newer than the
+  // first public reply, or arsalAlreadyRepliedAfter treats it as a stale event.
+  const follow = sc.userPart("what's the server", Math.floor(Date.now() / 1000) + 5);
   fake.getConversation(first.id).conversation_parts.conversation_parts.push(follow);
   await index.handleWebhook(webhookReq(first.id, follow), res);
-  assert.strictEqual(T.pendingSpreadTemplateAppend.size, 0);
   const all = fake.publicWrites().map((p) => p.data.body).join('\n');
+  const hits = (all.match(/cannot post a test account number or password/gi) || []).length;
+  assert.ok(hits >= 2, 'later non-personal offered turn omitted the template, hits=' + hits);
   assert.ok(!all.includes(P) && !all.includes(L), 'bare follow-up disclosed a credential');
   secretsAbsent(surfaces(), 'spread-follow');
 });

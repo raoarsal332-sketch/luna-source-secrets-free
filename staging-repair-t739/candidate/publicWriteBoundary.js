@@ -172,6 +172,16 @@ function deny(code) {
   return { ok: false, code, ids: [], hashes: [] };
 }
 
+/**
+ * Single switch for model-composed prose on a plain main-route comment.
+ * Design lines 583 and 877. The current answer is deny. Approved catalog
+ * rows, the spread template, admitted greetings, and credential holds do
+ * not consult this function. Flipping the return is the whole change.
+ */
+function plainMainRouteModelTextDenied() {
+  return true;
+}
+
 function assertApprovedPublicOutput(data, opts) {
   opts = opts || {};
   if (!data || data.message_type !== 'comment') return { ok: true, ids: [], hashes: [], skipped: true };
@@ -217,7 +227,16 @@ function assertApprovedPublicOutput(data, opts) {
       }
     }
     body = lookupExact(index, coreText);
-    if (!body) return deny('NOT_APPROVED_OUTPUT');
+    if (!body) {
+      if (plainMainRouteModelTextDenied()) return deny('NOT_APPROVED_OUTPUT');
+      return {
+        ok: true,
+        code: 'OK',
+        ids: ['comp.main-route-model'],
+        hashes: [sha256(coreText)],
+        classId: 'comp.main-route-model',
+      };
+    }
     if (body.kind === 'nonsendable') return deny('NON_SENDABLE');
     if (body.hash !== sha256(coreText)) return deny('NOT_APPROVED_OUTPUT');
     if (body.kind === 'catalog') {
@@ -287,6 +306,7 @@ module.exports = {
   staffActive,
   bindTurn,
   currentTurn,
+  plainMainRouteModelTextDenied,
   loadIndex,
   hrefCount,
   attachmentCount,

@@ -490,6 +490,44 @@ test('F1 flag-off exclusive stays silent on a second entry of the same event', a
     noWrites('replay-same-event');
   });
 });
+test('F1 queued fallback, auth replay, burst rerun, and mark-file restart stay silent', async () => {
+  const fs = require('fs');
+  const f1 = require(path.join(E.t.dir, 'f1AbstainMark'));
+  await withFlags({}, async () => {
+    reset();
+    const { id, user } = newConv('What is Elite Atom and how does the profit split work?');
+    lm.state.queue.push('ACTION: REPLY\nBODY: a public paragraph');
+    await index.handleWebhook(webhookReq(id, user), res);
+    noWrites('mark-first');
+    assert.strictEqual(f1.blocks(id, user.id), true, 'mark was not written for the initiating event');
+    assert.ok(fs.existsSync(f1.filePath()));
+
+    lm.state.queue.push('ACTION: REPLY\nBODY: queued paragraph');
+    const queued = webhookReq(id, user);
+    queued.__queuedWebhook = true;
+    await index.handleWebhook(queued, res);
+    noWrites('queued-fallback');
+
+    T.deferForAuth(id);
+    lm.state.queue.push('ACTION: REPLY\nBODY: replay paragraph');
+    const replayed = await T.replayAuthDeferred('f1-author');
+    assert.ok(replayed && replayed.replayed >= 1, JSON.stringify(replayed));
+    noWrites('auth-replay');
+
+    T.burstRerunPending.add(id);
+    lm.state.queue.push('ACTION: REPLY\nBODY: burst paragraph');
+    T.scheduleBurstRerun(id);
+    await E.settle(400);
+    assert.ok(h.logs.some((l) => l.line.startsWith('BURST_RERUN ' + id)), 'burst rerun did not run');
+    noWrites('burst-rerun');
+
+    const resolved = require.resolve(path.join(E.t.dir, 'f1AbstainMark'));
+    delete require.cache[resolved];
+    const reloaded = require(path.join(E.t.dir, 'f1AbstainMark'));
+    assert.strictEqual(reloaded.blocksConversation(id), true, 'restart dropped the mark file');
+    assert.strictEqual(reloaded.blocks(id, user.id), true);
+  });
+});
 test('no generic stub other than the inert startup ones was called; no egress', () => {
   const inert = new Set([
     'generalAccountAskGuard.assessDraft', 'logRedact.install', 'luna-maintainer.create',

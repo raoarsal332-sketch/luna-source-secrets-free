@@ -29,13 +29,58 @@ function findHi(base) {
   return null;
 }
 
+function scriptedTransport(treeDir) {
+  const realPath = path.join(treeDir, 'lunaResponsesTransport.js');
+  if (!fs.existsSync(realPath)) return null;
+  const stubPath = path.join(STUB_DIR, 'lunaResponsesTransport.js');
+  const wrap = path.join(GEN_DIR, 'scripted_lunaResponsesTransport.js');
+  fs.mkdirSync(GEN_DIR, { recursive: true });
+  fs.writeFileSync(wrap, `'use strict';
+const real = require(${JSON.stringify(realPath)});
+const stub = require(${JSON.stringify(stubPath)});
+function take() {
+  if (!stub.state || !Array.isArray(stub.state.queue) || !stub.state.queue.length) return null;
+  const next = stub.state.queue.shift();
+  if (stub.state.calls) stub.state.calls.push({ scripted: true });
+  return next == null ? '' : String(next);
+}
+function scriptedParsed(text) {
+  const t = String(text || '').trim();
+  return {
+    status: 'completed', incomplete: false, incompleteReason: null, refusal: null,
+    unknownTypes: [], toolCalls: [], text: t, partialText: t, outputItems: [],
+    responseId: 'scripted', usage: { available: false },
+  };
+}
+async function createRaw(openai, req) {
+  const next = take();
+  if (next != null) return scriptedParsed(next);
+  return real.createRaw(openai, req);
+}
+async function create(openai, req) {
+  const next = take();
+  if (next != null) {
+    return { choices: [{ index: 0, finish_reason: 'stop', message: { role: 'assistant', content: next } }], usage: {}, _luna: scriptedParsed(next) };
+  }
+  return real.create(openai, req);
+}
+module.exports = Object.assign({}, real, { create, createRaw });
+`);
+  return wrap;
+}
+
 function install(opts) {
   opts = opts || {};
   const treeDir = path.resolve(opts.treeDir);
   const noHi = new Set(opts.noHi || []);
+  const scripted = scriptedTransport(treeDir);
   const origResolve = Module._resolveFilename;
   Module._resolveFilename = function (request, parent, isMain, options) {
     if (request === 'openai') return path.join(STUB_DIR, 'openai.js');
+    if (scripted && typeof request === 'string' && !path.isAbsolute(request) && /(?:^|\/)lunaResponsesTransport(?:\.js)?$/.test(request)) {
+      resolved.stub.add('lunaResponsesTransport');
+      return scripted;
+    }
     try {
       return origResolve.call(this, request, parent, isMain, options);
     } catch (e) {

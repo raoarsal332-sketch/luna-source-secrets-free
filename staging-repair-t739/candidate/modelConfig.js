@@ -148,7 +148,7 @@ function answerParams(opts) {
       presend: opts.presend,
       episode: opts.episode,
       phase: opts.phase,
-    });
+    }) || { effort: 'medium', rule: 'no-decision' };
     // REASONING_MEDIUM_V1: the policy decision is SHADOW-ONLY (logged, never applied).
     effort = FIXED_EFFORT;
     rule = 'medium-fixed(shadow:' + decision.effort + ':' + decision.rule + ')';

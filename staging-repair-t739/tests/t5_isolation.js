@@ -58,9 +58,18 @@ test('B1 in-process block: fetch, https.request, net.connect, dns.lookup and chi
 test('B2 recorder sits BELOW axios: the real icRequest/axios stack runs, headers are built by the real code, the adapter records the request', async () => {
   reset();
   const { id } = newConv();
-  const r = await index.postReply(id, 'comment', 'The daily loss limit is 5%.');
-  assert.ok(r.ok);
+  // Design lines 571 and 583: this sentence is model prose. It is denied
+  // before axios while plainMainRouteModelTextDenied() is true.
+  const denied = await index.postReply(id, 'comment', 'The daily loss limit is 5%.');
+  if (E.which === 'candidate') {
+    assert.strictEqual(denied.holdCode, 'NOT_APPROVED_OUTPUT', JSON.stringify(denied));
+    assert.ok(!fake.requests.some((q) => q.method === 'post' && /\/reply$/.test(q.url)), 'free-text comment reached axios');
+  }
+  const guard = require(require('path').join(E.t.dir, 'spreadPublicGuard'));
+  const r = await index.postReply(id, 'comment', guard.SAFE_SPREAD_REPLY);
+  assert.ok(r.ok, JSON.stringify(r));
   assert.ok(fake.requests.length >= 2, 'expected GET (ownership re-fetch) and POST');
+  assert.ok(fake.requests.some((q) => q.method === 'post' && /\/reply$/.test(q.url)));
   assert.ok(fake.requests.every((q) => q.auth === 'fake-token'), JSON.stringify(fake.requests.map((q) => q.auth)));
   assert.ok(fake.requests.every((q) => q.url.startsWith('https://api.intercom.io/')));
   assert.strictEqual(h.net.attempts.length, 0);

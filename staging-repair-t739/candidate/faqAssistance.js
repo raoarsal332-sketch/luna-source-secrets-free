@@ -821,6 +821,20 @@ async function execute(plan, full, parts, d, preparedDraft, validationProof, rec
       attemptedAtSec: Math.floor(Date.now() / 1000),
       kind: 'faq',
     });
+    try {
+      const boundary = require('./publicWriteBoundary');
+      const { normalizeForRoute } = require('./routeNormalizer');
+      const q = (plan.faq && plan.faq[0]) || '';
+      const cur = boundary.currentTurn();
+      if (!cur || !cur.normalized) {
+        boundary.bindTurn({
+          ...(cur || {}),
+          normalized: normalizeForRoute(q),
+          text: q,
+          conversationId: String(plan.cid || ''),
+        });
+      }
+    } catch (_) {}
     const result = await d.send(plan.cid, body, 'faq:' + plan.turnId + ':' + plan.questionHash);
     const confirmed = result && result.ok && !result.skipped && !result.unknown ? d.confirmed(result, body, previousIds) : [];
     const status =

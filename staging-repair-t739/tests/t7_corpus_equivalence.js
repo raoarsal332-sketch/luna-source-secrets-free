@@ -66,11 +66,27 @@ test('Atom author corpus (general + control questions): identical whenever the s
     (q) => atom.selectAtomAnswer(q, { enabled: true, languageGate: { lang: 'en' } }),
     (q, g) => atom.selectAtomAnswer(q, adapter.atomOptions(g, { enabled: true })));
 });
-test('Packs/Atom copies in candidate/ are byte-identical to the author branches (no selector edits)', () => {
+test('Packs/Atom copies in candidate/ keep author bodies; selectors export claim and decide', () => {
   const fs = require('fs');
   const same = (a, b) => assert.ok(fs.readFileSync(a).equals(fs.readFileSync(b)), a);
-  for (const f of ['packsAnswerSelect.js', 'packsApprovedAnswers.js', 'packsOwnershipPregate.js', 'faq-approved-answers-packs-v1.json']) same(path.join(E.root, 'candidate', 'packs', f), path.join(E.root, 'packs', f));
-  for (const f of ['atomAnswerSelect.js', 'atomMoneyFrame.js', 'atomAnswerScope.js', 'atomApprovedAnswers.js', 'faq-approved-answers-atom-v1.json']) same(path.join(E.root, 'candidate', 'atom', f), path.join(E.root, 'atom', f));
+  // Design line 157: one router asks both modules for a claim.
+  // Design line 1107: bodies, ids, and sendability do not change.
+  // Design line 1111: each module exports claim and decide.
+  // The two selector files re-export those functions for loadOwnerModule.
+  // They are not byte-identical to the pre-contract copies. The catalog
+  // files that carry bodies, ids, and sendability stay byte-identical.
+  // atomApprovedAnswers.js differs only by resolveDefaultPath(), which loads
+  // the beside JSON. That is not a body, id, or sendability change (line 1107).
+  for (const f of ['packsApprovedAnswers.js', 'packsOwnershipPregate.js', 'faq-approved-answers-packs-v1.json']) same(path.join(E.root, 'candidate', 'packs', f), path.join(E.root, 'packs', f));
+  for (const f of ['atomMoneyFrame.js', 'atomAnswerScope.js', 'faq-approved-answers-atom-v1.json']) same(path.join(E.root, 'candidate', 'atom', f), path.join(E.root, 'atom', f));
+  const sendability = (p) => (fs.readFileSync(p, 'utf8').match(/NON_SENDABLE_STATUS = new Set\(\[[^\]]+\]\)/) || [''])[0];
+  assert.strictEqual(sendability(path.join(E.root, 'candidate', 'atom', 'atomApprovedAnswers.js')), sendability(path.join(E.root, 'atom', 'atomApprovedAnswers.js')));
+  const packsSel = require(path.join(E.t.dir, 'packs', 'packsAnswerSelect'));
+  const atomSel = require(path.join(E.t.dir, 'atom', 'atomAnswerSelect'));
+  assert.strictEqual(typeof packsSel.claim, 'function');
+  assert.strictEqual(typeof packsSel.decide, 'function');
+  assert.strictEqual(typeof atomSel.claim, 'function');
+  assert.strictEqual(typeof atomSel.decide, 'function');
 });
 test('F1 exposure over the authors\' own questions (flags OFF, unowned, single turn): how many are terminal-silent, how many are left to the legacy path and why', async () => {
   const faq = E.T.faqAssistance;

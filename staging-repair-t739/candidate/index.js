@@ -104,6 +104,13 @@ function credentialHoldLog(url, hold) {
   const cid = (String(url || '').match(/conversations\/(\d+)/) || [])[1] || '';
   console.error(...publicCredentialHold.logLine(cid, hold));
 }
+// Design lines 282 and 573. A staff command that does not send posts
+// note.staff.hold with a boundary code. CRED_* is not a note code, so an
+// unapproved staff reply uses NOT_APPROVED_OUTPUT. Automated holds do not
+// call this.
+function staffCommandHoldNote(code) {
+  return publicCredentialHold.staffHoldNote(code) || publicCredentialHold.staffHoldNote('NOT_APPROVED_OUTPUT');
+}
 function credentialHoldForWrite(method, url, data) {
   const cid = (String(url || '').match(/conversations\/(\d+)/) || [])[1] || '';
   return publicCredentialHold.holdOutgoingPayload(method, data, { conversationId: cid });
@@ -4125,19 +4132,15 @@ function isShortClientAck(text, parts) {
 
 /* MT5_CONTAINMENT_V1:BEGIN */
 const spreadPublicGuard = require('./spreadPublicGuard');
+const spreadTestState = require('./spreadTestState');
 const SPREAD_TEST_REPLY = spreadPublicGuard.SAFE_SPREAD_REPLY;
-/** Mixed spreads+other: defer template into the single final public send (O02). */
-const pendingSpreadTemplateAppend = new Map();
+function clearSpreadState(conversationId, reason) {
+  try { spreadTestState.clear(String(conversationId || ''), reason || 'clear-event'); } catch (_) {}
+}
 function buildSpreadTestReply() {
   return SPREAD_TEST_REPLY;
 }
 const __spreadSquash = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
-/** Append the contained spread reply once to a mixed answer (never credentials). */
-function appendSafeSpreadReply(body) {
-  const b = String(body || '');
-  if (__spreadSquash(b).includes(__spreadSquash(SPREAD_TEST_REPLY))) return b;
-  return b.trim() ? `${b.trim()}\n\n${SPREAD_TEST_REPLY}` : SPREAD_TEST_REPLY;
-}
 function lastPublicBotBodyFromParts(parts) {
   if (!Array.isArray(parts)) return '';
   for (let i = parts.length - 1; i >= 0; i--) {
@@ -6184,17 +6187,6 @@ async function postReplyWithOwnershipLock(conversationId, messageType, body, opS
   const denied = await permission();
   if (denied) { console.error('OWNERSHIP_PRESEND_BLOCK', conversationId, denied.reason); return denied; }
   if (messageType === 'comment') {
-    // Mixed spread+other: deliver the contained template on this public write, whichever
-    // sender reached postReply (postClientCommentOnceInner also appends, idempotently).
-    try {
-      const __pendKey = String(conversationId);
-      if (pendingSpreadTemplateAppend.has(__pendKey)) {
-        pendingSpreadTemplateAppend.delete(__pendKey);
-        const __before = String(body || '');
-        body = appendSafeSpreadReply(body);
-        if (body !== __before) console.log('SPREAD_TEST_REPLY_MIXED_APPEND', conversationId);
-      }
-    } catch (_) { /* never block the hold on the append helper */ }
     const original = String(body || '');
     // Hold the text that was actually composed. Screening must not be able to drop a
     // credential (or the legitimate answer) and send a different body with no hold code.
@@ -6431,19 +6423,8 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     return null;
   }
   /* MT5_CONTAINMENT_V1:BEGIN */
-  // O02: mixed spreads+other — append the contained spread reply to THIS single send
-  // (never a prior early post). Ownership / STOP / aiOff / Risk / already-replied /
-  // presend gates below still apply unchanged.
-  try {
-    const __pendKey = String(conversationId);
-    const __pend = pendingSpreadTemplateAppend.get(__pendKey);
-    if (__pend) {
-      pendingSpreadTemplateAppend.delete(__pendKey);
-      const __before = String(body || '');
-      body = appendSafeSpreadReply(body);
-      if (body !== __before) console.log('SPREAD_TEST_REPLY_MIXED_APPEND', conversationId);
-    }
-  } catch (_) { /* never block send on append helper */ }
+  // The spread template is its own approved send from the persisted state machine.
+  // It is not appended onto another body, and it is not flushed from a map.
   // A credential in this body is a transport hold with a reason code. Returning null here
   // dropped the send with no hold code and no staff note.
   /* MT5_CONTAINMENT_V1:END */
@@ -7178,7 +7159,7 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain, command
   }
   if (action === 'REPLY') {
     if (plan && plan.held) {
-      const __holdNote = publicCredentialHold.staffHoldNote(plan.held);
+      const __holdNote = staffCommandHoldNote(plan.held);
       if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + commandPartId);
       return 'HELD';
     }
@@ -7194,7 +7175,7 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain, command
     let out = postProcessModelReply(body, conversationId);
     const r = await postReply(conversationId, 'comment', out);
     if (r && r.held) {
-      const __holdNote = publicCredentialHold.staffHoldNote(r.holdCode);
+      const __holdNote = staffCommandHoldNote(r.holdCode);
       if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + commandPartId);
     } else if (r && r.status >= 200 && r.status < 300) {
       await postReply(conversationId, 'note', 'Sent to client.', 'command:' + commandPartId);
@@ -7271,10 +7252,26 @@ function authorizedRuns(conversationId) {
   }
   return runs;
 }
-function persistAuthorizedCommand(context) {
-  const all = loadAuthorizedCommands(), key = context.conversationId + ':' + context.partId;
-  all[key] = { conversationId: context.conversationId, partId: context.partId, at: Date.now(), record: context.record };
-  const completed = Object.keys(all).filter((id) => ['complete', 'superseded'].includes(all[id].record.phase)).sort((a, b) => all[a].at - all[b].at);
+function scrubCredentialPlan(record, conversationId) {
+  if (!record || !record.plan || typeof record.plan !== 'object') return false;
+  if (record.plan.held && !record.plan.body) {
+    if (!record.held) record.held = record.plan.held;
+    return false;
+  }
+  const hold = publicCredentialHold.holdPlanForPersistence(record.plan, { conversationId });
+  if (!hold) return false;
+  const act = String(record.plan.action || 'NOOP').toUpperCase();
+  const held = publicCredentialHold.safeCode(hold.code);
+  record.plan = {
+    action: ['REPLY', 'NOTE', 'CLOSE', 'OPEN', 'SKIP', 'STOP', 'RESUME', 'NOOP', 'CLARIFY'].includes(act) ? act : 'NOOP',
+    held,
+    bodyLength: Number(hold.len || 0),
+  };
+  record.held = held;
+  return true;
+}
+function writeAuthorizedCommandMap(all) {
+  const completed = Object.keys(all).filter((id) => all[id] && all[id].record && ['complete', 'superseded'].includes(all[id].record.phase)).sort((a, b) => all[a].at - all[b].at);
   // Never evict an unresolved intent/pending command as permission to repeat it.
   while (Object.keys(all).length > 4000 && completed.length) delete all[completed.shift()];
   if (Object.keys(all).length > 4000) throw authorizedCommandRetry('ledger-full');
@@ -7290,6 +7287,23 @@ function persistAuthorizedCommand(context) {
     if (fd !== undefined) fs.closeSync(fd);
     try { fs.unlinkSync(tmp); } catch (e) { if (e.code !== 'ENOENT') throw e; }
   }
+}
+function persistAuthorizedCommand(context) {
+  scrubCredentialPlan(context.record, context.conversationId);
+  const all = loadAuthorizedCommands(), key = context.conversationId + ':' + context.partId;
+  all[key] = { conversationId: context.conversationId, partId: context.partId, at: Date.now(), record: context.record };
+  writeAuthorizedCommandMap(all);
+}
+function scrubAuthorizedLedger(conversationId) {
+  let all;
+  try { all = loadAuthorizedCommands(); } catch (e) { if (e.code === 'ENOENT') return; throw e; }
+  let changed = false;
+  for (const row of Object.values(all)) {
+    if (!row || !row.record) continue;
+    if (conversationId && String(row.conversationId) !== String(conversationId)) continue;
+    if (scrubCredentialPlan(row.record, row.conversationId)) changed = true;
+  }
+  if (changed) writeAuthorizedCommandMap(all);
 }
 function applyAuthorizedCommandControl(method, conversationId, value) {
   const c = authorizedCommandContext.getStore();
@@ -7347,6 +7361,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
   }
   authNoteInflight.set(idKey, Date.now());
   try {
+  scrubAuthorizedLedger(conversationId);
   const parts = partsOf(full);
   const { all, state, id } = getConvState(conversationId);
   if (!Array.isArray(state.handledAuthNoteIds)) state.handledAuthNoteIds = [];
@@ -7503,7 +7518,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       }, { conversationId });
       if (__srcHold) {
         credentialHoldLog('conversations/' + conversationId, __srcHold);
-        const __holdNote = publicCredentialHold.staffHoldNote(__srcHold.code);
+        const __holdNote = staffCommandHoldNote(__srcHold.code);
         if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + partId);
         console.log('AUTH_NOTE REPLY_HELD', conversationId, authorId, partId);
         acted = 'REPLY';
@@ -7512,7 +7527,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       let out = postProcessModelReply(cmdBody, conversationId);
       const r = await postReply(conversationId, 'comment', out);
       if (r && r.held) {
-        const __holdNote = publicCredentialHold.staffHoldNote(r.holdCode);
+        const __holdNote = staffCommandHoldNote(r.holdCode);
         if (__holdNote) await postReply(conversationId, 'note', __holdNote, 'command:' + partId);
       } else if (r && r.status >= 200 && r.status < 300) {
         await postReply(conversationId, 'note', 'Sent to client.', 'command:' + partId);
@@ -7587,7 +7602,8 @@ async function processAuthorizedNoteCommands(conversationId, full) {
     }
     });
     context.record.phase = Object.values(context.record.steps).some((s) => s === 'unknown' || s === 'intent') ? 'unknown' : 'complete';
-    // Drop prepared bodies after completion; retained diagnostics contain IDs/status only.
+    // Drop prepared bodies after completion. A credential hold keeps only the code.
+    if (context.record.plan && context.record.plan.held) context.record.held = context.record.plan.held;
     delete context.record.plan;
     delete context.record.confirm;
     persistAuthorizedCommand(context);
@@ -7750,6 +7766,29 @@ const handleWebhook = async (req, res) => {
     clientReplyInflight.set(inflightKey, Date.now());
     if (!(req && req.__burstRerun)) burstRerunChain.delete(inflightKey);
 
+    let __spreadDecision = null;
+    const __spreadTurn = (text, part, clearEvent, clearReason) => {
+      if (clearEvent) {
+        clearSpreadState(conversationId, clearReason || 'clear-event');
+        __spreadDecision = { send: false, state: 'idle', reason: 'clear-event', __ran: true };
+        return __spreadDecision;
+      }
+      if (__spreadDecision && __spreadDecision.__ran) return __spreadDecision;
+      try {
+        __spreadDecision = spreadTestState.onTurn({
+          conversationId: String(conversationId),
+          eventId: String((part && (part.id || part.created_at)) || ''),
+          eventAt: Number((part && part.created_at) || 0),
+          text: String(text || ''),
+        });
+      } catch (_) {
+        __spreadDecision = { send: false, state: 'idle', reason: 'spread-state-error' };
+      }
+      if (!__spreadDecision) __spreadDecision = { send: false, state: 'idle', reason: 'idle' };
+      __spreadDecision.__ran = true;
+      return __spreadDecision;
+    };
+
     try {
     const cfg = control.getConfig();
     if (cfg.repliesEnabled === false) {
@@ -7770,6 +7809,7 @@ const handleWebhook = async (req, res) => {
     // Auth note commands run only on conversation.admin.noted (avoids note storms on user.replied)
     if (control.isAiOff(conversationId)) {
       console.log('SKIP aiOff', conversationId);
+      clearSpreadState(conversationId, 'aiOff');
       return res.sendStatus(200);
     }
 
@@ -7805,18 +7845,13 @@ const handleWebhook = async (req, res) => {
       });
       if (__endedMuteEarly.mute && __endedMuteEarly.reason === 'explicit-stop') {
         console.log('SKIP continuous-ownership-ended', conversationId, __endedMuteEarly.reason);
+        __spreadTurn(stripHtml((__latestEarly && __latestEarly.body) || ''), __latestEarly, true, 'stop');
         return res.sendStatus(200);
       }
       const __earlyText = stripHtml((__latestEarly && __latestEarly.body) || '');
-      const __earlySpread = __spreadAskGate && typeof __spreadAskGate.isSpreadCheckAsk === 'function' && __spreadAskGate.isSpreadCheckAsk(__earlyText);
-      const __earlyMixed = __earlySpread && typeof __spreadAskGate.hasAdditionalNonSpreadAsk === 'function' && __spreadAskGate.hasAdditionalNonSpreadAsk(__earlyText);
-      const __earlyFollow = __spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
-        && __spreadAskGate.isBareSpreadFollowUpAsk(__earlyText)
-        && priorBotWasContainedSpreadReply(__ownParts);
-      // Mixed spread+other must arm the append before any earlier sender (FAQ) posts.
-      if (__earlyMixed) pendingSpreadTemplateAppend.set(String(conversationId), { customerText: __earlyText, userPart: __latestEarly, clientName: '' });
-      // A pure spread ask or a bare follow-up is the contained template, not an FAQ answer.
-      const __faqHandled = (__earlySpread && !__earlyMixed) || __earlyFollow
+      // One onTurn. Entry is spread-test-credential only. FAQ must not swallow that send.
+      const __spreadNow = __spreadTurn(__earlyText, __latestEarly, false, '');
+      const __faqHandled = (__spreadNow && (__spreadNow.send || __spreadNow.blockPublic))
         ? null
         : await faqAssistance.offer(__fetched, __ownParts, topic, faqAssistanceDeps(), {
         deferExecuteIfHumanOwned: true,
@@ -7871,17 +7906,20 @@ const handleWebhook = async (req, res) => {
         deferredHumanOwnedFaq.delete(conversationId);
         __humanOwnedLegacyFaqBypass = false;
         console.log('SKIP ownership-intake', __ownVerdict.reason, conversationId);
+        __spreadTurn('', null, true, 'human-ownership');
         return res.sendStatus(200);
       }
       if (__reopenOwnedEarly) {
         __humanOwnedLegacyFaqBypass = false;
         if (!deferredHumanOwnedFaq.has(conversationId)) {
           console.log('SKIP ownership-intake', __ownVerdict.reason, conversationId);
+          __spreadTurn('', null, true, 'human-ownership');
           return res.sendStatus(200);
         }
         // else: Option B deferred approved FAQ on unassigned / Luna-seat reopen — continue
       } else if (!deferredHumanOwnedFaq.has(conversationId) && !__humanOwnedLegacyFaqBypass) {
         console.log('SKIP ownership-intake', __ownVerdict.reason, conversationId);
+        __spreadTurn('', null, true, 'human-ownership');
         return res.sendStatus(200);
       }
     }
@@ -7898,11 +7936,13 @@ const handleWebhook = async (req, res) => {
     // Escalations teambox: NEVER client-reply. Optional consolidated teammate note only.
     if (team === ESCALATIONS_TEAM_ID || isEscalationsTeambox(full)) {
       await handleEscalationsSilentNoteOnly(conversationId, full);
+      __spreadTurn('', null, true, 'escalations');
       return res.sendStatus(200);
     }
     // Risk Team teambox OR Risk-assigned (incl. assignment-part history): NEVER client-reply.
     if (team === RISK_TEAM_ID || isRiskTeambox(full) || isRiskAssigned(full) || conversationAssignedToRiskInParts(full)) {
       await handleRiskSilentNoteOnly(conversationId, full);
+      __spreadTurn('', null, true, 'risk');
       return res.sendStatus(200);
     }
     // Jerry-assigned (non-Escalations/Risk): optional long-message SUMMARY NOTE only.
@@ -7913,6 +7953,10 @@ const handleWebhook = async (req, res) => {
     }
     if (SKIP_TEAM_IDS.has(team)) {
       console.log('SKIP team inbox', conversationId, team);
+      return res.sendStatus(200);
+    }
+    if (__spreadDecision && __spreadDecision.blockPublic) {
+      console.log('SPREAD_OFFERED_PERSONAL_CLEAR', conversationId);
       return res.sendStatus(200);
     }
 
@@ -7949,6 +7993,7 @@ const handleWebhook = async (req, res) => {
       }
       if (!(deferredHumanOwnedFaq.has(conversationId) || __humanOwnedLegacyFaqBypass)) {
         console.log('SKIP continuous-ownership-ended', conversationId, __endedMute.reason);
+        if (__endedMute.reason === 'explicit-stop') __spreadTurn(stripHtml((latestUser && latestUser.body) || ''), latestUser, true, 'stop');
         return res.sendStatus(200);
       }
     }
@@ -8220,6 +8265,7 @@ const handleWebhook = async (req, res) => {
 
     // Fin / Elite AI wait , hard gate before FAQ/AI/deterministic public replies
     if (shouldWaitForFin(full, text, topic)) {
+      __spreadTurn(text, latestUser, true, 'fin-wait');
       return res.sendStatus(200);
     }
 
@@ -8391,30 +8437,25 @@ const handleWebhook = async (req, res) => {
       }
     }
 
-    // Behavior locks v2: spread test account (direct reply, no escalate).
-    // Pure spread → one canned send + return.
-    // Mixed spreads+other (O02) → do NOT post early; defer exact template onto the
-    // single final public reply in postClientCommentOnceInner (append before guard).
-    // Bare follow-ups ("send again" / "what's the server") only when the prior Luna
-    // public reply was the contained spread reply; the answer is that same text.
+    // Spread-test state. One onTurn per customer turn. The template, when owed,
+    // leaves through the same public-comment boundary. No second sender.
     {
-      const __bareFollow =
-        __spreadAskGate && typeof __spreadAskGate.isBareSpreadFollowUpAsk === 'function'
-        && __spreadAskGate.isBareSpreadFollowUpAsk(text)
-        && priorBotWasContainedSpreadReply(parts);
-      const __spreadAsk = isSpreadCheckAsk(text) || __bareFollow;
-      if (__spreadAsk) {
-        const mixed = !__bareFollow
-          && __spreadAskGate && typeof __spreadAskGate.hasAdditionalNonSpreadAsk === 'function'
-          && __spreadAskGate.hasAdditionalNonSpreadAsk(text);
-        if (!mixed) {
-          const spreadBody = postProcessModelReply(buildSpreadTestReply(), conversationId);
-          await postClientCommentOnce(conversationId, spreadBody, latestUser, clientName);
-          console.log(__bareFollow ? 'SPREAD_TEST_REPLY_FOLLOWUP' : 'SPREAD_TEST_REPLY', conversationId);
-          return res.sendStatus(200);
+      const __sd = (__spreadDecision && __spreadDecision.__ran)
+        ? __spreadDecision
+        : __spreadTurn(text, latestUser, false, '');
+      if (__sd && __sd.blockPublic) {
+        console.log('SPREAD_OFFERED_PERSONAL_CLEAR', conversationId);
+        return res.sendStatus(200);
+      }
+      if (__sd && __sd.send) {
+        // The approved template is not model prose. postProcessModelReply junk-strips it.
+        const spreadBody = buildSpreadTestReply();
+        const posted = await postClientCommentOnce(conversationId, spreadBody, latestUser, clientName);
+        if (posted && posted.ok && !posted.held && !posted.skipped) {
+          try { spreadTestState.commitActed(conversationId); } catch (_) {}
         }
-        pendingSpreadTemplateAppend.set(String(conversationId), { customerText: text, userPart: latestUser, clientName });
-        console.log('SPREAD_TEST_REPLY_MIXED_DEFER', conversationId);
+        console.log(__sd.entry ? 'SPREAD_TEST_REPLY' : 'SPREAD_TEST_REPLY_OFFERED', conversationId);
+        return res.sendStatus(200);
       }
     }
 
@@ -9972,6 +10013,20 @@ const handleWebhook = async (req, res) => {
       console.log('SKIP empty reply body', conversationId);
       return res.sendStatus(200);
     }
+    // The composed draft is the customer-facing text. A credential in it is a
+    // silent hold here, before presend or the allowlist can replace the draft
+    // and drop the pair. Automated path: no staff note.
+    {
+      const __draftHold = publicCredentialHold.holdFinalPublic({
+        screened: body,
+        rendered: body,
+        conversationId,
+      });
+      if (__draftHold) {
+        credentialHoldLog('conversations/' + conversationId, __draftHold);
+        return res.sendStatus(200);
+      }
+    }
     /* PENDING_ASK_RESOLVE_V1: a stock "share a bit more" clarify / nudge is not an answer when the latest
      * message is a nudge pointing at a clear, knowledge-answerable question (real-model replay of live
      * 215476072310759: the forced ESCALATE->REPLY body was the stock clarify in 2 of 5 runs). Regenerate
@@ -11436,17 +11491,6 @@ const handleWebhook = async (req, res) => {
     } finally {
       try { require('./publicWriteBoundary').bindTurn(null); } catch (_) {}
       clientReplyInflight.delete(inflightKey);
-      // A mixed spread ask arms this map before the other answer is composed. If that
-      // answer is held or never posted, the contained template still has to go out.
-      const __unsentSpread = pendingSpreadTemplateAppend.get(inflightKey);
-      pendingSpreadTemplateAppend.delete(inflightKey);
-      if (__unsentSpread) {
-        try {
-          const __spreadBody = postProcessModelReply(buildSpreadTestReply(), inflightKey);
-          await postClientCommentOnce(inflightKey, __spreadBody, __unsentSpread.userPart || null, __unsentSpread.clientName || '');
-          console.log('SPREAD_TEST_REPLY_MIXED_FLUSH', inflightKey);
-        } catch (e) { console.error('SPREAD_TEST_REPLY_MIXED_FLUSH_ERR', inflightKey, 'class=' + (e && e.name || 'Error')); }
-      }
       scheduleBurstRerun(inflightKey);
       /* LUNA_RESPONSES_V1: close the episode on EVERY exit path from the AI section (reply
        * sent, hold, escalate, early return or throw) and emit its LUNA_EPISODE summary. A

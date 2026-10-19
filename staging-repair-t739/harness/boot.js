@@ -31,9 +31,14 @@ function boot(opts) {
     LUNA_FAQ_ASSIST_STATE_FILE: f('faq-assist.json'),
     MAINTAINER_ENABLED: 'false',
     LUNA_PROMPT_FILE: f('system-prompt.txt'),
+    LUNA_TEAMMATE_ADMINS_FILE: f('bot-teammate-admins.json'),
     NODE_ENV: 'test',
   });
   fs.writeFileSync(f('system-prompt.txt'), 'synthetic prompt for tests\n');
+  // Synthetic principals only. The live seed is real Intercom admin ids and must
+  // not be the test authority. The candidate module treats this file as the set.
+  const adminsFile = f('bot-teammate-admins.json');
+  fs.writeFileSync(adminsFile, JSON.stringify(String(process.env.FAKE_AUTHORIZED_ADMINS || '777001,777002').split(',')));
   const controlFile = f('control.json');
   const setControl = (patch) => {
     let cur = { paused: false, testMode: false, aiOff: {}, testAllowNames: [], testAllowConversationIds: [], config: {} };
