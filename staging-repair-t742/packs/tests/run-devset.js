@@ -13,6 +13,7 @@ const { loadParams, PARAMS_PATH } = require('../../../staging-repair-t739/candid
 const { normalizeForRoute } = require('../../../staging-repair-t739/candidate/routeNormalizer');
 const sharedPolicy = require('../../../staging-repair-t739/candidate/unresolvedPolicy');
 const { route } = require('../../../staging-repair-t739/candidate/publicRouter');
+const safety = require('../../../staging-repair-t739/candidate/faqOutboundSafety');
 const { claim, decide, catalogCensus, REFUSE_ID, HANDOFF_ID, propositionsSha256 } = require('../impl');
 
 const DEV_PATH = path.join(__dirname, '..', 'devset', 'packs-dev-t742.json');
@@ -93,6 +94,9 @@ function isF1(routed) {
 
 async function main() {
   process.env.TICKET_STATE_FILE = F1_STATE;
+  for (const file of [F1_STATE, path.join('/tmp', 'f1-terminal-abstain.json')]) {
+    try { fs.unlinkSync(file); } catch (_) { /* fresh mark file */ }
+  }
   const dev = JSON.parse(fs.readFileSync(DEV_PATH, 'utf8'));
   const rows = dev.rows;
   const data = approved.load();
@@ -219,6 +223,30 @@ async function main() {
     else if (!gold && shared) policyExtra += 1;
   }
 
+  const probes = [
+    ['How do Elite Packs work?', 'SEND', 'packs.overview.en'],
+    ['What are the drop rates for Elite Packs?', 'SEND', 'packs.drop-rates.en'],
+    ['How much do Elite Packs cost?', 'SEND', 'packs.pack-costs-floors.en'],
+    ['How many cards are in one Elite Pack?', 'SEND', 'packs.cards-per-pack.en'],
+    ['How do I open an Elite Pack?', 'SEND', 'packs.opening-and-charges.en'],
+    ['Did the Elite Pack I purchased show up on my account?', 'SEND', 'packs.account-status.refuse.en'],
+    ['I received an Elite Pack. What is the published card count, and did mine arrive?', 'SEND', 'packs.account-status.refuse.en'],
+    ['Can I gift a special Elite Pack to another trader?', 'ABSTAIN', 'COVERAGE_DENIED'],
+  ];
+  const probeResults = [];
+  for (const [text, goldAction, goldId] of probes) {
+    const on = await routeRow({ id: 'probe', text }, true);
+    const got = on && on.decide && on.decide.action === 'SEND' ? on.decide.partId : (on && on.reason);
+    let posted = false;
+    if (on && on.decide && on.decide.action === 'SEND') {
+      const row = data.byId.get(on.decide.partId);
+      const gated = await safety.gateFinalOutbound(row.body, { answerIds: [row.id] });
+      posted = !!(gated && gated.ok);
+    }
+    const ok = goldAction === 'SEND' ? got === goldId && posted : got === goldId;
+    probeResults.push({ text, gold: goldId, got, posted, ok });
+  }
+
   const report = {
     catalog: {
       sha256: sha256File(CATALOG_PATH),
@@ -256,6 +284,7 @@ async function main() {
     sharedNoneFlagOffPacksF1: sharedNoneFlagOffF1,
     sharedNormalizerMismatches: { n: normMismatch, of: rows.length, ids: normIds },
     sharedPolicyDisagreementsOnExclusive: { miss: policyMiss, extra: policyExtra },
+    authorProbes: probeResults,
   };
   process.stdout.write(JSON.stringify(report, null, 2) + '\n');
   const parityOk = parity.length === 0
@@ -267,7 +296,8 @@ async function main() {
     && offSent === 0
     && sharedNoneRouterSends === 0
     && nonSendable === 0
-    && handoffSent === 0;
+    && handoffSent === 0
+    && probeResults.every((p) => p.ok);
   if (!report.catalog.censusOk || claimOk !== rows.length || !parityOk) {
     process.exitCode = 2;
   }

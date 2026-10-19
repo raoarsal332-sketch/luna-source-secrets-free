@@ -25,6 +25,11 @@ function splitIntents(normalized) {
 
 function clauseIsAccountState(clause) {
   if (/^\s*if\b/.test(clause)) return false;
+  // A how-to and a speaker who is only naming the rule are not account state.
+  if (/\bhow do i\b/.test(clause)) return false;
+  if (/\bi am asking\b/.test(clause) || /\bi'm asking\b/.test(clause)) return false;
+  if (/\bi might\b/.test(clause)) return false;
+  if (/\bi have a question\b/.test(clause)) return false;
   const stripped = clause
     .replace(/\bmy packs tab\b/g, 'MYTAB')
     .replace(/\b(?:in|on) my packs\b/g, 'INPACKS')
@@ -32,10 +37,13 @@ function clauseIsAccountState(clause) {
     .replace(/\bmy packs\b/g, '');
   if (/\bmy\b|MYTAB|INPACKS|MYMY/.test(stripped)) return true;
   if (/\bmine\b/.test(clause)) return true;
-  if (/\b(?:did|have|am) i\b/.test(clause)) return true;
-  if (/\bi (?:submitted|opened|bought|paid|sent|typed|funded|pulled|own|just|already)\b/.test(clause)) return true;
+  if (/\b(?:did|have|am|was|has) i\b/.test(clause)) return true;
+  if (/\bi (?:submitted|opened|bought|paid|sent|typed|funded|pulled|own|just|already|have|had|got|received|redeemed|purchased|was|were|used|applied|claimed|cancelled|canceled)\b/.test(clause)) return true;
+  if (/\bi've\b/.test(clause)) return true;
+  if (/\bi'm\b/.test(clause)) return true;
   if (/\bof mine\b/.test(clause)) return true;
   if (/\bi have left\b/.test(clause)) return true;
+  if (/\b(?:we|our)\b/.test(clause) && /\b(?:account|balance|order|login|pack)\b/.test(clause)) return true;
   return false;
 }
 
