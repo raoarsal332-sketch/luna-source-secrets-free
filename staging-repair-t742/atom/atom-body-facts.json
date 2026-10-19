@@ -1,0 +1,188 @@
+{
+  "catalogSha256": "df6e02686d6d4033f487f6c3140881ad67d920d3a5a52e424011e29220b072a6",
+  "facts": {
+    "atom.overview.en": [
+      "no-min-general",
+      "no-min-trading-1",
+      "no-min-trading-2",
+      "no-time-general",
+      "pass-on-target",
+      "simulated",
+      "what-is"
+    ],
+    "atom.2step.phases.en": [
+      "phase1-8",
+      "phase2-5",
+      "phases-2"
+    ],
+    "atom.2step.daily-loss.en": [
+      "daily-3",
+      "daily-anchor",
+      "open-trades"
+    ],
+    "atom.2step.max-loss.en": [
+      "floor-90k",
+      "floor-static",
+      "static-10"
+    ],
+    "atom.2step.min-days.en": [
+      "inactivity-2",
+      "no-expire-2",
+      "no-min-trading-2",
+      "no-profit-days-2",
+      "no-time-2"
+    ],
+    "atom.2step.consistency.en": [
+      "cons-2-funded",
+      "cons-2-none",
+      "not-breach"
+    ],
+    "atom.2step.news.en": [
+      "news-funded-ban",
+      "news-phase-2"
+    ],
+    "atom.2step.leverage.en": [
+      "lev-default-30",
+      "lev-menu"
+    ],
+    "atom.2step.reward.en": [
+      "reward-default-80",
+      "reward-menu-2"
+    ],
+    "atom.1step.phases.en": [
+      "phases-1",
+      "target-8-not-10"
+    ],
+    "atom.1step.daily-loss.en": [
+      "daily-4",
+      "daily-anchor",
+      "open-trades"
+    ],
+    "atom.1step.max-loss.en": [
+      "floor-103",
+      "floor-94k",
+      "floor-follows",
+      "floor-static",
+      "open-profit",
+      "trailing-6"
+    ],
+    "atom.1step.min-days.en": [
+      "dollar-500",
+      "funded-5",
+      "inactivity-1",
+      "no-expire-1",
+      "no-min-trading-1",
+      "no-profit-eval",
+      "no-time-1"
+    ],
+    "atom.1step.consistency.en": [
+      "cons-1-both",
+      "cons-1-example",
+      "not-breach"
+    ],
+    "atom.1step.news.en": [
+      "news-eval-1",
+      "news-funded-ban"
+    ],
+    "atom.1step.leverage.en": [
+      "lev-default-30",
+      "lev-fixed",
+      "lev-fixed-number"
+    ],
+    "atom.1step.reward.en": [
+      "reward-default-80",
+      "reward-menu-1"
+    ],
+    "atom.1step.funded-profitable-days.en": [
+      "funded-5",
+      "no-profit-eval"
+    ],
+    "atom.payouts.general.en": [
+      "cap-3",
+      "cap-stays",
+      "first-21",
+      "first-and-later",
+      "interval-list",
+      "later-14",
+      "reward-default-80",
+      "reward-on-payout-sheet",
+      "risk-1.5"
+    ],
+    "atom.prices.list.en": [
+      "not-161",
+      "price-100k",
+      "price-25k",
+      "price-409",
+      "price-50k",
+      "price-519",
+      "price-7k",
+      "price-table",
+      "size-old"
+    ],
+    "atom.checkout.options.en": [
+      "checkout-page",
+      "interval-list",
+      "later-14",
+      "lev-default-30",
+      "lev-fixed",
+      "lev-menu",
+      "maxloss-menu",
+      "phase1-8",
+      "reward-default-80",
+      "reward-menu-1",
+      "reward-menu-2",
+      "scalping-addon",
+      "scalping-listed",
+      "weekend-1",
+      "weekend-2"
+    ],
+    "atom.bundles.en": [
+      "bundle-2",
+      "bundle-3",
+      "bundle-4",
+      "bundle-credits",
+      "credits-not-withdrawable",
+      "free-pack",
+      "not-payout-credits"
+    ],
+    "atom.house.eas-copy.en": [
+      "copier-own",
+      "ea-allowed",
+      "hold-3",
+      "no-hedge",
+      "no-share",
+      "scalping-addon"
+    ],
+    "atom.house.simulated.en": [
+      "no-guarantee",
+      "no-real-capital",
+      "rewards-sim",
+      "simulated"
+    ],
+    "atom.handoff.unverified.en": [],
+    "atom.account-status.refuse.en": [],
+    "atom.obsolete.10pct-1step.en": [
+      "older-draft-10",
+      "target-8-not-10"
+    ],
+    "atom.obsolete.first-payout-14.en": [
+      "first-21",
+      "first-and-later",
+      "later-14",
+      "not-14"
+    ],
+    "atom.obsolete.leverage-150-default.en": [
+      "lev-default-30",
+      "lev-menu",
+      "lev-not-universal"
+    ],
+    "atom.obsolete.price-161-permanent.en": [
+      "not-161",
+      "price-100k"
+    ],
+    "atom.obsolete.sizes-5k-10k.en": [
+      "size-list",
+      "size-old"
+    ]
+  }
+}

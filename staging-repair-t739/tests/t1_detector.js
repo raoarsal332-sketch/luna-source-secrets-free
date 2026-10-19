@@ -161,7 +161,9 @@ test('hold result and log line are body-free', () => {
   const h = d.inspect(`Login: ${L} Password: ${P}`);
   const res = JSON.stringify(d.holdResult(h)) + d.logLine('123', h).join(' ') + d.staffHoldNote(h.code);
   assert.ok(!res.includes(L) && !res.includes(P));
-  assert.strictEqual(d.staffHoldNote('X_1'), 'Reply held by safety check (reason: X_1). Nothing was sent to the customer.');
+  assert.strictEqual(d.staffHoldNote('X_1'), null);
+  assert.strictEqual(d.staffHoldNote('CRED_PAIR_UNLABELLED'), null);
+  assert.strictEqual(d.staffHoldNote('NOT_APPROVED_OUTPUT'), 'Reply held by safety check (reason: NOT_APPROVED_OUTPUT). Nothing was sent to the customer.');
 });
 test('HOLD  unlabelled letter-digit pair with no cue word (S01 shape)', () => {
   const r = d.inspect('99999001 / Passw0rd');

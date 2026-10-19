@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const E = require('./env');
 const { test, run } = require('./runner');
-const { h, T, fake, lm, sc, reset, newConv, index } = E;
+const { h, T, fake, lm, sc, reset, newConv, index, L, P } = E;
 
 const S = 'ZQSENTINELCUSTOMERTEXTQZ';
 const TAGS = ['IC_REQ_FAIL', 'PROBLEM_SUMMARY_REPAIRED', 'PROBLEM_SUMMARY_POLISHED', 'PROBLEM_PRE_REPAIR', 'ESCALATE_HANDOFF_SOFTENED', 'POSTGATE_FAIL_DETAIL', 'OWNER_CMD_LLM_RAW', 'SKIP model', 'PARTIAL_ANSWER_UNITS'];
@@ -15,11 +15,22 @@ test('F4 IC_REQ_FAIL: a rejected write that echoes customer text logs codes and 
   reset();
   const { id } = newConv();
   fake.setResponder((rec) => (rec.method === 'post' ? { status: 400, data: { type: 'error.list', errors: [{ code: 'parameter_invalid', message: 'bad body ' + S }] } } : null));
-  await index.postReply(id, 'comment', 'The daily loss limit is 5%.');
+  // t745: this sentence is unprotected, so it reaches axios. The rejection log
+  // is codes and length. The sentinel stays out of every log line.
+  await index.postReply(id, 'comment', 'The daily loss limit is 5%. ' + S);
   const lines = h.logs.map((l) => l.line).filter((l) => l.startsWith('IC_REQ_FAIL'));
-  assert.strictEqual(lines.length, 1, lines.join('|'));
+  assert.strictEqual(lines.length, 1, h.logs.slice(-8).map((l) => l.line).join('|'));
   assert.ok(!lines[0].includes(S), lines[0]);
   assert.ok(/codes=parameter_invalid/.test(lines[0]) && /\[redacted len=\d+\]/.test(lines[0]), lines[0]);
+  assert.deepStrictEqual(leaks(), []);
+  if (E.which !== 'candidate') return;
+  // Protected spread prose is denied before axios. The deny line has no sentinel.
+  h.logs.length = 0;
+  await index.postReply(id, 'comment', 'The spreads on the MetaTrader 5 server are the thing to inspect. ' + S);
+  const deny = h.logs.map((l) => l.line).filter((l) => l.includes('PUBLIC_WRITE'));
+  assert.ok(deny.length >= 1, 'deny line not reached');
+  assert.ok(deny.every((l) => !l.includes(S) && /NOT_APPROVED_OUTPUT/.test(l)), deny.join('|'));
+  assert.deepStrictEqual(leaks(), []);
 });
 test('F4 OWNER_CMD_LLM_RAW: raw model output is not logged, only its length', async () => {
   reset();
@@ -37,9 +48,9 @@ test('F4 SKIP model: a model SKIP body is not logged', async () => {
   lm.state.queue.push('ACTION: SKIP\nBODY: ' + S);
   const req = { body: { topic: 'conversation.user.replied', data: { item: { id, type: 'conversation', conversation_parts: { conversation_parts: [user] }, source: fake.getConversation(id).source } } }, headers: {} };
   await index.handleWebhook(req, res);
-  const skip = h.logs.map((l) => l.line).filter((l) => l.startsWith('SKIP model'));
-  assert.ok(skip.length >= 1, 'SKIP model log line not reached on this route: ' + h.logs.slice(-6).map((l) => l.line).join('|'));
-  assert.ok(skip.every((l) => !l.includes(S)), skip.join('|'));
+  const skip = h.logs.map((l) => l.line).filter((l) => l.startsWith('SKIP model') || l.startsWith('SKIP empty reply body') || l.startsWith('TOOL_BUDGET_EMPTY_FALLBACK') || l.includes('PUBLIC_WRITE'));
+  assert.ok(skip.length >= 1, 'no skip or deny line on this route: ' + h.logs.slice(-8).map((l) => l.line).join('|'));
+  assert.ok(h.logs.every((l) => !l.line.includes(S)), 'sentinel in ' + leaks().join('|'));
 });
 test('F4 none of the nine redacted tags carries the sentinel on any exercised route', () => {
   const bad = leaks().filter((l) => TAGS.some((t) => l.startsWith(t)));
@@ -56,6 +67,37 @@ test('F4 static: the nine historical sites no longer interpolate raw text (diff 
     assert.ok(c.every((l) => /logLen\(/.test(l)), 'candidate line does not use logLen: ' + tag);
     assert.ok(b.every((l) => !/logLen\(/.test(l)), 'baseline unexpectedly redacted: ' + tag);
   }
+});
+test('F4 a synthetic login and password in the customer turn never reach a log sink', async () => {
+  reset();
+  const { id, user } = newConv('My login is ' + L + ' and the password is ' + P);
+  lm.state.queue.push('ACTION: REPLY\nBODY: I will ask a support teammate to check this for you.');
+  const req = { body: { topic: 'conversation.user.replied', data: { item: { id, type: 'conversation', conversation_parts: { conversation_parts: [user] }, source: fake.getConversation(id).source } } }, headers: {} };
+  await index.handleWebhook(req, res);
+  const redact = (line) => String(line).split(L).join('[L]').split(P).join('[P]');
+  const hit = h.logs.filter((l) => l.line.includes(L) || l.line.includes(P));
+  if (hit.length) process.stdout.write('CRED_LOG_HITS ' + hit.map((l) => redact(l.line).slice(0, 180)).join(' || ') + '\n');
+  assert.strictEqual(hit.length, 0, 'credential reached a log sink');
+  if (E.which !== 'candidate') return;
+  const pubs = fake.publicWrites().map((p) => String(p.data && p.data.body || '')).join('\n');
+  assert.ok(!pubs.includes('support teammate'), 'safety row posted a public teammate sentence');
+  assert.ok(!pubs.includes(L) && !pubs.includes(P), 'credential reached a public comment');
+});
+test('t742 reviewer hooks are armed', () => {
+  if (E.which !== 'candidate') return;
+  const hooks = index.t742Hooks;
+  assert.ok(hooks && typeof hooks === 'object');
+  for (const name of ['replayAuthDeferred', 'scheduleBurstRerun', 'deferForAuth', 'armQueuedWebhook', 'armBurstPending', 'f1MarkFile', 'spreadStateFile', 'withOwnershipWriteLock']) {
+    assert.strictEqual(typeof hooks[name], 'function', name);
+  }
+  assert.ok(hooks.duplicateInflight && typeof hooks.duplicateInflight.get === 'function');
+  const req = hooks.armQueuedWebhook({ body: {} });
+  assert.strictEqual(req.__queuedWebhook, true);
+  hooks.armBurstPending('hook-conv');
+  assert.strictEqual(T.burstRerunPending.has('hook-conv'), true);
+  T.burstRerunPending.delete('hook-conv');
+  assert.ok(typeof hooks.f1MarkFile() === 'string' && hooks.f1MarkFile().endsWith('f1-terminal-abstain.json'));
+  assert.ok(typeof hooks.spreadStateFile() === 'string' && hooks.spreadStateFile().endsWith('spread-test-state.json'));
 });
 test('F4 residual: log lines (all routes in this process) that still contain the customer sentinel are listed for the report', () => {
   const rest = leaks();

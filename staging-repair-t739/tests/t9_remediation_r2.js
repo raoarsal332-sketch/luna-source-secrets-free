@@ -86,7 +86,8 @@ test('r2 spread: eligible credential asks, follow-ups, and mixed appends deliver
   }
 
   reset();
-  const first = newConv('what are the spreads?');
+  // Design lines 608 and 614: only spread-test-credential enters offered.
+  const first = newConv('can I get a demo login to check spreads');
   await index.handleWebhook(webhookReq(first.id, first.user), res);
   const followTexts = ["what's the investor password", 'send the login again', 'server?'];
   for (const ft of followTexts) {
@@ -105,9 +106,12 @@ test('r2 spread: eligible credential asks, follow-ups, and mixed appends deliver
   lm.state.queue.push('ACTION: REPLY\nBODY: The daily loss limit for 2-Step Lite is 3% of the starting balance.');
   await index.handleWebhook(webhookReq(mixed.id, mixed.user), res);
   const mixedBody = fake.publicWrites().map((p) => p.data.body).join('\n');
-  assert.ok(/cannot post a test account number or password/i.test(mixedBody), mixedBody.slice(0, 300));
   assert.ok(!mixedBody.includes(L) && !mixedBody.includes(P));
-  assert.strictEqual(T.pendingSpreadTemplateAppend.size, 0);
+  // Design line 151 deletes the in-memory map. Design lines 608 and 614:
+  // this mixed strong-spread-phrase ask is not the spread-test-credential entry.
+  assert.ok(!T.pendingSpreadTemplateAppend, 'in-memory spread map is still exported');
+  const state = require(path.join(E.t.dir, 'spreadTestState'));
+  assert.notStrictEqual(state.load(mixed.id).state, 'offered');
 });
 
 test('r2 S09 authorized REPLY: a credential that exists only in an href or attachment is held with a code', async () => {

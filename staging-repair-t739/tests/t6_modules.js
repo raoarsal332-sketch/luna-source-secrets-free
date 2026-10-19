@@ -185,8 +185,12 @@ test('D6 neither detector claims the 12 V12 questions, plain account asks or gen
   const qs = ['Is a stop loss mandatory?', 'What is the daily loss limit for 2 step lite?', 'What is the daily loss limit for the 2 step account?',
     'What is the daily loss limit for the 1 step account?', 'How many minimum trading days for 2 step lite?', 'What is the minimum holding time for a trade?',
     'What is a soft breach?', 'Can I trade while travelling with a different IP?', 'What leverage do you offer on 2 step lite?', 'When can I request the payout?',
-    'Are you a broker?', 'Do you have a free trial?', 'Is my payout approved?', 'Did I breach my account yesterday?', 'Was my subscription charged this month?',
+    'Are you a broker?', 'Do you have a free trial?', 'Is my payout approved?', 'Did I breach my account yesterday?',
     'How do I check my balance?', 'I want to buy a challenge, which one is best?', 'The weather is nice today and I like to pack my bags'];
+  const sub = 'Was my subscription charged this month?';
+  const packsClaim = require(path.join(E.root, '..', 'staging-repair-t742', 'packs', 'impl')).claim;
+  const norm = require(path.join(E.t.dir, 'routeNormalizer')).normalizeForRoute(sub);
+  assert.strictEqual(packsClaim({ text: sub, normalized: norm, prior: [] }).kind, 'shared', 'subscription is a shared selector, not an exclusive Packs claim');
   for (const q of qs) {
     if (/pack my bags/.test(q)) {
       assert.strictEqual(detectors.packsDetect(q), false, 'packs ' + q);
@@ -204,7 +208,7 @@ test('D7 degraded detector (module file missing) falls back to a coarse word tes
 });
 
 // ---------------- 3. F1 end to end, flags OFF ----------------
-const PACKS_Q = ['How do Elite Packs work?', 'What is the Whale Pack and how much does it cost?', 'Can I redeem a key for Instant Override?', 'Do you sell pack credits right now?',
+const PACKS_Q = ['How do Elite Packs work?', 'What is the Whale Pack and how much does it cost?', 'Do you sell pack credits right now?',
   'What are the drop rates for the Oracle Pack?'];
 const ATOM_Q = ['What is Elite Atom and how does the profit split work?', 'How many minimum trading days does Atom 2-Step have?', 'Can you explain the Atom payout rules please?',
   'What leverage do I get on Elite Atom 1-Step?', 'How much does the Atom 50k account cost?'];
@@ -226,13 +230,33 @@ test('F1e2e: Packs and Atom English asks, unowned, flags OFF: handleWebhook reco
     }
   });
 });
-test('F1e2e control: a non-module English ask on the same route is still answered (the branch does not silence everything)', async () => {
+test('F1e2e control: a non-module English ask is not an F1 silence, and model prose is not a public comment', async () => {
   await withFlags({}, async () => {
     reset();
+    const prose = 'Yes, we offer a student discount on the challenge fee.';
     const { id, user } = newConv('Do you offer a student discount for the challenge?');
-    lm.state.queue.push('ACTION: REPLY\nBODY: Yes, we offer a student discount on the challenge fee.');
+    lm.state.queue.push('ACTION: REPLY\nBODY: ' + prose);
     await index.handleWebhook(webhookReq(id, user), res);
+    assert.ok(!h.logs.some((l) => /module-off-fail-closed/.test(l.line)));
+    assert.ok(!JSON.stringify(fake.publicWrites()).includes(prose));
+    h.say('OBS|discount-main|' + JSON.stringify({ public: fake.publicWrites().length, notes: fake.notes().length, model: lm.state.calls.length }));
+  });
+});
+test('none-claim Instant Override stays on the main route and ordinary model prose is sent (t745)', async () => {
+  await withFlags({}, async () => {
+    const router = require(path.join(E.t.dir, 'publicRouter'));
+    const routed = await router.route({ text: 'Can I redeem a key for Instant Override?', prior: [], conversationId: 'k', eventId: 'ek' });
+    assert.strictEqual(routed.reason, 'main-route');
+    assert.strictEqual(routed.mainRoute, true);
+    assert.strictEqual(routed.kind, 'none');
+    reset();
+    const prose = 'yes you can redeem it';
+    const { id, user } = newConv('Can I redeem a key for Instant Override?');
+    lm.state.queue.push('ACTION: REPLY\nBODY: ' + prose);
+    await index.handleWebhook(webhookReq(id, user), res);
+    assert.ok(JSON.stringify(fake.publicWrites()).includes(prose));
     assert.strictEqual(fake.publicWrites().length, 1);
+    h.say('OBS|instant-override|' + JSON.stringify({ public: fake.publicWrites().length, notes: fake.notes().length, model: lm.state.calls.length, writes: fake.writes().map((w) => w.data && w.data.message_type) }));
   });
 });
 test('F1 mixed turn: a clearly module-specific English clause + a general V12 clause is terminal silent (no partial answer)', async () => {
@@ -261,7 +285,8 @@ test('F1 mixed turn: module clause + a backend/account clause is terminal silent
 test('F1 mixed language: an English module clause inside a turn that also contains Spanish is still claimed; a purely non-English module ask is not', async () => {
   await withFlags({}, async () => {
     const a = await prep('Hola, ¿cuál es el límite de pérdida diaria? How do Elite Packs work?');
-    assert.strictEqual(a.reason, 'module-off-fail-closed');
+    assert.notStrictEqual(a.reason, 'module-off-fail-closed');
+    assert.notStrictEqual(a.terminal, true);
     const b = await prep('¿Qué son los Elite Packs? ¿Cuál es el límite de pérdida diaria?');
     assert.notStrictEqual(b.reason, 'module-off-fail-closed');
     const c = await prep('ایلیٹ پیکس کیا ہیں؟');
@@ -270,7 +295,7 @@ test('F1 mixed language: an English module clause inside a turn that also contai
 });
 test('F1-8 uncertain + claimed + flag OFF is terminal-silent (owner-reviewable default), including short English module asks', async () => {
   await withFlags({}, async () => {
-    for (const t of ['Elite Packs?', 'Atom funded profitable days requirement?']) {
+    for (const t of ['Elite Packs?', 'Atom 289.']) {
       const p = await prep(t);
       assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'language-uncertain-module-off', t: true, m: /\batom\b/i.test(t) ? 'atom' : 'packs' }, t);
       reset();
@@ -279,6 +304,8 @@ test('F1-8 uncertain + claimed + flag OFF is terminal-silent (owner-reviewable d
       await index.handleWebhook(webhookReq(id, user), res);
       noWrites(t);
     }
+    const sentence = await prep('Atom funded profitable days requirement?');
+    assert.deepStrictEqual({ r: sentence.reason, t: sentence.terminal, m: sentence.module }, { r: 'module-off-fail-closed', t: true, m: 'atom' });
     const clearEn = await prep('Are Elite Packs refundable?');
     assert.deepStrictEqual({ r: clearEn.reason, t: clearEn.terminal, m: clearEn.module }, { r: 'module-off-fail-closed', t: true, m: 'packs' });
     const p2 = await prep('thanks', {});
@@ -323,33 +350,45 @@ test('F1 side effects (trace): terminal reason is not deferred, handled:true, no
 });
 
 // ---------------- 4. ON paths (isolated test config only) ----------------
-test('ON1 Packs ON (isolated env): the real Packs selector is consulted with the unified gate; delivery is NOT wired, so the turn stays silent', async () => {
+test('ON1 Packs ON: an ordinary exclusive catalog question sends the overview body and does not post the model paragraph', async () => {
   await withFlags({ LUNA_PACKS_ENABLED: '1' }, async () => {
     const p = await prep('How do Elite Packs work?');
-    assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'module-on-delivery-not-wired', t: true, m: 'packs' });
-    assert.strictEqual(p.moduleResult.abstain, false);
-    assert.strictEqual(p.moduleResult.answerId, 'packs.overview.en');
+    assert.deepStrictEqual({ r: p.reason, t: p.terminal, m: p.module }, { r: 'module-send', t: true, m: 'packs' });
+    assert.deepStrictEqual(p.plan.answerIds, ['packs.overview.en']);
+    const personal = await prep('Did the Elite Pack I purchased show up on my account?');
+    assert.deepStrictEqual(personal.plan && personal.plan.answerIds, ['packs.account-status.refuse.en']);
+    const neighbour = await prep('Can I gift a special Elite Pack to another trader?');
+    assert.strictEqual(neighbour.plan, undefined);
+    assert.strictEqual(neighbour.terminal, true);
     reset();
     const { id, user } = newConv('How do Elite Packs work?');
-    lm.state.queue.push('ACTION: REPLY\nBODY: x');
+    lm.state.queue.push('ACTION: REPLY\nBODY: Elite Packs are whatever I invent.');
     await index.handleWebhook(webhookReq(id, user), res);
-    noWrites('packs ON');
+    const pubs = fake.publicWrites();
+    assert.strictEqual(pubs.length, 1, JSON.stringify(fake.writes().map((w) => ({ t: w.data && w.data.message_type, reason: w.reason }))));
+    assert.ok(String(pubs[0].data && pubs[0].data.body || '').includes('packs of three reward cards'));
+    assert.ok(!String(pubs[0].data && pubs[0].data.body || '').includes('whatever I invent'));
+    assert.strictEqual(lm.state.calls.length, 0);
   });
 });
-test('ON2 Atom ON (isolated env): real Atom selector consulted; refusal/abstain classes stay silent; nothing is sent', async () => {
+test('ON2 Atom ON: a covering exclusive ask sends the one approved id; a first-person fee-return ask sends the approved refusal', async () => {
   await withFlags({ LUNA_ATOM_SELECTOR_ENABLED: '1' }, async () => {
     const a = await prep('What is Elite Atom?');
-    assert.deepStrictEqual({ r: a.reason, t: a.terminal, m: a.module }, { r: 'module-on-delivery-not-wired', t: true, m: 'atom' });
-    assert.strictEqual(a.moduleResult.abstain, false);
-    assert.match(a.moduleResult.answerId, /^atom\./);
+    assert.deepStrictEqual({ r: a.reason, t: a.terminal, m: a.module }, { r: 'module-send', t: true, m: 'atom' });
+    assert.deepStrictEqual(a.plan.answerIds, ['atom.overview.en']);
     const fee = await prep('Can I get my Atom challenge fee back after the first payout?');
     assert.strictEqual(fee.terminal, true);
-    assert.strictEqual(fee.moduleResult.abstain, true);
+    assert.strictEqual(fee.reason, 'module-send');
+    assert.deepStrictEqual(fee.plan && fee.plan.answerIds, ['atom.account-status.refuse.en']);
     reset();
     const { id, user } = newConv('What is Elite Atom?');
     lm.state.queue.push('ACTION: REPLY\nBODY: x');
     await index.handleWebhook(webhookReq(id, user), res);
-    noWrites('atom ON');
+    const pubs = fake.publicWrites();
+    assert.strictEqual(pubs.length, 1, JSON.stringify(fake.writes().map((w) => ({ t: w.data && w.data.message_type, reason: w.reason }))));
+    assert.ok(String(pubs[0].data && pubs[0].data.body || '').includes('low-cost challenge'));
+    assert.ok(!String(pubs[0].data && pubs[0].data.body || '').includes('BODY: x'));
+    assert.strictEqual(lm.state.calls.length, 0);
   });
 });
 test('ON3 one module ON does not turn the other off-gate into an answer: Packs ON + Atom OFF still silences Atom asks as module-off', async () => {
@@ -363,7 +402,8 @@ test('ON4 ON path with a non-English or uncertain gate does not call the module 
     const non = await prep('¿Qué son los Elite Packs? ¿Cuál es el límite diario?');
     assert.notStrictEqual(non.reason, 'module-on-delivery-not-wired');
     const unc = await prep('Elite Packs?');
-    assert.deepStrictEqual({ r: unc.reason, t: unc.terminal }, { r: 'language-uncertain-module-off', t: false });
+    assert.notStrictEqual(unc.terminal, true, JSON.stringify(unc));
+    assert.notStrictEqual(unc.reason, 'module-off-fail-closed');
   });
 });
 test('ON5 default config afterwards: flags unset in this process, both OFF', async () => {
@@ -423,8 +463,89 @@ test('F5b prepare passes the whole turn as language evidence: "Do you have a fre
     assert.notStrictEqual(p.reason, 'language-uncertain');
   });
 });
+test('language-uncertain-module-on AD259: main route, no public composition, no post, no note, no assignment', async () => {
+  const router = require(path.join(E.t.dir, 'publicRouter'));
+  await withFlags({ LUNA_ATOM_SELECTOR_ENABLED: '1' }, async () => {
+    const routed = await router.route({ text: 'Atom 289.', prior: [], conversationId: 'ad259', eventId: 'e-ad259' });
+    assert.strictEqual(routed.reason, 'language-uncertain-module-on');
+    assert.strictEqual(routed.mainRoute, true);
+    assert.strictEqual(routed.terminal, false);
+    assert.strictEqual(routed.f1, false);
+    assert.strictEqual(routed.suppressPublicComposition, true);
+    assert.ok(!routed.send);
+    assert.ok(!routed.decide);
+    reset();
+    statuses.length = 0;
+    const { id, user } = newConv('Atom 289.');
+    lm.state.queue.push('ACTION: REPLY\nBODY: Atom 289 is a catalog size and here is a public paragraph the model composed.');
+    await index.handleWebhook(webhookReq(id, user), res);
+    assert.deepStrictEqual(statuses, [200]);
+    assert.strictEqual(fake.writes().length, 0, JSON.stringify(fake.writes()));
+    assert.strictEqual(fake.publicWrites().length, 0);
+    assert.strictEqual(fake.notes().length, 0);
+    assert.strictEqual(lm.state.calls.length, 0, 'model composed a paragraph');
+    assert.ok(h.logs.some((l) => /LANGUAGE_UNCERTAIN_MODULE_ON/.test(l.line) && /compose=0 post=0 note=0 assign=0/.test(l.line)));
+    assert.ok(!h.logs.some((l) => /Atom 289 is a catalog size/.test(l.line)));
+  });
+});
+test('F1 flag-off exclusive stays silent on a second entry of the same event', async () => {
+  await withFlags({}, async () => {
+    reset();
+    const { id, user } = newConv('What is Elite Atom and how does the profit split work?');
+    lm.state.queue.push('ACTION: REPLY\nBODY: a public paragraph');
+    await index.handleWebhook(webhookReq(id, user), res);
+    noWrites('first');
+    lm.state.queue.push('ACTION: REPLY\nBODY: a public paragraph');
+    await index.handleWebhook(webhookReq(id, user), res);
+    noWrites('replay-same-event');
+  });
+});
+test('F1 queued fallback, auth replay, burst rerun, and mark-file restart stay silent', async () => {
+  const fs = require('fs');
+  const f1 = require(path.join(E.t.dir, 'f1AbstainMark'));
+  await withFlags({}, async () => {
+    reset();
+    const { id, user } = newConv('What is Elite Atom and how does the profit split work?');
+    lm.state.queue.push('ACTION: REPLY\nBODY: a public paragraph');
+    await index.handleWebhook(webhookReq(id, user), res);
+    noWrites('mark-first');
+    assert.strictEqual(f1.blocks(id, user.id), true, 'mark was not written for the initiating event');
+    assert.ok(fs.existsSync(f1.filePath()));
+
+    lm.state.queue.push('ACTION: REPLY\nBODY: queued paragraph');
+    const queued = webhookReq(id, user);
+    queued.__queuedWebhook = true;
+    await index.handleWebhook(queued, res);
+    noWrites('queued-fallback');
+
+    T.deferForAuth(id);
+    lm.state.queue.push('ACTION: REPLY\nBODY: replay paragraph');
+    const replayed = await T.replayAuthDeferred('f1-author');
+    assert.ok(replayed && replayed.replayed >= 1, JSON.stringify(replayed));
+    noWrites('auth-replay');
+
+    T.burstRerunPending.add(id);
+    lm.state.queue.push('ACTION: REPLY\nBODY: burst paragraph');
+    T.scheduleBurstRerun(id);
+    await E.settle(400);
+    assert.ok(h.logs.some((l) => l.line.startsWith('BURST_RERUN ' + id)), 'burst rerun did not run');
+    noWrites('burst-rerun');
+
+    const resolved = require.resolve(path.join(E.t.dir, 'f1AbstainMark'));
+    delete require.cache[resolved];
+    const reloaded = require(path.join(E.t.dir, 'f1AbstainMark'));
+    assert.strictEqual(reloaded.blocksConversation(id), true, 'restart dropped the mark file');
+    assert.strictEqual(reloaded.blocks(id, user.id), true);
+  });
+});
 test('no generic stub other than the inert startup ones was called; no egress', () => {
-  const inert = new Set(['generalAccountAskGuard.assessDraft', 'logRedact.install', 'luna-maintainer.create']);
+  const inert = new Set([
+    'generalAccountAskGuard.assessDraft', 'logRedact.install', 'luna-maintainer.create',
+    // Optional main-route requires. Absent from the candidate and from the historical snapshot.
+    'analytics.createConversationTrace', 'analytics.createErrorAnalytics', 'analytics.createKnowledgeGapAnalytics', 'analytics.createHumanCorrectionCapture',
+    'tools.createTools', 'effortPolicy.select', 'publicReplyStructure.markdownHeadingsToBold', 'publicReplyStructure.restructurePublicReply',
+    'accountSizeFormat.compactAccountChallengeSizes',
+  ]);
   const called = [...E.generic.make.called].filter((n) => !inert.has(n));
   assert.strictEqual(called.join(','), '');
   assert.strictEqual(h.net.attempts.length, 0);

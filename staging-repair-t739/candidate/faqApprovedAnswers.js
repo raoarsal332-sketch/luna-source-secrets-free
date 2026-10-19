@@ -141,8 +141,36 @@ function load(filePath) {
   return data;
 }
 
+function extraEnabled() {
+  return true;
+}
+
+/**
+ * Extra-catalog paths for Packs and Atom. The files are the sibling JSON
+ * already in this tree. V12 list() does not include them. get() loads a
+ * sendable extra row by id when decide has already chosen that id.
+ */
+function resolveExtraPath(kind) {
+  if (!extraEnabled()) return null;
+  if (kind === 'packs') return path.join(__dirname, 'packs', 'faq-approved-answers-packs-v1.json');
+  if (kind === 'atom') return path.join(__dirname, 'atom', 'faq-approved-answers-atom-v1.json');
+  return null;
+}
+
+function extraGet(id) {
+  for (const kind of ['packs', 'atom']) {
+    const file = resolveExtraPath(kind);
+    if (!file || !fs.existsSync(file)) continue;
+    const row = load(file).allById.get(id);
+    if (row && row.sendable === true) return row;
+  }
+  return null;
+}
+
 function get(id, filePath) {
-  return load(filePath).byId.get(id) || null;
+  const hit = load(filePath).byId.get(id);
+  if (hit || filePath) return hit || null;
+  return extraGet(id);
 }
 
 function getAny(id, filePath) {
@@ -221,19 +249,25 @@ function chunkMatchesAllowlistedTemplate(chunk, filePath) {
 /**
  * @returns {{ ok:boolean, reason:string, coreHashes:string[], answerIds:string[] }}
  */
+function rowForAllowlist(id, filePath) {
+  if (filePath) return load(filePath).byId.get(id) || null;
+  return get(id) || null;
+}
+
 function assertAllowlistedFinal(body, answerIds, filePath) {
   const data = load(filePath);
-  // Pending / non-sendable ids never enter the allowlist.
-  const ids = (answerIds || []).filter((id) => data.byId.has(id));
+  // Pending / non-sendable ids never enter the allowlist. An extra Packs or
+  // Atom row is sendable when get() returns it; V12 list() still omits it.
+  const ids = (answerIds || []).filter((id) => rowForAllowlist(id, filePath));
   if (!ids.length) return { ok: false, reason: 'no-approved-answer-ids', coreHashes: [], answerIds: [] };
 
   const allowed = sentenceSetForAnswers(ids, filePath);
-  const coreHashes = ids.map((id) => data.byId.get(id).contentHash);
+  const coreHashes = ids.map((id) => rowForAllowlist(id, filePath).contentHash);
 
   const norm = normalizeBody(body);
   for (const id of ids) {
-    const a = data.byId.get(id);
-    if (norm === a.body) return { ok: true, reason: 'exact', coreHashes, answerIds: ids };
+    const a = rowForAllowlist(id, filePath);
+    if (norm === a.body || norm === normalizeBody(a.body)) return { ok: true, reason: 'exact', coreHashes, answerIds: ids };
   }
 
   const chunks = norm
@@ -252,7 +286,7 @@ function assertAllowlistedFinal(body, answerIds, filePath) {
         break;
       }
       for (const id of ids) {
-        const b = data.byId.get(id).body;
+        const b = rowForAllowlist(id, filePath).body;
         if (rest === b || rest.startsWith(b + ' ') || rest.startsWith(b + '\n')) {
           rest = normalizeBody(rest.slice(b.length));
           progressed = true;
@@ -309,6 +343,7 @@ module.exports = {
   isSendableStatus,
   isSendableRow,
   isWelcomeOrBoilerplate,
+  resolveExtraPath,
   clearCache,
   sentenceSetForAnswers,
   PURE_GREETING_ALLOWLIST,

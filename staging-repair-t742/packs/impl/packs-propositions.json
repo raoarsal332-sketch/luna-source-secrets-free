@@ -1,0 +1,943 @@
+{
+  "version": 2,
+  "catalogSha256": "bed88e6ab45c74a378273f301a197ee56b8276c312bb4bca081c7c9efb6b2318",
+  "rule": "Each fact is a proposition stated by the listed approved bodies. Surfaces are ordinary English paraphrases of that proposition, taken from the approved body, not from a dev-row id. An ask triggers a fact when one surface is present (and every all-phrase, when set). A body covers the ask only when it states every triggered fact. Concealed spelling triggers nothing. A bare topic word is not membership when the body does not state the asked fact.",
+  "facts": [
+    {
+      "id": "overview.three-reward-cards",
+      "statement": "An Elite Pack holds three reward cards.",
+      "statedBy": [
+        "packs.overview.en",
+        "packs.cards-per-pack.en"
+      ],
+      "any": [
+        "three reward cards",
+        "exactly three",
+        "three cards",
+        "exact card count",
+        "card count",
+        "how many cards",
+        "pack size",
+        "3 cards",
+        "3 reward cards",
+        "how many reward cards",
+        "cards in a pack",
+        "cards in each pack",
+        "cards per pack",
+        "number of cards",
+        "cards does one",
+        "cards are in",
+        "cards in one",
+        "cards inside"
+      ]
+    },
+    {
+      "id": "cards.drawn-on-its-own",
+      "statement": "Each card is drawn on its own, not as one whole-pack roll.",
+      "statedBy": [
+        "packs.cards-per-pack.en"
+      ],
+      "any": [
+        "drawn on its own",
+        "draw on its own",
+        "draw standing alone",
+        "each draw",
+        "one roll",
+        "each card is drawn",
+        "drawn separately",
+        "on its own",
+        "not whole-pack",
+        "not a single roll",
+        "individual card",
+        "one card at a time"
+      ]
+    },
+    {
+      "id": "overview.paid-with-pack-credits",
+      "statement": "Packs are bought with Pack Credits.",
+      "statedBy": [
+        "packs.overview.en"
+      ],
+      "any": [
+        "paid for with pack credits",
+        "balance pays",
+        "sells reward cards for pack credits",
+        "reward cards for pack credits",
+        "buy packs with pack credits",
+        "pay with pack credits",
+        "bought with pack credits",
+        "purchase with pack credits",
+        "costs pack credits",
+        "using pack credits"
+      ]
+    },
+    {
+      "id": "overview.opened-by-the-trader",
+      "statement": "The trader opens the pack personally.",
+      "statedBy": [
+        "packs.overview.en"
+      ],
+      "any": [
+        "open that pack personally",
+        "who opens the pack",
+        "opens the pack",
+        "i open it",
+        "opened on the dashboard",
+        "open them yourself",
+        "open it yourself",
+        "you open the pack",
+        "you open it",
+        "trader opens",
+        "open the pack yourself"
+      ]
+    },
+    {
+      "id": "overview.kept-until-applied",
+      "statement": "Cards are kept until the trader applies one.",
+      "statedBy": [
+        "packs.overview.en"
+      ],
+      "any": [
+        "held until",
+        "kept until",
+        "keeps each card until",
+        "keep cards until",
+        "until it is applied",
+        "until the trader applies",
+        "until i apply",
+        "until you apply",
+        "keep every card",
+        "apply it yourself",
+        "apply a card yourself",
+        "does not apply automatically",
+        "applied automatically",
+        "not automatic"
+      ]
+    },
+    {
+      "id": "whale.tier-price-floor-exotic",
+      "statement": "Whale is tier 4, 12,500 credits, Uncommon floor, Exotic 0.050% per card.",
+      "statedBy": [
+        "packs.followup.whale-pack.en"
+      ],
+      "all": [
+        "whale"
+      ],
+      "any": [
+        "exotic",
+        "credit price",
+        "tier number",
+        "12,500",
+        "12500",
+        "uncommon floor",
+        "uncommon or better",
+        "0.050",
+        "tier 4",
+        "whale pack"
+      ]
+    },
+    {
+      "id": "floor.lowest-rarity",
+      "statement": "A floor is the lowest rarity a pack can hold.",
+      "statedBy": [
+        "packs.rarity-floor.en"
+      ],
+      "any": [
+        "lowest rarity",
+        "what a floor means",
+        "define a floor",
+        "word floor",
+        "rarity floor",
+        "what is a floor",
+        "what a floor is",
+        "floor means",
+        "never contains common",
+        "rare or better",
+        "lowest rarity a pack"
+      ]
+    },
+    {
+      "id": "credits.not-challenge-resale-or-cash",
+      "statement": "Pack Credits cannot buy a challenge, be resold, or carry monetary value.",
+      "statedBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "any": [
+        "buy a challenge",
+        "buying challenges",
+        "be resold",
+        "being resold",
+        "monetary value",
+        "barred from",
+        "not withdrawable",
+        "cannot buy a challenge",
+        "no monetary value",
+        "not cash",
+        "cannot be resold",
+        "pack credits buy elite packs only"
+      ]
+    },
+    {
+      "id": "credits.expire-with-account",
+      "statement": "Pack Credits expire with the account.",
+      "statedBy": [
+        "packs.credits-vs-payout-credits.en"
+      ],
+      "any": [
+        "expire with the account",
+        "expire when the account",
+        "expire with",
+        "expire when",
+        "expiration",
+        "do pack credits expire",
+        "credits expire"
+      ]
+    },
+    {
+      "id": "credits.conversion-is-voluntary",
+      "statement": "Only a voluntary conversion leaves the withdrawable payout balance.",
+      "statedBy": [
+        "packs.credits-vs-payout-credits.en",
+        "packs.convert-payout-credits.en",
+        "packs.withdraw-credits.en"
+      ],
+      "any": [
+        "converted portion",
+        "voluntary step",
+        "rather than an automatic",
+        "voluntary",
+        "explicit choice",
+        "not automatic",
+        "choose to convert",
+        "customer choice"
+      ]
+    },
+    {
+      "id": "credits.not-cashable-or-transferable",
+      "statement": "Pack Credits cannot be cashed out or transferred.",
+      "statedBy": [
+        "packs.withdraw-credits.en",
+        "packs.credits-vs-payout-credits.en",
+        "packs.refunds-legal.en"
+      ],
+      "any": [
+        "cashed out",
+        "be transferred",
+        "cash that can be taken out",
+        "taken out",
+        "cannot be cashed",
+        "cannot transfer",
+        "not transferable",
+        "cash out pack credits",
+        "withdraw pack credits"
+      ]
+    },
+    {
+      "id": "credits.bought-monthly",
+      "statement": "Pack Credits can be bought as a monthly plan.",
+      "statedBy": [
+        "packs.buy-credits.en",
+        "packs.monthly-subscription.en"
+      ],
+      "any": [
+        "monthly basis",
+        "bought on a monthly",
+        "monthly plan",
+        "every month",
+        "one off or monthly",
+        "one-off or monthly",
+        "monthly credits",
+        "billed each month",
+        "same date every month"
+      ]
+    },
+    {
+      "id": "mypacks.stores-unopened",
+      "statement": "My Packs stores unopened free packs from promos, giveaways, and keys.",
+      "statedBy": [
+        "packs.my-packs-keys.en"
+      ],
+      "any": [
+        "stores unopened",
+        "unopened free packs",
+        "what the tab is for",
+        "what is my packs",
+        "my packs tab",
+        "redeem a key",
+        "redeem key",
+        "giveaway packs",
+        "where unopened"
+      ]
+    },
+    {
+      "id": "mypacks.waits-unopened",
+      "statement": "A pack that is held unopened sits in My Packs.",
+      "statedBy": [
+        "packs.my-packs-keys.en"
+      ],
+      "any": [
+        "waits unopened",
+        "wait unopened",
+        "sits in my packs",
+        "held unopened",
+        "unopened pack sits"
+      ]
+    },
+    {
+      "id": "packpass.meter-and-award",
+      "statement": "Credit-purchased packs advance Pack Pass; free packs do not; a full meter awards a free Ignition.",
+      "statedBy": [
+        "packs.pack-pass.en"
+      ],
+      "any": [
+        "pack pass produce",
+        "produce a free pack",
+        "meter fills",
+        "meter fill",
+        "free packs advance",
+        "free packs count",
+        "move the pack pass",
+        "move pack pass",
+        "credit-purchased packs",
+        "awards a free ignition",
+        "pack pass award",
+        "pack pass",
+        "free ignition",
+        "do free packs count",
+        "when the meter is full"
+      ]
+    },
+    {
+      "id": "packpass.threshold-dashboard-only",
+      "statement": "The Pack Pass exact threshold is dashboard-only.",
+      "statedBy": [
+        "packs.pack-pass.en"
+      ],
+      "any": [
+        "exact count is dashboard-only",
+        "hides the exact threshold",
+        "exact thresholds are dashboard-only",
+        "dashboard-only",
+        "exact threshold"
+      ]
+    },
+    {
+      "id": "chain.credit-bought-window",
+      "statement": "After a credit-bought pack, 15% applies within 2 minutes, then 20% from the third, and the upgrade is 10%.",
+      "statedBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "any": [
+        "within two minutes",
+        "two minutes",
+        "third successive",
+        "upgrade percent",
+        "same-pack percent",
+        "chain rule",
+        "15%",
+        "15 percent",
+        "twenty percent",
+        "20%",
+        "within 2 minutes",
+        "2 minutes",
+        "third pack",
+        "successive",
+        "upgrade offer",
+        "10% off"
+      ]
+    },
+    {
+      "id": "chain.free-pack-window",
+      "statement": "After a free pack, 5% same-pack and 10% next tier last 90 seconds, and Oracle has no upgrade.",
+      "statedBy": [
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "any": [
+        "ninety seconds",
+        "free-pack window",
+        "no upgrade",
+        "90 seconds",
+        "5%",
+        "after a free pack",
+        "free pack window"
+      ]
+    },
+    {
+      "id": "special.time-limited-countdown",
+      "statement": "A Special Pack is a time-limited deal whose countdown ends the offer.",
+      "statedBy": [
+        "packs.special-packs.en"
+      ],
+      "any": [
+        "what is a special pack",
+        "what are special packs",
+        "special pack countdown",
+        "special pack timer",
+        "special packs are",
+        "time-limited",
+        "time limited",
+        "countdown ends",
+        "timer ends",
+        "when the countdown",
+        "still active",
+        "which offer wins",
+        "better offer"
+      ]
+    },
+    {
+      "id": "offers.better-one-wins",
+      "statement": "When a Special Pack and a chain discount both apply, the better offer wins, and an offer is never promised still active.",
+      "statedBy": [
+        "packs.special-packs.en",
+        "packs.chain-upgrade-discounts.en"
+      ],
+      "any": [
+        "which offer wins",
+        "still active",
+        "both apply",
+        "better offer",
+        "do not stack",
+        "which offer"
+      ]
+    },
+    {
+      "id": "luckystreak.meter",
+      "statement": "Openings without Epic or better fill Lucky Streak; a full meter guarantees Epic or better; an Epic pull resets it.",
+      "statedBy": [
+        "packs.lucky-streak.en"
+      ],
+      "any": [
+        "lucky streak",
+        "miss epic",
+        "without epic or better",
+        "epic or better pull",
+        "without epic",
+        "epic or better",
+        "resets the meter",
+        "guarantees epic"
+      ]
+    },
+    {
+      "id": "freepacks.no-settled-tier",
+      "statement": "An eligible new account can include a free pack and pack credits, and no specific tier or percent is quoted as settled fact.",
+      "statedBy": [
+        "packs.free-packs-general.en"
+      ],
+      "any": [
+        "quoted as settled fact",
+        "settled fact",
+        "instead of quoting",
+        "specific tier",
+        "free pack and pack credits",
+        "new account",
+        "will not quote",
+        "specific free-pack"
+      ]
+    },
+    {
+      "id": "freepacks.inspect-dashboard",
+      "statement": "Instead of quoting a free-pack tier, the trader inspects My Packs and Credits on the dashboard.",
+      "statedBy": [
+        "packs.free-packs-general.en"
+      ],
+      "any": [
+        "instead of quoting",
+        "inspect on the dashboard",
+        "check my packs",
+        "check the dashboard",
+        "what you actually received"
+      ]
+    },
+    {
+      "id": "legal.final-code-age",
+      "statement": "Pack purchases are generally final, the Italian Consumer Code is the statutory withdrawal reference, and the age rule is 18+.",
+      "statedBy": [
+        "packs.refunds-legal.en"
+      ],
+      "any": [
+        "generally final",
+        "consumer code",
+        "age rule",
+        "which code",
+        "18+",
+        "aged 18",
+        "italian consumer",
+        "withdrawal right",
+        "statutory"
+      ]
+    },
+    {
+      "id": "dashboard.five-tabs",
+      "statement": "The Elite Packs page lists five tabs: Packs, My Packs, Inventory, Collection, and Credits.",
+      "statedBy": [
+        "packs.dashboard-tabs.en"
+      ],
+      "any": [
+        "five tabs",
+        "five elite packs tabs",
+        "main menu",
+        "packs, my packs",
+        "elite packs page"
+      ]
+    },
+    {
+      "id": "dashboard.top-right",
+      "statement": "Two balances and the Redeem key button sit at the top right of every tab.",
+      "statedBy": [
+        "packs.dashboard-tabs.en"
+      ],
+      "any": [
+        "top right",
+        "two balances",
+        "redeem key button"
+      ]
+    },
+    {
+      "id": "founders.key",
+      "statement": "Founder's Key is 60% off for one year and does not combine with other website discounts.",
+      "statedBy": [
+        "packs.exotic-cards.en",
+        "packs.discount-stacking.en"
+      ],
+      "any": [
+        "founder's key",
+        "founders key",
+        "60% off",
+        "does not combine",
+        "one year"
+      ]
+    },
+    {
+      "id": "which.no-single-best",
+      "statement": "There is no single best pack; the choice follows spend and rarity floor, and no named card is promised.",
+      "statedBy": [
+        "packs.which-pack-best.en"
+      ],
+      "any": [
+        "best pack",
+        "generic buyer",
+        "named card",
+        "no single best",
+        "which pack should",
+        "higher tiers",
+        "rarity odds",
+        "no guarantee",
+        "specific card"
+      ]
+    },
+    {
+      "id": "opening.deducted-at-seal",
+      "statement": "Credits are deducted at cut seal or Fast open, not while the pack is only a preview.",
+      "statedBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "any": [
+        "cutting the seal",
+        "fast open",
+        "only a preview",
+        "credits deducted",
+        "cut the seal",
+        "preview",
+        "credits are deducted",
+        "when are credits",
+        "opening a pack",
+        "open a pack",
+        "open an elite pack",
+        "how do i open",
+        "skip"
+      ]
+    },
+    {
+      "id": "missing.three-details",
+      "statement": "A missing pack, card, reward, key, or credits report needs the name, an account identifier, and the approximate time.",
+      "statedBy": [
+        "packs.missing-reward.en"
+      ],
+      "any": [
+        "three details",
+        "never showed up",
+        "sent to support",
+        "did not show",
+        "didnt show",
+        "didn't show",
+        "never arrived",
+        "contact support",
+        "approximate time",
+        "missing pack",
+        "missing card",
+        "missing reward"
+      ]
+    },
+    {
+      "id": "million.after-full-discovery",
+      "statement": "After the full 80-card discovery, Whale and Oracle can produce The Million.",
+      "statedBy": [
+        "packs.the-million.en"
+      ],
+      "any": [
+        "80-card",
+        "produce the million",
+        "the million",
+        "primordial",
+        "1,000,000",
+        "1000000",
+        "once per lifetime"
+      ]
+    },
+    {
+      "id": "collection.recent-pulls",
+      "statement": "Collection tracks discovered cards and recent pulls.",
+      "statedBy": [
+        "packs.collection.en"
+      ],
+      "any": [
+        "recent pulls",
+        "collection keep",
+        "discovered cards",
+        "collection track",
+        "what does collection"
+      ]
+    },
+    {
+      "id": "inventory.click-path",
+      "statement": "Applying a card is Use card, review, select a compatible account, then Apply.",
+      "statedBy": [
+        "packs.inventory-use-card.en"
+      ],
+      "any": [
+        "click path",
+        "applies a card",
+        "use card",
+        "apply card",
+        "apply a card",
+        "compatible account",
+        "how to apply"
+      ]
+    },
+    {
+      "id": "withdraw.unexpected-charge",
+      "statement": "Unexpected charges and credit disputes go to the human team.",
+      "statedBy": [
+        "packs.withdraw-credits.en"
+      ],
+      "any": [
+        "unexpected credit charge",
+        "unexpected charges",
+        "unexpected charge",
+        "human team",
+        "refund dispute",
+        "missing credits"
+      ]
+    },
+    {
+      "id": "overview.what-is",
+      "statement": "Elite Packs are the published pack product opened on the dashboard.",
+      "statedBy": [
+        "packs.overview.en"
+      ],
+      "any": [
+        "how do elite packs work",
+        "how does elite packs work",
+        "how does an elite pack work",
+        "how do packs work",
+        "how elite packs work",
+        "what are elite packs",
+        "what is an elite pack",
+        "what is elite packs",
+        "what are packs",
+        "explain elite packs",
+        "explain an elite pack",
+        "describe an elite pack",
+        "describe elite packs",
+        "elite packs work",
+        "what elite packs are"
+      ]
+    },
+    {
+      "id": "costs.published-prices",
+      "statement": "Each pack tier has a published credit price and floor, and the live offer stays on the Packs tab.",
+      "statedBy": [
+        "packs.pack-costs-floors.en"
+      ],
+      "any": [
+        "how much does a pack cost",
+        "how much do packs cost",
+        "how much is a pack",
+        "how many credits does a pack cost",
+        "pack prices",
+        "price of a pack",
+        "prices of the packs",
+        "credit cost",
+        "what do packs cost",
+        "cost of an elite pack",
+        "cost of elite packs",
+        "3,000 credits",
+        "3000 credits",
+        "no floor",
+        "how much do elite packs cost",
+        "how much does an elite pack cost",
+        "how much is an elite pack",
+        "cost of elite packs",
+        "elite packs cost",
+        "price of elite packs",
+        "what does a pack cost",
+        "what do the packs cost"
+      ]
+    },
+    {
+      "id": "drops.published-table",
+      "statement": "Drop rates are published per card and may be rounded.",
+      "statedBy": [
+        "packs.drop-rates.en"
+      ],
+      "any": [
+        "drop rates",
+        "drop rate",
+        "odds of",
+        "percent chance",
+        "chance of pulling",
+        "may be rounded",
+        "per-card odds",
+        "odds table"
+      ]
+    },
+    {
+      "id": "cardcount.collection-size",
+      "statement": "The collection has 76 regular cards, 4 Exotic cards, and 1 Primordial card.",
+      "statedBy": [
+        "packs.card-count.en"
+      ],
+      "any": [
+        "76 regular",
+        "how many cards are in the collection",
+        "how many cards exist",
+        "collection size",
+        "six rarities",
+        "4 exotic",
+        "four exotic",
+        "how many rarities"
+      ]
+    },
+    {
+      "id": "oracle.published",
+      "statement": "Oracle is tier 5, 15,000 credits, Rare or better, with no upgrade because it is the top tier.",
+      "statedBy": [
+        "packs.followup.oracle-pack.en"
+      ],
+      "all": [
+        "oracle"
+      ],
+      "any": [
+        "15,000",
+        "15000",
+        "tier 5",
+        "0.080",
+        "top tier",
+        "oracle pack"
+      ]
+    },
+    {
+      "id": "payoutboost.card",
+      "statement": "Payout Boost 100% keeps the full split on the next payout once per cycle.",
+      "statedBy": [
+        "packs.followup.payout-boost-100.en"
+      ],
+      "any": [
+        "payout boost",
+        "100% card",
+        "once per payout",
+        "next payout"
+      ]
+    },
+    {
+      "id": "purple.needs-name",
+      "statement": "A color alone is not a card name.",
+      "statedBy": [
+        "packs.followup.purple-card-ambiguous.en"
+      ],
+      "any": [
+        "color alone",
+        "from color",
+        "card color",
+        "purple card",
+        "what color"
+      ]
+    },
+    {
+      "id": "autoapply.no",
+      "statement": "A card changes an account only when the trader applies it.",
+      "statedBy": [
+        "packs.card-auto-apply.en"
+      ],
+      "any": [
+        "apply automatically",
+        "applied automatically",
+        "auto apply",
+        "auto-apply",
+        "by itself",
+        "have to apply",
+        "need to apply"
+      ]
+    },
+    {
+      "id": "uses.multiplier",
+      "statement": "A x2, x3, or x5 card has that many uses, one at a time.",
+      "statedBy": [
+        "packs.uses-multiplier.en"
+      ],
+      "any": [
+        "x2",
+        "x3",
+        "x5",
+        "×2",
+        "×3",
+        "×5",
+        "how many uses",
+        "multiple uses",
+        "duplicate pull",
+        "uses left",
+        "number of uses"
+      ]
+    },
+    {
+      "id": "eligibility.labels",
+      "statement": "Card labels name the exact eligible account types, and only compatible accounts appear at Apply.",
+      "statedBy": [
+        "packs.eligibility-labels.en"
+      ],
+      "any": [
+        "which accounts can",
+        "compatible account",
+        "eligible account",
+        "skip a trading day",
+        "drawdown buffer",
+        "leverage boost",
+        "card label",
+        "where can i use"
+      ]
+    },
+    {
+      "id": "exotic.four",
+      "statement": "Four Exotic cards exist, each once per trader for life.",
+      "statedBy": [
+        "packs.exotic-cards.en"
+      ],
+      "any": [
+        "instant override",
+        "lifetime split",
+        "open season",
+        "four exotic",
+        "once per trader",
+        "once in a lifetime",
+        "exotic cards"
+      ]
+    },
+    {
+      "id": "crypto.five-off",
+      "statement": "Crypto payments are 5% off one-off bundles.",
+      "statedBy": [
+        "packs.crypto-discount.en"
+      ],
+      "any": [
+        "crypto",
+        "5% off",
+        "pay by crypto",
+        "paying with crypto"
+      ]
+    },
+    {
+      "id": "cancel.monthly",
+      "statement": "A monthly credits plan is cancelled from the Credits tab and stays active until the paid period ends.",
+      "statedBy": [
+        "packs.cancel-subscription.en"
+      ],
+      "all": [
+        "cancel"
+      ],
+      "any": [
+        "credits tab",
+        "two clicks",
+        "end of the month",
+        "next renewal",
+        "monthly plan",
+        "monthly credits"
+      ]
+    },
+    {
+      "id": "convert.shortfall",
+      "statement": "Payout Credits convert to Pack Credits only when the trader chooses, including a shortfall at open.",
+      "statedBy": [
+        "packs.convert-payout-credits.en"
+      ],
+      "any": [
+        "convert payout",
+        "convert and buy",
+        "shortfall",
+        "payout credits into",
+        "how to convert",
+        "conversion"
+      ]
+    },
+    {
+      "id": "monthly.plan",
+      "statement": "Monthly credit plans charge today and then on the same date until cancelled.",
+      "statedBy": [
+        "packs.monthly-subscription.en"
+      ],
+      "any": [
+        "monthly plan",
+        "same date every month",
+        "renews each month",
+        "subscription for credits",
+        "monthly credits plan",
+        "one-off or monthly"
+      ]
+    },
+    {
+      "id": "buy.where",
+      "statement": "Credits are added on the Credits tab by bundle, one-off or monthly, paid by card, crypto, or Payout Credits.",
+      "statedBy": [
+        "packs.buy-credits.en"
+      ],
+      "any": [
+        "buy credits",
+        "add credits",
+        "credits tab",
+        "buy pack credits",
+        "purchase credits",
+        "top up",
+        "bundle"
+      ]
+    },
+    {
+      "id": "simulated.accounts",
+      "statement": "Every account a card applies to or opens is a simulated trading account.",
+      "statedBy": [
+        "packs.simulated.en"
+      ],
+      "any": [
+        "simulated trading",
+        "simulated account",
+        "are the accounts real",
+        "real money account",
+        "demo account"
+      ]
+    },
+    {
+      "id": "opening.how",
+      "statement": "Opening is Open pack, then cut the seal or Fast open, and credits are taken at that step.",
+      "statedBy": [
+        "packs.opening-and-charges.en"
+      ],
+      "any": [
+        "how do i open",
+        "how to open",
+        "open a pack",
+        "open an elite pack",
+        "opening a pack",
+        "cut the seal",
+        "fast open"
+      ]
+    }
+  ]
+}
