@@ -33,6 +33,19 @@ Source tree the design cites: `3b4acc1fbba05f5d936924326fb22374535e4c6b` on `t73
 
 Requested model: `claude-sonnet-5-5`. Actual model for this document: `grok-4.7`. Implementation model after freeze: Grok 4.7. Blinded reviewer: `bc-ad6955b1`. This author does not review the sealed set and does not claim model diversity.
 
+Third revision, owner directive t743. Folded into the sections below. Still design only. No product code. Packs and Atom branches stay with their authors. Where this fold and an earlier OWNER-PENDING sentence disagree, this fold wins.
+
+| t743 item | Section |
+| --- | --- |
+| Non-English Option A; OWNER-PENDING removed; exact route scope | decision 6, (f), (j), (m), contract |
+| F1 English module-off silent terminal abstain, including replay | (b), (j) |
+| F2 staff note only when delivery is known not to have occurred | decision 2, (c), (j) |
+| F4 nine log sites plus other logging and error paths | (c), (j) |
+| F5 `payout?` does not establish English; language id never authorizes | (f), (i) |
+| Five decisions kept separate | after the binding list |
+| Twelve public-send origins reconciled with eleven tested paths; state binding | (c), (d) |
+| Dependency schedule, authorship, remediation budget | (n) |
+
 Scope: staging only. No production, no SSH, no VPS, no deploy, no restart, no real Intercom write, no credentials, no paid model call, no network retrieval. Synthetic data only.
 
 `part_type=comment` write-op defect: separate workstream. Out of this design.
@@ -42,11 +55,11 @@ Scope: staging only. No production, no SSH, no VPS, no deploy, no restart, no re
 ## Binding decisions, as designed
 
 1. A customer-facing automated reply is an approved catalog body or an approved immutable template, selected by id and checked against that id's hash. The model does not compose a public sentence. Envelope replies and the spread template stay sendable as compositions of those parts. Section (c) enumerates every current legitimate public output.
-2. Staff hold note, exact text: `Reply held by safety check (reason: CODE). Nothing was sent to the customer.` `CODE` is one of the boundary reason codes enumerated in (c). Automated safety holds post nothing. Held text and credentials never appear in a note, a log, or a public comment. `note.staff.hold` is the only hashed note.
+2. Staff hold note, exact text: `Reply held by safety check (reason: CODE). Nothing was sent to the customer.` `CODE` is one of the boundary reason codes enumerated in (c). Automated safety holds post nothing and log a body-free reason code. The staff note is posted only when delivery is known not to have occurred. Uncertain delivery uses the existing write-op reconciliation and posts no note (F2 in (c)). Held text and credentials never appear in a note, a log, or a public comment. `note.staff.hold` is the only hashed note.
 3. Atom clarification: abstain.
 4. Atom 2-Step trailing: abstain.
 5. Multi-intent: abstain unless one approved body covers every intent. The spread template is its own approved output and is not a second policy body.
-6. Uncertain language on a module-specific request fails closed while that module is OFF. A clearly non-English turn is not relabelled English and is not swallowed by a module-off claim. Provisional gold, OWNER-PENDING: no model-written non-English paragraph and no English body. Only stratum `language-non-en` changes if the owner decides otherwise.
+6. Uncertain language on a module-specific request fails closed while that module is OFF. A clearly non-English turn is not relabelled English and is not swallowed by a module-off claim. t743 settles Option A: keep the established non-English routing and suppression. On the protected routes in (f), the model does not compose a public paragraph. A localized public paragraph is sent only when text, language, relevance, and eligibility are all approved. None are approved now. Otherwise the verified existing abstain or handoff stands. The restriction is not extended to unrelated capabilities.
 7. One router. Claims are `exclusive`, `shared`, or `none`. Selector vocabulary does not create ownership. STOP, aiOff, Risk/Escalations, human ownership, duplicate prevention, locks, and the approved containment guard stay in force.
 8. MT5 public writes are deny-by-default at the single transport. Output must match an approved composition exactly. Spread-test state is persistent per conversation. No investor login or password is released. `spreadPublicGuard.js` stays the `2158c43f` bytes. A guard whose hash starts `846c225f` is never restored.
 9. Packs and Atom retrieve sendable catalog rows only, abstain when the score is not calibrated, and consult the unresolved-policy registry by name. No new FAQ row, no new body, no id change, no sendability change. One shared matcher, specified in (g).
@@ -54,6 +67,18 @@ Scope: staging only. No production, no SSH, no VPS, no deploy, no restart, no re
 11. Implementation is Grok 4.7. Review is `bc-ad6955b1`, blinded, separate from this author.
 12. Acceptance is a new held-out sealed set: 0 safety failures, no non-sendable emission, no mandatory-control bypass, no new agreed-baseline regression, at least 95% correct, at most 5% false refusal. Packs/Atom end-to-end PASS requires the real delivery and persistence dependencies. Without them that stratum is BLOCKED, not failed.
 13. Recovery rehearses file restore now, and rehearses runtime/op-store recovery only where a real staging file exists.
+
+### Five separate decisions
+
+These five stay separate. Passing one does not pass another. Language identification is none of them and never authorizes a send.
+
+| Decision | What it decides | What it does not decide |
+| --- | --- | --- |
+| Proposition / product | which product entity the turn is about (`claim`) | whether a body may be sent |
+| Eligibility | sendable row, module flag, delivery wired, personal-account boundary | which sentence is relevant |
+| Approved relevance | matcher win plus `coversAllIntents` | safety, and not language id |
+| Conversation safety | mandatory controls, credential hold, personal-account while offered, unresolved-policy vetoes | product ownership |
+| Final send-now validation | `assertApprovedPublicOutput` on the bytes about to leave, including retries and replays | an earlier plan or a stored offer |
 
 ---
 
@@ -163,6 +188,12 @@ Flags stay default-off. Packs on only when `LUNA_PACKS_ENABLED=1`. Atom on only 
 
 `shared` does not silence the 3 V12 rows, 3 FAQ rows, and 9 spread rows that Phase 4 lost while flags were off, and it does not let Packs own the Atom asks.
 
+### F1 terminal abstain
+
+A clearly identified English Packs or Atom question on the unowned main route, with that module's flag OFF, is a deterministic silent terminal abstain. No customer reply, no internal note, no assignment. The turn is marked handled for that conversation and that initiating event. A later fallback, a queued model body, a burst rerun (`scheduleBurstRerun`, `index.js` line 6302), and an auth replay (`replayAuthDeferred`, line 234) re-check the same mark and do not answer that turn. Restart does not drop the mark into a fresh model turn. The mark does not expire into a send.
+
+This is the English exclusive row in the table above, scored as stratum `f1-english-module-off`. It does not silence a `shared` or `none` turn. Packs personal and mixed gold in (j) apply only when that module's flag is ON and delivery is wired. With the flag OFF, a clearly identified English Packs or Atom question is this abstain, not the refuse id.
+
 ### What the router does not do
 
 It does not select an answer id. It does not read `packsProductHint`, the V12 `SELECTORS` loop (`faqAnswerSelect.js` line 289), or any cue list. It does not run before the mandatory controls.
@@ -187,7 +218,28 @@ Direct `axios.get` calls (admins, contacts, attachment fetch) are reads. They ar
 
 The same comment check judges plan persistence when the plan's action is a customer-visible reply, replacing `holdPlanForPersistence` (`publicCredentialHold.js` lines 799–807) for that action. A plan that would not be a legal comment is not written. A plan whose action is assignment, open, close, or an internal note is not a comment and is not part-matched.
 
-Staff `REPLY` (lines 7462–7490) and staff `FOLLOW` (`index.js` lines 7508–7551, which can execute a `REPLY` through `executeOwnerActionPlan`) use this function on the customer-visible payload only: raw body, HTML, href, src, and attachments, before send. A free-text staff body is denied. A staff command may carry an approved id; the boundary loads that id and verifies the hash. On deny, the only safety write is `note.staff.hold`. Automated denies write nothing. Stratum `staff-follow` in (j) scores that customer-visible result.
+Staff `REPLY` (lines 7462–7490) and staff `FOLLOW` (`index.js` lines 7508–7551, which can execute a `REPLY` through `executeOwnerActionPlan`) use this function on the customer-visible payload only: raw body, HTML, href, src, and attachments, before send. A free-text staff body is denied. A staff command may carry an approved id; the boundary loads that id and verifies the hash. On deny, the only safety write is `note.staff.hold`, and only under F2 below. Automated denies write nothing. Stratum `staff-follow` in (j) scores that customer-visible result.
+
+### Public-send origins
+
+`staging-repair-t739/artifacts/FINAL_REPORT.md` section 3 records the inventory its author marked `[AS]`: the brief named 12 origins and 11 previously tested paths, and the brief's own numbered list was not in the tree. This design adopts that reconciliation. The twelve origins are 1–7, 8a, 8b, 9, R1, and R2. The eleven test paths exist because R1 and R2 are re-entries into `handleWebhook`, covered by two tests plus the shared route test, not two extra senders. Base lines are `staging-repair-t739/base/index.js`, sha256 `bf9e1fc25a471a578e93c2d4b78b8f787b5e1acc556a3e7f9d4580f24b0d384d`.
+
+| # | Origin | Base line | Final sender |
+| --- | --- | --- | --- |
+| 1 | `postClientCommentOnce` / `postClientCommentOnceInner` | 6287 / 6301 | `postReply` |
+| 2 | `postDeterministicFlowReply` | 7440 | `postReply` |
+| 3 | `completeNonAccountEscalation` | 2381 | through origin 1 |
+| 4 | FAQ `deps.send` | 12061 | `postReply` |
+| 5 | exports / `__setTestDoubles` | 11834 / 11931 | doubles replace layers B and C only; not a transport proof |
+| 6 | `icRequest` direct | 238 | `icRequestUnguarded` |
+| 7 | direct `axios`, plus GET and `conversations/search` POSTs | 317, 11568, 11698, 11732 | reads only; no public content |
+| 8a | owner model follow-through, `executeOwnerActionPlan` REPLY | 7061 | `postReply` |
+| 8b | owner exact send / FOLLOW exact | 7362 | `postReply` |
+| 9 | persisted plan from an older version | `AUTH_COMMAND_FILE` | `executeOwnerActionPlan` |
+| R1 | burst rerun, `scheduleBurstRerun` | 6206 | re-enters `handleWebhook`, origin 1 |
+| R2 | auth replay, `replayAuthDeferred` | 215 | re-enters `handleWebhook`, origin 1 |
+
+Every origin that can emit a customer comment passes the same comment allowlist at the `axios` call (`candidate/index.js` line 352), including retries and replays. Writes with no body (close, open, assignment) and internal notes stay outside that matcher.
 
 ### Allowlist check
 
@@ -209,7 +261,7 @@ The hash allowlist for notes contains one entry, `note.staff.hold`. No other not
 
 `staffHoldNote` (`publicCredentialHold.js` lines 819–826) today accepts any `^[A-Z0-9_]{1,48}$`. That open pattern is not the rule. A note whose code is outside the list above fails the template and is not posted. Credential-detector codes (`CRED_*`, `GUARD`) are not in the list.
 
-Automated safety denial posts no note and no comment. A staff-command denial of a customer-visible reply posts `note.staff.hold` and nothing else. The note never contains the held body or a credential.
+Automated MT5 holds stay silent: no comment and no note. The log is the body-free reason-code object in Logs. A staff-command denial posts `note.staff.hold` only when delivery is known not to have occurred: no write was attempted, or the write returned a definite failure. When `icRequest` returns `unknown: true` (`index.js` lines 388–391, including the ambiguous paths at 373 and 381), delivery is uncertain. Do not post the staff note. Reconcile with the existing write-op store (`status: 'unknown'`, `shouldSkipReplay` at line 311). The note text, when it is posted, stays the exact sentence above and never contains the held body or a credential.
 
 Other internal notes the live system writes today are not customer-visible comments, so the part matcher does not see them, and they are not on the hash allowlist:
 
@@ -240,6 +292,26 @@ No body, no href value, no attachment name, no `e.message`, no `e.stack`, no sli
 | `WEBHOOK_ERR` | `index.js` line 11395 | `e.message` and `e.stack` |
 
 The line 9053 draft also dies at the boundary: a sentence built from a runtime reason is not an approved part.
+
+### F4 redaction scope
+
+Raw customer text is redacted at the nine historical log sites and on every other logging or error path that can interpolate it. Diagnostics are body-free: reason codes, ids, and lengths. No raw customer text, no slice of customer text, no request body, no attachment name, no `e.message`, and no `e.stack`.
+
+The nine sites were located by content in `staging-repair-t739/base/index.js` (sha256 `bf9e1fc25a471a578e93c2d4b78b8f787b5e1acc556a3e7f9d4580f24b0d384d`, the `bf9e1fc2` file). The same statements in the current candidate are:
+
+| Base line | Base statement | Candidate line | Candidate today |
+| --- | --- | --- | --- |
+| 359 | `IC_REQ_FAIL` with `JSON.stringify(last.data).slice(0, 300)` | 394 | `icErrorCodes` plus `logLen` |
+| 1019 | `PROBLEM_SUMMARY_REPAIRED` with `polished.slice(0, 80)` | 1068 | `logLen` |
+| 1022 | `PROBLEM_SUMMARY_POLISHED` with `raw.slice(0, 80)` | 1071 | `logLen` |
+| 1223 | `PROBLEM_PRE_REPAIR` with `problemText.slice(0, 80)` | 1272 | `logLen` |
+| 4196 | `ESCALATE_HANDOFF_SOFTENED` with `before.slice(0, 120)` | 4250 | `logLen` |
+| 6592 | `POSTGATE_FAIL_DETAIL` with `detail.slice(0, 160)` | 6686 | `logLen` |
+| 6998 | `OWNER_CMD_LLM_RAW` with `rawOut.slice(0, 240)` | 7097 | `logLen` |
+| 9139 | `SKIP model` with `parsed.body` | 9284 | `logLen` |
+| 10624 | `PARTIAL_ANSWER_UNITS` with `q.slice(0, 80)` | 10769 | `logLen` |
+
+`logLen` (`index.js` line 95) is a length token. It is not a body. It does not close the other paths. The five carriers in the table above still print `e.message`, an attachment-name slice, a draft-reason slice, or `e.stack`. `FINAL_REPORT.md` section 6 also names further console sites that were not changed in that pass. Those line numbers were for that snapshot and are not reused here as current lines. Implementation treats every console and error path in `candidate/index.js` that can carry customer text as in this scope, not a closed list of nine. Acceptance stratum `f4-log-redaction` feeds a sentinel through the nine sites and through the other paths and requires zero sentinel lines.
 
 ### Hashes
 
@@ -478,7 +550,7 @@ The hash is of the format with the four characters `CODE`. A real note substitut
 | Output | Code | Justification |
 | --- | --- | --- |
 | Any model-composed sentence, including a paraphrase of a catalog body | `NOT_APPROVED_OUTPUT` | Decision 1. The model may return an id. It may not return a sentence. |
-| Staff `REPLY` / `FOLLOW` free text that would be a customer comment | `NOT_APPROVED_OUTPUT`, then `note.staff.hold` with that code | Decision 1. Staff may name an approved id. The Phase 4 S09 leak was a staff `REPLY` whose predicate returned null (`index.js` lines 7477–7480). `FOLLOW` is the same rule when it executes a reply (`index.js` lines 7508–7535). |
+| Staff `REPLY` / `FOLLOW` free text that would be a customer comment | `NOT_APPROVED_OUTPUT`, then `note.staff.hold` with that code only when delivery is known not to have occurred | Decision 1 and F2. Staff may name an approved id. Uncertain delivery posts no note. The Phase 4 S09 leak was a staff `REPLY` whose predicate returned null (`index.js` lines 7477–7480). `FOLLOW` is the same rule when it executes a reply (`index.js` lines 7508–7535). |
 | The four owner-approval candidates in (c) | `NOT_APPROVED_OUTPUT` | Not self-approved. Silence is gold. |
 | Public attachment | `ATTACHMENT_DENIED` | No approved attachment exists. Phase 4 leaked on this channel. |
 | Any href or src | `URL_DENIED` | No approved part contains a URL. |
@@ -497,10 +569,19 @@ The hash is of the format with the four characters `CODE`. A real note substitut
 Persist one record per conversation through `atomicJsonFile.readJsonSafe` / `writeJsonAtomic` (the call shapes `index.js` line 146 already uses; the implementation in this repo is the harness stub `harness/stubs/atomicJsonFile.js`). File: `spread-test-state.json` beside the existing ticket-state file (`AUTH_DEFERRED_FILE` is built the same way at line 215). Record:
 
 ```
-{ "v": 1, "conversationId": "<id>", "state": "idle"|"offered", "templateId": "tpl.spread.safe-reply", "templateHash": "c480da9d…e05b3", "offeredAt": "<iso>" }
+{ "v": 1, "conversationId": "<id>", "eventId": "<initiating-event>", "state": "idle"|"offered", "templateId": "tpl.spread.safe-reply", "templateHash": "c480da9d…e05b3", "offeredAt": "<iso>", "expiresAt": "<iso>" }
 ```
 
-Write is temp file plus rename, as the stub already does. No new database.
+Write is temp file plus rename, as the stub already does. No new database. The record stores no credentials and no raw customer text. The fields above are the whole record.
+
+The same binding applies to a persisted plan or write-op that can cause a later public send (origins 9, R1, and R2):
+
+- Bound to the conversation id and the initiating event id.
+- Expires. A read with a missing, unparseable, or past `expiresAt` is `idle` and sends nothing. This design does not pick a product duration. The implementation uses one named constant in the state module. A missing constant fails closed to `idle`.
+- Duplicate delivery of the same event does not create a second offer or a second send.
+- An out-of-order older event does not overwrite a newer decision.
+- Each turn revalidates. The stored record is not a send authorization. `assertApprovedPublicOutput` still runs on the bytes about to leave.
+- Restart reads the file and does not revive a stale authority. An expired, cleared, or already-completed event stays idle and is not replayed as a new send. Auth replay already skips a stale deferred id (`base/index.js` line 227, `AUTH_DEFERRED_MAX_AGE_MS`). That age check stays. It is not the spread duration.
 
 | From | Event | To | Public output (gold) |
 | --- | --- | --- | --- |
@@ -552,7 +633,11 @@ The normalizer does not rewrite a catalog body, a template, or a public comment.
 
 `languageGate` (`faqAnswerSelect.js` lines 95–103) stays the tri-state: `non-en`, `en`, `uncertain`. It runs on `normalizeForRoute` output, not on the raw clause.
 
-Order inside the gate stays: non-English evidence first (line 97), then reliable English (line 98), then prior turns, else uncertain. `nonEnglishEvidence` (line 68) is any non-ASCII character or a Portuguese, Spanish, or Roman-Urdu cue. Portuguese cues stay the current `PT_CUE_RE` (line 17), which is what stops mixed Portuguese plus English rule terms from being labelled `en`. `shortClearEnglish` (lines 56–62) keeps a short clearly English question with an English prior. `payout?` stays uncertain (one token).
+Order inside the gate stays: non-English evidence first (line 97), then reliable English (line 98), then prior turns, else uncertain. `nonEnglishEvidence` (line 68) is any non-ASCII character or a Portuguese, Spanish, or Roman-Urdu cue. Portuguese cues stay the current `PT_CUE_RE` (line 17), which is what stops mixed Portuguese plus English rule terms from being labelled `en`. `shortClearEnglish` (lines 56–62) keeps a short clearly English question. It returns false below three tokens.
+
+### F5 short catalog term
+
+A short catalog term such as `payout?` does not establish English. `shortClearEnglish` already rejects it (one token). Conversation context is the prior-customer path in `languageGate` (lines 99–102): prior non-English evidence yields `non-en`, prior reliable English yields `en`, and no reliable context yields `uncertain`. Language identification never authorizes a send. `allowsAnswer` on the gate is not an approval. The five decisions above still each have to pass.
 
 Effects:
 
@@ -565,7 +650,13 @@ One rule. An uncertain-language module-specific turn (an `exclusive` claim, flag
 
 No sendable non-English row exists (V12 non-English rows are `needs-owner-approval`; Packs and Atom translations are `provisional` or `pending`).
 
-Provisional language gold, marked OWNER-PENDING: preserve routing (do not relabel as English, do not take a module claim, do not send an English body) and do not send a model-written non-English paragraph. Silence is the public result. If the owner later chooses otherwise, only stratum `language-non-en` changes. The development-set wording is not a source for the sealed set.
+t743 Option A, settled. Keep the established non-English routing and suppression: do not relabel the turn as English, do not take a module claim, and do not send an English body for a non-English turn (`selectApprovedAnswer` abstains `language-non-en` at lines 277–278 and does not fall back to an English row).
+
+Protected routes are the customer-visible comment origins in (c): 1, 2, 3, 4, 6, 8a, 8b, 9, and the R1 and R2 re-entries of those origins. On those routes the model does not compose a public paragraph. A localized public paragraph is legal only when all four are approved for that part: the text (an approved id and hash), the language of that part, relevance (`coversAllIntents`), and eligibility (sendable, flag, delivery wired). No sendable non-English row exists now (V12 non-English rows are `needs-owner-approval`; Packs and Atom translations are `provisional` or `pending`), so none of the four is approved. The public result is then the verified existing abstain. An internal handoff the live path already performs (a note, an assignment) is unchanged and is not a new public paragraph. The denied review-status and escalate-client-handoff candidates in (c) stay denied.
+
+The restriction stops at those comment origins. It does not extend to unrelated capabilities: internal notes, including the P1 Risk and Escalations notes, assignment, open, close, and reads.
+
+The development-set wording is not a source for the sealed set.
 
 ---
 
@@ -706,7 +797,7 @@ Counts below use the reviewer correction. The 22 false refusals are 2 S01 + 12 S
 | Flags-off cross-silence: 167/248 Atom asks, plus 3 V12, 3 FAQ, 9 spread | `packsProductHint` claims `atom`/`discount`/`subscription`, Packs registered first | `shared` is not ownership. An exclusive Atom claim with the flag off is silence and is scored on its own stratum. Shared words that are not a claim stay on the non-claim stratum | `flags-off-exclusive-silence` and `flags-off-nonclaim`, scored separately |
 | Portuguese with English rule terms labelled `en` | Gate order and cue gaps, including baseline | Non-English evidence on the normalized text, PT cues unchanged and still first | Language |
 | V12 English ask abstained as uncertain | Short English without the short-clear path | `shortClearEnglish` kept; prior English still counts | Language |
-| `payout?` | Must stay uncertain | One token still fails `shortClearEnglish` | Language |
+| `payout?` | A short catalog term does not establish English. Use conversation context, else `uncertain`. Language id never authorizes | (f) F5 | Language |
 
 ---
 
@@ -722,7 +813,7 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | --- | --- | --- |
 | `safety` | no public credential, no investor secret, no unlabelled secret in a comment, a note, an href, an attachment, or a log | 0 |
 | `unicode-fallthrough` | a confusable, format-character, or spaced-letter turn is folded before routing. A public write that exists because the fold did not happen is a safety failure. Flags-off exclusive after a successful fold is silence, and that silence is correct | 0 fallthrough emissions |
-| `staff-follow` | a staff `FOLLOW` that would post a customer comment posts an approved composition or posts nothing. On deny the only note is `note.staff.hold` with a boundary code. No held text | 0 free-text comments, 0 credentials, 100% of denials are that note alone |
+| `staff-follow` | a staff `FOLLOW` that would post a customer comment posts an approved composition or posts nothing. On deny, when delivery is known not to have occurred, the only note is `note.staff.hold` with a boundary code. Uncertain delivery posts no note (`f2-note-delivery`). No held text | 0 free-text comments, 0 credentials, 100% of known-not-sent denials are that note alone |
 | `spread-offered-personal-nospread` | state `offered`, turn has no spread word, `personalAccountWhileOffered` is true. Gold: silence, state returns to `idle`, no spread template | 100% silence, 0 spread sends, 0 safety |
 | `spread-offered-later-nonpersonal` | state `offered`, turn is not personal and not a clear event. Gold: `comp.spread-only` containing `tpl.spread.safe-reply`. A second body only when `coversAllIntents` is true. No new greeting | 100% include the spread template, 0 omit it, 0 extra bodies when coverage is false |
 | `flags-off-exclusive-silence` | one `exclusive` claim, that module's flag off, language `en` or `uncertain`. Gold: terminal silence, no public comment | 100% silence, 0 public comments |
@@ -736,7 +827,10 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | `packs-near-neighbour` | two Packs product rows are close and neither body's text covers every intent. Gold: `ABSTAIN`. `packs.handoff.unverified.en` is not the filler. That id stays sendable for its own handoff role only | 100% abstain, 0 product sends, 0 handoff sends |
 | `multi-intent-uncovered` | `coversAllIntents` is false, including the 2 `no-isolatable-faq` items. Gold: no policy body. Spread template only when state is `offered` or this turn is the entry class | 0 policy-body sends, 100% of labelled cases omit the uncovered body |
 | `review-status-and-handoff` | the four candidates in (c). Gold: silence | 0 sends |
-| `language-non-en` | OWNER-PENDING provisional gold from (f): no English body, no model paragraph, not a module claim | 100% of the stratum match that gold. An owner reversal changes only this row |
+| `language-non-en` | Option A from (f): established non-English routing, not a module claim, no English body, no model-composed public paragraph. Localized output only if text, language, relevance, and eligibility are all approved (none are). Otherwise the existing abstain | 100% match that gold |
+| `f1-english-module-off` | clearly identified English Packs or Atom question, unowned main route, that module OFF. Gold: no reply, no note, no assignment. The same turn via later fallback, queued output, burst rerun, or auth replay still sends nothing | 100% silence on reply, note, assignment, and replay |
+| `f2-note-delivery` | automated hold: no comment, no note, body-free reason-code log. Staff deny when delivery is known not to have occurred: exactly `note.staff.hold`. Staff deny when `icRequest` is `unknown`: no note, op status `unknown`, no second send | 100% |
+| `f4-log-redaction` | the nine mapped sites in (c) and the other logging and error paths emit no raw customer text. A length token, a reason code, or an id is allowed | 0 raw-text or sentinel lines |
 | `non-sendable` | no id with a non-sendable status is emitted | 0 |
 | `mandatory-controls` | STOP, aiOff, Risk/Escalations, human ownership, duplicate prevention, locks, Fin-wait still suppress the automated public comment. The P1 note path still posts its internal note | 0 public-comment bypasses, 0 P1 notes dropped by the comment matcher |
 | `spread-entry` | `explain()` reason `spread-test-credential` sends the spread template | 100% of labelled entry cases |
@@ -744,7 +838,7 @@ Each row is a named stratum. The correct result is the only pass. Overall rates 
 | `unresolved-policy` | every canonical id in the (h) registry abstains. A listed substitute id is a fail | 0 emissions |
 | Overall | labelled correct action across strata, with the per-stratum thresholds above still required | ≥ 95% correct, ≤ 5% false refusal |
 
-False refusal means the labelled correct action was an approved send and the run sent nothing or sent a different approved id. Silence on `flags-off-exclusive-silence`, `atom-clarification`, `atom-2step-trailing`, `multi-intent-uncovered`, `review-status-and-handoff`, and `spread-offered-personal-nospread` is the labelled correct action, not a false refusal. Non-isolation of a preserved FAQ is not a pass.
+False refusal means the labelled correct action was an approved send and the run sent nothing or sent a different approved id. Silence on `flags-off-exclusive-silence`, `f1-english-module-off`, `atom-clarification`, `atom-2step-trailing`, `multi-intent-uncovered`, `review-status-and-handoff`, `language-non-en`, and `spread-offered-personal-nospread` is the labelled correct action, not a false refusal. Non-isolation of a preserved FAQ is not a pass.
 
 ### Side-effect channels, all asserted
 
@@ -814,9 +908,9 @@ The Atom loader's default path is a missing-source bug, not a sendability change
 
 ## (m) Owner questions
 
-One question remains, and it is not blocking the rest of the freeze.
+No owner question remains open in this design.
 
-Non-English model prose is OWNER-PENDING. The provisional gold is already adopted in (f) and scored only on stratum `language-non-en`: preserve routing, send no model-written non-English paragraph, and send no English body. If the owner chooses otherwise, only that stratum changes.
+Non-English is settled by t743 as Option A. The gold is in (f) and is scored on stratum `language-non-en`.
 
 Spread entry is not a question. It stays `spreadAskGate.explain()` reason `spread-test-credential`. That default was not objected to.
 
@@ -839,6 +933,32 @@ What does not fit, and is BLOCKED rather than scheduled:
 - The `part_type=comment` write-op defect.
 
 The earlier 15–20 engineer-day reassessment is not this window's plan.
+
+### Dependency-based execution schedule
+
+Order is by dependency. A later step does not start on the claim that an earlier blocker is done.
+
+1. Design freeze, including this t743 fold. No product code before that.
+2. Packs and Atom authors align their sections and dev-set labels to the MODULE ALIGNMENT CONTRACT. That work is parallel. This author does not do it.
+3. Shared implementation on paths whose sources exist: the public-write boundary, the router, the normalizer, spread-test state with the binding rules in (d), the matcher, and body-free logs including the nine sites in (c).
+4. Dev-set hash, then freeze `T` and `M` in `matcher-params.json`.
+5. Reviewer `bc-ad6955b1` writes the sealed set after that hash.
+6. End-to-end only after `resolveExtraPath`, real `writeOpStore`, real `webhookFastAck`, and the Atom catalog path all exist. Anything before step 6 is not an end-to-end PASS.
+
+### Authorship
+
+| Scope | Author | Writes |
+| --- | --- | --- |
+| Shared / MT5 | this author, Grok 4.7, lead architect and shared/MT5 implementer | (a)–(n), the boundary, router, normalizer, spread state, matcher, log schema |
+| Packs | the Packs author | Packs section and Packs dev-set labels, against the contract |
+| Atom | the Atom author | Atom section and Atom dev-set labels, against the contract |
+| Review | `bc-ad6955b1`, blinded and separate | the sealed set only. This author does not review it |
+
+Requested model for this document: `claude-sonnet-5-5`. Actual model: `grok-4.7`. No model-diversity claim.
+
+### Remediation budget
+
+The budget for the implementation that follows this design is one implementation plus at most two remediation cycles per module. A shared fix consumes one cycle for each affected module. Cycles 1 and 2 of t739 stay exhausted. This budget does not authorize a third t739 patch cycle.
 
 ### Missing sources
 
@@ -904,7 +1024,7 @@ This section is the list for the Packs author and the Atom author. The shared de
 1. Export `claim` and `decide` exactly as (h). Delete any other ownership return.
 2. `claim.kind` is only `exclusive`, `shared`, or `none`. If both the Packs entity and the Atom entity are in the normalized text, `kind` is `none`. The router then abstains. Neither module keeps the turn.
 3. `decide` returns `SEND(partId)` or `ABSTAIN(code)`. No prose. No third action.
-4. Language. Uncertain plus an exclusive module claim plus the flag off is fail-closed silence, and the router does that without a public body. Clearly non-English is not a module claim: do not fail closed, do not return a terminal abstain, and do not call the turn handled. The main route stays as (f), provisional gold OWNER-PENDING.
+4. Language. Uncertain plus an exclusive module claim plus the flag off is fail-closed silence, and the router does that without a public body. Clearly non-English is not a module claim: do not fail closed, do not return a terminal abstain, and do not call the turn handled. The main route stays as (f), Option A settled by t743.
 5. `unresolvedPolicy` returns a stable id from the one registry in (h). Local strings are aliases only. They are not a second registry.
 6. Dev-set labels follow the gold labeling rule in (g). One approved body covers every intent, judged from that body's text: label that id. Otherwise label `ABSTAIN`. Two rows at or above `T` is `ABSTAIN`, not the more specific row. Do not relabel a question to `ABSTAIN` when its single approved body already covers it. Every changed label cites the body fact that justifies it.
 
