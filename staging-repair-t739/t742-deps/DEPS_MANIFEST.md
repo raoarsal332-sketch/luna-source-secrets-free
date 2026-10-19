@@ -95,6 +95,13 @@ accountNumberPrefer lines 166/170/308/320/394 were missed by the scan regex but 
 | statePresend/textUtils.js | `92c3349c4b2b03c6843ea7c1df481641af6eb38a931dbf187f4dc984bc4e31e3` | `b1261a82fd49a2bc0416b0fefe072354e5b88e84e9d0ba775e8ad85572654986` | SANITIZED-COMMENTS-ONLY; live-verified t744 | 6 values on lines 89, 104 (phone-like) | acorn 8.19.0 comment-stripped token streams identical (4662 tokens); node --check OK (orig + sanitized); same byte length |
 | HISTORICAL/accountNumberPrefer.js | `f24b8425618eab76daf238c5f75e4d71ab3ab33b299575d0c1b4c9956d3b00a9` | `dfed1aaf181f358a0204765c08c27193214b7d56a4721112cf7dd04f0b921b06` | SANITIZED-COMMENTS-ONLY; HISTORICAL (8 Oct live snapshot-r82; current live 795c58d7f2c8… not retrieved) | 28 values on lines 106, 162, 163, 166, 170, 201, 308, 320, 394, 413, 488, 593 (account-number-like, phone-like) | acorn 8.19.0 comment-stripped token streams identical (5026 tokens); node --check OK (orig + sanitized); same byte length |
 
+## Current live accountNumberPrefer.js (owner approval t745, retrieved 19 Oct 15:50 PKT)
+| Path in store | Original live sha256 | Sanitized sha256 | Provenance | Values changed | Equivalence |
+|---|---|---|---|---|---|
+| accountNumberPrefer.js | `795c58d7f2c872b831b47e079f539d5bbc54ddd9e890956fa865ca5977639ff6` | `422bfed00c6bddb2f9d6ef9e464c50113b0682c616d97b332498efd07d70b385` | SANITIZED-COMMENTS-ONLY; retrieved t745 (ubuntu@51.79.173.231:/home/ubuntu/accountNumberPrefer.js, 29712 B, mtime 2026-10-08 23:39:54 UTC) | 36 values on lines 106, 162, 163, 166, 170, 178, 219, 278, 279, 288, 342, 354, 428, 447, 522, 627 (phone-like, account-number-like) | acorn 8.19.0 comment-stripped token streams identical (5257 tokens); node --check OK (orig + sanitized); same byte length |
+
+This file is now the current dependency. `HISTORICAL/accountNumberPrefer.js` (8 Oct f24b8425, sanitized) is kept unchanged as historical evidence only. Scan note: line 280 `const TOKEN = '(…regex…)'` matched the secret-assignment pattern. It is a regex-pattern constant named TOKEN, not a secret, so it was left unchanged (it is code, not a comment).
+
 ## index.js
 Not stored here. Use the repo copy `staging-repair-t739/base/index.js` (git blob 29daecf3), which is byte-identical to live bf9e1fc25a471a578e93c2d4b78b8f787b5e1acc556a3e7f9d4580f24b0d384d. Its scan flags were account-number-like comment values and one staff email; they were already in the repo before this task.
 
