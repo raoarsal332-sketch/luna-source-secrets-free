@@ -1,0 +1,597 @@
+{
+  "summary": {
+    "verdict": "NEEDS CHANGES",
+    "commit": "e3c1c9c6eb04741c764e803819f521598f7741da",
+    "guardSha256": "2e9cd341955ded1bbb1ea512731d30d0a26b05023f70849353cb4316474ac8c8",
+    "gitObjectMatchesPin": true,
+    "total": 82,
+    "passed": 36,
+    "failed": 46,
+    "critical": 46,
+    "r4TreePresent": false,
+    "authorTestsUsed": false
+  },
+  "hashes": {
+    "commit": "e3c1c9c6eb04741c764e803819f521598f7741da",
+    "credentialGuardJs": "2e9cd341955ded1bbb1ea512731d30d0a26b05023f70849353cb4316474ac8c8",
+    "indexJs": "512b76e3d2ce9e5721b21d88c91ae0aabbb12e750f7310bd03ae4d843aa72c31",
+    "spreadAskGateJs": "3b2b0546cd9bfb8c94dd062c7c41e77300b3a3a810d251842a292c1737d8f9ef",
+    "credentialSanitizerJs": "ed62aa7b330aa090d7faeac9ef70f75e1f2ef312361d6530158e2dd30123d64a"
+  },
+  "results": [
+    {
+      "id": "artifact-pin",
+      "ok": true,
+      "severity": "none",
+      "path": "reviews/cred-r5/pinned/credentialGuard.js",
+      "detail": "sha256 matches the reviewed commit"
+    },
+    {
+      "id": "module-has-no-logger-or-io",
+      "ok": true,
+      "severity": "none",
+      "path": "credentialGuard.js",
+      "detail": "no console, stdout, or require"
+    },
+    {
+      "id": "ctrl-labeled-echo",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-label-casing",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-pass-colon",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-typed",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-here",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-hinglish-colon",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-arabic-with-english-label",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-urdu-with-english-label",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-hindi-with-english-label",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-long-tail-pass",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-newline-label",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-team-assign-skip",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply after Luna team assign",
+      "detail": "fixed message, secret absent from the decision and from console"
+    },
+    {
+      "id": "ctrl-escalation-assign-skip",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply after Luna escalation assign",
+      "detail": "skip overridden, secret absent"
+    },
+    {
+      "id": "ctrl-pass-the-challenge",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "ordinary challenge wording stays allowed"
+    },
+    {
+      "id": "ctrl-detected-secret-blocks-spaced-echo",
+      "ok": true,
+      "severity": "none",
+      "path": "model reply via decideCredentialGuard",
+      "detail": "a detected disclosure replaces the whole draft"
+    },
+    {
+      "id": "ctrl-decision-json-omits-secret",
+      "ok": true,
+      "severity": "none",
+      "path": "decideCredentialGuard return value",
+      "detail": "blocked decision JSON does not contain the secret"
+    },
+    {
+      "id": "zwsp-between-pass-and-word",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "zwsp-inside-password",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "zwsp-after-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "homoglyph-cyrillic-o",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "combining-mark-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "spaced-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "leet-at",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "leet-zero",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "fullwidth-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "fullwidth-colon-here",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "pwd-alias",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "passwd-alias",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "split-short-first-token",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "spaced-character-secret",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "split-second-half",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "base64-message",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "urdu-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "arabic-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "hindi-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "hinglish-hai",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "hinglish-pass-hai",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "urdu-otp",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply via decideCredentialGuard → would send at index.js postClientCommentOnce",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "model-history-echo",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "model reply: current client text has no disclosure, draft repeats an earlier secret. Send site index.js:4489",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "owner-dictated-body",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "owner-dictated reply. executeOwnerActionPlan posts this body at index.js postReply comment without calling the guard",
+      "detail": "candidate returned the draft and the synthetic secret is still in the outbound message"
+    },
+    {
+      "id": "spread-send-is-constant",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/index.js:3782 isSpreadCheckAsk → postClientCommentOnce(SPREAD_TEST_REPLY)",
+      "detail": "early return sends only the post-processed locked template"
+    },
+    {
+      "id": "spread-explicit-test",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-check",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-what-are",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-bare",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-hinglish-explicit",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-credentials-phrase",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-eurusd",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "explicit request sends the locked template only"
+    },
+    {
+      "id": "spread-mt5-password-only",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-investor-password-ask",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-spreadsheet",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-negated",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-the-word",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-across-accounts",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-widespread",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-personal-login",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/spreadAskGate.js explain + index.js early return",
+      "detail": "no template send"
+    },
+    {
+      "id": "spread-idiom-some-light",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:3782 isSpreadCheckAsk → postClientCommentOnce(SPREAD_TEST_REPLY) via spreadAskGate.explain reason spread-term",
+      "detail": "locked investor template would be sent without an explicit spread-test request"
+    },
+    {
+      "id": "spread-idiom-spread-to",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:3782 isSpreadCheckAsk → postClientCommentOnce(SPREAD_TEST_REPLY) via spreadAskGate.explain reason spread-term",
+      "detail": "locked investor template would be sent without an explicit spread-test request"
+    },
+    {
+      "id": "spread-idiom-risk",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:3782 isSpreadCheckAsk → postClientCommentOnce(SPREAD_TEST_REPLY) via spreadAskGate.explain reason spread-term",
+      "detail": "locked investor template would be sent without an explicit spread-test request"
+    },
+    {
+      "id": "spread-mixed-client-secret-not-appended",
+      "ok": true,
+      "severity": "none",
+      "path": "01_runtime/index.js:3782 isSpreadCheckAsk → postClientCommentOnce(SPREAD_TEST_REPLY)",
+      "detail": "explicit request sends the template and not the pasted client secret"
+    },
+    {
+      "id": "model-payout-answer-appends-secret",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/presendMega.js validate then index.js:4489. Guard is not consulted and presend ok=true",
+      "detail": "a normal answer that appends a password is allowed by both the candidate and the presend gate"
+    },
+    {
+      "id": "model-shares-template-password-off-request",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "presendMega.js spread check requires the word spread (lines 208-212); decideCredentialGuard does not scan the draft. Send site index.js:4489",
+      "detail": "investor template secret is allowed on a payout question that never asked for a spread test"
+    },
+    {
+      "id": "runtime-references-guard",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js",
+      "detail": "no reference to the candidate anywhere on the outbound path"
+    },
+    {
+      "id": "owner-plan-bypasses-guard",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:3278 executeOwnerActionPlan REPLY → postReply comment",
+      "detail": "this send or rewrite never calls decideCredentialGuard"
+    },
+    {
+      "id": "owner-note-bypasses-guard",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:3450 processAuthorizedNoteCommands REPLY → postReply comment",
+      "detail": "this send or rewrite never calls decideCredentialGuard"
+    },
+    {
+      "id": "inner-retry-bypasses-guard",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:2924 postClientCommentOnceInner replaces finalBody with a new model draft",
+      "detail": "this send or rewrite never calls decideCredentialGuard"
+    },
+    {
+      "id": "presend-regenerate-bypasses-guard",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:4435 __presendRegenerate returns a new client body",
+      "detail": "this send or rewrite never calls decideCredentialGuard"
+    },
+    {
+      "id": "repeated-question-retry-bypasses-guard",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:4463 repeated-question retry assigns body from a second model call",
+      "detail": "this send or rewrite never calls decideCredentialGuard"
+    },
+    {
+      "id": "skip-logs-model-body",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:4024",
+      "detail": "SKIP model logs parsed.body before any credential guard"
+    },
+    {
+      "id": "owner-logs-raw-model",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "01_runtime/index.js:3225",
+      "detail": "owner command logs the raw model text, which can contain a dictated secret"
+    },
+    {
+      "id": "log-plain-redacted",
+      "ok": true,
+      "severity": "none",
+      "path": "credentialSanitizer.sanitizeCredentials",
+      "detail": "secret removed before retention"
+    },
+    {
+      "id": "log-hinglish-hai",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-zwsp",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-leet",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-urdu",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-arabic",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-hindi",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-homoglyph",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-spaced-label",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    },
+    {
+      "id": "log-base64-retained",
+      "ok": false,
+      "severity": "CRITICAL",
+      "path": "02_statePresend/statePresend.js noteInbound and 03_luna-maintainer/collector.js observe → credentialSanitizer.sanitizeCredentials",
+      "detail": "sanitized retention text still carries the secret"
+    }
+  ]
+}
