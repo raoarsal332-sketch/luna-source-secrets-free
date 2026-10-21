@@ -1,0 +1,342 @@
+{
+  "pin": "88a663da6b1aac1e8e14fe4e9f1459f2eea7287b",
+  "hashes": {
+    "luna-current/01_runtime/fixedMessageHandoff.js": "4b540186af6cce394abd3f6a90cc51a56d908bd823d647a8cc5653cca8245236",
+    "luna-current/01_runtime/teammateHandoffGates.js": "96eaf4ce75a0eb888cdabb5552a7e90996cdde2278721a8958e7991032e4ca2b",
+    "luna-current/01_runtime/index.js": "a99d781e7d6d0a2297f76fa8d81e7e34a0478ad83402ae7c9cd90d7c12dbf1cd"
+  },
+  "seal": "2a24f6ca866e07a8ec017237d9798982d40aec9e5e9b82a7748ab29f34ca8db7",
+  "caseCount": 153,
+  "passed": 137,
+  "failed": 16,
+  "byGroup": {
+    "order": {
+      "pass": 9,
+      "fail": 0
+    },
+    "assign-failure": {
+      "pass": 26,
+      "fail": 0
+    },
+    "ownership": {
+      "pass": 69,
+      "fail": 0
+    },
+    "account": {
+      "pass": 12,
+      "fail": 6
+    },
+    "credentials": {
+      "pass": 5,
+      "fail": 7
+    },
+    "replay": {
+      "pass": 7,
+      "fail": 0
+    },
+    "recovery": {
+      "pass": 0,
+      "fail": 2
+    },
+    "followup": {
+      "pass": 0,
+      "fail": 1
+    },
+    "regression": {
+      "pass": 8,
+      "fail": 0
+    },
+    "copy": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "criticalFails": [
+    {
+      "id": "R3I-acct-hi-plain",
+      "critical": "swallowed_account_question",
+      "title": "account question hi is answered, not replaced by the fixed line",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hi-after-fin",
+      "critical": "swallowed_account_question",
+      "title": "account question hi after a Fin handoff is answered, not replaced by the fixed line",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hi-latin-script-plain",
+      "critical": "swallowed_account_question",
+      "title": "account question hi-latin-script is answered, not replaced by the fixed line",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hi-latin-script-after-fin",
+      "critical": "swallowed_account_question",
+      "title": "account question hi-latin-script after a Fin handoff is answered, not replaced by the fixed line",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hinglish-plain",
+      "critical": "swallowed_account_question",
+      "title": "account question hinglish is answered, not replaced by the fixed line",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "fixed handoff line was sent: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hinglish-after-fin",
+      "critical": "swallowed_account_question",
+      "title": "account question hinglish after a Fin handoff is answered, not replaced by the fixed line",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "fixed handoff line was sent: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-password-apostrophe",
+      "critical": "credential_leak",
+      "title": "welcome note and customer line redact password-apostrophe",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-password-curly",
+      "critical": "credential_leak",
+      "title": "welcome note and customer line redact password-curly",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-arabic-label",
+      "critical": "credential_leak",
+      "title": "welcome note and customer line redact arabic-label",
+      "problems": [
+        "credential leak of synthetic canary into note-translation prompt"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-urdu-label",
+      "critical": "credential_leak",
+      "title": "welcome note and customer line redact urdu-label",
+      "problems": [
+        "credential leak of synthetic canary into note-translation prompt"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-hindi-label",
+      "critical": "credential_leak",
+      "title": "welcome note and customer line redact hindi-label",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-main-apostrophe",
+      "critical": "credential_leak",
+      "title": "main escalate redacts an apostrophe password inside the note body",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-note-translation-prompt",
+      "critical": "credential_leak",
+      "title": "Urdu handoff does not send the canary into the English note translation",
+      "problems": [
+        "credential leak of synthetic canary into note-translation prompt"
+      ]
+    },
+    {
+      "id": "R3I-recovery-swallows-account-question",
+      "critical": "swallowed_account_question",
+      "title": "an account-number question during an unfinished handoff is still answered",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: A teammate now has this conversation.",
+        "fixed handoff line was sent: A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "R3I-recovery-500-swallows-account-question",
+      "critical": "swallowed_account_question",
+      "title": "an account-number question after an ambiguous assignment failure is still answered",
+      "problems": [
+        "comment count 0 wanted 1 :: ",
+        "comment missing SYNTH_ACCOUNT_ANSWER :: "
+      ]
+    },
+    {
+      "id": "R3I-status-ping-no-promise",
+      "critical": "premature_promise",
+      "title": "a status ping after a successful handoff does not invent a review or a time",
+      "problems": [
+        "premature promise in comment: We have already passed this to the team. They are reviewing it and will reply here when ready."
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "id": "R3I-acct-hi-plain",
+      "title": "account question hi is answered, not replaced by the fixed line",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hi-after-fin",
+      "title": "account question hi after a Fin handoff is answered, not replaced by the fixed line",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hi-latin-script-plain",
+      "title": "account question hi-latin-script is answered, not replaced by the fixed line",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hi-latin-script-after-fin",
+      "title": "account question hi-latin-script after a Fin handoff is answered, not replaced by the fixed line",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: यह बातचीत अब एक साथी के पास है।",
+        "fixed handoff line was sent: यह बातचीत अब एक साथी के पास है।",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hinglish-plain",
+      "title": "account question hinglish is answered, not replaced by the fixed line",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "fixed handoff line was sent: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-acct-hinglish-after-fin",
+      "title": "account question hinglish after a Fin handoff is answered, not replaced by the fixed line",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "fixed handoff line was sent: یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+        "escalateAwaitingFirstTeammate was set"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-password-apostrophe",
+      "title": "welcome note and customer line redact password-apostrophe",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-password-curly",
+      "title": "welcome note and customer line redact password-curly",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-arabic-label",
+      "title": "welcome note and customer line redact arabic-label",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into note-translation prompt"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-urdu-label",
+      "title": "welcome note and customer line redact urdu-label",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into note-translation prompt"
+      ]
+    },
+    {
+      "id": "R3I-cred-welcome-hindi-label",
+      "title": "welcome note and customer line redact hindi-label",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-main-apostrophe",
+      "title": "main escalate redacts an apostrophe password inside the note body",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into internal note"
+      ]
+    },
+    {
+      "id": "R3I-cred-note-translation-prompt",
+      "title": "Urdu handoff does not send the canary into the English note translation",
+      "critical": "credential_leak",
+      "problems": [
+        "credential leak of synthetic canary into note-translation prompt"
+      ]
+    },
+    {
+      "id": "R3I-recovery-swallows-account-question",
+      "title": "an account-number question during an unfinished handoff is still answered",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment missing SYNTH_ACCOUNT_ANSWER :: A teammate now has this conversation.",
+        "fixed handoff line was sent: A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "R3I-recovery-500-swallows-account-question",
+      "title": "an account-number question after an ambiguous assignment failure is still answered",
+      "critical": "swallowed_account_question",
+      "problems": [
+        "comment count 0 wanted 1 :: ",
+        "comment missing SYNTH_ACCOUNT_ANSWER :: "
+      ]
+    },
+    {
+      "id": "R3I-status-ping-no-promise",
+      "title": "a status ping after a successful handoff does not invent a review or a time",
+      "critical": "premature_promise",
+      "problems": [
+        "premature promise in comment: We have already passed this to the team. They are reviewing it and will reply here when ready."
+      ]
+    }
+  ]
+}
