@@ -1,0 +1,446 @@
+{
+  "files": 173,
+  "findingCount": 64,
+  "unguarded": [
+    {
+      "file": "luna-current/01_runtime/luna-maintainer/bridge.js",
+      "line": 16,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "return require(p);"
+    },
+    {
+      "file": "luna-current/01_runtime/luna-maintainer/collector.js",
+      "line": 22,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(candidate); } catch (err) { last = err; }"
+    },
+    {
+      "file": "luna-current/01_runtime/luna-maintainer/collector.js",
+      "line": 37,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const mod = require(p);"
+    },
+    {
+      "file": "luna-current/01_runtime/luna-maintainer/llm.js",
+      "line": 14,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(name); } catch (err) { if (!err || err.code !== 'MODULE_NOT_FOUND') throw err; }"
+    },
+    {
+      "file": "luna-current/01_runtime/luna-maintainer/observability.js",
+      "line": 8,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(name); } catch (err) { if (!err || err.code !== 'MODULE_NOT_FOUND') throw err; }"
+    },
+    {
+      "file": "luna-current/01_runtime/luna-maintainer/schema.js",
+      "line": 26,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const mod = require(p);"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_final.js",
+      "line": 22,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_movie.js",
+      "line": 21,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v10.js",
+      "line": 64,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v2.js",
+      "line": 28,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v3.js",
+      "line": 32,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v4.js",
+      "line": 29,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v5.js",
+      "line": 30,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v6.js",
+      "line": 27,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v6.js",
+      "line": 47,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v6.js",
+      "line": 61,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v7.js",
+      "line": 28,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v8.js",
+      "line": 36,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v8.js",
+      "line": 56,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v8.js",
+      "line": 81,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v8.js",
+      "line": 110,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v8.js",
+      "line": 127,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/smoke_v9.js",
+      "line": 31,
+      "kind": "model-create",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ai = await client.chat.completions.create({"
+    },
+    {
+      "file": "luna-current/01_runtime/statePresend/presendMega.js",
+      "line": 116,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { g[name] = require(p); break; } catch (_) {                }"
+    },
+    {
+      "file": "luna-current/01_runtime/statePresend/statePresend.js",
+      "line": 31,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(candidate); } catch (err) { last = err; }"
+    },
+    {
+      "file": "luna-current/02_statePresend/presendMega.js",
+      "line": 116,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { g[name] = require(p); break; } catch (_) {                }"
+    },
+    {
+      "file": "luna-current/02_statePresend/statePresend.js",
+      "line": 31,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(candidate); } catch (err) { last = err; }"
+    },
+    {
+      "file": "luna-current/03_luna-maintainer/bridge.js",
+      "line": 16,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "return require(p);"
+    },
+    {
+      "file": "luna-current/03_luna-maintainer/collector.js",
+      "line": 22,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(candidate); } catch (err) { last = err; }"
+    },
+    {
+      "file": "luna-current/03_luna-maintainer/collector.js",
+      "line": 37,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const mod = require(p);"
+    },
+    {
+      "file": "luna-current/03_luna-maintainer/llm.js",
+      "line": 14,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(name); } catch (err) { if (!err || err.code !== 'MODULE_NOT_FOUND') throw err; }"
+    },
+    {
+      "file": "luna-current/03_luna-maintainer/observability.js",
+      "line": 8,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "try { return require(name); } catch (err) { if (!err || err.code !== 'MODULE_NOT_FOUND') throw err; }"
+    },
+    {
+      "file": "luna-current/03_luna-maintainer/schema.js",
+      "line": 26,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const mod = require(p);"
+    },
+    {
+      "file": "luna-current/06_tools/luna-local-chat.js",
+      "line": 42,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const control = require(path.join(ROOT, 'control'));"
+    },
+    {
+      "file": "luna-current/06_tools/luna-local-chat.js",
+      "line": 43,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const assistantIdentityGuard = require(path.join(ROOT, 'assistantIdentityGuard'));"
+    },
+    {
+      "file": "luna-current/07_selftests/selftest-audit-harden.js",
+      "line": 185,
+      "kind": "new-function",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const fn = new Function("
+    },
+    {
+      "file": "luna-current/07_selftests/selftest-lock-harden.js",
+      "line": 100,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const g = require(path + '/imageAskGuard.js');"
+    },
+    {
+      "file": "luna-current/07_selftests/selftest-lock-harden.js",
+      "line": 135,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const idg = require(path + '/identityEscalateGates.js');"
+    },
+    {
+      "file": "luna-current/07_selftests/test-escalate-ack-norepeat.js",
+      "line": 22,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "teammateHandoffGates = require(path.join(path.dirname(srcPath), 'teammateHandoffGates'));"
+    },
+    {
+      "file": "luna-current/07_selftests/test-escalate-ack-norepeat.js",
+      "line": 28,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "escalateRelatedOnly = require(path.join(path.dirname(srcPath), 'escalateRelatedOnly'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 4,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const sp = require(path.join(root, 'statePresend/statePresend'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 5,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const cs = require(path.join(root, 'statePresend/conversationState'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 6,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const main = require(path.join(root, 'index'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 7,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const ctl = require(path.join(root, 'control'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 43,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const kb = require(path.join(root, 'faq-kb'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 141,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const g = require(path.join(root, 'imageAskGuard'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 153,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const { createStore } = require(path.join(root, 'luna-maintainer/store'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 154,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const { createCollector } = require(path.join(root, 'luna-maintainer/collector'));"
+    },
+    {
+      "file": "luna-current/08_repair_tests/current_checks.js",
+      "line": 162,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const calc = require(path.join(root, 'statePresend/tools/calc')).calc;"
+    },
+    {
+      "file": "luna-current/08_repair_tests/isolation.js",
+      "line": 37,
+      "kind": "dynamic-require",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "for (const name of ['http', 'https']) { const m = require(name); m.request = blocked; m.get = blocked; m.createServer = blocked; }"
+    },
+    {
+      "file": "luna-current/08_repair_tests/isolation.js",
+      "line": 43,
+      "kind": "axios-call",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "function axios(...args) { return axiosImpl(...args); }"
+    },
+    {
+      "file": "luna-current/09_failfix_staging/faq-kb.js",
+      "line": 3,
+      "kind": "raw-require-axios",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const axios = require('axios');"
+    },
+    {
+      "file": "luna-current/09_failfix_staging/faq-kb.js",
+      "line": 226,
+      "kind": "axios-method",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const r = await axios.get(url, {"
+    },
+    {
+      "file": "luna-export/control.js",
+      "line": 2,
+      "kind": "raw-require-axios",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const axios = require('axios');"
+    },
+    {
+      "file": "luna-export/control.js",
+      "line": 163,
+      "kind": "axios-call",
+      "guardedNearby": false,
+      "boundaryImpl": false,
+      "text": "const res = await axios({"
+    }
+  ]
+}

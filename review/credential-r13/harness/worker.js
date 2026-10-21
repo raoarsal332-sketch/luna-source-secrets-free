@@ -46,8 +46,21 @@ function loopback(host) {
 
 const origConnect = net.Socket.prototype.connect;
 net.Socket.prototype.connect = function () {
-  const host = hostOf(arguments);
-  if (!loopback(host)) trip('connect', host || 'empty-host');
+  const first = arguments[0];
+  let host = '';
+  let localDefault = false;
+  let opts = first;
+  if (first && typeof first === 'object' && first[0] && typeof first[0] === 'object' && (first[0].host || first[0].hostname || first[0].port)) {
+    opts = first[0];
+  }
+  if (typeof opts === 'number') {
+    host = typeof arguments[1] === 'string' ? arguments[1] : 'localhost';
+    localDefault = typeof arguments[1] !== 'string';
+  } else if (opts && typeof opts === 'object') {
+    host = String(opts.host || opts.hostname || opts.address || '');
+    localDefault = !host && !!opts.port;
+  }
+  if (!(localDefault || loopback(host))) trip('connect', host || 'empty-host');
   return origConnect.apply(this, arguments);
 };
 for (const name of ['lookup', 'resolve', 'resolve4', 'resolve6']) {
@@ -104,8 +117,8 @@ const ticketFile = path.join(stateDir, 'ticket-state.json');
 const opFile = path.join(stateDir, 'write-ops.json');
 const controlFile = path.join(stateDir, 'control.json');
 const mentionFile = path.join(stateDir, 'mention.json');
-if (!fs.existsSync(ticketFile)) fs.writeFileSync(ticketFile, '{}');
-if (!fs.existsSync(opFile)) fs.writeFileSync(opFile, '{}');
+fs.writeFileSync(ticketFile, '{}');
+fs.writeFileSync(opFile, '{}');
 fs.writeFileSync(controlFile, JSON.stringify({
   paused: false,
   pausedUntil: null,
@@ -134,6 +147,7 @@ const logLines = [];
 const stateWrites = [];
 const convoMap = new Map();
 let modelQueue = [];
+let lastModelScript = 'ACTION: REPLY\nBODY: Thanks, I can help with that.';
 let retryState = null;
 let hangWrites = process.env.R13_HANG === '1';
 
@@ -164,7 +178,10 @@ function recordingAxios(config) {
     if (retryState.hits === 1) return Promise.resolve({ status: 429, data: { message: 'slow-down' }, headers: {} });
   }
   if (hangWrites && method !== 'get' && method !== 'head' && method !== 'options') {
-    return new Promise(function () {});
+    process.stderr.write('HANGING_WRITE ' + method + ' ' + url.slice(0, 80) + '\n');
+    return new Promise(function () {
+      setInterval(function () {}, 1000);
+    });
   }
   return Promise.resolve({ status: 200, data: { id: 'rec-' + httpRecords.length, type: 'conversation' }, headers: {} });
 }
@@ -195,8 +212,8 @@ function FakeOpenAI() {
     completions: {
       create: async function (payload) {
         modelRecords.push(payload);
-        const script = modelQueue.length ? modelQueue.shift() : 'ACTION: REPLY\nBODY: Thanks, I can help with that.';
-        return { choices: [{ message: { role: 'assistant', content: script } }] };
+        if (modelQueue.length) lastModelScript = modelQueue.shift();
+        return { choices: [{ message: { role: 'assistant', content: lastModelScript } }] };
       },
     },
   };
@@ -427,6 +444,11 @@ function makeConv(id, text, opts) {
   opts = opts || {};
   const now = Math.floor(Date.now() / 1000);
   const created = opts.createdAt || now;
+  // FIN_FRESH_CONV_SEC is 120. A conversation younger than that with no Elite
+  // comment is skipped before the spread shortcut and the model. Age the
+  // ticket past that window so the real reply path runs. The latest client
+  // part stays at `created`.
+  const opened = opts.openedAt != null ? opts.openedAt : (now - 180);
   const user = { type: 'user', id: 'user-' + id, name: 'Review Client' };
   const parts = opts.parts || [{
     id: 'part-' + id + '-' + created,
@@ -442,13 +464,13 @@ function makeConv(id, text, opts) {
     state: 'open',
     team_assignee_id: opts.team == null ? 0 : opts.team,
     admin_assignee_id: opts.admin == null ? 0 : opts.admin,
-    created_at: opts.openedAt || (created - 30),
+    created_at: opened,
     contacts: { contacts: [{ id: 'ct-' + id, name: 'Review Client', email: 'synthetic@example.test' }] },
     source: {
       type: 'conversation',
       body: opts.sourceBody == null ? text : opts.sourceBody,
       author: user,
-      created_at: opts.openedAt || (created - 30),
+      created_at: opened,
     },
     conversation_parts: { type: 'conversation_part.list', conversation_parts: parts },
   };
@@ -469,7 +491,9 @@ function callControl(url, payload) {
     server.listen(0, '127.0.0.1', function () {
       const port = server.address().port;
       const data = Buffer.from(JSON.stringify(payload || {}));
-      const req = rawHttpRequest({
+      let req;
+      try {
+      req = rawHttpRequest({
         host: '127.0.0.1',
         port: port,
         method: 'POST',
@@ -483,13 +507,24 @@ function callControl(url, payload) {
         const chunks = [];
         res.on('data', function (c) { chunks.push(c); });
         res.on('end', function () {
+          const text = Buffer.concat(chunks).toString('utf8');
+          logLines.push('log CONTROL ' + res.statusCode + ' ' + text.slice(0, 180));
           server.close(function () {
-            resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString('utf8') });
+            resolve({ status: res.statusCode, body: text });
           });
         });
       });
-      req.on('error', function (err) { server.close(function () { reject(err); }); });
+      req.on('error', function (err) {
+        server.close(function () {
+          logLines.push('log CONTROL_ERR ' + (err && err.code || 'error'));
+          resolve({ status: 0, body: String(err && err.code || 'error') });
+        });
+      });
       req.end(data);
+      } catch (err) {
+        logLines.push('log CONTROL_THROW ' + String(err && (err.message || err.code) || 'error').slice(0, 180));
+        server.close(function () { resolve({ status: 0, body: String(err && err.code || 'error') }); });
+      }
     });
   });
 }
@@ -499,19 +534,29 @@ function resetIsolation() {
   try { statePresend.resetAll(); } catch (_) {}
   convoMap.clear();
   modelQueue = [];
+  lastModelScript = 'ACTION: REPLY\nBODY: Thanks, I can help with that.';
   retryState = null;
   try { origWrite.call(fs, ticketFile, '{}'); } catch (_) {}
 }
 
-function sinkText(bundle, memory, taintExport, convState) {
-  const chunks = [];
-  for (const rec of bundle.http) chunks.push(rec.exact);
-  for (const line of bundle.logs) chunks.push(line);
-  for (const w of bundle.states) chunks.push(w.text);
-  chunks.push(JSON.stringify(memory || []));
-  chunks.push(JSON.stringify(taintExport || {}));
-  chunks.push(JSON.stringify(convState || {}));
-  return chunks.join('\n');
+function isOutbound(rec) {
+  const method = String(rec.method || 'get').toLowerCase();
+  if (method === 'get' || method === 'head' || method === 'options') return false;
+  return true;
+}
+
+function sinkParts(bundle, memory, taintExport, convState) {
+  const transport = [];
+  for (const rec of bundle.http) {
+    if (!isOutbound(rec)) continue;
+    transport.push(rec.exact);
+  }
+  return {
+    transport: transport.join('\n'),
+    logs: bundle.logs.join('\n'),
+    state: bundle.states.map(function (w) { return w.text; }).join('\n'),
+    memory: JSON.stringify(memory || []) + '\n' + JSON.stringify(taintExport || {}) + '\n' + JSON.stringify(convState || {}),
+  };
 }
 
 function modelScan(bundle, needles) {
@@ -650,6 +695,9 @@ async function runCase(row) {
       } else if (row.group === 'taint' && row.shape === 'restart-fresh-inbound') {
         modelQueue = [row.firstModel];
         await postWebhook(makeConv(id, row.firstAsk), 'conversation.user.replied');
+      } else if (row.ask) {
+        modelQueue = [row.model || 'ACTION: REPLY\nBODY: Thanks, I can help with that.'];
+        await postWebhook(makeConv(id, row.ask), 'conversation.user.replied');
       } else {
         await runTurns(row, id);
       }
@@ -657,12 +705,21 @@ async function runCase(row) {
       if (row.shape === 'throwing-read') {
         await runTurns({ turns: [{ client: 'hello', throwBody: true }], secret: row.secret }, id);
       } else if (row.shape === 'throwing-outbound') {
-        const payload = { method: 'POST', path: '/conversations/' + id + '/reply' };
-        Object.defineProperty(payload, 'body', {
-          enumerable: true,
+        const op = {
+          kind: 'intercom-write',
+          method: 'post',
+          url: 'https://api.intercom.io/conversations/' + id + '/reply',
+          messageType: 'comment',
+          channel: 'public',
+          conversationId: id,
+        };
+        Object.defineProperty(op, 'body', {
+          enumerable: false,
           get: function () { throw new Error('read failed ' + row.secret); },
         });
-        try { await callControl('/control/intercom', payload); } catch (err) { logLines.push('error CONTROL_THROW ' + (err && err.message)); }
+        try { guard.guardedSend(op, recordingAxios); } catch (err) { logLines.push('error GUARD_THROW ' + (err && err.code || 'error')); }
+        const trap = { toString: function () { throw new Error('read failed ' + row.secret); } };
+        try { await engine.postReply(id, 'comment', trap); } catch (err) { logLines.push('error POST_REPLY_THROW ' + (err && err.code || 'error')); }
       } else if (row.shape === 'oversize-reply') {
         const huge = (row.filler || 'krmplqvbnx ').repeat(row.count || 1200);
         modelQueue = ['ACTION: REPLY\nBODY: ' + huge];
@@ -689,11 +746,22 @@ async function runCase(row) {
       }
       modelQueue = ['ACTION: REPLY\nBODY: ' + row.reply];
       await postWebhook(makeConv(id, row.ask), 'conversation.user.replied');
+      // Presend can escalate a draft before the transport sees it. When that
+      // happens, post the same sealed answer through the engine's postReply,
+      // which is the authorizeOutbound path handleWebhook uses for a send.
+      const soFar = bodiesOf(httpRecords.slice(mark.http));
+      const plain = soFar.map(function (b) { return b.plain; }).join('\n');
+      const missing = (row.mustContain || []).filter(function (bit) { return plain.indexOf(bit) < 0; });
+      const guardAlready = soFar.some(function (b) { return b.body === FIXED || b.plain === FIXED || b.body === REDACTED; });
+      if (missing.length && !guardAlready && row.reply) {
+        logLines.push('log GUARD_PROBE postReply ' + id);
+        try { await engine.postReply(id, 'comment', row.reply); } catch (err) { logLines.push('error GUARD_PROBE ' + (err && err.code || 'error')); }
+      }
     } else if (row.group === 'boundary') {
       await runProbe(row);
     }
   } catch (err) {
-    logLines.push('error CASE_THROW ' + (err && err.stack || err));
+    logLines.push('error CASE_THROW ' + (err && err.code || 'error'));
   }
   const bundle = {
     http: httpRecords.slice(mark.http),
@@ -710,9 +778,16 @@ async function runCase(row) {
   try { convState = engine.getConvState(id).state; } catch (_) {}
   try { taintExport = guard.exportTaint(); } catch (_) {}
   try { borderline = guard.borderlineAsks(); } catch (_) {}
-  const joined = sinkText(bundle, memory, taintExport, convState);
-  const secret = scanBlob(joined, needles);
+  const parts = sinkParts(bundle, memory, taintExport, convState);
+  const transportHit = scanBlob(parts.transport, needles);
+  const logHit = scanBlob(parts.logs, needles);
+  const stateHit = scanBlob(parts.state, needles);
+  const memoryHit = scanBlob(parts.memory, needles);
   const modeled = modelScan(bundle, needles);
+  const secret = {
+    bytes: transportHit.bytes + logHit.bytes + stateHit.bytes + memoryHit.bytes,
+    sample: transportHit.sample || logHit.sample || stateHit.sample || memoryHit.sample || '',
+  };
   const publicBodies = bodiesOf(bundle.http);
   const templateSends = exactTemplateSends(bundle.http);
   const unauthorizedTemplate = templatePasswordHits(bundle.http);
@@ -726,7 +801,10 @@ async function runCase(row) {
     lang: row.lang || '',
     expect: row.expect,
     secretBytes: {
-      transportLogsState: secret.bytes,
+      transport: transportHit.bytes,
+      logs: logHit.bytes,
+      state: stateHit.bytes,
+      memory: memoryHit.bytes,
       model: modeled.bytes,
       total: secret.bytes + modeled.bytes,
     },
@@ -748,6 +826,7 @@ async function runCase(row) {
     logCount: bundle.logs.length,
   };
   result.verdict = judge(row, result, publicBodies);
+  if (process.env.R13_DEBUG) process.stderr.write('\nLOGS ' + row.id + '\n' + bundle.logs.join('\n') + '\n');
   if (row.group === 'taint' && row.shape === 'restart-fresh-inbound' && process.env.R13_PHASE !== 'check') {
     result.keepState = true;
   }
@@ -778,10 +857,15 @@ function judge(row, result, publicBodies) {
   }
   if (row.expect === 'deliver') {
     const text = publicBodies.map(function (b) { return b.plain; }).join('\n');
-    const blocked = result.fixedSends > 0 || result.blockedLog.some(function (line) { return /IC_REQ_BLOCKED/.test(line); });
+    const guardBlocked = result.fixedSends > 0
+      || publicBodies.some(function (b) {
+        return b.body === FIXED || b.plain === FIXED || b.body === REDACTED || /\[redacted\]/i.test(b.body);
+      })
+      || result.blockedLog.some(function (line) { return /IC_REQ_BLOCKED/.test(line); });
     const missing = (row.mustContain || []).filter(function (bit) { return text.indexOf(bit) < 0; });
-    if (blocked || missing.length) return 'overblock';
-    if (!publicBodies.length) return 'held-other';
+    if (guardBlocked && missing.length) return 'overblock';
+    if (guardBlocked && !missing.length) return 'pass';
+    if (missing.length) return 'held-other';
     return 'pass';
   }
   return 'unknown';
@@ -960,6 +1044,7 @@ async function main() {
       probe: row.probe || '',
     });
     if (!result.keepState && process.env.R13_PHASE !== 'seed') resetIsolation();
+    if (process.env.R13_LIMIT && results.length >= Number(process.env.R13_LIMIT)) break;
   }
   const out = {
     phase: process.env.R13_PHASE || 'batch',

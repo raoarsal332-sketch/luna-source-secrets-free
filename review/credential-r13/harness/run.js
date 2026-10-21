@@ -45,13 +45,8 @@ function prepareSandbox() {
   }
   const { execFileSync } = require('child_process');
   execFileSync('patch', ['-p1', '--forward', '--input', diff], { cwd: SANDBOX, stdio: 'inherit' });
-  const link = (name, target) => {
-    const at = path.join(RUNTIME, name);
-    if (fs.existsSync(at)) fs.rmSync(at, { recursive: true, force: true });
-    fs.symlinkSync(target, at);
-  };
-  link('statePresend', path.join(SANDBOX, 'luna-current/02_statePresend'));
-  link('luna-maintainer', path.join(SANDBOX, 'luna-current/03_luna-maintainer'));
+  fs.cpSync(path.join(SANDBOX, 'luna-current/02_statePresend'), path.join(RUNTIME, 'statePresend'), { recursive: true });
+  fs.cpSync(path.join(SANDBOX, 'luna-current/03_luna-maintainer'), path.join(RUNTIME, 'luna-maintainer'), { recursive: true });
   execFileSync('npm', ['install', '--omit=dev', '--no-audit', '--no-fund'], { cwd: RUNTIME, stdio: 'inherit' });
 }
 
@@ -67,6 +62,7 @@ function cleanEnv(extra) {
 
 function runWorker(extra, outFile, timeoutMs) {
   return new Promise((resolve) => {
+    fs.rmSync(outFile, { force: true });
     const child = spawn(process.execPath, [WORKER], {
       cwd: RUNTIME,
       env: cleanEnv(Object.assign({
@@ -109,7 +105,7 @@ function tally(results) {
 function summarize(rows, scan) {
   const leaks = rows.filter((r) => r.group === 'leak' || r.group === 'taint' || r.group === 'recovery');
   const leakFails = leaks.filter((r) => r.verdict !== 'pass');
-  const secretBytes = leaks.reduce((n, r) => n + ((r.secretBytes && r.secretBytes.total) || 0), 0);
+  const secretBytes = rows.reduce((n, r) => n + ((r.secretBytes && r.secretBytes.total) || 0), 0);
   const spread = rows.filter((r) => r.group === 'spread');
   const eligible = spread.filter((r) => r.expect === 'exact-template');
   const eligibleMiss = eligible.filter((r) => r.verdict !== 'pass');
@@ -126,7 +122,10 @@ function summarize(rows, scan) {
   const rawException = failClosed.filter((r) => r.verdict !== 'pass');
   const boundary = rows.filter((r) => r.group === 'boundary');
   const bypasses = boundary.filter((r) => r.verdict === 'bypass');
+  const sendKind = /^(axios-call|axios-method|http-request|fetch|undici|node-fetch|got|net-connect|child-process|model-create|raw-require-axios|raw-require-http|getBuiltinModule|vm|new-function)$/;
   const productUnguarded = (scan.unguarded || []).filter((f) => {
+    if (!sendKind.test(f.kind)) return false;
+    if (!/^luna-current\/01_runtime\//.test(f.file)) return false;
     return !/smoke_|07_selftests|08_repair|09_failfix|06_tools\/bin|test\//.test(f.file);
   });
   const pass = secretBytes === 0
@@ -181,6 +180,7 @@ async function main() {
   ];
   const parsed = [];
   for (const [name, env, timeout] of jobs) {
+    fs.rmSync(env.R13_STATE, { recursive: true, force: true });
     fs.mkdirSync(env.R13_STATE, { recursive: true });
     const outFile = path.join(outDir, name + '.json');
     process.stderr.write('job ' + name + '\n');

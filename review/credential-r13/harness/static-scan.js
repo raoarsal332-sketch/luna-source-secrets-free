@@ -27,9 +27,13 @@ function walk(dir, out) {
   for (const name of fs.readdirSync(dir)) {
     if (name === 'node_modules' || name === '.git') continue;
     const full = path.join(dir, name);
-    const st = fs.statSync(full);
+    let st;
+    try { st = fs.lstatSync(full); } catch (_) { continue; }
+    if (st.isSymbolicLink()) {
+      try { st = fs.statSync(full); } catch (_) { continue; }
+    }
     if (st.isDirectory()) walk(full, out);
-    else if (name.endsWith('.js')) out.push(full);
+    else if (st.isFile() && name.endsWith('.js')) out.push(full);
   }
 }
 
