@@ -1,0 +1,934 @@
+{
+  "verdict": "NEEDS CHANGES",
+  "identities": {
+    "frozen": "d87a673a056c79ece9866e44765136b752621496",
+    "manifest": "0f624bba821f058ed12f89b5e24c72a4792bad08cf4486748011d1b484ad976a",
+    "guard": "72461d23b878bca818f74d866ae983921d2979200400b49465958913447a62a1",
+    "diff": "d7cfd65282ea385f31b6af3e89ffb363f273e790850d81b6ff96d1032d05d191",
+    "authorTests": "cac5784db707bad15c491f19eab6e850d9dc5b4ac2472e0596e164ed4192fb61",
+    "report": "6b76578b116281ac72baa667d338054e26ce8c0846c709280d662721d77cfd7a",
+    "reviewSource": "88e8b6df9d34484afb1c1a75d3feb9bb175b850f187a29b194f589c9e2b32805"
+  },
+  "maintainerDisabled": false,
+  "caseCount": 144,
+  "failedCount": 31,
+  "byClass": {
+    "55188-negative": {
+      "total": 22,
+      "failed": 0
+    },
+    "55188-positive": {
+      "total": 19,
+      "failed": 2
+    },
+    "55188-first-contact": {
+      "total": 7,
+      "failed": 7
+    },
+    "55188-false-positive": {
+      "total": 12,
+      "failed": 11
+    },
+    "history-echo": {
+      "total": 4,
+      "failed": 0
+    },
+    "zwsp": {
+      "total": 3,
+      "failed": 0
+    },
+    "combining": {
+      "total": 2,
+      "failed": 0
+    },
+    "homoglyph": {
+      "total": 2,
+      "failed": 0
+    },
+    "fullwidth": {
+      "total": 2,
+      "failed": 0
+    },
+    "spaced-label": {
+      "total": 3,
+      "failed": 0
+    },
+    "leetspeak": {
+      "total": 2,
+      "failed": 0
+    },
+    "pwd-passwd": {
+      "total": 2,
+      "failed": 0
+    },
+    "short-token": {
+      "total": 4,
+      "failed": 0
+    },
+    "hinglish": {
+      "total": 3,
+      "failed": 0
+    },
+    "urdu": {
+      "total": 2,
+      "failed": 0
+    },
+    "arabic": {
+      "total": 2,
+      "failed": 0
+    },
+    "hindi": {
+      "total": 2,
+      "failed": 1
+    },
+    "char-split": {
+      "total": 2,
+      "failed": 2
+    },
+    "base64": {
+      "total": 4,
+      "failed": 1
+    },
+    "html-history": {
+      "total": 2,
+      "failed": 2
+    },
+    "dictated-draft": {
+      "total": 2,
+      "failed": 0
+    },
+    "model-draft": {
+      "total": 2,
+      "failed": 1
+    },
+    "api-token": {
+      "total": 3,
+      "failed": 1
+    },
+    "payout-template": {
+      "total": 4,
+      "failed": 1
+    },
+    "approved-faq": {
+      "total": 5,
+      "failed": 0
+    },
+    "overblock": {
+      "total": 6,
+      "failed": 0
+    },
+    "log-skip": {
+      "total": 9,
+      "failed": 1
+    },
+    "log-owner": {
+      "total": 1,
+      "failed": 0
+    },
+    "log-error": {
+      "total": 2,
+      "failed": 0
+    },
+    "opstore": {
+      "total": 1,
+      "failed": 0
+    },
+    "replay": {
+      "total": 1,
+      "failed": 0
+    },
+    "note-redact": {
+      "total": 2,
+      "failed": 0
+    },
+    "helper-retry": {
+      "total": 1,
+      "failed": 0
+    },
+    "repeated-question": {
+      "total": 1,
+      "failed": 0
+    },
+    "presend-regenerate": {
+      "total": 1,
+      "failed": 1
+    },
+    "note-inbound": {
+      "total": 1,
+      "failed": 0
+    },
+    "observe": {
+      "total": 1,
+      "failed": 0
+    }
+  },
+  "markers": {
+    "outboundBlocked": true,
+    "icBlocked": true,
+    "icErr": true,
+    "icFail": true,
+    "replay": false,
+    "spreadLog": true,
+    "skipModel": true,
+    "ownerRaw": true,
+    "helper": false,
+    "regenerate": true,
+    "repeated": false
+  },
+  "graphSites": 63,
+  "failed": [
+    {
+      "id": "first-first-please",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "first-first-hindi",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "first-first-arabic",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "first-first-urdu",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "first-first-karo",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "first-first-html",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "first-first-nbsp",
+      "cls": "55188-first-contact",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-morning",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-yesterday",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-no-need",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-cannot",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-dont-want",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-spread-sheet",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-what-is",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-failed",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-already-did",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-help-me-understand",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "fp-rumor",
+      "cls": "55188-false-positive",
+      "ok": false,
+      "problems": [
+        "leak",
+        "unauthorized-55188"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "template-password"
+        }
+      ],
+      "kinds": [
+        "template"
+      ],
+      "templateExact": true,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "own-split-capture",
+      "cls": "char-split",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "primary"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "own-split-echo",
+      "cls": "char-split",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "fixture"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "own-b64-unpadded",
+      "cls": "base64",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "fixture"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "own-html",
+      "cls": "html-history",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "primary"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "own-html-entity",
+      "cls": "html-history",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "primary"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "own-sk",
+      "cls": "api-token",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "fixture"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "pay-ordinary",
+      "cls": "payout-template",
+      "ok": false,
+      "problems": [
+        "missing-approved-text"
+      ],
+      "leaks": [],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    },
+    {
+      "id": "skip-split",
+      "cls": "log-skip",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "log",
+          "label": "primary"
+        }
+      ],
+      "kinds": [],
+      "templateExact": false,
+      "publicCount": 0,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "FAQ_RETRIEVE",
+        "LUNA_ROUTE",
+        "LUNA_TOOLS",
+        "AI_ACTION",
+        "SKIP"
+      ]
+    },
+    {
+      "id": "presend-regenerate",
+      "cls": "presend-regenerate",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "primary"
+        },
+        {
+          "channel": "memory",
+          "label": "primary"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": true,
+      "thrown": null,
+      "logTags": [
+        "FAQ_RETRIEVE",
+        "LUNA_ROUTE",
+        "AI_ACTION",
+        "[statePresend]",
+        "[maintainer]",
+        "OUT"
+      ]
+    },
+    {
+      "id": "model-webhook-echo",
+      "cls": "model-draft",
+      "ok": false,
+      "problems": [
+        "leak",
+        "inbound-leak"
+      ],
+      "leaks": [
+        {
+          "channel": "memory",
+          "label": "primary"
+        }
+      ],
+      "kinds": [
+        "fixed"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "FAQ_RETRIEVE",
+        "LUNA_ROUTE",
+        "AI_ACTION",
+        "OUT"
+      ]
+    },
+    {
+      "id": "eligible-nbsp-prior",
+      "cls": "55188-positive",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [],
+      "templateExact": false,
+      "publicCount": 0,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUTBOUND_BLOCKED",
+        "SPREAD_TEST_REPLY"
+      ]
+    },
+    {
+      "id": "direct-template-without-remember",
+      "cls": "55188-positive",
+      "ok": false,
+      "problems": [
+        "template-miss"
+      ],
+      "leaks": [],
+      "kinds": [],
+      "templateExact": false,
+      "publicCount": 0,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "IC_REQ_BLOCKED",
+        "OUT"
+      ]
+    },
+    {
+      "id": "hindi-spaced",
+      "cls": "hindi",
+      "ok": false,
+      "problems": [
+        "leak"
+      ],
+      "leaks": [
+        {
+          "channel": "write",
+          "label": "primary"
+        }
+      ],
+      "kinds": [
+        "other"
+      ],
+      "templateExact": false,
+      "publicCount": 1,
+      "markerHit": null,
+      "thrown": null,
+      "logTags": [
+        "OUT",
+        "NOTE",
+        "AUTH_NOTE"
+      ]
+    }
+  ],
+  "wired": true
+}
