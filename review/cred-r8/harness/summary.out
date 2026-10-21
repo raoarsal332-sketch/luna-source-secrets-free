@@ -1,0 +1,112 @@
+◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+{
+  "total": 165,
+  "failed": 60,
+  "passed": 105,
+  "byCode": {
+    "missed_explicit": 10,
+    "overblock_or_missing_safe": 4,
+    "leak_model_user": 41,
+    "expected_fixed_message": 8,
+    "leak_public": 7,
+    "leak_memory": 9,
+    "leak_messagesFor": 8,
+    "leak_buildState": 8,
+    "webhook_hang": 3,
+    "unexpected_public": 2
+  },
+  "byClass": {
+    "explicit-en-non-en-first": {
+      "total": 20,
+      "failed": 4
+    },
+    "explicit-en-non-en-later": {
+      "total": 20,
+      "failed": 4
+    },
+    "explicit-name": {
+      "total": 3,
+      "failed": 1
+    },
+    "explicit-clause": {
+      "total": 1,
+      "failed": 0
+    },
+    "borderline-55188": {
+      "total": 6,
+      "failed": 0
+    },
+    "deny-55188": {
+      "total": 28,
+      "failed": 0
+    },
+    "overblock-control": {
+      "total": 20,
+      "failed": 4
+    },
+    "labeled-value": {
+      "total": 7,
+      "failed": 7
+    },
+    "hinglish": {
+      "total": 2,
+      "failed": 2
+    },
+    "urdu-arabic-hindi": {
+      "total": 7,
+      "failed": 7
+    },
+    "split-label": {
+      "total": 3,
+      "failed": 3
+    },
+    "bigram-multitoken": {
+      "total": 3,
+      "failed": 3
+    },
+    "symbols": {
+      "total": 3,
+      "failed": 3
+    },
+    "unicode-zwsp": {
+      "total": 3,
+      "failed": 3
+    },
+    "unicode-combining": {
+      "total": 1,
+      "failed": 0
+    },
+    "unicode-homoglyph": {
+      "total": 2,
+      "failed": 2
+    },
+    "unicode-fullwidth": {
+      "total": 2,
+      "failed": 2
+    },
+    "sk-bearer": {
+      "total": 4,
+      "failed": 4
+    },
+    "html": {
+      "total": 8,
+      "failed": 0
+    },
+    "base64": {
+      "total": 3,
+      "failed": 3
+    },
+    "history-echo": {
+      "total": 3,
+      "failed": 1
+    },
+    "owner-dictated": {
+      "total": 6,
+      "failed": 3
+    },
+    "outbound-graph": {
+      "total": 10,
+      "failed": 4
+    }
+  }
+}
