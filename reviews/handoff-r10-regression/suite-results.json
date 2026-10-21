@@ -1,0 +1,976 @@
+{
+  "generatedAt": "2026-10-21T23:08:55.415Z",
+  "hashes": {
+    "reportRel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r10/FM_R10_REPORT.md",
+    "reportSha": "a7a84a7b90ad2aeae6b8179567be42d9feebb9f4ad6fc06253b4caa8af16867a",
+    "reportShaExpected": "a7a84a7b90ad2aeae6b8179567be42d9feebb9f4ad6fc06253b4caa8af16867a",
+    "reportOk": true,
+    "fileCount": 18,
+    "mismatches": 0,
+    "files": [
+      {
+        "rel": "luna-current/01_runtime/fixedMessageHandoff.js",
+        "want": "441c2c306565c27ec2c6ebbd0dbf3601018312494606fdfd29878b1ae5fe8857",
+        "got": "441c2c306565c27ec2c6ebbd0dbf3601018312494606fdfd29878b1ae5fe8857",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/01_runtime/index.js",
+        "want": "b32ecc9d878096ebc50e535b450c328f227790dd0dee76bcb8afdf5ce11b5054",
+        "got": "b32ecc9d878096ebc50e535b450c328f227790dd0dee76bcb8afdf5ce11b5054",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/01_runtime/challengeVariantGuard.js",
+        "want": "0d6fff5f5330091c4f8ca02f5ae189845b386922c944d8a7b152970cdc43d12d",
+        "got": "0d6fff5f5330091c4f8ca02f5ae189845b386922c944d8a7b152970cdc43d12d",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/01_runtime/softEdges.js",
+        "want": "22f8b555a71bb81f6936997a57c85481b5c351b9446c0f30f7f178c93d5071e0",
+        "got": "22f8b555a71bb81f6936997a57c85481b5c351b9446c0f30f7f178c93d5071e0",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/01_runtime/imageAskGuard.js",
+        "want": "a1f2d24187dab83e5a98f643f8c6cb93bb8f0c8efc118bf936f7f347d12e70b9",
+        "got": "a1f2d24187dab83e5a98f643f8c6cb93bb8f0c8efc118bf936f7f347d12e70b9",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/01_runtime/escalateRelatedOnly.js",
+        "want": "1d1a0f6ae8b5bc2e91d9068425b8476d4e7fe92e3296c8627b826a932d34189a",
+        "got": "1d1a0f6ae8b5bc2e91d9068425b8476d4e7fe92e3296c8627b826a932d34189a",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/01_runtime/teammateHandoffGates.js",
+        "want": "96eaf4ce75a0eb888cdabb5552a7e90996cdde2278721a8958e7991032e4ca2b",
+        "got": "96eaf4ce75a0eb888cdabb5552a7e90996cdde2278721a8958e7991032e4ca2b",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/02_statePresend/credentialSanitizer.js",
+        "want": "454d094137063fd7e0cb010dcbda8ea9acbf1257e96c816e8aee7dd754c69a15",
+        "got": "454d094137063fd7e0cb010dcbda8ea9acbf1257e96c816e8aee7dd754c69a15",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/02_statePresend/targetedRegeneration.js",
+        "want": "31b8c5329980a32c8bc864582aa52c976dc0838bac8bccb854d534b46c19a58a",
+        "got": "31b8c5329980a32c8bc864582aa52c976dc0838bac8bccb854d534b46c19a58a",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/02_statePresend/statePresend.js",
+        "want": "0e3b8675e00856eca158748711683471e3820d43a9e5c0ff626a14dc84a90764",
+        "got": "0e3b8675e00856eca158748711683471e3820d43a9e5c0ff626a14dc84a90764",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/02_statePresend/textUtils.js",
+        "want": "8a023ab868017cac7e04a5e89de85a2960dcba1c1e7e21b1dce8dad925a6c20c",
+        "got": "8a023ab868017cac7e04a5e89de85a2960dcba1c1e7e21b1dce8dad925a6c20c",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r4/fixedMessageHandoff.test.js",
+        "want": "74f9fdd2fbea587515d1ed062fbd0c947d5a305e4b0f3a1f0fd8693e8788ae2d",
+        "got": "74f9fdd2fbea587515d1ed062fbd0c947d5a305e4b0f3a1f0fd8693e8788ae2d",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r5/fixedMessageHandoff.test.js",
+        "want": "9dbbd19b7fceae0bfb306276765defb3c13833531ba006b3105549de5bf12c1f",
+        "got": "9dbbd19b7fceae0bfb306276765defb3c13833531ba006b3105549de5bf12c1f",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r6/fixedMessageHandoff.test.js",
+        "want": "86768ddd278620d3427a44573db26d0f5093082b7da9f39b4677ba872c1e3544",
+        "got": "86768ddd278620d3427a44573db26d0f5093082b7da9f39b4677ba872c1e3544",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r7/fixedMessageHandoff.test.js",
+        "want": "3a4f6b745b8582acea3defee0253625bf0d32b47c7477b0e3c069862d6833aee",
+        "got": "3a4f6b745b8582acea3defee0253625bf0d32b47c7477b0e3c069862d6833aee",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r8/fixedMessageHandoff.test.js",
+        "want": "a5e0aba2948dd8eb02843143c8dd9fb0cae8283336cb5ec0bb6ca9c45ad99347",
+        "got": "a5e0aba2948dd8eb02843143c8dd9fb0cae8283336cb5ec0bb6ca9c45ad99347",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r9/fixedMessageHandoff.test.js",
+        "want": "3b4735e05730f162c9d69fded5a97c6f77ef793f4b4f67af5ee9c491b2b361dd",
+        "got": "3b4735e05730f162c9d69fded5a97c6f77ef793f4b4f67af5ee9c491b2b361dd",
+        "ok": true
+      },
+      {
+        "rel": "luna-current/10_synthetic_lanes/fixed-message-handoff-r10/fixedMessageHandoff.test.js",
+        "want": "090696eb1588731f705a5d6561dfe21b103301cd72473f7c3b755477e518396c",
+        "got": "090696eb1588731f705a5d6561dfe21b103301cd72473f7c3b755477e518396c",
+        "ok": true
+      }
+    ],
+    "r9UnchangedMismatches": [],
+    "r9UnchangedOk": true
+  },
+  "trees": {
+    "baseline": {
+      "tree": "baseline",
+      "root": "/workspace",
+      "selftestFiles": [
+        "selftest-audit-harden.js",
+        "selftest-coverage-morphology.js",
+        "selftest-escalate-related-only.js",
+        "selftest-faq-orphan-and-country.js",
+        "selftest-faq-reset-time-retrieval.js",
+        "selftest-identity-before-escalate.js",
+        "selftest-identity-escalate-gates.js",
+        "selftest-identity-question-not-human-request.js",
+        "selftest-lock-harden.js",
+        "selftest-missedq-clarify-escalate.js",
+        "selftest-promo-prompt.js",
+        "selftest-reply-spacing.js",
+        "selftest-review-status-direct.js",
+        "selftest-scope-decline-not-escalated.js",
+        "selftest-smalltalk-missedq.js",
+        "selftest-soft-edges.js",
+        "selftest-wrongtopic-client-raised-reset.js",
+        "test-escalate-ack-norepeat.js",
+        "test-fin-wait.js",
+        "test-owner-cmd-router.js"
+      ],
+      "smokeExcluded": [
+        "smoke_final.js",
+        "smoke_movie.js",
+        "smoke_v10.js",
+        "smoke_v2.js",
+        "smoke_v3.js",
+        "smoke_v4.js",
+        "smoke_v5.js",
+        "smoke_v6.js",
+        "smoke_v7.js",
+        "smoke_v8.js",
+        "smoke_v9.js"
+      ],
+      "suites": [
+        {
+          "id": "08_repair_tests/run-suite.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 58,
+          "failCount": 0,
+          "passNames": [
+            "system-prompt.txt",
+            "fundedelite-faqs.md",
+            "selftest-audit-harden.js",
+            "selftest-coverage-morphology.js",
+            "selftest-escalate-related-only.js",
+            "selftest-faq-orphan-and-country.js",
+            "selftest-faq-reset-time-retrieval.js",
+            "selftest-identity-before-escalate.js",
+            "selftest-identity-escalate-gates.js",
+            "selftest-identity-question-not-human-request.js",
+            "selftest-lock-harden.js",
+            "selftest-missedq-clarify-escalate.js",
+            "selftest-promo-prompt.js",
+            "selftest-reply-spacing.js",
+            "selftest-review-status-direct.js",
+            "selftest-scope-decline-not-escalated.js",
+            "selftest-smalltalk-missedq.js",
+            "selftest-soft-edges.js",
+            "selftest-wrongtopic-client-raised-reset.js",
+            "test-escalate-ack-norepeat.js",
+            "test-fin-wait.js",
+            "test-owner-cmd-router.js"
+          ],
+          "failNames": [],
+          "suiteLine": "SUITE hashFail 0 syntaxFail 0 adversarialFail 0 selftestFail 0",
+          "tail": "tual\":false}\nCHECK {\"id\":\"url-https://[::ffff:127.0.0.1]/x\",\"pass\":true,\"expected\":false,\"actual\":false}\nCHECK {\"id\":\"url-https://[::ffff:169.254.169.254]/x\",\"pass\":true,\"expected\":false,\"actual\":false}\nCHECK {\"id\":\"url-https://localhost/x\",\"pass\":true,\"expected\":false,\"actual\":false}\nCHECK {\"id\":\"url-https://example.com/x\",\"pass\":true,\"expected\":true,\"actual\":true}\nIMAGE_FETCH_BLOCKED not-an-image-bytes \nCHECK {\"id\":\"attachment-resolved-address-guard\",\"pass\":true,\"expected\":true,\"actual\":true,\"adapterReached\":1,\"imageAccepted\":false,\"scope\":\"Adapter inspection only; no actual DNS/private request.\"}\nIMAGE_FETCH_BLOCKED not-an-image-bytes \nCHECK {\"id\":\"reject-nonimage-bytes-under-image-header\",\"pass\":true,\"expected\":false,\"actual\":false}\nCHECK {\"id\":\"valid-png-accepted\",\"pass\":true,\"expected\":true,\"actual\":true}\nIMAGE_FETCH_BLOCKED too-large-stream 9437184\nCHECK {\"id\":\"stream-size-cap\",\"pass\":true,\"expected\":1,\"actual\":1}\nOUT unknown-redelivery 0 FAIL\nOUT unknown-redelivery 0 FAIL\nCHECK {\"id\":\"unknown-write-not-repeated-on-redelivery\",\"pass\":true,\"expected\":1,\"actual\":1,\"freshRemoteView\":\"same stale parts both times\"}\nOUT audit 200 FAIL\nCHECK {\"id\":\"malformed-write-success-not-trusted\",\"pass\":true,\"expected\":false,\"actual\":false}\nTOTAL 58 PASS 58 FAIL 0\n\nSELFTESTS 20\nPASS selftest-audit-harden.js\nPASS selftest-coverage-morphology.js\nPASS selftest-escalate-related-only.js\nPASS selftest-faq-orphan-and-country.js\nPASS selftest-faq-reset-time-retrieval.js\nPASS selftest-identity-before-escalate.js\nPASS selftest-identity-escalate-gates.js\nPASS selftest-identity-question-not-human-request.js\nPASS selftest-lock-harden.js\nPASS selftest-missedq-clarify-escalate.js\nPASS selftest-promo-prompt.js\nPASS selftest-reply-spacing.js\nPASS selftest-review-status-direct.js\nPASS selftest-scope-decline-not-escalated.js\nPASS selftest-smalltalk-missedq.js\nPASS selftest-soft-edges.js\nPASS selftest-wrongtopic-client-raised-reset.js\nPASS test-escalate-ack-norepeat.js\nPASS test-fin-wait.js\nPASS test-owner-cmd-router.js\n\nSUITE hashFail 0 syntaxFail 0 adversarialFail 0 selftestFail 0\nSUITE_OK\n\nCONTROL_STATE_UNREADABLE , holding last known good state (paused=true)\nIC_REQ_ERR OUT https://api.intercom.io/conversations/unknown-redelivery/reply synthetic timeout after acceptance\nIC_REQ_UNKNOWN OUT https://api.intercom.io/conversations/unknown-redelivery/reply write outcome unknown , not retried\nIC_REQ_REPLAY_SUPPRESSED OUT https://api.intercom.io/conversations/unknown-redelivery/reply unknown\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-identity.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 1,
+          "failCount": 0,
+          "passNames": [
+            "bench"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS bench identity multi-part remainder\n\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-retrieval.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 0,
+          "failCount": 0,
+          "passNames": [],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "\nnode:internal/modules/cjs/loader:1433\n  throw err;\n  ^\n\nError: Cannot find module 'axios'\nRequire stack:\n- /workspace/luna-current/09_failfix_staging/faq-kb.js\n- /workspace/luna-current/09_failfix_staging/selftest-bench-failfix-retrieval.js\n    at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)\n    at Function._load (node:internal/modules/cjs/loader:1216:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)\n    at Module.require (node:internal/modules/cjs/loader:1527:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (/workspace/luna-current/09_failfix_staging/faq-kb.js:3:15)\n    at Module._compile (node:internal/modules/cjs/loader:1781:14)\n    at Object..js (node:internal/modules/cjs/loader:1913:10) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/workspace/luna-current/09_failfix_staging/faq-kb.js',\n    '/workspace/luna-current/09_failfix_staging/selftest-bench-failfix-retrieval.js'\n  ]\n}\n\nNode.js v22.23.3\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-variant.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 5,
+          "failCount": 0,
+          "passNames": [
+            "R104:",
+            "neighbor:",
+            "R011",
+            "generic",
+            "size"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS R104: 200k Instant max-lot already named Instant — do not Instant-vs-Elite clarify\nPASS neighbor: Instant 50k leverage already named — do not Instant-vs-Elite clarify\nPASS R011 neighbor: generic 1-Step explain still names Lite + Free Retry and asks which\nPASS generic Instant explain still covers both / asks which (not silent Instant dump)\nPASS size catalogue ask still variant-sensitive\nALL PASS 5\n\n"
+        },
+        {
+          "id": "03_luna-maintainer/test/run-tests.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 18,
+          "failCount": 9,
+          "passNames": [],
+          "failNames": [
+            "sandbox",
+            "patching",
+            "the",
+            "a",
+            "the",
+            "dry",
+            "approved",
+            "post-deploy",
+            "history"
+          ],
+          "suiteLine": "",
+          "tail": "532,\"stage\":\"evaluated\",\"proposalId\":\"prop_25586dd4febc13e5\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  approved deploy backs up, applies, health-checks and rolls back cleanly: evaluation failed; proposal is not eligible for approval\n[maintainer] {\"at\":1792624127535,\"stage\":\"root_cause\",\"fingerprint\":\"7e0d3d78861ff28f\",\"category\":\"business_rule\",\"confidence\":0.84,\"insufficient\":false}\n[maintainer] {\"at\":1792624127535,\"stage\":\"proposal_created\",\"proposalId\":\"prop_5a779102a6e624e9\",\"changeKind\":\"business_rule_adjustment\",\"paths\":[\"teammateHandoffGates.js\"]}\n[maintainer] {\"at\":1792624127543,\"stage\":\"evaluated\",\"proposalId\":\"prop_5a779102a6e624e9\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  post-deploy monitoring auto-rolls back on a threshold breach: evaluation failed; proposal is not eligible for approval\n[maintainer] {\"at\":1792624127544,\"stage\":\"root_cause\",\"fingerprint\":\"3bd037257a5aed92\",\"category\":\"business_rule\",\"confidence\":0.84,\"insufficient\":false}\n[maintainer] {\"at\":1792624127544,\"stage\":\"proposal_created\",\"proposalId\":\"prop_3c7c3a565e27c575\",\"changeKind\":\"business_rule_adjustment\",\"paths\":[\"teammateHandoffGates.js\"]}\n[maintainer] {\"at\":1792624127552,\"stage\":\"evaluated\",\"proposalId\":\"prop_3c7c3a565e27c575\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  history and audit trail record the whole decision chain: evaluation failed; proposal is not eligible for approval\n\n18 passed, 9 failed\n - sandbox lives outside the production root: The expression evaluated to a falsy value:\n\n  assert.ok(fs.existsSync(path.join(sb.root, 'statePresend/statePresend.js')))\n\n - patching in the sandbox leaves the production file byte-identical: ENOENT: no such file or directory, open '/workspace/luna-export/teammateHandoffGates.js'\n - the golden suite passes against the shipped Luna source: expected a real case pack, got 0\n - a good patch fixes the targets, causes no regressions and needs approval: patch did not apply\n - the AI cannot approve its own patch: evaluation failed; proposal is not eligible for approval\n - dry run writes nothing to Luna: evaluation failed; proposal is not eligible for approval\n - approved deploy backs up, applies, health-checks and rolls back cleanly: evaluation failed; proposal is not eligible for approval\n - post-deploy monitoring auto-rolls back on a threshold breach: evaluation failed; proposal is not eligible for approval\n - history and audit trail record the whole decision chain: evaluation failed; proposal is not eligible for approval\n\n"
+        }
+      ]
+    },
+    "r9": {
+      "tree": "r9",
+      "root": "/tmp/trees/r9",
+      "selftestFiles": [
+        "selftest-audit-harden.js",
+        "selftest-coverage-morphology.js",
+        "selftest-escalate-related-only.js",
+        "selftest-faq-orphan-and-country.js",
+        "selftest-faq-reset-time-retrieval.js",
+        "selftest-identity-before-escalate.js",
+        "selftest-identity-escalate-gates.js",
+        "selftest-identity-question-not-human-request.js",
+        "selftest-lock-harden.js",
+        "selftest-missedq-clarify-escalate.js",
+        "selftest-promo-prompt.js",
+        "selftest-reply-spacing.js",
+        "selftest-review-status-direct.js",
+        "selftest-scope-decline-not-escalated.js",
+        "selftest-smalltalk-missedq.js",
+        "selftest-soft-edges.js",
+        "selftest-wrongtopic-client-raised-reset.js",
+        "test-escalate-ack-norepeat.js",
+        "test-fin-wait.js",
+        "test-owner-cmd-router.js"
+      ],
+      "smokeExcluded": [
+        "smoke_final.js",
+        "smoke_movie.js",
+        "smoke_v10.js",
+        "smoke_v2.js",
+        "smoke_v3.js",
+        "smoke_v4.js",
+        "smoke_v5.js",
+        "smoke_v6.js",
+        "smoke_v7.js",
+        "smoke_v8.js",
+        "smoke_v9.js"
+      ],
+      "suites": [
+        {
+          "id": "08_repair_tests/run-suite.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 58,
+          "failCount": 0,
+          "passNames": [
+            "system-prompt.txt",
+            "fundedelite-faqs.md",
+            "selftest-audit-harden.js",
+            "selftest-coverage-morphology.js",
+            "selftest-escalate-related-only.js",
+            "selftest-faq-orphan-and-country.js",
+            "selftest-faq-reset-time-retrieval.js",
+            "selftest-identity-escalate-gates.js",
+            "selftest-identity-question-not-human-request.js",
+            "selftest-missedq-clarify-escalate.js",
+            "selftest-promo-prompt.js",
+            "selftest-reply-spacing.js",
+            "selftest-review-status-direct.js",
+            "selftest-scope-decline-not-escalated.js",
+            "selftest-smalltalk-missedq.js",
+            "selftest-soft-edges.js",
+            "selftest-wrongtopic-client-raised-reset.js",
+            "test-escalate-ack-norepeat.js",
+            "test-fin-wait.js",
+            "test-owner-cmd-router.js"
+          ],
+          "failNames": [
+            "selftest-identity-before-escalate.js",
+            "selftest-lock-harden.js"
+          ],
+          "suiteLine": "SUITE hashFail 0 syntaxFail 0 adversarialFail 0 selftestFail 2",
+          "tail": "S: soft ask: screenshot please → GENERIC\nPASS: soft ask: Mind sending a screenshot? → GENERIC\nPASS: soft ask: please send a screenshot → GENERIC\nPASS: specific crop still SPECIFIC\nPASS: hasRecentImage blocks soft generic\nPASS: hasRecentImage allows one specific clarification\nPASS: gates export isUsableClientEmail\nPASS: gates collectEscalateIds skips intercom-mail\nPASS selftest-missedq-clarify-escalate.js\nPASS selftest-promo-prompt.js\nPASS selftest-reply-spacing.js\nPASS selftest-review-status-direct.js\nPASS selftest-scope-decline-not-escalated.js\nPASS selftest-smalltalk-missedq.js\nPASS selftest-soft-edges.js\nPASS selftest-wrongtopic-client-raised-reset.js\nPASS test-escalate-ack-norepeat.js\nPASS test-fin-wait.js\nPASS test-owner-cmd-router.js\n\nSUITE hashFail 0 syntaxFail 0 adversarialFail 0 selftestFail 2\n\nCONTROL_STATE_UNREADABLE , holding last known good state (paused=true)\nIC_REQ_ERR OUT https://api.intercom.io/conversations/unknown-redelivery/reply synthetic timeout after acceptance\nIC_REQ_UNKNOWN OUT https://api.intercom.io/conversations/unknown-redelivery/reply write outcome unknown , not retried\nIC_REQ_REPLAY_SUPPRESSED OUT https://api.intercom.io/conversations/unknown-redelivery/reply unknown\nnode:internal/assert/utils:77\n    throw err;\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(src.indexOf('IDENTITY_BEFORE_ESCALATE asked missing') < src.indexOf(\"let clientMsg = postProcessModelReply(\\n          \\\"I've forwarded this to a teammate\"))\n\n    at Object.<anonymous> (/tmp/trees/r9/luna-current/08_repair_tests/test_mirror/selftest-identity-before-escalate.js:41:8)\n    at Module._compile (node:internal/modules/cjs/loader:1781:14)\n    at Object..js (node:internal/modules/cjs/loader:1913:10)\n    at Module.load (node:internal/modules/cjs/loader:1505:32)\n    at Function.<anonymous> (node:internal/modules/cjs/loader:1309:12)\n    at Module._load (/tmp/trees/r9/luna-current/08_repair_tests/isolation.js:54:15)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v22.23.3\nFAIL: canned paths wrap postProcess The expression evaluated to a falsy value:\n\n  assert.ok(src.includes('postProcessModelReply(lockedFinHandoffWelcome'))\n\n\n1 failure(s)\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-identity.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 1,
+          "failCount": 0,
+          "passNames": [
+            "bench"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS bench identity multi-part remainder\n\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-retrieval.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 0,
+          "failCount": 0,
+          "passNames": [],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "\nnode:internal/modules/cjs/loader:1433\n  throw err;\n  ^\n\nError: Cannot find module 'axios'\nRequire stack:\n- /tmp/trees/r9/luna-current/09_failfix_staging/faq-kb.js\n- /tmp/trees/r9/luna-current/09_failfix_staging/selftest-bench-failfix-retrieval.js\n    at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)\n    at Function._load (node:internal/modules/cjs/loader:1216:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)\n    at Module.require (node:internal/modules/cjs/loader:1527:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (/tmp/trees/r9/luna-current/09_failfix_staging/faq-kb.js:3:15)\n    at Module._compile (node:internal/modules/cjs/loader:1781:14)\n    at Object..js (node:internal/modules/cjs/loader:1913:10) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/tmp/trees/r9/luna-current/09_failfix_staging/faq-kb.js',\n    '/tmp/trees/r9/luna-current/09_failfix_staging/selftest-bench-failfix-retrieval.js'\n  ]\n}\n\nNode.js v22.23.3\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-variant.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 5,
+          "failCount": 0,
+          "passNames": [
+            "R104:",
+            "neighbor:",
+            "R011",
+            "generic",
+            "size"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS R104: 200k Instant max-lot already named Instant — do not Instant-vs-Elite clarify\nPASS neighbor: Instant 50k leverage already named — do not Instant-vs-Elite clarify\nPASS R011 neighbor: generic 1-Step explain still names Lite + Free Retry and asks which\nPASS generic Instant explain still covers both / asks which (not silent Instant dump)\nPASS size catalogue ask still variant-sensitive\nALL PASS 5\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r2/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 16,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "welcome",
+            "vague",
+            "Fin",
+            "Bot",
+            "Arabic-script",
+            "Italian",
+            "Hinglish",
+            "a",
+            "Arsal",
+            "a",
+            "a",
+            "live-agent",
+            "a",
+            "empty",
+            "module"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status is frozen, unapproved, and not a behavior change\nPASS welcome lines match the runtime source\nPASS vague live-agent ask sends the English fixed welcome\nPASS Fin handoff plus hi sends the fixed welcome\nPASS Bot test placeholder is not used as a name\nPASS Arabic-script vague handoff uses the runtime Urdu welcome\nPASS Italian greeting after Fin handoff uses the runtime Italian welcome\nPASS Hinglish cue after a live-agent phrase uses the runtime Salam welcome\nPASS a substantive question does not take the fixed welcome\nPASS Arsal public reply closes the gate\nPASS a human teammate public reply closes the gate\nPASS a handoff phrase in a note does not open the gate\nPASS live-agent ask after the last Elite comment opens the gate for a later hi\nPASS a live-agent ask before the last Elite comment does not open the gate\nPASS empty text stays vague when a Fin handoff is already in history\nPASS module does not embed production seats or call Intercom\nfixed-message-handoff-r2 16 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r3/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 33,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "fixed",
+            "Arabic",
+            "Urdu",
+            "Hindi",
+            "English",
+            "Fin",
+            "an",
+            "an",
+            "a",
+            "an",
+            "a",
+            "a",
+            "an",
+            "author",
+            "Risk",
+            "ambiguous",
+            "defer",
+            "our",
+            "escalate",
+            "runtime",
+            "silence",
+            "a",
+            "note",
+            "assignment",
+            "assignment",
+            "assignment",
+            "partial",
+            "success",
+            "ambiguous",
+            "credentials",
+            "recovery",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status is unapproved and is not a release\nPASS fixed strings do not invent a promise\nPASS Arabic handoff ask is detected from script and gets Arabic fixed text\nPASS Urdu handoff ask is detected from Urdu letters and gets Urdu fixed text\nPASS Hindi handoff ask is detected from Devanagari and gets Hindi fixed text\nPASS English live-agent ask still gets the English fixed line\nPASS Fin handoff plus hi gets one English fixed line\nPASS an Arabic account-number question is not swallowed by the welcome\nPASS an Urdu account-number question is not swallowed by the welcome\nPASS a Hindi account-number question is not swallowed by the welcome\nPASS an English account-number question is not swallowed by the welcome\nPASS a substantive Arabic question is not treated as a handoff welcome\nPASS a human assignee is silence in Arabic, Urdu, and Hindi\nPASS an admin body without part_type is silence\nPASS author type teammate is silence\nPASS Risk and Escalations teams are silence\nPASS ambiguous and stale ownership are silence\nPASS defer gate fails closed for the same ownership cases\nPASS our own pending assignee can still complete the one message\nPASS escalate paths use the fixed line in the customer language\nPASS runtime wires every handoff path through the shared sequence\nPASS silence does not touch the transport\nPASS a new customer turn can send one new message and the same turn cannot\nPASS note failure does not assign or message\nPASS assignment 500 withholds the message and the awaiting flag\nPASS assignment timeout withholds the message and the awaiting flag\nPASS assignment 422 withholds the message and the awaiting flag\nPASS partial assignment success withholds the message and the awaiting flag\nPASS success posts note, then assignment, then exactly one fixed message\nPASS ambiguous assignment is not replayed and does not send a second message\nPASS credentials are redacted before the note and never enter the customer message\nPASS recovery after a held assignment sends one message when the seat is observed\nPASS a completed handoff retries without a second note, assignment, or message\nOK 33 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r4/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 10,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "Hindi",
+            "a",
+            "a",
+            "our",
+            "question",
+            "a",
+            "runtime",
+            "an",
+            "credential"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays unapproved\nPASS Hindi and Hinglish account questions route normal on welcome, recovery, and missed escalation\nPASS a supplied account number is still a handoff, not a question\nPASS a human-owned handoff ask stays silent\nPASS our pending assignee can still finish the one fixed message\nPASS question detection and ask completeness see Devanagari and Hinglish\nPASS a status ping stays silent when a human or another assignee owns the conversation\nPASS runtime source closes recovery, missed escalation, ownership, and the translation prompt\nPASS an account question does not touch the transport\nPASS credential canaries never reach the note, the prompt, or the customer line\nOK 10 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r5/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 8,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "one",
+            "a",
+            "account-number",
+            "a",
+            "Hinglish",
+            "runtime",
+            "lost"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS one sanitizer redacts multi-token, markup, Hindi labels, and repeated base64\nPASS a remembered secret is echo-blocked without a second label\nPASS account-number questions stay non-empty in every language, with or without a question mark\nPASS a cleared presend draft still answers an account-number question\nPASS Hinglish uses the approved Urdu handoff line\nPASS runtime redacts prompts and comments, answers account questions, and gates identity after that\nPASS lost ticket state and opstore reconcile from conversation parts\nOK 8 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r6/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 9,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "the",
+            "every",
+            "status-only",
+            "fresh",
+            "an",
+            "an",
+            "lost",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS the locked spread reply is exempt by hash and a symbol token is not cut\nPASS every copy of a repeated base64 value is redacted, including inside a label\nPASS status-only and the holding post check the fixed line before a second comment\nPASS fresh account-number questions are answered, including Italian, before the Fin wait\nPASS an identity question is answered and is not a live-agent handoff\nPASS an emptied known-account re-ask escalates, and Italian live-agent gets the Italian line\nPASS lost stores send the one fixed line from parts unless a human replied or owns it\nPASS a bot-owned status ping or FAQ with an unsupported number hedges instead of handing off\nOK 9 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r7/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 9,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "ownership",
+            "a",
+            "credentials",
+            "the",
+            "a",
+            "new",
+            "unsupported",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS ownership suppression runs before every new public path\nPASS a spread template or near-miss does not hand off a payout ask\nPASS credentials survive NFKC, format characters, spaced labels, symbols, and normalized echoes\nPASS the locked spread reply is byte-exact on the first message\nPASS a live-agent request on user.created bypasses the Fin wait after ownership\nPASS new languages use structure and the English line when no translation is approved\nPASS unsupported numbers hedge, including a holding time and a regenerated figure\nPASS a note is confirmed only after a verified write, and lost stores need both parts\nOK 9 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r8/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 7,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "missed",
+            "echoes",
+            "an",
+            "an",
+            "the",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS missed escalation uses the original draft, not the post-hedge body\nPASS echoes of a redacted secret are scrubbed in every normalized form\nPASS an empty escalation body routes to presend_escalate\nPASS an eligible spread ask on user.created bypasses the Fin wait after ownership\nPASS the approved number hedge is terminal\nPASS a failed assignment stays pending and a note is not an answer\nOK 7 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r9/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 5,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "a",
+            "owner",
+            "a",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS a symbol secret also scrubs its long alphanumeric runs\nPASS owner verbatim reply is allowed on a human-assigned thread and generated text is not\nPASS a missed FAQ hedges or regenerates and a negated spread does not hand off\nPASS a human note does not satisfy the handoff sequence\nOK 5 passed\n\n"
+        },
+        {
+          "id": "03_luna-maintainer/test/run-tests.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 18,
+          "failCount": 9,
+          "passNames": [],
+          "failNames": [
+            "sandbox",
+            "patching",
+            "the",
+            "a",
+            "the",
+            "dry",
+            "approved",
+            "post-deploy",
+            "history"
+          ],
+          "suiteLine": "",
+          "tail": ",\"stage\":\"evaluated\",\"proposalId\":\"prop_80711f5516677140\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  approved deploy backs up, applies, health-checks and rolls back cleanly: evaluation failed; proposal is not eligible for approval\n[maintainer] {\"at\":1792624131357,\"stage\":\"root_cause\",\"fingerprint\":\"7e0d3d78861ff28f\",\"category\":\"business_rule\",\"confidence\":0.84,\"insufficient\":false}\n[maintainer] {\"at\":1792624131357,\"stage\":\"proposal_created\",\"proposalId\":\"prop_1df701eb5aadb49e\",\"changeKind\":\"business_rule_adjustment\",\"paths\":[\"teammateHandoffGates.js\"]}\n[maintainer] {\"at\":1792624131365,\"stage\":\"evaluated\",\"proposalId\":\"prop_1df701eb5aadb49e\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  post-deploy monitoring auto-rolls back on a threshold breach: evaluation failed; proposal is not eligible for approval\n[maintainer] {\"at\":1792624131367,\"stage\":\"root_cause\",\"fingerprint\":\"3bd037257a5aed92\",\"category\":\"business_rule\",\"confidence\":0.84,\"insufficient\":false}\n[maintainer] {\"at\":1792624131367,\"stage\":\"proposal_created\",\"proposalId\":\"prop_d82a37555dc4ba0e\",\"changeKind\":\"business_rule_adjustment\",\"paths\":[\"teammateHandoffGates.js\"]}\n[maintainer] {\"at\":1792624131375,\"stage\":\"evaluated\",\"proposalId\":\"prop_d82a37555dc4ba0e\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  history and audit trail record the whole decision chain: evaluation failed; proposal is not eligible for approval\n\n18 passed, 9 failed\n - sandbox lives outside the production root: The expression evaluated to a falsy value:\n\n  assert.ok(fs.existsSync(path.join(sb.root, 'statePresend/statePresend.js')))\n\n - patching in the sandbox leaves the production file byte-identical: ENOENT: no such file or directory, open '/tmp/trees/r9/luna-export/teammateHandoffGates.js'\n - the golden suite passes against the shipped Luna source: expected a real case pack, got 0\n - a good patch fixes the targets, causes no regressions and needs approval: patch did not apply\n - the AI cannot approve its own patch: evaluation failed; proposal is not eligible for approval\n - dry run writes nothing to Luna: evaluation failed; proposal is not eligible for approval\n - approved deploy backs up, applies, health-checks and rolls back cleanly: evaluation failed; proposal is not eligible for approval\n - post-deploy monitoring auto-rolls back on a threshold breach: evaluation failed; proposal is not eligible for approval\n - history and audit trail record the whole decision chain: evaluation failed; proposal is not eligible for approval\n\n"
+        }
+      ]
+    },
+    "r10": {
+      "tree": "r10",
+      "root": "/tmp/trees/r10",
+      "selftestFiles": [
+        "selftest-audit-harden.js",
+        "selftest-coverage-morphology.js",
+        "selftest-escalate-related-only.js",
+        "selftest-faq-orphan-and-country.js",
+        "selftest-faq-reset-time-retrieval.js",
+        "selftest-identity-before-escalate.js",
+        "selftest-identity-escalate-gates.js",
+        "selftest-identity-question-not-human-request.js",
+        "selftest-lock-harden.js",
+        "selftest-missedq-clarify-escalate.js",
+        "selftest-promo-prompt.js",
+        "selftest-reply-spacing.js",
+        "selftest-review-status-direct.js",
+        "selftest-scope-decline-not-escalated.js",
+        "selftest-smalltalk-missedq.js",
+        "selftest-soft-edges.js",
+        "selftest-wrongtopic-client-raised-reset.js",
+        "test-escalate-ack-norepeat.js",
+        "test-fin-wait.js",
+        "test-owner-cmd-router.js"
+      ],
+      "smokeExcluded": [
+        "smoke_final.js",
+        "smoke_movie.js",
+        "smoke_v10.js",
+        "smoke_v2.js",
+        "smoke_v3.js",
+        "smoke_v4.js",
+        "smoke_v5.js",
+        "smoke_v6.js",
+        "smoke_v7.js",
+        "smoke_v8.js",
+        "smoke_v9.js"
+      ],
+      "suites": [
+        {
+          "id": "08_repair_tests/run-suite.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 58,
+          "failCount": 0,
+          "passNames": [
+            "system-prompt.txt",
+            "fundedelite-faqs.md",
+            "selftest-audit-harden.js",
+            "selftest-coverage-morphology.js",
+            "selftest-escalate-related-only.js",
+            "selftest-faq-orphan-and-country.js",
+            "selftest-faq-reset-time-retrieval.js",
+            "selftest-identity-escalate-gates.js",
+            "selftest-identity-question-not-human-request.js",
+            "selftest-missedq-clarify-escalate.js",
+            "selftest-promo-prompt.js",
+            "selftest-reply-spacing.js",
+            "selftest-review-status-direct.js",
+            "selftest-scope-decline-not-escalated.js",
+            "selftest-smalltalk-missedq.js",
+            "selftest-soft-edges.js",
+            "selftest-wrongtopic-client-raised-reset.js",
+            "test-escalate-ack-norepeat.js",
+            "test-fin-wait.js",
+            "test-owner-cmd-router.js"
+          ],
+          "failNames": [
+            "selftest-identity-before-escalate.js",
+            "selftest-lock-harden.js"
+          ],
+          "suiteLine": "SUITE hashFail 0 syntaxFail 0 adversarialFail 0 selftestFail 2",
+          "tail": " soft ask: screenshot please → GENERIC\nPASS: soft ask: Mind sending a screenshot? → GENERIC\nPASS: soft ask: please send a screenshot → GENERIC\nPASS: specific crop still SPECIFIC\nPASS: hasRecentImage blocks soft generic\nPASS: hasRecentImage allows one specific clarification\nPASS: gates export isUsableClientEmail\nPASS: gates collectEscalateIds skips intercom-mail\nPASS selftest-missedq-clarify-escalate.js\nPASS selftest-promo-prompt.js\nPASS selftest-reply-spacing.js\nPASS selftest-review-status-direct.js\nPASS selftest-scope-decline-not-escalated.js\nPASS selftest-smalltalk-missedq.js\nPASS selftest-soft-edges.js\nPASS selftest-wrongtopic-client-raised-reset.js\nPASS test-escalate-ack-norepeat.js\nPASS test-fin-wait.js\nPASS test-owner-cmd-router.js\n\nSUITE hashFail 0 syntaxFail 0 adversarialFail 0 selftestFail 2\n\nCONTROL_STATE_UNREADABLE , holding last known good state (paused=true)\nIC_REQ_ERR OUT https://api.intercom.io/conversations/unknown-redelivery/reply synthetic timeout after acceptance\nIC_REQ_UNKNOWN OUT https://api.intercom.io/conversations/unknown-redelivery/reply write outcome unknown , not retried\nIC_REQ_REPLAY_SUPPRESSED OUT https://api.intercom.io/conversations/unknown-redelivery/reply unknown\nnode:internal/assert/utils:77\n    throw err;\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(src.indexOf('IDENTITY_BEFORE_ESCALATE asked missing') < src.indexOf(\"let clientMsg = postProcessModelReply(\\n          \\\"I've forwarded this to a teammate\"))\n\n    at Object.<anonymous> (/tmp/trees/r10/luna-current/08_repair_tests/test_mirror/selftest-identity-before-escalate.js:41:8)\n    at Module._compile (node:internal/modules/cjs/loader:1781:14)\n    at Object..js (node:internal/modules/cjs/loader:1913:10)\n    at Module.load (node:internal/modules/cjs/loader:1505:32)\n    at Function.<anonymous> (node:internal/modules/cjs/loader:1309:12)\n    at Module._load (/tmp/trees/r10/luna-current/08_repair_tests/isolation.js:54:15)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v22.23.3\nFAIL: canned paths wrap postProcess The expression evaluated to a falsy value:\n\n  assert.ok(src.includes('postProcessModelReply(lockedFinHandoffWelcome'))\n\n\n1 failure(s)\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-identity.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 1,
+          "failCount": 0,
+          "passNames": [
+            "bench"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS bench identity multi-part remainder\n\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-retrieval.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 0,
+          "failCount": 0,
+          "passNames": [],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "\nnode:internal/modules/cjs/loader:1433\n  throw err;\n  ^\n\nError: Cannot find module 'axios'\nRequire stack:\n- /tmp/trees/r10/luna-current/09_failfix_staging/faq-kb.js\n- /tmp/trees/r10/luna-current/09_failfix_staging/selftest-bench-failfix-retrieval.js\n    at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)\n    at Function._load (node:internal/modules/cjs/loader:1216:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)\n    at Module.require (node:internal/modules/cjs/loader:1527:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (/tmp/trees/r10/luna-current/09_failfix_staging/faq-kb.js:3:15)\n    at Module._compile (node:internal/modules/cjs/loader:1781:14)\n    at Object..js (node:internal/modules/cjs/loader:1913:10) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/tmp/trees/r10/luna-current/09_failfix_staging/faq-kb.js',\n    '/tmp/trees/r10/luna-current/09_failfix_staging/selftest-bench-failfix-retrieval.js'\n  ]\n}\n\nNode.js v22.23.3\n"
+        },
+        {
+          "id": "09_failfix_staging/selftest-bench-failfix-variant.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 5,
+          "failCount": 0,
+          "passNames": [
+            "R104:",
+            "neighbor:",
+            "R011",
+            "generic",
+            "size"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS R104: 200k Instant max-lot already named Instant — do not Instant-vs-Elite clarify\nPASS neighbor: Instant 50k leverage already named — do not Instant-vs-Elite clarify\nPASS R011 neighbor: generic 1-Step explain still names Lite + Free Retry and asks which\nPASS generic Instant explain still covers both / asks which (not silent Instant dump)\nPASS size catalogue ask still variant-sensitive\nALL PASS 5\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r10/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 7,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "owner",
+            "an",
+            "ordinary",
+            "a",
+            "a",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS owner commands require admin type, owner id, and an internal note\nPASS an empty KB FAQ and a bot-owned status ping do not hand off\nPASS ordinary words in password-back phrases are not stored as secrets\nPASS a team-will-review sentence in a FAQ answer regenerates or hedges\nPASS a wiped stored confirmation is re-verified against parts before the fixed line\nPASS a 200 with errors or a null body is not a confirmed write\nOK 7 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r2/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 16,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "welcome",
+            "vague",
+            "Fin",
+            "Bot",
+            "Arabic-script",
+            "Italian",
+            "Hinglish",
+            "a",
+            "Arsal",
+            "a",
+            "a",
+            "live-agent",
+            "a",
+            "empty",
+            "module"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status is frozen, unapproved, and not a behavior change\nPASS welcome lines match the runtime source\nPASS vague live-agent ask sends the English fixed welcome\nPASS Fin handoff plus hi sends the fixed welcome\nPASS Bot test placeholder is not used as a name\nPASS Arabic-script vague handoff uses the runtime Urdu welcome\nPASS Italian greeting after Fin handoff uses the runtime Italian welcome\nPASS Hinglish cue after a live-agent phrase uses the runtime Salam welcome\nPASS a substantive question does not take the fixed welcome\nPASS Arsal public reply closes the gate\nPASS a human teammate public reply closes the gate\nPASS a handoff phrase in a note does not open the gate\nPASS live-agent ask after the last Elite comment opens the gate for a later hi\nPASS a live-agent ask before the last Elite comment does not open the gate\nPASS empty text stays vague when a Fin handoff is already in history\nPASS module does not embed production seats or call Intercom\nfixed-message-handoff-r2 16 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r3/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 33,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "fixed",
+            "Arabic",
+            "Urdu",
+            "Hindi",
+            "English",
+            "Fin",
+            "an",
+            "an",
+            "a",
+            "an",
+            "a",
+            "a",
+            "an",
+            "author",
+            "Risk",
+            "ambiguous",
+            "defer",
+            "our",
+            "escalate",
+            "runtime",
+            "silence",
+            "a",
+            "note",
+            "assignment",
+            "assignment",
+            "assignment",
+            "partial",
+            "success",
+            "ambiguous",
+            "credentials",
+            "recovery",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status is unapproved and is not a release\nPASS fixed strings do not invent a promise\nPASS Arabic handoff ask is detected from script and gets Arabic fixed text\nPASS Urdu handoff ask is detected from Urdu letters and gets Urdu fixed text\nPASS Hindi handoff ask is detected from Devanagari and gets Hindi fixed text\nPASS English live-agent ask still gets the English fixed line\nPASS Fin handoff plus hi gets one English fixed line\nPASS an Arabic account-number question is not swallowed by the welcome\nPASS an Urdu account-number question is not swallowed by the welcome\nPASS a Hindi account-number question is not swallowed by the welcome\nPASS an English account-number question is not swallowed by the welcome\nPASS a substantive Arabic question is not treated as a handoff welcome\nPASS a human assignee is silence in Arabic, Urdu, and Hindi\nPASS an admin body without part_type is silence\nPASS author type teammate is silence\nPASS Risk and Escalations teams are silence\nPASS ambiguous and stale ownership are silence\nPASS defer gate fails closed for the same ownership cases\nPASS our own pending assignee can still complete the one message\nPASS escalate paths use the fixed line in the customer language\nPASS runtime wires every handoff path through the shared sequence\nPASS silence does not touch the transport\nPASS a new customer turn can send one new message and the same turn cannot\nPASS note failure does not assign or message\nPASS assignment 500 withholds the message and the awaiting flag\nPASS assignment timeout withholds the message and the awaiting flag\nPASS assignment 422 withholds the message and the awaiting flag\nPASS partial assignment success withholds the message and the awaiting flag\nPASS success posts note, then assignment, then exactly one fixed message\nPASS ambiguous assignment is not replayed and does not send a second message\nPASS credentials are redacted before the note and never enter the customer message\nPASS recovery after a held assignment sends one message when the seat is observed\nPASS a completed handoff retries without a second note, assignment, or message\nOK 33 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r4/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 10,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "Hindi",
+            "a",
+            "a",
+            "our",
+            "question",
+            "a",
+            "runtime",
+            "an",
+            "credential"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays unapproved\nPASS Hindi and Hinglish account questions route normal on welcome, recovery, and missed escalation\nPASS a supplied account number is still a handoff, not a question\nPASS a human-owned handoff ask stays silent\nPASS our pending assignee can still finish the one fixed message\nPASS question detection and ask completeness see Devanagari and Hinglish\nPASS a status ping stays silent when a human or another assignee owns the conversation\nPASS runtime source closes recovery, missed escalation, ownership, and the translation prompt\nPASS an account question does not touch the transport\nPASS credential canaries never reach the note, the prompt, or the customer line\nOK 10 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r5/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 8,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "one",
+            "a",
+            "account-number",
+            "a",
+            "Hinglish",
+            "runtime",
+            "lost"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS one sanitizer redacts multi-token, markup, Hindi labels, and repeated base64\nPASS a remembered secret is echo-blocked without a second label\nPASS account-number questions stay non-empty in every language, with or without a question mark\nPASS a cleared presend draft still answers an account-number question\nPASS Hinglish uses the approved Urdu handoff line\nPASS runtime redacts prompts and comments, answers account questions, and gates identity after that\nPASS lost ticket state and opstore reconcile from conversation parts\nOK 8 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r6/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 9,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "the",
+            "every",
+            "status-only",
+            "fresh",
+            "an",
+            "an",
+            "lost",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS the locked spread reply is exempt by hash and a symbol token is not cut\nPASS every copy of a repeated base64 value is redacted, including inside a label\nPASS status-only and the holding post check the fixed line before a second comment\nPASS fresh account-number questions are answered, including Italian, before the Fin wait\nPASS an identity question is answered and is not a live-agent handoff\nPASS an emptied known-account re-ask escalates, and Italian live-agent gets the Italian line\nPASS lost stores send the one fixed line from parts unless a human replied or owns it\nPASS a bot-owned status ping or FAQ with an unsupported number hedges instead of handing off\nOK 9 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r7/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 9,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "ownership",
+            "a",
+            "credentials",
+            "the",
+            "a",
+            "new",
+            "unsupported",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS ownership suppression runs before every new public path\nPASS a spread template or near-miss does not hand off a payout ask\nPASS credentials survive NFKC, format characters, spaced labels, symbols, and normalized echoes\nPASS the locked spread reply is byte-exact on the first message\nPASS a live-agent request on user.created bypasses the Fin wait after ownership\nPASS new languages use structure and the English line when no translation is approved\nPASS unsupported numbers hedge, including a holding time and a regenerated figure\nPASS a note is confirmed only after a verified write, and lost stores need both parts\nOK 9 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r8/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 7,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "missed",
+            "echoes",
+            "an",
+            "an",
+            "the",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS missed escalation uses the original draft, not the post-hedge body\nPASS echoes of a redacted secret are scrubbed in every normalized form\nPASS an empty escalation body routes to presend_escalate\nPASS an eligible spread ask on user.created bypasses the Fin wait after ownership\nPASS the approved number hedge is terminal\nPASS a failed assignment stays pending and a note is not an answer\nOK 7 passed\n\n"
+        },
+        {
+          "id": "10_synthetic_lanes/fixed-message-handoff-r9/fixedMessageHandoff.test.js",
+          "exit": 0,
+          "signal": "",
+          "ok": true,
+          "passCount": 5,
+          "failCount": 0,
+          "passNames": [
+            "status",
+            "a",
+            "owner",
+            "a",
+            "a"
+          ],
+          "failNames": [],
+          "suiteLine": "",
+          "tail": "PASS status stays the R3 candidate and is not approved\nPASS a symbol secret also scrubs its long alphanumeric runs\nPASS owner verbatim reply is allowed on a human-assigned thread and generated text is not\nPASS a missed FAQ hedges or regenerates and a negated spread does not hand off\nPASS a human note does not satisfy the handoff sequence\nOK 5 passed\n\n"
+        },
+        {
+          "id": "03_luna-maintainer/test/run-tests.js",
+          "exit": 1,
+          "signal": "",
+          "ok": false,
+          "passCount": 18,
+          "failCount": 9,
+          "passNames": [],
+          "failNames": [
+            "sandbox",
+            "patching",
+            "the",
+            "a",
+            "the",
+            "dry",
+            "approved",
+            "post-deploy",
+            "history"
+          ],
+          "suiteLine": "",
+          "tail": "\"stage\":\"evaluated\",\"proposalId\":\"prop_2b70ea543854df94\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  approved deploy backs up, applies, health-checks and rolls back cleanly: evaluation failed; proposal is not eligible for approval\n[maintainer] {\"at\":1792624135395,\"stage\":\"root_cause\",\"fingerprint\":\"7e0d3d78861ff28f\",\"category\":\"business_rule\",\"confidence\":0.84,\"insufficient\":false}\n[maintainer] {\"at\":1792624135395,\"stage\":\"proposal_created\",\"proposalId\":\"prop_837c9ebe9d638989\",\"changeKind\":\"business_rule_adjustment\",\"paths\":[\"teammateHandoffGates.js\"]}\n[maintainer] {\"at\":1792624135402,\"stage\":\"evaluated\",\"proposalId\":\"prop_837c9ebe9d638989\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  post-deploy monitoring auto-rolls back on a threshold breach: evaluation failed; proposal is not eligible for approval\n[maintainer] {\"at\":1792624135404,\"stage\":\"root_cause\",\"fingerprint\":\"3bd037257a5aed92\",\"category\":\"business_rule\",\"confidence\":0.84,\"insufficient\":false}\n[maintainer] {\"at\":1792624135404,\"stage\":\"proposal_created\",\"proposalId\":\"prop_7b222cb2c81ae3e0\",\"changeKind\":\"business_rule_adjustment\",\"paths\":[\"teammateHandoffGates.js\"]}\n[maintainer] {\"at\":1792624135412,\"stage\":\"evaluated\",\"proposalId\":\"prop_7b222cb2c81ae3e0\",\"passed\":false,\"reason\":\"patch_failed\"}\nFAIL  history and audit trail record the whole decision chain: evaluation failed; proposal is not eligible for approval\n\n18 passed, 9 failed\n - sandbox lives outside the production root: The expression evaluated to a falsy value:\n\n  assert.ok(fs.existsSync(path.join(sb.root, 'statePresend/statePresend.js')))\n\n - patching in the sandbox leaves the production file byte-identical: ENOENT: no such file or directory, open '/tmp/trees/r10/luna-export/teammateHandoffGates.js'\n - the golden suite passes against the shipped Luna source: expected a real case pack, got 0\n - a good patch fixes the targets, causes no regressions and needs approval: patch did not apply\n - the AI cannot approve its own patch: evaluation failed; proposal is not eligible for approval\n - dry run writes nothing to Luna: evaluation failed; proposal is not eligible for approval\n - approved deploy backs up, applies, health-checks and rolls back cleanly: evaluation failed; proposal is not eligible for approval\n - post-deploy monitoring auto-rolls back on a threshold breach: evaluation failed; proposal is not eligible for approval\n - history and audit trail record the whole decision chain: evaluation failed; proposal is not eligible for approval\n\n"
+        }
+      ]
+    }
+  },
+  "candidateOnlyFailures": []
+}
