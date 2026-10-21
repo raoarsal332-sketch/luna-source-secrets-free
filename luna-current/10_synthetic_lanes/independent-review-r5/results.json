@@ -1,0 +1,1642 @@
+{
+  "seal": "b6beb60fbab22c6349809289657581aee13775d1269e2d02a52e97fc94e2031c",
+  "cases": 161,
+  "failed": 25,
+  "passed": 136,
+  "byClass": {
+    "order": {
+      "n": 15,
+      "fail": 2
+    },
+    "failure": {
+      "n": 36,
+      "fail": 8
+    },
+    "replay": {
+      "n": 8,
+      "fail": 2
+    },
+    "ownership": {
+      "n": 19,
+      "fail": 1
+    },
+    "account": {
+      "n": 33,
+      "fail": 6
+    },
+    "identity": {
+      "n": 3,
+      "fail": 1
+    },
+    "credential": {
+      "n": 40,
+      "fail": 1
+    },
+    "faq": {
+      "n": 3,
+      "fail": 2
+    },
+    "spread": {
+      "n": 4,
+      "fail": 2
+    }
+  },
+  "failures": [
+    {
+      "id": "order-welcome-it",
+      "cls": "order",
+      "status": 200,
+      "fails": [
+        "write order comment wanted note,assignment,comment",
+        "comment \"Hello Synthetic, Which account number is this about?\" wanted \"Un collega ha ora questa conversazione.\"",
+        "escalateAwaitingFirstTeammate not set"
+      ],
+      "writes": [
+        "comment:Hello Synthetic, Which account number is this about?"
+      ]
+    },
+    {
+      "id": "order-presend",
+      "cls": "order",
+      "status": 200,
+      "fails": [
+        "write order  wanted note,assignment,comment",
+        "comment \"\" wanted \"A teammate now has this conversation.\"",
+        "note missing 77011002 got ",
+        "escalateAwaitingFirstTeammate not set"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-500",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-timeout",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-422",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-partial",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-500",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note,assignment"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-timeout",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note,assignment"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-422",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note,assignment"
+      ],
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-partial",
+      "cls": "failure",
+      "status": 200,
+      "fails": [
+        "write order  wanted note,assignment"
+      ],
+      "writes": []
+    },
+    {
+      "id": "replay-same-turn-state-kept",
+      "cls": "replay",
+      "status": 200,
+      "fails": [
+        "write order note,assignment,comment,comment wanted note,assignment,comment",
+        "comment count 2",
+        "comment \"A teammate now has this conversation. || Hello Synthetic, We have already passed this to the team. They are reviewing it and will reply here when ready.\" wanted \"A teammate now has this conversation.\""
+      ],
+      "writes": [
+        "note",
+        "assignment",
+        "comment",
+        "comment"
+      ]
+    },
+    {
+      "id": "replay-both-lost-assignee-visible-message-missing",
+      "cls": "replay",
+      "status": 200,
+      "fails": [
+        "write order  wanted comment",
+        "comment count 0",
+        "comment \"\" wanted \"A teammate now has this conversation.\""
+      ],
+      "writes": []
+    },
+    {
+      "id": "acct-welcome-it",
+      "cls": "account",
+      "status": 200,
+      "fails": [
+        "account answer missing fact; got \"Hello Synthetic, I can help with your FundedElite account.\""
+      ],
+      "writes": [
+        "comment:Hello Synthetic, I can help with your FundedElite account."
+      ]
+    },
+    {
+      "id": "acct-owned-it",
+      "cls": "account",
+      "status": 200,
+      "fails": [
+        "comment count 0",
+        "account answer missing fact; got \"\""
+      ],
+      "writes": []
+    },
+    {
+      "id": "acct-welcome-mixed",
+      "cls": "account",
+      "status": 200,
+      "fails": [
+        "account answer missing fact; got \"السلام علیکم Synthetic، For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.\""
+      ],
+      "writes": [
+        "comment:السلام علیکم Synthetic، For MT5, the account number is in the email that was sen"
+      ]
+    },
+    {
+      "id": "acct-owned-mixed",
+      "cls": "account",
+      "status": 200,
+      "fails": [
+        "account answer missing fact; got \"السلام علیکم Synthetic، For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.\""
+      ],
+      "writes": [
+        "comment:السلام علیکم Synthetic، For MT5, the account number is in the email that was sen"
+      ]
+    },
+    {
+      "id": "acct-fresh-created",
+      "cls": "account",
+      "status": 200,
+      "fails": [
+        "comment count 0",
+        "account answer missing fact; got \"\""
+      ],
+      "writes": []
+    },
+    {
+      "id": "acct-fresh-replied",
+      "cls": "account",
+      "status": 200,
+      "fails": [
+        "comment count 0",
+        "account answer missing fact; got \"\""
+      ],
+      "writes": []
+    },
+    {
+      "id": "identity-bot-question",
+      "cls": "identity",
+      "status": 200,
+      "fails": [
+        "assignment was sent",
+        "note was sent",
+        "fixed handoff line was sent"
+      ],
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-base64-twice",
+      "cls": "credential",
+      "status": 200,
+      "fails": [
+        "prompt leaked QWJjZGVmZ2hpamtsbW5vcHFyc3Q"
+      ],
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies."
+      ]
+    },
+    {
+      "id": "faq-holding-time",
+      "cls": "faq",
+      "status": 200,
+      "fails": [
+        "assignment was sent",
+        "note was sent",
+        "fixed handoff line was sent"
+      ],
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "faq-daily-loss",
+      "cls": "faq",
+      "status": 200,
+      "fails": [
+        "fixed handoff line was sent"
+      ],
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "spread-check",
+      "cls": "spread",
+      "status": 200,
+      "fails": [
+        "spread password not intact: Hello Synthetic, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: [secret]?J! Use this account to check spreads."
+      ],
+      "writes": [
+        "comment:Hello Synthetic, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new Funded"
+      ]
+    },
+    {
+      "id": "spread-what-are",
+      "cls": "spread",
+      "status": 200,
+      "fails": [
+        "spread password not intact: Hello Synthetic, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: [secret]?J! Use this account to check spreads."
+      ],
+      "writes": [
+        "comment:Hello Synthetic, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new Funded"
+      ]
+    },
+    {
+      "id": "status-ping-bot-owned-not-silent",
+      "cls": "ownership",
+      "status": 200,
+      "fails": [
+        "fixed handoff line was sent"
+      ],
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    }
+  ],
+  "all": [
+    {
+      "id": "order-welcome-en",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "order-welcome-ur",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ]
+    },
+    {
+      "id": "order-welcome-ar",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:هذه المحادثة الآن لدى أحد الزملاء."
+      ]
+    },
+    {
+      "id": "order-welcome-hi",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:यह बातचीत अब एक साथी के पास है।"
+      ]
+    },
+    {
+      "id": "order-welcome-it",
+      "cls": "order",
+      "ok": false,
+      "writes": [
+        "comment:Hello Synthetic, Which account number is this about?"
+      ]
+    },
+    {
+      "id": "order-welcome-hinglish",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ]
+    },
+    {
+      "id": "order-welcome-fin-vague",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "order-main",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "order-presend",
+      "cls": "order",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "order-missed",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "order-identity-recovery",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "order-recovery-continue",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "fail-welcome-note-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-welcome-note-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-welcome-note-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-welcome-note-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-welcome-assignment-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-welcome-assignment-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-welcome-assignment-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-welcome-assignment-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-main-note-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-main-note-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-main-note-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-main-note-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-main-assignment-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-main-assignment-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-main-assignment-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-main-assignment-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-presend-note-500",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-timeout",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-422",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-note-partial",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-500",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-timeout",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-422",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-presend-assignment-partial",
+      "cls": "failure",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "fail-missed-note-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-missed-note-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-missed-note-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-missed-note-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note"
+      ]
+    },
+    {
+      "id": "fail-missed-assignment-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-missed-assignment-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-missed-assignment-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-missed-assignment-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-recovery-assignment-500",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-recovery-assignment-timeout",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-recovery-assignment-422",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "assignment"
+      ]
+    },
+    {
+      "id": "fail-recovery-assignment-partial",
+      "cls": "failure",
+      "ok": true,
+      "writes": [
+        "assignment"
+      ]
+    },
+    {
+      "id": "replay-same-turn-state-kept",
+      "cls": "replay",
+      "ok": false,
+      "writes": [
+        "note",
+        "assignment",
+        "comment",
+        "comment"
+      ]
+    },
+    {
+      "id": "replay-both-lost-parts-complete",
+      "cls": "replay",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "replay-both-lost-assignee-visible-message-missing",
+      "cls": "replay",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "replay-bot-seat-not-already-assigned",
+      "cls": "replay",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "replay-ambiguous-hold-state-kept",
+      "cls": "replay",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "replay-500-opstore-kept-state-lost",
+      "cls": "replay",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment"
+      ]
+    },
+    {
+      "id": "replay-422-retries-assign-still-no-message",
+      "cls": "replay",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "assignment"
+      ]
+    },
+    {
+      "id": "replay-message-500-no-second-message",
+      "cls": "replay",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment"
+      ]
+    },
+    {
+      "id": "own-handoff-en",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-ping-en",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-stale-en",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-handoff-ur",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-ping-ur",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-stale-ur",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-handoff-ar",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-ping-ar",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-stale-ar",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-handoff-hi",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-ping-hi",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-stale-hi",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-handoff-hinglish",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-ping-hinglish",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-stale-hinglish",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-handoff-mixed",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-ping-mixed",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "own-stale-mixed",
+      "cls": "ownership",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "acct-welcome-en",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-owned-en",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-welcome-en-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-owned-en-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-welcome-en-bare",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-owned-en-bare",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-welcome-ur",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے"
+      ]
+    },
+    {
+      "id": "acct-owned-ur",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے"
+      ]
+    },
+    {
+      "id": "acct-welcome-ur-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے"
+      ]
+    },
+    {
+      "id": "acct-owned-ur-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے"
+      ]
+    },
+    {
+      "id": "acct-welcome-ar",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات "
+      ]
+    },
+    {
+      "id": "acct-owned-ar",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات "
+      ]
+    },
+    {
+      "id": "acct-welcome-ar-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات "
+      ]
+    },
+    {
+      "id": "acct-owned-ar-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات "
+      ]
+    },
+    {
+      "id": "acct-welcome-hi",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी ग"
+      ]
+    },
+    {
+      "id": "acct-owned-hi",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी ग"
+      ]
+    },
+    {
+      "id": "acct-welcome-hi-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी ग"
+      ]
+    },
+    {
+      "id": "acct-owned-hi-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी ग"
+      ]
+    },
+    {
+      "id": "acct-welcome-hinglish",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Salam Synthetic, MT5 par account number us email mein hai jo trading login ke sa"
+      ]
+    },
+    {
+      "id": "acct-owned-hinglish",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Salam Synthetic, MT5 par account number us email mein hai jo trading login ke sa"
+      ]
+    },
+    {
+      "id": "acct-welcome-hinglish-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Salam Synthetic, MT5 par account number us email mein hai jo trading login ke sa"
+      ]
+    },
+    {
+      "id": "acct-owned-hinglish-q",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Salam Synthetic, MT5 par account number us email mein hai jo trading login ke sa"
+      ]
+    },
+    {
+      "id": "acct-welcome-it",
+      "cls": "account",
+      "ok": false,
+      "writes": [
+        "comment:Hello Synthetic, I can help with your FundedElite account."
+      ]
+    },
+    {
+      "id": "acct-owned-it",
+      "cls": "account",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "acct-welcome-mixed",
+      "cls": "account",
+      "ok": false,
+      "writes": [
+        "comment:السلام علیکم Synthetic، For MT5, the account number is in the email that was sen"
+      ]
+    },
+    {
+      "id": "acct-owned-mixed",
+      "cls": "account",
+      "ok": false,
+      "writes": [
+        "comment:السلام علیکم Synthetic، For MT5, the account number is in the email that was sen"
+      ]
+    },
+    {
+      "id": "acct-recovery-422",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-recovery-500",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "acct-fresh-created",
+      "cls": "account",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "acct-fresh-replied",
+      "cls": "account",
+      "ok": false,
+      "writes": []
+    },
+    {
+      "id": "acct-identity-supply-is-handoff",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "acct-digits-with-question-mark",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "identity-ask-no-promise",
+      "cls": "identity",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, Please share your account number."
+      ]
+    },
+    {
+      "id": "identity-bot-question",
+      "cls": "identity",
+      "ok": false,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "identity-ask-email-only",
+      "cls": "identity",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-escalate-multi",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-multi",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-braces",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-braces",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was brace-secret-[sec"
+      ]
+    },
+    {
+      "id": "cred-escalate-html",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-html",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-entity",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-entity",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-equals-entity",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-equals-entity",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-apostrophe",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-apostrophe",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-curly-apos",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-curly-apos",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-deva",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-deva",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-gupt",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-gupt",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-gupt-space",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-gupt-space",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-koot",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-koot",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-koot-space",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-koot-space",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-sanket",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-sanket",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-passcode-hi",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-passcode-hi",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-ar",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-ar",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-ur",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-ur",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-tag-label",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-tag-label",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies. Value was [secret]."
+      ]
+    },
+    {
+      "id": "cred-escalate-stop-account",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "cred-reply-echo-stop-account",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, For MT5, the account number is in the email that was sent with "
+      ]
+    },
+    {
+      "id": "cred-base64-twice",
+      "cls": "credential",
+      "ok": false,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies."
+      ]
+    },
+    {
+      "id": "cred-second-pass-placeholder",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The consistency rule still applies and the placeholder stays."
+      ]
+    },
+    {
+      "id": "cred-owner-prompt",
+      "cls": "credential",
+      "ok": true,
+      "writes": []
+    },
+    {
+      "id": "cred-remembered-echo",
+      "cls": "credential",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "faq-holding-time",
+      "cls": "faq",
+      "ok": false,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "faq-daily-loss",
+      "cls": "faq",
+      "ok": false,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "faq-escalate-not-account-ask",
+      "cls": "faq",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, The help centre describes that rule. I can explain it here."
+      ]
+    },
+    {
+      "id": "spread-check",
+      "cls": "spread",
+      "ok": false,
+      "writes": [
+        "comment:Hello Synthetic, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new Funded"
+      ]
+    },
+    {
+      "id": "spread-what-are",
+      "cls": "spread",
+      "ok": false,
+      "writes": [
+        "comment:Hello Synthetic, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new Funded"
+      ]
+    },
+    {
+      "id": "spread-negative-login",
+      "cls": "spread",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, I can help with the login issue on your FundedElite account."
+      ]
+    },
+    {
+      "id": "spread-negative-distribution",
+      "cls": "spread",
+      "ok": true,
+      "writes": [
+        "comment:Hello Synthetic, Tell me which FundedElite account you mean and I can explain th"
+      ]
+    },
+    {
+      "id": "handoff-substantive-not-fixed",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "status-ping-bot-owned-not-silent",
+      "cls": "ownership",
+      "ok": false,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "owned-account-arabic-question-mark",
+      "cls": "account",
+      "ok": true,
+      "writes": [
+        "comment:السلام علیکم Synthetic، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات "
+      ]
+    },
+    {
+      "id": "mixed-hindi-english-handoff",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "comment:Salam Synthetic, Can you send the account number linked to this issue?"
+      ]
+    },
+    {
+      "id": "urdu-note-english",
+      "cls": "order",
+      "ok": true,
+      "writes": [
+        "note",
+        "assignment",
+        "comment:یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ]
+    }
+  ]
+}
