@@ -1,0 +1,3337 @@
+{
+  "commit": "71ed3d69fd1d7cef10a249fe00971f8998f33a8d",
+  "hashes": {
+    "payoutClaimGuard.js": {
+      "actual": "2936f87ee4f9ce35c0efd9587c5e6f2fbbf667eb27e1d2b8bbe79967baa099a9",
+      "expected": "2936f87ee4f9ce35c0efd9587c5e6f2fbbf667eb27e1d2b8bbe79967baa099a9",
+      "ok": true
+    },
+    "approved.lock.json": {
+      "actual": "52a4eca9c8d306e48653a05aad26e83b2f4644dc15a48137190be1775b241aed",
+      "expected": "52a4eca9c8d306e48653a05aad26e83b2f4644dc15a48137190be1775b241aed",
+      "ok": true
+    },
+    "index.js.public-sends.diff": {
+      "actual": "440d7028b1493f8fbd5c660faf393016877cae7a9ad5192d40d5fe9d558f8466",
+      "expected": "440d7028b1493f8fbd5c660faf393016877cae7a9ad5192d40d5fe9d558f8466",
+      "ok": true
+    },
+    "T800_R12_REPORT.md": {
+      "actual": "b7822ce96d10a5c886ae584f6ba99d68f1ef966339b1a000b3076cf543742360",
+      "expected": "b7822ce96d10a5c886ae584f6ba99d68f1ef966339b1a000b3076cf543742360",
+      "ok": true
+    },
+    "SHA256SUMS.txt": {
+      "actual": "cb3645a26b468753068ec54589b94d7e459231dd43f22493df4a5de836b58a7f",
+      "expected": "cb3645a26b468753068ec54589b94d7e459231dd43f22493df4a5de836b58a7f",
+      "ok": true
+    }
+  },
+  "presendMode": "enforce (unset default)",
+  "helpCentre": {
+    "17437215": "https://faq.fundedelite.com/en/articles/17437215-catalyst",
+    "17437285": "https://faq.fundedelite.com/en/articles/17437285-how-much-can-i-risk-on-one-instrument-funded-only",
+    "17437306": "https://faq.fundedelite.com/en/articles/17437306-can-i-trade-or-hold-positions-over-the-weekend",
+    "17437354": "https://faq.fundedelite.com/en/articles/17437354-how-will-i-be-paid-and-what-are-the-fees",
+    "17437366": "https://faq.fundedelite.com/en/articles/17437366-do-i-get-my-challenge-fee-back",
+    "17437388": "https://faq.fundedelite.com/en/articles/17437388-hard-breach-vs-soft-breach",
+    "17437398": "https://faq.fundedelite.com/en/articles/17437398-what-happens-after-a-soft-breach",
+    "17437410": "https://faq.fundedelite.com/en/articles/17437410-how-do-i-reset-a-funded-account"
+  },
+  "bodyAudit": [
+    {
+      "id": "weekend_hold",
+      "ok": false,
+      "detail": "Locked English body says weekend close is allowed. Help Centre 17437306 lists that close, including a stop or target being hit, as a Violation without the add-on."
+    },
+    {
+      "id": "weekend_hold:ur",
+      "ok": false,
+      "detail": "Translation is locked to the same false close-is-allowed claim. Body starts: آپ ویک اینڈ ٹریڈنگ ایڈ آن کے بغیر جمعہ سے پیر تک پوزیشن ہولڈ کر سکتے ہیں۔ ویک ای"
+    },
+    {
+      "id": "weekend_hold:roman",
+      "ok": false,
+      "detail": "Translation is locked to the same false close-is-allowed claim. Body starts: Aap Weekend Trading add-on ke baghair Jumma se Peer tak position hold kar sakte "
+    },
+    {
+      "id": "weekend_hold:hi",
+      "ok": false,
+      "detail": "Translation is locked to the same false close-is-allowed claim. Body starts: आप वीकएंड ट्रेडिंग ऐड-ऑन के बिना शुक्रवार से सोमवार तक पोजीशन होल्ड कर सकते हैं।"
+    },
+    {
+      "id": "weekend_hold:ar",
+      "ok": false,
+      "detail": "Translation is locked to the same false close-is-allowed claim. Body starts: يمكنك إبقاء الصفقات من الجمعة إلى الاثنين دون إضافة تداول نهاية الأسبوع. وتحريك "
+    },
+    {
+      "id": "weekend_hold:hinglish",
+      "ok": false,
+      "detail": "Translation is locked to the same false close-is-allowed claim. Body starts: Aap Weekend Trading add-on ke bina Friday se Monday tak position hold kar sakte "
+    },
+    {
+      "id": "weekend_trade",
+      "ok": true,
+      "detail": "Opening without the add-on is a violation and a funded account is reset with the cycle profit forfeited. The body does not say that closing is also a violation."
+    },
+    {
+      "id": "strategy_risk",
+      "ok": true,
+      "detail": "Owner-final: Strategy Risk or Risk Rule on a funded account is a soft reset and never termination. This named body matches that rule. It is the wrong body for the separate 50% instrument hard breach."
+    },
+    {
+      "id": "daily_loss_hard",
+      "ok": true,
+      "detail": "Matches 17437388: touching daily or max loss is a hard breach and ends the account."
+    },
+    {
+      "id": "hard_breach",
+      "ok": true,
+      "detail": "Matches the hard column of 17437388, including the free-retry exception. It omits the 50% instrument line, which that article lists as hard."
+    },
+    {
+      "id": "soft_kinds",
+      "ok": true,
+      "detail": "Matches the soft column of 17437388."
+    },
+    {
+      "id": "instrument_cap",
+      "ok": true,
+      "detail": "The cap numbers match 17437285. The article also says breaking the rule can close the funded account. This body does not say that, and it does not deny it."
+    },
+    {
+      "id": "soft_breach_payout",
+      "ok": true,
+      "detail": "Matches 17437398."
+    },
+    {
+      "id": "rise_fee",
+      "ok": true,
+      "detail": "Matches 17437354 Rise row."
+    },
+    {
+      "id": "crypto_fee",
+      "ok": true,
+      "detail": "Matches 17437354 crypto row."
+    },
+    {
+      "id": "payout_timing",
+      "ok": true,
+      "detail": "Matches 17437354 timing."
+    },
+    {
+      "id": "catalyst_rules",
+      "ok": true,
+      "detail": "Matches 17437215 stage rules."
+    },
+    {
+      "id": "catalyst_ladder",
+      "ok": true,
+      "detail": "Matches the 17437215 ladder, including the $50,000 start at 80%."
+    },
+    {
+      "id": "catalyst_reopen",
+      "ok": true,
+      "detail": "Matches 17437215 ladder movement."
+    },
+    {
+      "id": "catalyst_stage_reset",
+      "ok": true,
+      "detail": "Matches the buy-one-reset sentence. It does not say whether a stage reset erases or keeps profit. Erase/keep has no approved body and must be the hedge."
+    },
+    {
+      "id": "reset_eligibility",
+      "ok": true,
+      "detail": "Matches 17437410 and the owner rule."
+    },
+    {
+      "id": "reset_count",
+      "ok": true,
+      "detail": "Matches 17437410."
+    },
+    {
+      "id": "reset_price",
+      "ok": true,
+      "detail": "Matches 17437410."
+    },
+    {
+      "id": "reset_where",
+      "ok": true,
+      "detail": "Matches 17437410."
+    },
+    {
+      "id": "reset_previous",
+      "ok": true,
+      "detail": "Matches 17437410 and the owner rule."
+    },
+    {
+      "id": "fee_refund",
+      "ok": true,
+      "detail": "Matches 17437366."
+    },
+    {
+      "id": "payout_not_reversed",
+      "ok": true,
+      "detail": "Owner-final. The eight articles do not state the opposite."
+    },
+    {
+      "id": "source_primary",
+      "ok": true,
+      "detail": "Meta priority. Not a customer money rule. Not contradicted by the articles."
+    },
+    {
+      "id": "locks",
+      "ok": true,
+      "detail": "All locked hashes match the frozen bodies and hedges."
+    }
+  ],
+  "tally": {
+    "cases": 259,
+    "critical_unsupported": 3,
+    "critical_wrong_body": 28,
+    "critical_bypass": 1,
+    "false_holds": 29,
+    "silent_drops": 0,
+    "over_capture": 6,
+    "regressions": 5,
+    "non_english": 30,
+    "harness_mistakes": 136,
+    "clean": 92
+  },
+  "verdict": "BLOCKED",
+  "failures": [
+    {
+      "id": "fact-strategy_risk-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par Strategy Risk ya Risk Rule ki breach ek soft breach hai aur is ke sath reset hota hai. Is se account khatam ya band nahi hota.",
+      "factHits": [
+        "strategy_risk:roman"
+      ]
+    },
+    {
+      "id": "fact-strategy_risk-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड अकाउंट पर स्ट्रैटेजी रिस्क या रिस्क रूल की ब्रीच एक सॉफ्ट ब्रीच है और इसके साथ रीसेट होता है। इससे अकाउंट समाप्त या बंद नहीं होता।",
+      "factHits": [
+        "strategy_risk:hi"
+      ]
+    },
+    {
+      "id": "fact-strategy_risk-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par Strategy Risk ya Risk Rule breach ek soft breach hai, reset ke saath. Isse account terminate ya close nahi hota.",
+      "factHits": [
+        "strategy_risk:hinglish"
+      ]
+    },
+    {
+      "id": "fact-daily_loss_hard-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Daily loss ki had ya max loss ki had ko chhuna hard breach hai. Hard breach account khatam kar deti hai.",
+      "factHits": [
+        "daily_loss_hard:roman"
+      ]
+    },
+    {
+      "id": "fact-daily_loss_hard-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "डेली लॉस की सीमा या मैक्स लॉस की सीमा को छूना हार्ड ब्रीच है। हार्ड ब्रीच अकाउंट समाप्त कर देती है।",
+      "factHits": [
+        "daily_loss_hard:hi"
+      ]
+    },
+    {
+      "id": "fact-daily_loss_hard-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Daily loss ki had ya max loss ki had ko chhuna hard breach hai. Hard breach account khatam kar deti hai.",
+      "factHits": [
+        "daily_loss_hard:roman"
+      ]
+    },
+    {
+      "id": "fact-hard_breach-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "fact-hard_breach-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hard breach account khatam kar deti hai. Is mein daily ya max loss ki had ko chhuna, fraud, KYC fraud ya chargeback, group trading ya IP sharing, account management ya passing service, evaluation mein scalp limit se zyada profit, aur warning ke baad dohrayi soft breach shamil hai. Evaluation mein 1-Step ya 2-Step par Free Retry ke sath hard breach khud Free Retry chala deti hai, fraud ke ilawa.\n\nSoft breach account khula rakhti hai aur aap ko apni trading theek karni hoti hai. Is mein minimum ho",
+      "factHits": [
+        "hard_breach:roman",
+        "soft_kinds:roman",
+        "soft_breach_payout:roman"
+      ]
+    },
+    {
+      "id": "fact-hard_breach-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "हार्ड ब्रीच अकाउंट समाप्त कर देती है। इसमें डेली या मैक्स लॉस की सीमा को छूना, फ्रॉड, केवाईसी फ्रॉड या चार्जबैक, ग्रुप ट्रेडिंग या आईपी शेयरिंग, अकाउंट मैनेजमेंट या पासिंग सर्विस, इवैल्यूएशन में स्कैल्प सीमा से अधिक लाभ, और चेतावनी के बाद दोहराई गई सॉफ्ट ब्रीच शामिल है। इवैल्यूएशन में 1-Step या 2-Step पर फ्री रिट्राई के साथ हार्ड ब्रीच अपने आप फ्री रिट्राई चला देती है, फ्रॉड को छोड़कर।\n\nसॉफ्ट ब्रीच अकाउंट खुला रखती है और आपको अपनी ट्रेडिंग सुधारनी होती है। इसमें न्यूनतम होल्डिंग समय से कम अलग ट्",
+      "factHits": [
+        "hard_breach:hi",
+        "soft_kinds:hi",
+        "soft_breach_payout:hi"
+      ]
+    },
+    {
+      "id": "fact-hard_breach-ar",
+      "group": "approved-body",
+      "lang": "ar",
+      "flags": [
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "السلام علیکم Sam،\n\nThanks for the details. I am checking this now and will update you here shortly.",
+      "factHits": []
+    },
+    {
+      "id": "fact-hard_breach-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hard breach account khatam kar deti hai. Is mein daily ya max loss ki had ko chhuna, fraud, KYC fraud ya chargeback, group trading ya IP sharing, account management ya passing service, evaluation mein scalp limit se zyada profit, aur warning ke baad dohrayi soft breach shamil hai. Evaluation mein 1-Step ya 2-Step par Free Retry ke sath hard breach khud Free Retry chala deti hai, fraud ke ilawa.\n\nSoft breach account khula rakhti hai aur aap ko apni trading theek karni hoti hai. Is mein minimum ho",
+      "factHits": [
+        "hard_breach:roman",
+        "soft_kinds:roman",
+        "soft_breach_payout:roman"
+      ]
+    },
+    {
+      "id": "fact-soft_kinds-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A soft breach keeps the account open and you must correct your trading. It includes an isolated trade under the minimum holding time, scalp profit under the limit, an IP flag with an honest explanation, a hedging flag with no link to another trader, and a first case of gambling-style trading.",
+      "factHits": [
+        "soft_kinds:en"
+      ]
+    },
+    {
+      "id": "fact-soft_kinds-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Soft breach account khula rakhti hai aur aap ko apni trading theek karni hoti hai. Is mein minimum holding time se kam alag trade, limit se kam scalp profit, imaandar wazahat ke sath IP flag, kisi doosre trader se baghair taaluq hedging flag, aur gambling style trading ka pehla case shamil hai.",
+      "factHits": [
+        "soft_kinds:roman"
+      ]
+    },
+    {
+      "id": "fact-soft_kinds-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "सॉफ्ट ब्रीच अकाउंट खुला रखती है और आपको अपनी ट्रेडिंग सुधारनी होती है। इसमें न्यूनतम होल्डिंग समय से कम अलग ट्रेड, सीमा से कम स्कैल्प लाभ, ईमानदार स्पष्टीकरण वाला आईपी फ्लैग, दूसरे ट्रेडर से बिना संबंध हेजिंग फ्लैग, और जुए जैसी ट्रेडिंग का पहला मामला शामिल है।\n\nफंडेड अकाउंट पर सॉफ्ट ब्रीच के बाद अकाउंट बंद नहीं होता। मौजूदा पेआउट 30% रिवॉर्ड शेयर पर फिर भी प्रोसेस होता है, और पेआउट चक्र पेआउट 1 से फिर शुरू होता है, जिससे फीस रिफंड की गिनती भी फिर शुरू होती है। यदि चेतावनी के बाद यह फिर हो तो अका",
+      "factHits": [
+        "soft_kinds:hi",
+        "soft_breach_payout:hi"
+      ]
+    },
+    {
+      "id": "fact-soft_kinds-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Soft breach account khula rakhti hai aur aap ko apni trading theek karni hoti hai. Is mein minimum holding time se kam alag trade, limit se kam scalp profit, imaandar wazahat ke sath IP flag, kisi doosre trader se baghair taaluq hedging flag, aur gambling style trading ka pehla case shamil hai.",
+      "factHits": [
+        "soft_kinds:roman"
+      ]
+    },
+    {
+      "id": "fact-instrument_cap-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "On a funded account you may not risk more than 50% of your daily loss limit on the same instrument in one trading day. A 3% daily loss limit means 1.5% on that instrument, 4% means 2%, and 5% means 2.5%. Example: a 2-Step $100,000 account has a $2,500 limit. Trades of $1,000 and $1,500 on the same instrument reach that limit.",
+      "factHits": [
+        "instrument_cap:en"
+      ]
+    },
+    {
+      "id": "fact-instrument_cap-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Main is ki tasdeeq nahi kar sakta. Hamari team tasdeeq karegi.",
+      "factHits": []
+    },
+    {
+      "id": "fact-instrument_cap-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड अकाउंट पर आप एक ट्रेडिंग दिन में एक ही इंस्ट्रूमेंट पर अपनी डेली लॉस सीमा का 50% से अधिक जोखिम नहीं ले सकते। 3% डेली लॉस सीमा का अर्थ उस इंस्ट्रूमेंट पर 1.5% है, 4% का अर्थ 2% है, और 5% का अर्थ 2.5% है। उदाहरण: 2-Step $100,000 अकाउंट की सीमा $2,500 है। उसी इंस्ट्रूमेंट पर $1,000 और $1,500 के ट्रेड उस सीमा तक पहुँच जाते हैं।",
+      "factHits": [
+        "instrument_cap:hi"
+      ]
+    },
+    {
+      "id": "fact-instrument_cap-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par aap ek trading din mein ek hi instrument par apni daily loss had ka 50% se zyada risk nahi le sakte. 3% daily loss had ka matlab us instrument par 1.5% hai, 4% ka matlab 2% hai, aur 5% ka matlab 2.5% hai. Misal: 2-Step $100,000 account ki had $2,500 hai. Ek hi instrument par $1,000 aur $1,500 ki trades us had tak pahunch jati hain.",
+      "factHits": [
+        "instrument_cap:roman"
+      ]
+    },
+    {
+      "id": "fact-soft_breach_payout-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "After a soft breach on a funded account, the account is not closed. The current payout is still processed at a 30% reward share, and the payout cycle restarts from payout 1, which also restarts the fee-refund count. If it happens again after the warning, the account can be reset and its profit forfeited. In evaluation, the team may reset the account using a free retry if you still have one.",
+      "factHits": [
+        "soft_breach_payout:en"
+      ]
+    },
+    {
+      "id": "fact-soft_breach_payout-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par soft breach ke baad account band nahi hota. Mojooda payout 30% reward share par phir bhi process hota hai, aur payout cycle payout 1 se dobara shuru hota hai, jis se fee refund ki ginti bhi dobara shuru hoti hai. Agar warning ke baad yeh dobara ho to account reset ho sakta hai aur us ka profit forfeit ho jata hai. Evaluation mein team free retry se account reset kar sakti hai agar woh abhi maujood ho.",
+      "factHits": [
+        "soft_breach_payout:roman"
+      ]
+    },
+    {
+      "id": "fact-soft_breach_payout-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड अकाउंट पर सॉफ्ट ब्रीच के बाद अकाउंट बंद नहीं होता। मौजूदा पेआउट 30% रिवॉर्ड शेयर पर फिर भी प्रोसेस होता है, और पेआउट चक्र पेआउट 1 से फिर शुरू होता है, जिससे फीस रिफंड की गिनती भी फिर शुरू होती है। यदि चेतावनी के बाद यह फिर हो तो अकाउंट रीसेट हो सकता है और उसका लाभ जब्त हो जाता है। इवैल्यूएशन में टीम फ्री रिट्राई से अकाउंट रीसेट कर सकती है यदि वह अभी उपलब्ध हो।",
+      "factHits": [
+        "soft_breach_payout:hi"
+      ]
+    },
+    {
+      "id": "fact-soft_breach_payout-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par soft breach ke baad account band nahi hota. Mojooda payout 30% reward share par phir bhi process hota hai, aur payout cycle payout 1 se dobara shuru hota hai, jis se fee refund ki ginti bhi dobara shuru hoti hai. Agar warning ke baad yeh dobara ho to account reset ho sakta hai aur us ka profit forfeit ho jata hai. Evaluation mein team free retry se account reset kar sakti hai agar woh abhi maujood ho.",
+      "factHits": [
+        "soft_breach_payout:roman"
+      ]
+    },
+    {
+      "id": "fact-weekend_hold-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-weekend_hold-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Salam Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-weekend_hold-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-weekend_hold-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-weekend_trade-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Trading on Saturday or Sunday needs the Weekend Trading add-on. Opening a new position without the add-on is a violation. With the add-on it is allowed. A fill on Saturday or Sunday counts as weekend trading. In evaluation the account may be reset with a free retry or reinstated. On a funded account it is reset and the current cycle's profit is forfeited.",
+      "factHits": [
+        "weekend_trade:en"
+      ]
+    },
+    {
+      "id": "fact-weekend_trade-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hafta ya Itwar ko trading ke liye Weekend Trading add-on chahiye. Add-on ke baghair nayi position kholna violation hai. Add-on ke sath yeh allowed hai. Hafta ya Itwar ko fill hona weekend trading shumar hota hai. Evaluation mein account free retry se reset ho sakta hai ya bahal ho sakta hai. Funded account par yeh reset hota hai aur mojooda cycle ka profit forfeit hota hai.",
+      "factHits": [
+        "weekend_trade:roman"
+      ]
+    },
+    {
+      "id": "fact-weekend_trade-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "शनिवार या रविवार को ट्रेडिंग के लिए वीकएंड ट्रेडिंग ऐड-ऑन चाहिए। ऐड-ऑन के बिना नई पोजीशन खोलना उल्लंघन है। ऐड-ऑन के साथ यह अनुमत है। शनिवार या रविवार को फिल होना वीकएंड ट्रेडिंग गिना जाता है। इवैल्यूएशन में अकाउंट फ्री रिट्राई से रीसेट हो सकता है या बहाल हो सकता है। फंडेड अकाउंट पर यह रीसेट होता है और मौजूदा चक्र का लाभ जब्त होता है।",
+      "factHits": [
+        "weekend_trade:hi"
+      ]
+    },
+    {
+      "id": "fact-weekend_trade-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hafta ya Itwar ko trading ke liye Weekend Trading add-on chahiye. Add-on ke baghair nayi position kholna violation hai. Add-on ke sath yeh allowed hai. Hafta ya Itwar ko fill hona weekend trading shumar hota hai. Evaluation mein account free retry se reset ho sakta hai ya bahal ho sakta hai. Funded account par yeh reset hota hai aur mojooda cycle ka profit forfeit hota hai.",
+      "factHits": [
+        "weekend_trade:roman"
+      ]
+    },
+    {
+      "id": "fact-rise_fee-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Rise $500 ya is se zyada ki withdrawal ke liye available hai. Fee har withdrawal par $40 hai. Rise ke zariye $4,800 reward $4,760 ban kar pohanchta hai.",
+      "factHits": [
+        "rise_fee:roman"
+      ]
+    },
+    {
+      "id": "fact-rise_fee-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Rise $500 या उससे अधिक की निकासी के लिए उपलब्ध है। शुल्क हर निकासी पर $40 है। Rise के जरिए $4,800 रिवॉर्ड $4,760 बनकर पहुँचता है।",
+      "factHits": [
+        "rise_fee:hi"
+      ]
+    },
+    {
+      "id": "fact-rise_fee-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Rise $500 ya is se zyada ki withdrawal ke liye available hai. Fee har withdrawal par $40 hai. Rise ke zariye $4,800 reward $4,760 ban kar pohanchta hai.",
+      "factHits": [
+        "rise_fee:roman"
+      ]
+    },
+    {
+      "id": "fact-crypto_fee-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Crypto (USDC) kisi bhi raqam ke liye available hai aur $500 se kam ki wahid surat hai. Fee raqam ka 3% hai. $400 crypto reward $388 ban kar pohanchta hai.",
+      "factHits": [
+        "crypto_fee:roman"
+      ]
+    },
+    {
+      "id": "fact-crypto_fee-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "क्रिप्टो (USDC) किसी भी राशि के लिए उपलब्ध है और $500 से कम की एकमात्र विधि है। शुल्क राशि का 3% है। $400 क्रिप्टो रिवॉर्ड $388 बनकर पहुँचता है।",
+      "factHits": [
+        "crypto_fee:hi"
+      ]
+    },
+    {
+      "id": "fact-crypto_fee-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Crypto (USDC) kisi bhi raqam ke liye available hai aur $500 se kam ki wahid surat hai. Fee raqam ka 3% hai. $400 crypto reward $388 ban kar pohanchta hai.",
+      "factHits": [
+        "crypto_fee:roman"
+      ]
+    },
+    {
+      "id": "fact-payout_timing-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-payout_timing-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+      "factHits": []
+    },
+    {
+      "id": "fact-payout_timing-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-payout_timing-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-payout_timing-ar",
+      "group": "approved-body",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "fact-payout_timing-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-catalyst_rules-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "You can hold positions from Friday to Monday without the Weekend Trading add-on. Moving the stop loss or take profit over the weekend is allowed. Closing a position over the weekend, including a stop loss or take profit being hit, is allowed.\n\nTrading on Saturday or Sunday needs the Weekend Trading add-on. Opening a new position without the add-on is a violation. With the add-on it is allowed. A fill on Saturday or Sunday counts as weekend trading. In evaluation the account may be reset with a f",
+      "factHits": [
+        "weekend_hold:en",
+        "weekend_trade:en",
+        "catalyst_rules:en",
+        "catalyst_ladder:en"
+      ]
+    },
+    {
+      "id": "fact-catalyst_rules-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "آپ ویک اینڈ ٹریڈنگ ایڈ آن کے بغیر جمعہ سے پیر تک پوزیشن ہولڈ کر سکتے ہیں۔ ویک اینڈ پر سٹاپ لاس یا ٹیک پرافٹ ہلانا جائز ہے۔ ویک اینڈ پر پوزیشن بند کرنا، بشمول سٹاپ لاس یا ٹیک پرافٹ لگنا، جائز ہے۔\n\nہفتہ یا اتوار کو ٹریڈنگ کے لیے ویک اینڈ ٹریڈنگ ایڈ آن چاہیے۔ ایڈ آن کے بغیر نئی پوزیشن کھولنا خلاف ورزی ہے۔ ایڈ آن کے ساتھ یہ جائز ہے۔ ہفتہ یا اتوار کو فل ہونا ویک اینڈ ٹریڈنگ شمار ہوتا ہے۔ ایویلیوایشن میں اکاؤنٹ فری ری ٹرائی سے ری سیٹ ہو سکتا ہے یا بحال ہو سکتا ہے۔ فنڈڈ اکاؤنٹ پر یہ ری سیٹ ہوتا ہے اور ",
+      "factHits": [
+        "weekend_hold:ur",
+        "weekend_trade:ur",
+        "catalyst_rules:ur"
+      ]
+    },
+    {
+      "id": "fact-catalyst_rules-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Aap Weekend Trading add-on ke baghair Jumma se Peer tak position hold kar sakte hain. Weekend par stop loss ya take profit hilana allowed hai. Weekend par position band karna, shamil stop loss ya take profit lagna, allowed hai.\n\nHafta ya Itwar ko trading ke liye Weekend Trading add-on chahiye. Add-on ke baghair nayi position kholna violation hai. Add-on ke sath yeh allowed hai. Hafta ya Itwar ko fill hona weekend trading shumar hota hai. Evaluation mein account free retry se reset ho sakta hai y",
+      "factHits": [
+        "weekend_hold:roman",
+        "weekend_trade:roman",
+        "catalyst_rules:roman",
+        "catalyst_ladder:roman"
+      ]
+    },
+    {
+      "id": "fact-catalyst_rules-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "आप वीकएंड ट्रेडिंग ऐड-ऑन के बिना शुक्रवार से सोमवार तक पोजीशन होल्ड कर सकते हैं। वीकएंड पर स्टॉप लॉस या टेक प्रॉफिट हिलाना अनुमत है। वीकएंड पर पोजीशन बंद करना, जिसमें स्टॉप लॉस या टेक प्रॉफिट लगना शामिल है, अनुमत है।\n\nशनिवार या रविवार को ट्रेडिंग के लिए वीकएंड ट्रेडिंग ऐड-ऑन चाहिए। ऐड-ऑन के बिना नई पोजीशन खोलना उल्लंघन है। ऐड-ऑन के साथ यह अनुमत है। शनिवार या रविवार को फिल होना वीकएंड ट्रेडिंग गिना जाता है। इवैल्यूएशन में अकाउंट फ्री रिट्राई से रीसेट हो सकता है या बहाल हो सकता है। फंडेड अकाउंट पर",
+      "factHits": [
+        "weekend_hold:hi",
+        "weekend_trade:hi",
+        "catalyst_rules:hi"
+      ]
+    },
+    {
+      "id": "fact-catalyst_rules-ar",
+      "group": "approved-body",
+      "lang": "ar",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "في كل مرحلة من Catalyst هدف الربح 8% من رصيد المرحلة، والخيارات 5% و8% و10%، ولا حد زمني. حد الخسارة اليومية 3%، بحسب الأعلى بين رصيد إغلاق الأمس أو حقوق الملكية. الخسارة القصوى حقوق ملكية متحركة: 6% في مرحلة $25,000 و5% من $50,000 فصاعدا. ترتفع مع حقوق الملكية ولا تنخفض. تحتاج 5 أيام رابحة، كل يوم صفقة واحدة على الأقل والحد الأدنى لأرباح المرحلة. قاعدة الاتساق 30% ويمكن إزالتها عند الدفع. تداول نهاية الأسبوع غير مسموح. أول سحب بعد 14 يوما، ثم كل 7 أو 14 أو 21 يوما حسب الاختيار عند الدفع.\n\nيتضاع",
+      "factHits": [
+        "catalyst_rules:ar",
+        "catalyst_ladder:ar",
+        "catalyst_reopen:ar",
+        "catalyst_stage_reset:ar"
+      ]
+    },
+    {
+      "id": "fact-catalyst_rules-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "critical_wrong_body",
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Aap Weekend Trading add-on ke baghair Jumma se Peer tak position hold kar sakte hain. Weekend par stop loss ya take profit hilana allowed hai. Weekend par position band karna, shamil stop loss ya take profit lagna, allowed hai.\n\nHafta ya Itwar ko trading ke liye Weekend Trading add-on chahiye. Add-on ke baghair nayi position kholna violation hai. Add-on ke sath yeh allowed hai. Hafta ya Itwar ko fill hona weekend trading shumar hota hai. Evaluation mein account free retry se reset ho sakta hai y",
+      "factHits": [
+        "weekend_hold:roman",
+        "weekend_trade:roman",
+        "catalyst_rules:roman",
+        "catalyst_ladder:roman"
+      ]
+    },
+    {
+      "id": "fact-catalyst_ladder-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst doubles after every approved payout, up to a $1,000,000 account and a 95% reward share. Stage 1 is $25,000, 80% share, $150 minimum P&L per profitable day, and no reset. Stage 2 is $50,000, 85%, $250, reset $890. Stage 3 is $100,000, 90%, $350, reset $1,290. Stage 4 is $200,000, 95%, $450, reset $1,790. Stage 5 is $400,000, 95%, $650, reset $2,490. Stage 6 is $800,000, 95%, $850, reset $3,390. Stage 7 is $1,000,000, 95%, $1,000, reset $4,790. Starting from $50,000 begins at stage 2 with",
+      "factHits": [
+        "catalyst_ladder:en"
+      ]
+    },
+    {
+      "id": "fact-catalyst_ladder-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst har manzoor payout ke baad double hota hai, $1,000,000 account aur 95% reward share tak. Stage 1 $25,000 hai, 80% share, profitable day par $150 minimum P&L, aur koi reset nahi. Stage 2 $50,000, 85%, $250, reset $890. Stage 3 $100,000, 90%, $350, reset $1,290. Stage 4 $200,000, 95%, $450, reset $1,790. Stage 5 $400,000, 95%, $650, reset $2,490. Stage 6 $800,000, 95%, $850, reset $3,390. Stage 7 $1,000,000, 95%, $1,000, reset $4,790. $50,000 se shuruat stage 2 par 80% share se hoti hai, ",
+      "factHits": [
+        "catalyst_ladder:roman"
+      ]
+    },
+    {
+      "id": "fact-catalyst_ladder-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst हर स्वीकृत पेआउट के बाद दोगुना होता है, $1,000,000 अकाउंट और 95% रिवॉर्ड शेयर तक। चरण 1 $25,000 है, 80% शेयर, लाभ वाले दिन $150 न्यूनतम पी एंड एल, और कोई रीसेट नहीं। चरण 2 $50,000, 85%, $250, रीसेट $890। चरण 3 $100,000, 90%, $350, रीसेट $1,290। चरण 4 $200,000, 95%, $450, रीसेट $1,790। चरण 5 $400,000, 95%, $650, रीसेट $2,490। चरण 6 $800,000, 95%, $850, रीसेट $3,390। चरण 7 $1,000,000, 95%, $1,000, रीसेट $4,790। $50,000 से शुरुआत चरण 2 पर 80% शेयर से होती है, जो हर स्वीकृत पेआउट पर 5 अंक ब",
+      "factHits": [
+        "catalyst_ladder:hi"
+      ]
+    },
+    {
+      "id": "fact-catalyst_ladder-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst har manzoor payout ke baad double hota hai, $1,000,000 account aur 95% reward share tak. Stage 1 $25,000 hai, 80% share, profitable day par $150 minimum P&L, aur koi reset nahi. Stage 2 $50,000, 85%, $250, reset $890. Stage 3 $100,000, 90%, $350, reset $1,290. Stage 4 $200,000, 95%, $450, reset $1,790. Stage 5 $400,000, 95%, $650, reset $2,490. Stage 6 $800,000, 95%, $850, reset $3,390. Stage 7 $1,000,000, 95%, $1,000, reset $4,790. $50,000 se shuruat stage 2 par 80% share se hoti hai, ",
+      "factHits": [
+        "catalyst_ladder:roman"
+      ]
+    },
+    {
+      "id": "fact-catalyst_reopen-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Each approved Catalyst payout closes the account and opens a fresh one at double the size, with new limits. This is automatic, or done by the team within 24 hours.",
+      "factHits": [
+        "catalyst_reopen:en"
+      ]
+    },
+    {
+      "id": "fact-catalyst_reopen-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Har Catalyst stage par profit target stage balance ka 8% hai, options 5%, 8% aur 10% hain, aur koi time limit nahi. Daily loss limit 3% hai, yesterday ke closing balance ya equity mein se jo higher ho. Max loss trailing equity hai: $25,000 stage par 6% aur $50,000 se upar 5%. Yeh equity ke saath upar jati hai aur neeche nahi aati. 5 profitable days chahiye, har din kam se kam ek trade aur stage ka minimum P&L. Consistency rule 30% hai aur checkout par hata sakte ho. Weekend trading allowed nahi.",
+      "factHits": [
+        "catalyst_rules:hinglish",
+        "catalyst_ladder:hinglish",
+        "catalyst_reopen:hinglish",
+        "catalyst_stage_reset:hinglish"
+      ]
+    },
+    {
+      "id": "fact-catalyst_reopen-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "हर Catalyst चरण पर लाभ लक्ष्य चरण बैलेंस का 8% है, विकल्प 5%, 8% और 10% हैं, और समय सीमा नहीं है। डेली लॉस सीमा 3% है, कल के समापन बैलेंस या इक्विटी में से जो अधिक हो। मैक्स लॉस ट्रेलिंग इक्विटी है: $25,000 चरण पर 6% और $50,000 से ऊपर 5%। यह इक्विटी के साथ बढ़ती है और नीचे नहीं जाती। 5 लाभ वाले दिन चाहिए, हर दिन कम से कम एक ट्रेड और चरण का न्यूनतम पी एंड एल। कंसिस्टेंसी नियम 30% है और चेकआउट पर हटाया जा सकता है। वीकएंड ट्रेडिंग अनुमत नहीं। पहला पेआउट 14 दिन बाद है, फिर चेकआउट पर चुने गए 7, 14 या",
+      "factHits": [
+        "catalyst_rules:hi",
+        "catalyst_ladder:hi",
+        "catalyst_reopen:hi",
+        "catalyst_stage_reset:hi"
+      ]
+    },
+    {
+      "id": "fact-catalyst_reopen-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "On every Catalyst stage the profit target is 8% of the stage balance, with options of 5%, 8%, and 10%, and there is no time limit. The daily loss limit is 3%, based on the higher of yesterday's closing balance or equity. Max loss is trailing equity: 6% on the $25,000 stage and 5% from $50,000 up. It rises with equity and never moves down. You need 5 profitable days, each with at least one trade and the stage's minimum P&L. The consistency rule is 30% and can be removed at checkout. Weekend tradi",
+      "factHits": [
+        "catalyst_rules:en",
+        "catalyst_ladder:en",
+        "catalyst_reopen:en",
+        "catalyst_stage_reset:en"
+      ]
+    },
+    {
+      "id": "fact-catalyst_stage_reset-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "fact-catalyst_stage_reset-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "Catalyst ہر منظور شدہ پے آؤٹ کے بعد دگنا ہوتا ہے، $1,000,000 اکاؤنٹ اور 95% ریوارڈ شیئر تک۔ مرحلہ 1 $25,000 ہے، 80% شیئر، منافع بخش دن پر $150 کم از کم پی اینڈ ایل، اور کوئی ری سیٹ نہیں۔ مرحلہ 2 $50,000، 85%، $250، ری سیٹ $890۔ مرحلہ 3 $100,000، 90%، $350، ری سیٹ $1,290۔ مرحلہ 4 $200,000، 95%، $450، ری سیٹ $1,790۔ مرحلہ 5 $400,000، 95%، $650، ری سیٹ $2,490۔ مرحلہ 6 $800,000، 95%، $850، ری سیٹ $3,390۔ مرحلہ 7 $1,000,000، 95%، $1,000، ری سیٹ $4,790۔ $50,000 سے آغاز مرحلہ 2 پر 80% شیئر سے ہوتا ہے، ",
+      "factHits": [
+        "catalyst_ladder:ur"
+      ]
+    },
+    {
+      "id": "fact-catalyst_stage_reset-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst doubles after every approved payout, up to a $1,000,000 account and a 95% reward share. Stage 1 is $25,000, 80% share, $150 minimum P&L per profitable day, and no reset. Stage 2 is $50,000, 85%, $250, reset $890. Stage 3 is $100,000, 90%, $350, reset $1,290. Stage 4 is $200,000, 95%, $450, reset $1,790. Stage 5 is $400,000, 95%, $650, reset $2,490. Stage 6 is $800,000, 95%, $850, reset $3,390. Stage 7 is $1,000,000, 95%, $1,000, reset $4,790. Starting from $50,000 begins at stage 2 with",
+      "factHits": [
+        "catalyst_ladder:en"
+      ]
+    },
+    {
+      "id": "fact-catalyst_stage_reset-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst हर स्वीकृत पेआउट के बाद दोगुना होता है, $1,000,000 अकाउंट और 95% रिवॉर्ड शेयर तक। चरण 1 $25,000 है, 80% शेयर, लाभ वाले दिन $150 न्यूनतम पी एंड एल, और कोई रीसेट नहीं। चरण 2 $50,000, 85%, $250, रीसेट $890। चरण 3 $100,000, 90%, $350, रीसेट $1,290। चरण 4 $200,000, 95%, $450, रीसेट $1,790। चरण 5 $400,000, 95%, $650, रीसेट $2,490। चरण 6 $800,000, 95%, $850, रीसेट $3,390। चरण 7 $1,000,000, 95%, $1,000, रीसेट $4,790। $50,000 से शुरुआत चरण 2 पर 80% शेयर से होती है, जो हर स्वीकृत पेआउट पर 5 अंक ब",
+      "factHits": [
+        "catalyst_ladder:hi"
+      ]
+    },
+    {
+      "id": "fact-catalyst_stage_reset-ar",
+      "group": "approved-body",
+      "lang": "ar",
+      "flags": [
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "يتضاعف Catalyst بعد كل سحب معتمد، حتى حساب $1,000,000 وحصة مكافأة 95%. المرحلة 1 هي $25,000 وحصة 80% وحد أدنى $150 للأرباح في اليوم الرابح، وبلا إعادة تعيين. المرحلة 2 $50,000 و85% و$250 وإعادة تعيين $890. المرحلة 3 $100,000 و90% و$350 وإعادة تعيين $1,290. المرحلة 4 $200,000 و95% و$450 وإعادة تعيين $1,790. المرحلة 5 $400,000 و95% و$650 وإعادة تعيين $2,490. المرحلة 6 $800,000 و95% و$850 وإعادة تعيين $3,390. المرحلة 7 $1,000,000 و95% و$1,000 وإعادة تعيين $4,790. البدء من $50,000 يبدأ عند المرحلة 2",
+      "factHits": [
+        "catalyst_ladder:ar"
+      ]
+    },
+    {
+      "id": "fact-catalyst_stage_reset-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst doubles after every approved payout, up to a $1,000,000 account and a 95% reward share. Stage 1 is $25,000, 80% share, $150 minimum P&L per profitable day, and no reset. Stage 2 is $50,000, 85%, $250, reset $890. Stage 3 is $100,000, 90%, $350, reset $1,290. Stage 4 is $200,000, 95%, $450, reset $1,790. Stage 5 is $400,000, 95%, $650, reset $2,490. Stage 6 is $800,000, 95%, $850, reset $3,390. Stage 7 is $1,000,000, 95%, $1,000, reset $4,790. Starting from $50,000 begins at stage 2 with",
+      "factHits": [
+        "catalyst_ladder:en",
+        "catalyst_stage_reset:en"
+      ]
+    },
+    {
+      "id": "fact-reset_eligibility-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded reset sirf tab allowed hai jab account breakeven par ho ya profit mein ho. Nuqsan ya drawdown mein yeh allowed nahi.",
+      "factHits": [
+        "reset_eligibility:roman"
+      ]
+    },
+    {
+      "id": "fact-reset_eligibility-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड रीसेट केवल तभी अनुमत है जब अकाउंट ब्रेकईवन पर हो या लाभ में हो। हानि या ड्रॉडाउन में यह अनुमत नहीं।",
+      "factHits": [
+        "reset_eligibility:hi"
+      ]
+    },
+    {
+      "id": "fact-reset_eligibility-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A funded reset is allowed only while the account is at breakeven or in profit. It is not allowed in a loss or in drawdown.",
+      "factHits": [
+        "reset_eligibility:en"
+      ]
+    },
+    {
+      "id": "fact-reset_count-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+      "factHits": []
+    },
+    {
+      "id": "fact-reset_count-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account ko 3 bar tak reset kiya ja sakta hai.",
+      "factHits": [
+        "reset_count:roman"
+      ]
+    },
+    {
+      "id": "fact-reset_count-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड रीसेट केवल तभी अनुमत है जब अकाउंट ब्रेकईवन पर हो या लाभ में हो। हानि या ड्रॉडाउन में यह अनुमत नहीं।\n\nफंडेड अकाउंट को 3 बार तक रीसेट किया जा सकता है।\n\nपहला फंडेड रीसेट मूल चैलेंज कीमत का 40% है, छूट से पहले, ऐड-ऑन सहित, न्यूनतम $10। दूसरा रीसेट पहले को दोगुना करता है। तीसरा रीसेट दूसरे को दोगुना करता है। उदाहरण: $569 पर खरीदा 1-Step $100,000 अकाउंट $228, फिर $456, फिर $912 में रीसेट होता है।\n\nआप फंडेड अकाउंट को डैशबोर्ड पर ट्रेडिंग ऑब्जेक्टिव्स से रीसेट कर सकते हैं। रीसेट ऑप्शन बटन क्रेडेंश",
+      "factHits": [
+        "reset_eligibility:hi",
+        "reset_count:hi",
+        "reset_price:hi",
+        "reset_where:hi",
+        "reset_previous:hi"
+      ]
+    },
+    {
+      "id": "fact-reset_count-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A funded reset is allowed only while the account is at breakeven or in profit. It is not allowed in a loss or in drawdown.\n\nA funded account can be reset up to 3 times.\n\nThe first funded reset is 40% of the original challenge price before discounts, including add-ons, with a minimum of $10. The second reset doubles the first. The third reset doubles the second. Example: a 1-Step $100,000 account bought at $569 resets for $228, then $456, then $912.\n\nYou can reset a funded account from Trading Ob",
+      "factHits": [
+        "reset_eligibility:en",
+        "reset_count:en",
+        "reset_price:en",
+        "reset_where:en",
+        "reset_previous:en"
+      ]
+    },
+    {
+      "id": "fact-reset_price-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Pehla funded reset asal challenge price ka 40% hai, discount se pehle, add-on samet, kam az kam $10. Doosra reset pehle ko double karta hai. Teesra reset doosre ko double karta hai. Misal: $569 par kharida 1-Step $100,000 account $228, phir $456, phir $912 mein reset hota hai.",
+      "factHits": [
+        "reset_price:roman"
+      ]
+    },
+    {
+      "id": "fact-reset_price-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "पहला फंडेड रीसेट मूल चैलेंज कीमत का 40% है, छूट से पहले, ऐड-ऑन सहित, न्यूनतम $10। दूसरा रीसेट पहले को दोगुना करता है। तीसरा रीसेट दूसरे को दोगुना करता है। उदाहरण: $569 पर खरीदा 1-Step $100,000 अकाउंट $228, फिर $456, फिर $912 में रीसेट होता है।",
+      "factHits": [
+        "reset_price:hi"
+      ]
+    },
+    {
+      "id": "fact-reset_price-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Pehla funded reset asal challenge price ka 40% hai, discount se pehle, add-on samet, kam az kam $10. Doosra reset pehle ko double karta hai. Teesra reset doosre ko double karta hai. Misal: $569 par kharida 1-Step $100,000 account $228, phir $456, phir $912 mein reset hota hai.",
+      "factHits": [
+        "reset_price:roman"
+      ]
+    },
+    {
+      "id": "fact-reset_where-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "You can reset a funded account from Trading Objectives on the dashboard. The Reset options button sits next to Credentials. It shows the next reset price, or it shows No reset options on this account.",
+      "factHits": [
+        "reset_where:en"
+      ]
+    },
+    {
+      "id": "fact-reset_where-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+      "factHits": []
+    },
+    {
+      "id": "fact-reset_where-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "You can reset a funded account from Trading Objectives on the dashboard. The Reset options button sits next to Credentials. It shows the next reset price, or it shows No reset options on this account.",
+      "factHits": [
+        "reset_where:en"
+      ]
+    },
+    {
+      "id": "fact-reset_where-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड रीसेट केवल तभी अनुमत है जब अकाउंट ब्रेकईवन पर हो या लाभ में हो। हानि या ड्रॉडाउन में यह अनुमत नहीं।\n\nफंडेड अकाउंट को 3 बार तक रीसेट किया जा सकता है।\n\nपहला फंडेड रीसेट मूल चैलेंज कीमत का 40% है, छूट से पहले, ऐड-ऑन सहित, न्यूनतम $10। दूसरा रीसेट पहले को दोगुना करता है। तीसरा रीसेट दूसरे को दोगुना करता है। उदाहरण: $569 पर खरीदा 1-Step $100,000 अकाउंट $228, फिर $456, फिर $912 में रीसेट होता है।\n\nआप फंडेड अकाउंट को डैशबोर्ड पर ट्रेडिंग ऑब्जेक्टिव्स से रीसेट कर सकते हैं। रीसेट ऑप्शन बटन क्रेडेंश",
+      "factHits": [
+        "reset_eligibility:hi",
+        "reset_count:hi",
+        "reset_price:hi",
+        "reset_where:hi",
+        "reset_previous:hi"
+      ]
+    },
+    {
+      "id": "fact-reset_where-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "You can reset a funded account from Trading Objectives on the dashboard. The Reset options button sits next to Credentials. It shows the next reset price, or it shows No reset options on this account.",
+      "factHits": [
+        "reset_where:en"
+      ]
+    },
+    {
+      "id": "fact-reset_previous-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+      "factHits": []
+    },
+    {
+      "id": "fact-reset_previous-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A reset gives a fresh funded account. Profit from the previous cycle is not paid.",
+      "factHits": [
+        "reset_previous:en"
+      ]
+    },
+    {
+      "id": "fact-reset_previous-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड रीसेट केवल तभी अनुमत है जब अकाउंट ब्रेकईवन पर हो या लाभ में हो। हानि या ड्रॉडाउन में यह अनुमत नहीं।\n\nफंडेड अकाउंट को 3 बार तक रीसेट किया जा सकता है।\n\nपहला फंडेड रीसेट मूल चैलेंज कीमत का 40% है, छूट से पहले, ऐड-ऑन सहित, न्यूनतम $10। दूसरा रीसेट पहले को दोगुना करता है। तीसरा रीसेट दूसरे को दोगुना करता है। उदाहरण: $569 पर खरीदा 1-Step $100,000 अकाउंट $228, फिर $456, फिर $912 में रीसेट होता है।\n\nआप फंडेड अकाउंट को डैशबोर्ड पर ट्रेडिंग ऑब्जेक्टिव्स से रीसेट कर सकते हैं। रीसेट ऑप्शन बटन क्रेडेंश",
+      "factHits": [
+        "reset_eligibility:hi",
+        "reset_count:hi",
+        "reset_price:hi",
+        "reset_where:hi",
+        "reset_previous:hi"
+      ]
+    },
+    {
+      "id": "fact-reset_previous-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Reset ek naya funded account deta hai. Pichle cycle ka profit ada nahi hota.",
+      "factHits": [
+        "reset_previous:roman"
+      ]
+    },
+    {
+      "id": "fact-fee_refund-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "1-Step, 2-Step, LITE 1-Step aur LITE 2-Step par challenge fee teesre payout ke sath wapas hoti hai agar aap ne pehli koshish mein evaluation pass ki ho, Free Retry use na hui ho, account kabhi reset na hua ho, aur in teen payout cycles mein soft breach na hui ho. Soft breach ginti dobara shuru karti hai, is liye teen mazeed saaf payout chahiye. Instant, Instant Elite, Flash Activation aur Catalyst par fee refund nahi.",
+      "factHits": [
+        "fee_refund:roman"
+      ]
+    },
+    {
+      "id": "fact-fee_refund-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "1-Step, 2-Step, LITE 1-Step और LITE 2-Step पर चैलेंज फीस तीसरे पेआउट के साथ वापस होती है यदि आपने पहली कोशिश में इवैल्यूएशन पास किया हो, फ्री रिट्राई उपयोग न हुई हो, अकाउंट कभी रीसेट न हुआ हो, और उन तीन पेआउट चक्रों में सॉफ्ट ब्रीच न हुई हो। सॉफ्ट ब्रीच गिनती फिर शुरू करती है, इसलिए तीन और साफ पेआउट चाहिए। Instant, Instant Elite, Flash Activation और Catalyst पर फीस रिफंड नहीं।",
+      "factHits": [
+        "fee_refund:hi"
+      ]
+    },
+    {
+      "id": "fact-fee_refund-ar",
+      "group": "approved-body",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "fact-fee_refund-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "1-Step, 2-Step, LITE 1-Step aur LITE 2-Step par challenge fee teesre payout ke sath wapas hoti hai agar aap ne pehli koshish mein evaluation pass ki ho, Free Retry use na hui ho, account kabhi reset na hua ho, aur in teen payout cycles mein soft breach na hui ho. Soft breach ginti dobara shuru karti hai, is liye teen mazeed saaf payout chahiye. Instant, Instant Elite, Flash Activation aur Catalyst par fee refund nahi.",
+      "factHits": [
+        "fee_refund:roman"
+      ]
+    },
+    {
+      "id": "fact-payout_not_reversed-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Mukammal payout wapas nahi liya jata.",
+      "factHits": [
+        "payout_not_reversed:roman"
+      ]
+    },
+    {
+      "id": "fact-payout_not_reversed-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "मैं इसकी पुष्टि नहीं कर सकता। हमारी टीम पुष्टि करेगी।",
+      "factHits": []
+    },
+    {
+      "id": "fact-payout_not_reversed-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Mukammal payout wapas nahi liya jata.",
+      "factHits": [
+        "payout_not_reversed:roman"
+      ]
+    },
+    {
+      "id": "fact-source_primary-en",
+      "group": "approved-body",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "The Help Centre is the primary public policy reference. The repo FAQ does not override it.",
+      "factHits": [
+        "source_primary:en"
+      ]
+    },
+    {
+      "id": "fact-source_primary-ur",
+      "group": "approved-body",
+      "lang": "ur",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+      "factHits": []
+    },
+    {
+      "id": "fact-source_primary-roman",
+      "group": "approved-body",
+      "lang": "roman",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Main is ki tasdeeq nahi kar sakta. Hamari team tasdeeq karegi.",
+      "factHits": []
+    },
+    {
+      "id": "fact-source_primary-hi",
+      "group": "approved-body",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "fact-source_primary-ar",
+      "group": "approved-body",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "fact-source_primary-hinglish",
+      "group": "approved-body",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Help Centre awami policy ka bunyadi hawala hai. Repo ka FAQ is par ghalib nahi.",
+      "factHits": [
+        "source_primary:roman"
+      ]
+    },
+    {
+      "id": "erase-6",
+      "group": "catalyst-erase-keep",
+      "lang": "roman",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst har manzoor payout ke baad double hota hai, $1,000,000 account aur 95% reward share tak. Stage 1 $25,000 hai, 80% share, profitable day par $150 minimum P&L, aur koi reset nahi. Stage 2 $50,000, 85%, $250, reset $890. Stage 3 $100,000, 90%, $350, reset $1,290. Stage 4 $200,000, 95%, $450, reset $1,790. Stage 5 $400,000, 95%, $650, reset $2,490. Stage 6 $800,000, 95%, $850, reset $3,390. Stage 7 $1,000,000, 95%, $1,000, reset $4,790. $50,000 se shuruat stage 2 par 80% share se hoti hai, ",
+      "factHits": [
+        "catalyst_ladder:roman"
+      ]
+    },
+    {
+      "id": "erase-7",
+      "group": "catalyst-erase-keep",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Main is ki tasdeeq nahi kar sakta. Hamari team tasdeeq karegi.",
+      "factHits": []
+    },
+    {
+      "id": "erase-10",
+      "group": "catalyst-erase-keep",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "मैं इसकी पुष्टि नहीं कर सकता। हमारी टीम पुष्टि करेगी।",
+      "factHits": []
+    },
+    {
+      "id": "erase-11",
+      "group": "catalyst-erase-keep",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "हर Catalyst चरण पर लाभ लक्ष्य चरण बैलेंस का 8% है, विकल्प 5%, 8% और 10% हैं, और समय सीमा नहीं है। डेली लॉस सीमा 3% है, कल के समापन बैलेंस या इक्विटी में से जो अधिक हो। मैक्स लॉस ट्रेलिंग इक्विटी है: $25,000 चरण पर 6% और $50,000 से ऊपर 5%। यह इक्विटी के साथ बढ़ती है और नीचे नहीं जाती। 5 लाभ वाले दिन चाहिए, हर दिन कम से कम एक ट्रेड और चरण का न्यूनतम पी एंड एल। कंसिस्टेंसी नियम 30% है और चेकआउट पर हटाया जा सकता है। वीकएंड ट्रेडिंग अनुमत नहीं। पहला पेआउट 14 दिन बाद है, फिर चेकआउट पर चुने गए 7, 14 या",
+      "factHits": [
+        "catalyst_rules:hi",
+        "catalyst_ladder:hi",
+        "catalyst_reopen:hi",
+        "catalyst_stage_reset:hi"
+      ]
+    },
+    {
+      "id": "erase-15",
+      "group": "catalyst-erase-keep",
+      "lang": "hinglish",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Har Catalyst stage par profit target stage balance ka 8% hai, options 5%, 8% aur 10% hain, aur time limit nahi. Daily loss had 3% hai, kal ke closing balance ya equity mein se jo zyada ho. Max loss trailing equity hai: $25,000 stage par 6% aur $50,000 se upar 5%. Yeh equity ke sath barhti hai aur neeche nahi jati. 5 profitable days chahiye, har din kam az kam ek trade aur stage ka minimum P&L. Consistency rule 30% hai aur checkout par hata ya ja sakta hai. Weekend trading allowed nahi. Pehla pay",
+      "factHits": [
+        "catalyst_rules:roman",
+        "catalyst_ladder:roman",
+        "catalyst_reopen:roman",
+        "catalyst_stage_reset:roman"
+      ]
+    },
+    {
+      "id": "term-4",
+      "group": "termination-paraphrase",
+      "lang": "roman",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A Strategy Risk or Risk Rule breach on a funded account is a soft breach with a reset. It does not terminate or close the account.",
+      "factHits": [
+        "strategy_risk:en"
+      ]
+    },
+    {
+      "id": "term-6",
+      "group": "termination-paraphrase",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "term-8",
+      "group": "termination-paraphrase",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par Strategy Risk ya Risk Rule ki breach ek soft breach hai aur is ke sath reset hota hai. Is se account khatam ya band nahi hota.",
+      "factHits": [
+        "strategy_risk:roman"
+      ]
+    },
+    {
+      "id": "worded-fifty",
+      "group": "worded-numbers",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "On a funded account you may not risk more than 50% of your daily loss limit on the same instrument in one trading day. A 3% daily loss limit means 1.5% on that instrument, 4% means 2%, and 5% means 2.5%. Example: a 2-Step $100,000 account has a $2,500 limit. Trades of $1,000 and $1,500 on the same instrument reach that limit.",
+      "factHits": [
+        "instrument_cap:en"
+      ]
+    },
+    {
+      "id": "worded-outcome",
+      "group": "worded-numbers",
+      "lang": "en",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A Strategy Risk or Risk Rule breach on a funded account is a soft breach with a reset. It does not terminate or close the account.",
+      "factHits": [
+        "strategy_risk:en"
+      ]
+    },
+    {
+      "id": "worded-pachas",
+      "group": "worded-numbers",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par aap ek trading din mein ek hi instrument par apni daily loss had ka 50% se zyada risk nahi le sakte. 3% daily loss had ka matlab us instrument par 1.5% hai, 4% ka matlab 2% hai, aur 5% ka matlab 2.5% hai. Misal: 2-Step $100,000 account ki had $2,500 hai. Ek hi instrument par $1,000 aur $1,500 ki trades us had tak pahunch jati hain.",
+      "factHits": [
+        "instrument_cap:roman"
+      ]
+    },
+    {
+      "id": "worded-tees",
+      "group": "worded-numbers",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Funded account par soft breach ke baad account band nahi hota. Mojooda payout 30% reward share par phir bhi process hota hai, aur payout cycle payout 1 se dobara shuru hota hai, jis se fee refund ki ginti bhi dobara shuru hoti hai. Agar warning ke baad yeh dobara ho to account reset ho sakta hai aur us ka profit forfeit ho jata hai. Evaluation mein team free retry se account reset kar sakti hai agar woh abhi maujood ho.",
+      "factHits": [
+        "soft_breach_payout:roman"
+      ]
+    },
+    {
+      "id": "worded-chaalis",
+      "group": "worded-numbers",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Pehla funded reset asal challenge price ka 40% hai, discount se pehle, add-on samet, kam az kam $10. Doosra reset pehle ko double karta hai. Teesra reset doosre ko double karta hai. Misal: $569 par kharida 1-Step $100,000 account $228, phir $456, phir $912 mein reset hota hai.",
+      "factHits": [
+        "reset_price:roman"
+      ]
+    },
+    {
+      "id": "worded-three",
+      "group": "worded-numbers",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A funded account can be reset up to 3 times.",
+      "factHits": [
+        "reset_count:en"
+      ]
+    },
+    {
+      "id": "worded-hindi-pachaas",
+      "group": "worded-numbers",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड अकाउंट पर आप एक ट्रेडिंग दिन में एक ही इंस्ट्रूमेंट पर अपनी डेली लॉस सीमा का 50% से अधिक जोखिम नहीं ले सकते। 3% डेली लॉस सीमा का अर्थ उस इंस्ट्रूमेंट पर 1.5% है, 4% का अर्थ 2% है, और 5% का अर्थ 2.5% है। उदाहरण: 2-Step $100,000 अकाउंट की सीमा $2,500 है। उसी इंस्ट्रूमेंट पर $1,000 और $1,500 के ट्रेड उस सीमा तक पहुँच जाते हैं।",
+      "factHits": [
+        "instrument_cap:hi"
+      ]
+    },
+    {
+      "id": "worded-ar-fifty",
+      "group": "worded-numbers",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "mixed-draft-rise",
+      "group": "mixed-draft",
+      "lang": "en",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "mixed-true-false",
+      "group": "mixed-draft",
+      "lang": "en",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "mixed-weekend",
+      "group": "mixed-draft",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Trading on Saturday or Sunday needs the Weekend Trading add-on. Opening a new position without the add-on is a violation. With the add-on it is allowed. A fill on Saturday or Sunday counts as weekend trading. In evaluation the account may be reset with a free retry or reinstated. On a funded account it is reset and the current cycle's profit is forfeited.",
+      "factHits": [
+        "weekend_trade:en"
+      ]
+    },
+    {
+      "id": "owner-password-reset",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "critical_wrong_body",
+        "over_capture"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "A funded reset is allowed only while the account is at breakeven or in profit. It is not allowed in a loss or in drawdown.\n\nA funded account can be reset up to 3 times.\n\nThe first funded reset is 40% of the original challenge price before discounts, including add-ons, with a minimum of $10. The second reset doubles the first. The third reset doubles the second. Example: a 1-Step $100,000 account bought at $569 resets for $228, then $456, then $912.\n\nYou can reset a funded account from Trading Ob",
+      "factHits": [
+        "reset_eligibility:en",
+        "reset_count:en",
+        "reset_price:en",
+        "reset_where:en",
+        "reset_previous:en"
+      ]
+    },
+    {
+      "id": "pause-during",
+      "group": "suppression",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send paused pause-during",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "aioff-during",
+      "group": "suppression",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send ticket-ai-off aioff-during",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "already-replied-refetch",
+      "group": "suppression",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send already-replied already-replied-refetch",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "human-after",
+      "group": "suppression",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send human-takeover human-after",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "stale-draft",
+      "group": "early-return",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send stale-draft stale-draft",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "bad-refetch",
+      "group": "early-return",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send refetch-unavailable bad-refetch",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "postgate-unsafe-unchanged",
+      "group": "postgate",
+      "lang": "en",
+      "flags": [
+        "critical_bypass",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "postgate-valid-hedge-exact",
+      "group": "postgate",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "customer-second-turn",
+      "group": "turns",
+      "lang": "en",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "SKIP already replied after user part customer-second-turn",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A Strategy Risk or Risk Rule breach on a funded account is a soft breach with a reset. It does not terminate or close the account.",
+      "factHits": [
+        "strategy_risk:en"
+      ]
+    },
+    {
+      "id": "over-password",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "critical_wrong_body",
+        "over_capture",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A funded reset is allowed only while the account is at breakeven or in profit. It is not allowed in a loss or in drawdown.\n\nA funded account can be reset up to 3 times.\n\nThe first funded reset is 40% of the original challenge price before discounts, including add-ons, with a minimum of $10. The second reset doubles the first. The third reset doubles the second. Example: a 1-Step $100,000 account bought at $569 resets for $228, then $456, then $912.\n\nYou can reset a funded account from Trading Ob",
+      "factHits": [
+        "reset_eligibility:en",
+        "reset_count:en",
+        "reset_price:en",
+        "reset_where:en",
+        "reset_previous:en"
+      ]
+    },
+    {
+      "id": "over-crypto-pay",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "critical_wrong_body",
+        "over_capture"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "Crypto (USDC) is available for any amount and is the only method below $500. The fee is 3% of the amount. A $400 crypto reward arrives as $388.",
+      "factHits": [
+        "crypto_fee:en"
+      ]
+    },
+    {
+      "id": "over-kyc",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "regression",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "over-platform",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "regression",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "over-half-pip",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "over_capture",
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "over-drawdown-clock",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "regression",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "over-instant-split",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "over_capture",
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "over-merge",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "regression",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "over-countries",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "regression",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Hello Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    },
+    {
+      "id": "over-sunrise",
+      "group": "over-capture",
+      "lang": "en",
+      "flags": [
+        "over_capture",
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "defer-matured",
+      "group": "deferred",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send human-takeover defer-matured",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "final-boundary-aioff",
+      "group": "early-return",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 0,
+      "postgate": false,
+      "skip": "SKIP pre-send ticket-ai-off final-boundary-aioff",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "",
+      "factHits": []
+    },
+    {
+      "id": "more-rev-takeback",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "more-rev-ur",
+      "group": "paraphrase",
+      "lang": "ur",
+      "flags": [
+        "critical_unsupported",
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "السلام علیکم Sam،\n\nجی ہاں، مکمل پے آؤٹ واپس ہو جاتا ہے۔",
+      "factHits": []
+    },
+    {
+      "id": "more-rev-hi",
+      "group": "paraphrase",
+      "lang": "hi",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "मैं इसकी पुष्टि नहीं कर सकता। हमारी टीम पुष्टि करेगी।",
+      "factHits": []
+    },
+    {
+      "id": "more-rev-ar",
+      "group": "paraphrase",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "more-rev-hing",
+      "group": "paraphrase",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Mukammal payout wapas nahi liya jata.",
+      "factHits": [
+        "payout_not_reversed:roman"
+      ]
+    },
+    {
+      "id": "more-prev-roman",
+      "group": "paraphrase",
+      "lang": "roman",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A reset gives a fresh funded account. Profit from the previous cycle is not paid.",
+      "factHits": [
+        "reset_previous:en"
+      ]
+    },
+    {
+      "id": "more-fee-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Rise is available for withdrawals of $500 or more. The fee is $40 per withdrawal. A $4,800 reward through Rise arrives as $4,760.\n\nCrypto (USDC) is available for any amount and is the only method below $500. The fee is 3% of the amount. A $400 crypto reward arrives as $388.",
+      "factHits": [
+        "rise_fee:en",
+        "crypto_fee:en"
+      ]
+    },
+    {
+      "id": "more-time-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Approved rewards are paid within 5 business days of approval. Bank transfers then take 1 to 3 days. Crypto usually arrives within hours. If a review is needed first, it is finished within 30 days. In some cases the reward is paid back to the original payment method, and you are told before it is sent.",
+      "factHits": [
+        "payout_timing:en"
+      ]
+    },
+    {
+      "id": "more-close-weekend",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "more-cat-target",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "On every Catalyst stage the profit target is 8% of the stage balance, with options of 5%, 8%, and 10%, and there is no time limit. The daily loss limit is 3%, based on the higher of yesterday's closing balance or equity. Max loss is trailing equity: 6% on the $25,000 stage and 5% from $50,000 up. It rises with equity and never moves down. You need 5 profitable days, each with at least one trade and the stage's minimum P&L. The consistency rule is 30% and can be removed at checkout. Weekend tradi",
+      "factHits": [
+        "catalyst_rules:en"
+      ]
+    },
+    {
+      "id": "more-cat-hi",
+      "group": "paraphrase",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "हर Catalyst चरण पर लाभ लक्ष्य चरण बैलेंस का 8% है, विकल्प 5%, 8% और 10% हैं, और समय सीमा नहीं है। डेली लॉस सीमा 3% है, कल के समापन बैलेंस या इक्विटी में से जो अधिक हो। मैक्स लॉस ट्रेलिंग इक्विटी है: $25,000 चरण पर 6% और $50,000 से ऊपर 5%। यह इक्विटी के साथ बढ़ती है और नीचे नहीं जाती। 5 लाभ वाले दिन चाहिए, हर दिन कम से कम एक ट्रेड और चरण का न्यूनतम पी एंड एल। कंसिस्टेंसी नियम 30% है और चेकआउट पर हटाया जा सकता है। वीकएंड ट्रेडिंग अनुमत नहीं। पहला पेआउट 14 दिन बाद है, फिर चेकआउट पर चुने गए 7, 14 या",
+      "factHits": [
+        "catalyst_rules:hi",
+        "catalyst_ladder:hi",
+        "catalyst_reopen:hi",
+        "catalyst_stage_reset:hi"
+      ]
+    },
+    {
+      "id": "more-soft-again",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "After a soft breach on a funded account, the account is not closed. The current payout is still processed at a 30% reward share, and the payout cycle restarts from payout 1, which also restarts the fee-refund count. If it happens again after the warning, the account can be reset and its profit forfeited. In evaluation, the team may reset the account using a free retry if you still have one.",
+      "factHits": [
+        "soft_breach_payout:en"
+      ]
+    },
+    {
+      "id": "more-hard-daily",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Touching the daily loss limit or the max loss limit is a hard breach. A hard breach ends the account.",
+      "factHits": [
+        "daily_loss_hard:en"
+      ]
+    },
+    {
+      "id": "more-hard-hi",
+      "group": "paraphrase",
+      "lang": "hi",
+      "flags": [
+        "critical_wrong_body",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "हार्ड ब्रीच अकाउंट समाप्त कर देती है। इसमें डेली या मैक्स लॉस की सीमा को छूना, फ्रॉड, केवाईसी फ्रॉड या चार्जबैक, ग्रुप ट्रेडिंग या आईपी शेयरिंग, अकाउंट मैनेजमेंट या पासिंग सर्विस, इवैल्यूएशन में स्कैल्प सीमा से अधिक लाभ, और चेतावनी के बाद दोहराई गई सॉफ्ट ब्रीच शामिल है। इवैल्यूएशन में 1-Step या 2-Step पर फ्री रिट्राई के साथ हार्ड ब्रीच अपने आप फ्री रिट्राई चला देती है, फ्रॉड को छोड़कर।",
+      "factHits": [
+        "hard_breach:hi"
+      ]
+    },
+    {
+      "id": "more-refund-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "After a soft breach on a funded account, the account is not closed. The current payout is still processed at a 30% reward share, and the payout cycle restarts from payout 1, which also restarts the fee-refund count. If it happens again after the warning, the account can be reset and its profit forfeited. In evaluation, the team may reset the account using a free retry if you still have one.\n\nOn 1-Step, 2-Step, LITE 1-Step, and LITE 2-Step, the challenge fee is refunded with the third payout if y",
+      "factHits": [
+        "soft_breach_payout:en",
+        "fee_refund:en"
+      ]
+    },
+    {
+      "id": "more-refund-ar",
+      "group": "paraphrase",
+      "lang": "ar",
+      "flags": [
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "بعد الخرق البسيط في الحساب الممول لا يُغلق الحساب. ويُعالج السحب الحالي بحصة مكافأة 30%، وتعيد دورة السحب البدء من السحب 1، وهذا يعيد أيضا عد استرداد الرسوم. إذا تكرر ذلك بعد التحذير يمكن إعادة تعيين الحساب ومصادرة ربحه. في التقييم قد تعيد الفريق تعيين الحساب باستخدام إعادة المحاولة المجانية إذا كانت لا تزال متاحة.",
+      "factHits": [
+        "soft_breach_payout:ar"
+      ]
+    },
+    {
+      "id": "more-where-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "You can reset a funded account from Trading Objectives on the dashboard. The Reset options button sits next to Credentials. It shows the next reset price, or it shows No reset options on this account.",
+      "factHits": [
+        "reset_where:en"
+      ]
+    },
+    {
+      "id": "more-price-ar",
+      "group": "paraphrase",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "more-ladder-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Catalyst doubles after every approved payout, up to a $1,000,000 account and a 95% reward share. Stage 1 is $25,000, 80% share, $150 minimum P&L per profitable day, and no reset. Stage 2 is $50,000, 85%, $250, reset $890. Stage 3 is $100,000, 90%, $350, reset $1,290. Stage 4 is $200,000, 95%, $450, reset $1,790. Stage 5 is $400,000, 95%, $650, reset $2,490. Stage 6 is $800,000, 95%, $850, reset $3,390. Stage 7 is $1,000,000, 95%, $1,000, reset $4,790. Starting from $50,000 begins at stage 2 with",
+      "factHits": [
+        "catalyst_ladder:en"
+      ]
+    },
+    {
+      "id": "more-reopen-hi",
+      "group": "paraphrase",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "हर Catalyst चरण पर लाभ लक्ष्य चरण बैलेंस का 8% है, विकल्प 5%, 8% और 10% हैं, और समय सीमा नहीं है। डेली लॉस सीमा 3% है, कल के समापन बैलेंस या इक्विटी में से जो अधिक हो। मैक्स लॉस ट्रेलिंग इक्विटी है: $25,000 चरण पर 6% और $50,000 से ऊपर 5%। यह इक्विटी के साथ बढ़ती है और नीचे नहीं जाती। 5 लाभ वाले दिन चाहिए, हर दिन कम से कम एक ट्रेड और चरण का न्यूनतम पी एंड एल। कंसिस्टेंसी नियम 30% है और चेकआउट पर हटाया जा सकता है। वीकएंड ट्रेडिंग अनुमत नहीं। पहला पेआउट 14 दिन बाद है, फिर चेकआउट पर चुने गए 7, 14 या",
+      "factHits": [
+        "catalyst_rules:hi",
+        "catalyst_ladder:hi",
+        "catalyst_reopen:hi",
+        "catalyst_stage_reset:hi"
+      ]
+    },
+    {
+      "id": "more-cap-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "On a funded account you may not risk more than 50% of your daily loss limit on the same instrument in one trading day. A 3% daily loss limit means 1.5% on that instrument, 4% means 2%, and 5% means 2.5%. Example: a 2-Step $100,000 account has a $2,500 limit. Trades of $1,000 and $1,500 on the same instrument reach that limit.",
+      "factHits": [
+        "instrument_cap:en"
+      ]
+    },
+    {
+      "id": "more-src-en",
+      "group": "paraphrase",
+      "lang": "en",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "I can't confirm that. Our team will confirm.",
+      "factHits": []
+    },
+    {
+      "id": "more-src-roman",
+      "group": "paraphrase",
+      "lang": "roman",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "Main is ki tasdeeq nahi kar sakta. Hamari team tasdeeq karegi.",
+      "factHits": []
+    },
+    {
+      "id": "more-fee-hing",
+      "group": "paraphrase",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Rise is available for withdrawals of $500 or more. The fee is $40 per withdrawal. A $4,800 reward through Rise arrives as $4,760.",
+      "factHits": [
+        "rise_fee:en"
+      ]
+    },
+    {
+      "id": "more-time-ur",
+      "group": "paraphrase",
+      "lang": "ur",
+      "flags": [
+        "critical_unsupported",
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "السلام علیکم Sam،\n\nایک گھنٹے میں ادا ہو جاتا ہے۔",
+      "factHits": []
+    },
+    {
+      "id": "more-time-ar",
+      "group": "paraphrase",
+      "lang": "ar",
+      "flags": [
+        "critical_unsupported",
+        "critical_wrong_body"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "السلام علیکم Sam،\n\nتُدفع خلال ساعة واحدة.",
+      "factHits": []
+    },
+    {
+      "id": "more-crypto-hi",
+      "group": "paraphrase",
+      "lang": "hi",
+      "flags": [
+        "false_hold",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "मैं इसकी पुष्टि नहीं कर सकता। हमारी टीम पुष्टि करेगी।",
+      "factHits": []
+    },
+    {
+      "id": "more-elig-ar",
+      "group": "paraphrase",
+      "lang": "ar",
+      "flags": [
+        "false_hold"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [],
+      "text": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+      "factHits": []
+    },
+    {
+      "id": "more-elig-hing",
+      "group": "paraphrase",
+      "lang": "hinglish",
+      "flags": [
+        "non_english",
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "A funded reset is allowed only while the account is at breakeven or in profit. It is not allowed in a loss or in drawdown.",
+      "factHits": [
+        "reset_eligibility:en"
+      ]
+    },
+    {
+      "id": "more-soft-hi",
+      "group": "paraphrase",
+      "lang": "hi",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "फंडेड अकाउंट पर सॉफ्ट ब्रीच के बाद अकाउंट बंद नहीं होता। मौजूदा पेआउट 30% रिवॉर्ड शेयर पर फिर भी प्रोसेस होता है, और पेआउट चक्र पेआउट 1 से फिर शुरू होता है, जिससे फीस रिफंड की गिनती भी फिर शुरू होती है। यदि चेतावनी के बाद यह फिर हो तो अकाउंट रीसेट हो सकता है और उसका लाभ जब्त हो जाता है। इवैल्यूएशन में टीम फ्री रिट्राई से अकाउंट रीसेट कर सकती है यदि वह अभी उपलब्ध हो।",
+      "factHits": [
+        "soft_breach_payout:hi"
+      ]
+    },
+    {
+      "id": "more-hold-roman",
+      "group": "paraphrase",
+      "lang": "roman",
+      "flags": [
+        "harness_mistake"
+      ],
+      "comments": 1,
+      "postgate": false,
+      "skip": "",
+      "error": null,
+      "blocked": [
+        "api.intercom.io"
+      ],
+      "text": "Salam Sam,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context.",
+      "factHits": []
+    }
+  ]
+}
