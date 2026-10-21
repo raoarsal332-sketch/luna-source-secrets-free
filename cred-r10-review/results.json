@@ -1,0 +1,624 @@
+{
+  "frozen": "ffbbcafb6fbe0afd73195d501299d7895e0f71dd",
+  "seal": "c7985dc5d8ab79e71b8bda433aa03281c258ec229f758071454e8891da291377",
+  "manifest": {
+    "ok": true,
+    "output": "luna-current/01_runtime/system-prompt.txt: OK\nluna-current/01_runtime/fundedelite-faqs.md: OK\nluna-current/04_docs/fundedelite-faqs.md: OK\nluna-current/10_synthetic_lanes/credential-guard-r10/credentialGuardR10.js: OK\nluna-current/10_synthetic_lanes/credential-guard-r10/credentialGuardR10.test.js: OK\nluna-current/10_synthetic_lanes/credential-guard-r10/proposed-integration.diff: OK\nluna-current/10_synthetic_lanes/credential-guard-r10/CRED_R10_REPORT.md: OK",
+    "status": 0
+  },
+  "meta": {
+    "ready": true,
+    "promptSha": "bdafd4f336d823df739fd422e63c86e2164b6e462977c2914351c468046b464d",
+    "promptLength": 77282,
+    "guardStatus": {
+      "candidate": "credential-guard-r10",
+      "frozen": true,
+      "approved": false,
+      "release": false,
+      "wired": false
+    },
+    "flatMaintainer": "Cannot find module '../01_runtime/credentialGuardR10'\nRequire stack:\n- /tmp/r10-flat/luna-maintainer/llm.js\n- /tmp/r10-flat/luna-maintainer/index.js\n- /workspace/cred-r10-review/harness.js",
+    "maintainerLog": [
+      "[maintainer] disabled: Cannot find module '../01_runtime/credentialGuardR10'\nRequire stack:\n- /tmp/r10-flat/luna-maintainer/llm.js\n- /tmp/r10-flat/luna-maintainer/index.js\n- /tmp/r10-flat/index.js"
+    ]
+  },
+  "counts": {
+    "cases": 200,
+    "leakEvents": 47,
+    "leaksBySurface": {
+      "comment": 24,
+      "model": 12,
+      "memory": 6,
+      "log": 2,
+      "maintainer": 3
+    },
+    "unauthorizedTemplate": 0,
+    "missedEligible": 3,
+    "hangs": 1,
+    "overblocks": 0,
+    "regressions": 0,
+    "harnessMisses": 0,
+    "tripwires": 0
+  },
+  "verdict": "BLOCKED",
+  "leaks": [
+    {
+      "id": "k-token-glue",
+      "group": "key",
+      "surface": "comment",
+      "name": "tokenGlue"
+    },
+    {
+      "id": "k-token-glue",
+      "group": "key",
+      "surface": "model",
+      "name": "tokenGlue"
+    },
+    {
+      "id": "k-token-glue",
+      "group": "key",
+      "surface": "memory",
+      "name": "tokenGlue"
+    },
+    {
+      "id": "k-apikey-glue",
+      "group": "key",
+      "surface": "model",
+      "name": "api2"
+    },
+    {
+      "id": "k-apikey-glue",
+      "group": "key",
+      "surface": "memory",
+      "name": "api2"
+    },
+    {
+      "id": "e-glued",
+      "group": "embedded",
+      "surface": "comment",
+      "name": "embed"
+    },
+    {
+      "id": "e-only-glued",
+      "group": "embedded",
+      "surface": "comment",
+      "name": "embed"
+    },
+    {
+      "id": "e-only-glued",
+      "group": "embedded",
+      "surface": "model",
+      "name": "embed"
+    },
+    {
+      "id": "e-only-glued",
+      "group": "embedded",
+      "surface": "memory",
+      "name": "embed"
+    },
+    {
+      "id": "b-raw-1",
+      "group": "base64",
+      "surface": "comment",
+      "name": "nest"
+    },
+    {
+      "id": "b-raw-2",
+      "group": "base64",
+      "surface": "comment",
+      "name": "pwd"
+    },
+    {
+      "id": "b-raw-3",
+      "group": "base64",
+      "surface": "comment",
+      "name": "pwd"
+    },
+    {
+      "id": "b-token-2",
+      "group": "base64",
+      "surface": "comment",
+      "name": "pwd"
+    },
+    {
+      "id": "o-unmap",
+      "group": "homoglyph",
+      "surface": "comment",
+      "name": "homo2"
+    },
+    {
+      "id": "o-unmap",
+      "group": "homoglyph",
+      "surface": "model",
+      "name": "homo2"
+    },
+    {
+      "id": "o-unmap",
+      "group": "homoglyph",
+      "surface": "memory",
+      "name": "homo2"
+    },
+    {
+      "id": "z-split-label",
+      "group": "zerowidth",
+      "surface": "comment",
+      "name": "zw"
+    },
+    {
+      "id": "z-split-label",
+      "group": "zerowidth",
+      "surface": "model",
+      "name": "zw"
+    },
+    {
+      "id": "z-split-label",
+      "group": "zerowidth",
+      "surface": "memory",
+      "name": "zw"
+    },
+    {
+      "id": "s-spaces",
+      "group": "spaced",
+      "surface": "comment",
+      "name": "spaced"
+    },
+    {
+      "id": "s-hyphen",
+      "group": "spaced",
+      "surface": "comment",
+      "name": "spaced"
+    },
+    {
+      "id": "s-dots",
+      "group": "spaced",
+      "surface": "comment",
+      "name": "spaced"
+    },
+    {
+      "id": "s-symbols",
+      "group": "spaced",
+      "surface": "comment",
+      "name": "spaced"
+    },
+    {
+      "id": "s-mixed",
+      "group": "spaced",
+      "surface": "comment",
+      "name": "spaced"
+    },
+    {
+      "id": "sh-pin",
+      "group": "short",
+      "surface": "comment",
+      "name": "pin"
+    },
+    {
+      "id": "sh-otp",
+      "group": "short",
+      "surface": "comment",
+      "name": "otp"
+    },
+    {
+      "id": "sh-pwd",
+      "group": "short",
+      "surface": "comment",
+      "name": "spwd"
+    },
+    {
+      "id": "sh-passcode",
+      "group": "short",
+      "surface": "comment",
+      "name": "passcode"
+    },
+    {
+      "id": "sh-pin-is",
+      "group": "short",
+      "surface": "comment",
+      "name": "pin"
+    },
+    {
+      "id": "sh-otp-eq",
+      "group": "short",
+      "surface": "comment",
+      "name": "otp"
+    },
+    {
+      "id": "sh-otp-eq",
+      "group": "short",
+      "surface": "model",
+      "name": "otp"
+    },
+    {
+      "id": "sh-otp-eq",
+      "group": "short",
+      "surface": "memory",
+      "name": "otp"
+    },
+    {
+      "id": "sh-2fa",
+      "group": "short",
+      "surface": "comment",
+      "name": "mfa"
+    },
+    {
+      "id": "sh-mfa",
+      "group": "short",
+      "surface": "comment",
+      "name": "mfa"
+    },
+    {
+      "id": "o-note-urdu",
+      "group": "owner",
+      "surface": "model",
+      "name": "note"
+    },
+    {
+      "id": "o-follow-reply",
+      "group": "owner",
+      "surface": "comment",
+      "name": "owner"
+    },
+    {
+      "id": "o-follow-reply",
+      "group": "owner",
+      "surface": "model",
+      "name": "owner"
+    },
+    {
+      "id": "o-follow-reply",
+      "group": "owner",
+      "surface": "log",
+      "name": "owner"
+    },
+    {
+      "id": "o-unlabeled",
+      "group": "owner",
+      "surface": "comment",
+      "name": "owner"
+    },
+    {
+      "id": "s-error-log",
+      "group": "search",
+      "surface": "log",
+      "name": "retry"
+    },
+    {
+      "id": "mt-llm",
+      "group": "maintainer",
+      "surface": "maintainer",
+      "name": "maint"
+    },
+    {
+      "id": "mt-badjson",
+      "group": "maintainer",
+      "surface": "maintainer",
+      "name": "maint"
+    },
+    {
+      "id": "lc-ask",
+      "group": "localchat",
+      "surface": "model",
+      "name": "chat"
+    },
+    {
+      "id": "lc-ask",
+      "group": "localchat",
+      "surface": "maintainer",
+      "name": "chat"
+    },
+    {
+      "id": "t-full",
+      "group": "tools",
+      "surface": "model",
+      "name": "tool"
+    },
+    {
+      "id": "w-urdu",
+      "group": "rewriter",
+      "surface": "model",
+      "name": "persist"
+    },
+    {
+      "id": "w-with-id",
+      "group": "rewriter",
+      "surface": "model",
+      "name": "persist"
+    }
+  ],
+  "unauthorized": [],
+  "missed": [
+    "g-en-demo",
+    "g-ur-send",
+    "g-hi-tarika"
+  ],
+  "hangs": [
+    {
+      "id": "d-angles",
+      "ms": 4573,
+      "notes": [
+        "slow 4573ms",
+        "IN conversation.user.replied cr10-d-angles | WEBHOOK_ERR bounds Error: bounds\n    at boundsError (/tmp/r10-flat/credentialGuardR10.js:344:15)\n    at decodeClientMarkup (/tmp/r10-flat/credentialGuardR10.js:303:40)\n    at eligibilityText (/tmp/r10-flat/credentialGuar"
+      ]
+    }
+  ],
+  "overblocks": [],
+  "regressions": [],
+  "harness": [],
+  "dosTimes": [
+    {
+      "id": "d-90k",
+      "ms": 11,
+      "hang": false,
+      "harness": false
+    },
+    {
+      "id": "d-200k",
+      "ms": 23,
+      "hang": false,
+      "harness": false
+    },
+    {
+      "id": "d-unclosed",
+      "ms": 7,
+      "hang": false,
+      "harness": false
+    },
+    {
+      "id": "d-angles",
+      "ms": 4573,
+      "hang": true,
+      "harness": false
+    },
+    {
+      "id": "d-entities",
+      "ms": 79,
+      "hang": false,
+      "harness": false
+    },
+    {
+      "id": "d-labels",
+      "ms": 40,
+      "hang": false,
+      "harness": false
+    },
+    {
+      "id": "d-aaa",
+      "ms": 135,
+      "hang": false,
+      "harness": false
+    },
+    {
+      "id": "d-comments",
+      "ms": 51,
+      "hang": false,
+      "harness": false
+    }
+  ],
+  "eligible": [
+    {
+      "id": "g-en-how-should",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-how-should | OUT cr10-g-en-how-should 200 ok | SPREAD_TEST_REPLY cr10-g-en-how-should"
+      ]
+    },
+    {
+      "id": "g-en-want",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-want | OUT cr10-g-en-want 200 ok | SPREAD_TEST_REPLY cr10-g-en-want"
+      ]
+    },
+    {
+      "id": "g-en-how-do",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-how-do | OUT cr10-g-en-how-do 200 ok | SPREAD_TEST_REPLY cr10-g-en-how-do"
+      ]
+    },
+    {
+      "id": "g-en-how-can",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-how-can | OUT cr10-g-en-how-can 200 ok | SPREAD_TEST_REPLY cr10-g-en-how-can"
+      ]
+    },
+    {
+      "id": "g-en-send",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-send | OUT cr10-g-en-send 200 ok | SPREAD_TEST_REPLY cr10-g-en-send"
+      ]
+    },
+    {
+      "id": "g-en-give",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-give | OUT cr10-g-en-give 200 ok | SPREAD_TEST_REPLY cr10-g-en-give"
+      ]
+    },
+    {
+      "id": "g-en-send-imp",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-send-imp | OUT cr10-g-en-send-imp 200 ok | SPREAD_TEST_REPLY cr10-g-en-send-imp"
+      ]
+    },
+    {
+      "id": "g-en-demo",
+      "missed": true,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "FAQ_RETRIEVE cr10-g-en-demo 0 | LUNA_TOOLS cr10-g-en-demo disabled | AI_ACTION cr10-g-en-demo REPLY FAQ_CONFIRM | OUT cr10-g-en-demo 200 ok"
+      ]
+    },
+    {
+      "id": "g-en-share",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-share | OUT cr10-g-en-share 200 ok | SPREAD_TEST_REPLY cr10-g-en-share"
+      ]
+    },
+    {
+      "id": "g-en-how-test",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-en-how-test | OUT cr10-g-en-how-test 200 ok | SPREAD_TEST_REPLY cr10-g-en-how-test"
+      ]
+    },
+    {
+      "id": "g-ur-script",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ur-script | OUT cr10-g-ur-script 200 ok | SPREAD_TEST_REPLY cr10-g-ur-script"
+      ]
+    },
+    {
+      "id": "g-ur-send",
+      "missed": true,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "FAQ_RETRIEVE cr10-g-ur-send 0 | LUNA_TOOLS cr10-g-ur-send disabled | AI_ACTION cr10-g-ur-send REPLY FAQ_CONFIRM | OUT cr10-g-ur-send 200 ok"
+      ]
+    },
+    {
+      "id": "g-ur-how",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ur-how | OUT cr10-g-ur-how 200 ok | SPREAD_TEST_REPLY cr10-g-ur-how"
+      ]
+    },
+    {
+      "id": "g-ur-roman",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ur-roman | OUT cr10-g-ur-roman 200 ok | SPREAD_TEST_REPLY cr10-g-ur-roman"
+      ]
+    },
+    {
+      "id": "g-ur-roman-mujhe",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ur-roman-mujhe | OUT cr10-g-ur-roman-mujhe 200 ok | SPREAD_TEST_REPLY cr10-g-ur-roman-mujhe"
+      ]
+    },
+    {
+      "id": "g-ur-roman-kaise",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ur-roman-kaise | OUT cr10-g-ur-roman-kaise 200 ok | SPREAD_TEST_REPLY cr10-g-ur-roman-kaise"
+      ]
+    },
+    {
+      "id": "g-hi-kaise",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-hi-kaise | OUT cr10-g-hi-kaise 200 ok | SPREAD_TEST_REPLY cr10-g-hi-kaise"
+      ]
+    },
+    {
+      "id": "g-hi-bhejo",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-hi-bhejo | OUT cr10-g-hi-bhejo 200 ok | SPREAD_TEST_REPLY cr10-g-hi-bhejo"
+      ]
+    },
+    {
+      "id": "g-hi-tarika",
+      "missed": true,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "FAQ_RETRIEVE cr10-g-hi-tarika 0 | LUNA_TOOLS cr10-g-hi-tarika disabled | AI_ACTION cr10-g-hi-tarika REPLY FAQ_CONFIRM | OUT cr10-g-hi-tarika 200 ok"
+      ]
+    },
+    {
+      "id": "g-ar-how",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ar-how | OUT cr10-g-ar-how 200 ok | SPREAD_TEST_REPLY cr10-g-ar-how"
+      ]
+    },
+    {
+      "id": "g-ar-send",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ar-send | OUT cr10-g-ar-send 200 ok | SPREAD_TEST_REPLY cr10-g-ar-send"
+      ]
+    },
+    {
+      "id": "g-ar-want",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-ar-want | OUT cr10-g-ar-want 200 ok | SPREAD_TEST_REPLY cr10-g-ar-want"
+      ]
+    },
+    {
+      "id": "g-hing-dena",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-hing-dena | OUT cr10-g-hing-dena 200 ok | SPREAD_TEST_REPLY cr10-g-hing-dena"
+      ]
+    },
+    {
+      "id": "g-hing-kaise",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-hing-kaise | OUT cr10-g-hing-kaise 200 ok | SPREAD_TEST_REPLY cr10-g-hing-kaise"
+      ]
+    },
+    {
+      "id": "g-hing-send",
+      "missed": false,
+      "harness": false,
+      "leaks": 0,
+      "notes": [
+        "IN conversation.user.replied cr10-g-hing-send | OUT cr10-g-hing-send 200 ok | SPREAD_TEST_REPLY cr10-g-hing-send"
+      ]
+    }
+  ]
+}
