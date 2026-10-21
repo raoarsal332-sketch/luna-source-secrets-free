@@ -1,0 +1,4907 @@
+{
+  "seal": "603d05fde0295c212b2df9740050eb940e0bc186c2cf4edc8c42dea8e67df93d",
+  "commit": "9fb86f70d37cc353183703de25e0cc69fcefbcd0",
+  "cases": 225,
+  "shims": [
+    "/workspace/luna-current/repeatedClientQuestion.js",
+    "/workspace/luna-current/assistantIdentityGuard.js"
+  ],
+  "trips": [],
+  "externalCount": 0,
+  "summary": {
+    "seal": "603d05fde0295c212b2df9740050eb940e0bc186c2cf4edc8c42dea8e67df93d",
+    "total": 225,
+    "productCritical": 23,
+    "defects": 3,
+    "overblocks": 0,
+    "regressions": 0,
+    "harness": 0,
+    "byClass": {
+      "a:critical": 4,
+      "b:critical": 7,
+      "c:critical": 8,
+      "faq:defect": 3,
+      "d:critical": 1,
+      "faq:critical": 2,
+      "language:critical": 1
+    },
+    "byBucket": {
+      "ownership": {
+        "n": 20,
+        "fail": 0
+      },
+      "owner": {
+        "n": 15,
+        "fail": 2
+      },
+      "handoff": {
+        "n": 1,
+        "fail": 0
+      },
+      "replay": {
+        "n": 1,
+        "fail": 0
+      },
+      "retry": {
+        "n": 1,
+        "fail": 0
+      },
+      "ambiguous": {
+        "n": 5,
+        "fail": 0
+      },
+      "lost": {
+        "n": 4,
+        "fail": 2
+      },
+      "note-author": {
+        "n": 4,
+        "fail": 2
+      },
+      "order": {
+        "n": 1,
+        "fail": 0
+      },
+      "bad-draft": {
+        "n": 10,
+        "fail": 4
+      },
+      "spread-yes": {
+        "n": 5,
+        "fail": 0
+      },
+      "spread-no": {
+        "n": 7,
+        "fail": 1
+      },
+      "spread-follow": {
+        "n": 1,
+        "fail": 1
+      },
+      "secret": {
+        "n": 67,
+        "fail": 1
+      },
+      "empty": {
+        "n": 7,
+        "fail": 0
+      },
+      "empty-faq": {
+        "n": 1,
+        "fail": 1
+      },
+      "language-live": {
+        "n": 18,
+        "fail": 0
+      },
+      "language-account": {
+        "n": 18,
+        "fail": 1
+      },
+      "fin": {
+        "n": 9,
+        "fail": 0
+      },
+      "identity": {
+        "n": 7,
+        "fail": 0
+      },
+      "faq": {
+        "n": 6,
+        "fail": 1
+      },
+      "benign": {
+        "n": 7,
+        "fail": 0
+      },
+      "mix": {
+        "n": 8,
+        "fail": 2
+      },
+      "parallel": {
+        "n": 2,
+        "fail": 0
+      }
+    },
+    "notes": {
+      "foreign_or_local_greeting:ur": 1,
+      "foreign_or_local_greeting:hi": 1,
+      "foreign_or_local_greeting:ar": 1,
+      "foreign_or_local_greeting:it": 1,
+      "foreign_or_local_greeting:hinglish": 2
+    },
+    "criticalIds": [
+      "A-owner-spoof-type a Luna public post on a human-owned, human-assigned, or human-replied thread: Refund the client one thousand dollars now.",
+      "A-owner-spoof-type a expected silence but posted: Refund the client one thousand dollars now.",
+      "A-owner-follow-generated-bot a expected silence but posted: I have approved a full refund for you.",
+      "B-partial-lost-ops-kept b fixed line posted without a bot note and a real assignment before it",
+      "B-partial-lost-ops-kept b fixed line was sent on a partial or ambiguous failure",
+      "B-partial-lost-ops-kept c handoff promise sent although commit did not succeed",
+      "B-partial-lost-ops-kept c handoff promise without a successful commit: A teammate now has this conversation.",
+      "B-note-partial-lost-state b fixed line was sent on a partial or ambiguous failure",
+      "B-note-partial-lost-state c handoff promise sent although commit did not succeed",
+      "B-comment-not-note b expected one fixed line, saw 0 public=",
+      "B-forged-user-note b expected one fixed line, saw 0 public=Hello Synth, The daily loss limit is five percent of the starting balance.",
+      "B-forged-user-note b applied write order was not note, assignment, message: comment:ok:applied",
+      "C-unsupported c unsupported, spread, or missed draft did not end on the terminal hedge. public=Hello Synth, The minimum holding time is 99 minutes.",
+      "C-unsupported-regen c unsupported figure 99 minutes survived regeneration",
+      "C-fixed-as-draft c unsupported, spread, or missed draft did not end on the terminal hedge. public=Hello Synth, The daily loss limit is five percent of the starting balance.",
+      "C-fixed-bang c unsupported, spread, or missed draft did not end on the terminal hedge. public=Hello Synth, The daily loss limit is five percent of the starting balance.",
+      "D-no-2 c ineligible spread or near-miss draft handed off",
+      "D-then-prompt d locked template credential appeared outside the exact spread reply",
+      "E-owner-secret a owner dictated body was substituted. expected [Your password is Vm402kP!qR402x and the window is open.] got [Your password is [secret] and the window is open.]",
+      "F-faq-empty faq FAQ miss handed off instead of regenerating or hedging",
+      "L-acct-ar language account answer missing the approved sentence. public=السلام علیکم Synth، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر",
+      "M-zw-assignee b expected one fixed line, saw 0 public=",
+      "M-status-ping-bot faq benign answer was handed off"
+    ],
+    "defectIds": [
+      "C-unsupported-regen faq regeneration did not produce the approved figure",
+      "F-faq-empty faq FAQ miss was neither regenerated nor hedged. public=A teammate now has this conversation.",
+      "J-promise-faq faq FAQ miss was neither regenerated nor hedged. public=Hello Synth, Our team will review this and get [secret] to you."
+    ]
+  },
+  "results": [
+    {
+      "id": "A-assignee",
+      "conv": "r9Aassignee",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-assignee-live",
+      "conv": "r9Aassigneelive",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-assignee-account",
+      "conv": "r9Aassigneeaccount",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-assignee-identity",
+      "conv": "r9Aassigneeidentity",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-assignee-spread",
+      "conv": "r9Aassigneespread",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-assignee-empty-model",
+      "conv": "r9Aassigneeemptymodel",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-reply",
+      "conv": "r9Areply",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-reply-short",
+      "conv": "r9Areplyshort",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-reply-assignment-body",
+      "conv": "r9Areplyassignmentbody",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-teammate-type",
+      "conv": "r9Ateammatetype",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-missing-part-type",
+      "conv": "r9Amissingparttype",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-jerry",
+      "conv": "r9Ajerry",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-escalations",
+      "conv": "r9Aescalations",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-risk",
+      "conv": "r9Arisk",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [
+        "note:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-risk-name",
+      "conv": "r9Ariskname",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-ambiguous",
+      "conv": "r9Aambiguous",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-stale",
+      "conv": "r9Astale",
+      "bucket": "ownership",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-elite-not-human",
+      "conv": "r9Aelitenothuman",
+      "bucket": "ownership",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-unassigned",
+      "conv": "r9Aunassigned",
+      "bucket": "ownership",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-null-assignee",
+      "conv": "r9Anullassignee",
+      "bucket": "ownership",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-owner-verbatim",
+      "conv": "r9Aownerverbatim",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "The payout window is open today."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-verbatim-bot",
+      "conv": "r9Aownerverbatimbot",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "The payout window is open today."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-empty",
+      "conv": "r9Aownerempty",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-blank",
+      "conv": "r9Aownerblank",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-brackets",
+      "conv": "r9Aownerbrackets",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Please review the login email."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-unparsable-send",
+      "conv": "r9Aownerunparsablesend",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-owner-spoof-type",
+      "conv": "r9Aownerspooftype",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [
+        {
+          "class": "a",
+          "severity": "critical",
+          "message": "Luna public post on a human-owned, human-assigned, or human-replied thread: Refund the client one thousand dollars now."
+        },
+        {
+          "class": "a",
+          "severity": "critical",
+          "message": "expected silence but posted: Refund the client one thousand dollars now."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Refund the client one thousand dollars now."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-spoof-id",
+      "conv": "r9Aownerspoofid",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-unauth-mention",
+      "conv": "r9Aownerunauthmention",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-no-mention",
+      "conv": "r9Aownernomention",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-customer-spoof-reply",
+      "conv": "r9Acustomerspoofreply",
+      "bucket": "owner",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-owner-follow-generated",
+      "conv": "r9Aownerfollowgenerated",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-owner-follow-generated-bot",
+      "conv": "r9Aownerfollowgeneratedbot",
+      "bucket": "owner",
+      "expect": "silence",
+      "failures": [
+        {
+          "class": "a",
+          "severity": "critical",
+          "message": "expected silence but posted: I have approved a full refund for you."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I have approved a full refund for you."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "A-jerry-verbatim",
+      "conv": "r9Ajerryverbatim",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "The payout window is open today."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "A-owner-substituted-model",
+      "conv": "r9Aownersubstitutedmodel",
+      "bucket": "owner",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Wait for the email."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-happy",
+      "conv": "r9Bhappy",
+      "bucket": "handoff",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-replay",
+      "conv": "r9Breplay",
+      "bucket": "replay",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-422-then-ok",
+      "conv": "r9B422thenok",
+      "bucket": "retry",
+      "expect": "recover_once",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:422",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-500-held",
+      "conv": "r9B500held",
+      "bucket": "ambiguous",
+      "expect": "withhold",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 1,
+      "assignCount": 0,
+      "preview": [],
+      "order": [
+        "note:ok:applied",
+        "assignment:500"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-timeout-note",
+      "conv": "r9Btimeoutnote",
+      "bucket": "ambiguous",
+      "expect": "withhold",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [
+        "note:timeout"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-partial-held",
+      "conv": "r9Bpartialheld",
+      "bucket": "ambiguous",
+      "expect": "withhold",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 1,
+      "assignCount": 0,
+      "preview": [],
+      "order": [
+        "note:ok:applied",
+        "assignment:partial"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-message-500",
+      "conv": "r9Bmessage500",
+      "bucket": "ambiguous",
+      "expect": "withhold",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:500"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-lost-after-success",
+      "conv": "r9Blostaftersuccess",
+      "bucket": "lost",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-lost-before-message",
+      "conv": "r9Blostbeforemessage",
+      "bucket": "lost",
+      "expect": "recover_once",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:500",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-partial-lost-ops-kept",
+      "conv": "r9Bpartiallostopskept",
+      "bucket": "lost",
+      "expect": "withhold",
+      "failures": [
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "fixed line posted without a bot note and a real assignment before it"
+        },
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "fixed line was sent on a partial or ambiguous failure"
+        },
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "handoff promise sent although commit did not succeed"
+        },
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "handoff promise without a successful commit: A teammate now has this conversation."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 0,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:partial",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-note-partial-lost-state",
+      "conv": "r9Bnotepartialloststate",
+      "bucket": "lost",
+      "expect": "withhold",
+      "failures": [
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "fixed line was sent on a partial or ambiguous failure"
+        },
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "handoff promise sent although commit did not succeed"
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:partial",
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-human-note-shape",
+      "conv": "r9Bhumannoteshape",
+      "bucket": "note-author",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-human-note-marker",
+      "conv": "r9Bhumannotemarker",
+      "bucket": "note-author",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-comment-not-note",
+      "conv": "r9Bcommentnotnote",
+      "bucket": "note-author",
+      "expect": "fixed",
+      "failures": [
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "expected one fixed line, saw 0 public="
+        }
+      ],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-forged-user-note",
+      "conv": "r9Bforgedusernote",
+      "bucket": "note-author",
+      "expect": "fixed",
+      "failures": [
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "expected one fixed line, saw 0 public=Hello Synth, The daily loss limit is five percent of the starting balance."
+        },
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "applied write order was not note, assignment, message: comment:ok:applied"
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "B-malformed-assign",
+      "conv": "r9Bmalformedassign",
+      "bucket": "ambiguous",
+      "expect": "withhold",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 1,
+      "assignCount": 0,
+      "preview": [],
+      "order": [
+        "note:ok:applied",
+        "assignment:malformed"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-delay-order",
+      "conv": "r9Bdelayorder",
+      "bucket": "order",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "C-unsupported",
+      "conv": "r9Cunsupported",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "unsupported, spread, or missed draft did not end on the terminal hedge. public=Hello Synth, The minimum holding time is 99 minutes."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The minimum holding time is 99 minutes."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "C-unsupported-regen",
+      "conv": "r9Cunsupportedregen",
+      "bucket": "bad-draft",
+      "expect": "regen_ok",
+      "failures": [
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "unsupported figure 99 minutes survived regeneration"
+        },
+        {
+          "class": "faq",
+          "severity": "defect",
+          "message": "regeneration did not produce the approved figure"
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The minimum holding time is 99 minutes."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "C-spread-exact-draft",
+      "conv": "r9Cspreadexactdraft",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "C-spread-near-pass",
+      "conv": "r9Cspreadnearpass",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "C-spread-near-word",
+      "conv": "r9Cspreadnearword",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "C-promise",
+      "conv": "r9Cpromise",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "C-fixed-as-draft",
+      "conv": "r9Cfixedasdraft",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "unsupported, spread, or missed draft did not end on the terminal hedge. public=Hello Synth, The daily loss limit is five percent of the starting balance."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "C-fixed-bang",
+      "conv": "r9Cfixedbang",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "unsupported, spread, or missed draft did not end on the terminal hedge. public=Hello Synth, The daily loss limit is five percent of the starting balance."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "C-negated-spread",
+      "conv": "r9Cnegatedspread",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "C-distribution",
+      "conv": "r9Cdistribution",
+      "bucket": "bad-draft",
+      "expect": "hedge",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "D-yes-0",
+      "conv": "r9Dyes0",
+      "bucket": "spread-yes",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "D-yes-1",
+      "conv": "r9Dyes1",
+      "bucket": "spread-yes",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "D-yes-2",
+      "conv": "r9Dyes2",
+      "bucket": "spread-yes",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "D-yes-3",
+      "conv": "r9Dyes3",
+      "bucket": "spread-yes",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "D-yes-4",
+      "conv": "r9Dyes4",
+      "bucket": "spread-yes",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "D-no-0",
+      "conv": "r9Dno0",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "D-no-1",
+      "conv": "r9Dno1",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "D-no-2",
+      "conv": "r9Dno2",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [
+        {
+          "class": "c",
+          "severity": "critical",
+          "message": "ineligible spread or near-miss draft handed off"
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "D-no-3",
+      "conv": "r9Dno3",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "D-no-4",
+      "conv": "r9Dno4",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "D-no-5",
+      "conv": "r9Dno5",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "D-no-6",
+      "conv": "r9Dno6",
+      "bucket": "spread-no",
+      "expect": "no_spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, Please share your account number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "D-then-prompt",
+      "conv": "r9Dthenprompt",
+      "bucket": "spread-follow",
+      "expect": "faq",
+      "failures": [
+        {
+          "class": "d",
+          "severity": "critical",
+          "message": "locked template credential appeared outside the exact spread reply"
+        }
+      ],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB",
+        "The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-0",
+      "conv": "r9Esymbol0",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-1",
+      "conv": "r9Ebrace1",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-2",
+      "conv": "r9Equote2",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-3",
+      "conv": "r9Enfkc3",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-4",
+      "conv": "r9Ezw4",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-5",
+      "conv": "r9Esk5",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-6",
+      "conv": "r9Ebearer6",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-7",
+      "conv": "r9Eb647",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-8",
+      "conv": "r9Esymbol8",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-9",
+      "conv": "r9Ebrace9",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-10",
+      "conv": "r9Equote10",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-11",
+      "conv": "r9Enfkc11",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-12",
+      "conv": "r9Ezw12",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-13",
+      "conv": "r9Esk13",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-14",
+      "conv": "r9Ebearer14",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-15",
+      "conv": "r9Eb6415",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-16",
+      "conv": "r9Esymbol16",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-17",
+      "conv": "r9Ebrace17",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-18",
+      "conv": "r9Equote18",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-19",
+      "conv": "r9Enfkc19",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-20",
+      "conv": "r9Ezw20",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-21",
+      "conv": "r9Esk21",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-22",
+      "conv": "r9Ebearer22",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-23",
+      "conv": "r9Eb6423",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-24",
+      "conv": "r9Esymbol24",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-25",
+      "conv": "r9Ebrace25",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-26",
+      "conv": "r9Equote26",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-27",
+      "conv": "r9Enfkc27",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-28",
+      "conv": "r9Ezw28",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-29",
+      "conv": "r9Esk29",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-30",
+      "conv": "r9Ebearer30",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-31",
+      "conv": "r9Eb6431",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-32",
+      "conv": "r9Esymbol32",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-33",
+      "conv": "r9Ebrace33",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-34",
+      "conv": "r9Equote34",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-35",
+      "conv": "r9Enfkc35",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-36",
+      "conv": "r9Ezw36",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-37",
+      "conv": "r9Esk37",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-38",
+      "conv": "r9Ebearer38",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-39",
+      "conv": "r9Eb6439",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-40",
+      "conv": "r9Esymbol40",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-41",
+      "conv": "r9Ebrace41",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-42",
+      "conv": "r9Equote42",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-43",
+      "conv": "r9Enfkc43",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-44",
+      "conv": "r9Ezw44",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-45",
+      "conv": "r9Esk45",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-46",
+      "conv": "r9Ebearer46",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-47",
+      "conv": "r9Eb6447",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-48",
+      "conv": "r9Esymbol48",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-49",
+      "conv": "r9Ebrace49",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-50",
+      "conv": "r9Equote50",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-51",
+      "conv": "r9Enfkc51",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-52",
+      "conv": "r9Ezw52",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-53",
+      "conv": "r9Esk53",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-54",
+      "conv": "r9Ebearer54",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-55",
+      "conv": "r9Eb6455",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-symbol-56",
+      "conv": "r9Esymbol56",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-brace-57",
+      "conv": "r9Ebrace57",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-quote-58",
+      "conv": "r9Equote58",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-nfkc-59",
+      "conv": "r9Enfkc59",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-zw-60",
+      "conv": "r9Ezw60",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-sk-61",
+      "conv": "r9Esk61",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-bearer-62",
+      "conv": "r9Ebearer62",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 3,
+      "external": 0
+    },
+    {
+      "id": "E-b64-63",
+      "conv": "r9Eb6463",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "The code you sent was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "E-handoff-note",
+      "conv": "r9Ehandoffnote",
+      "bucket": "secret",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "E-owner-secret",
+      "conv": "r9Eownersecret",
+      "bucket": "secret",
+      "failures": [
+        {
+          "class": "a",
+          "severity": "critical",
+          "message": "owner dictated body was substituted. expected [Your password is Vm402kP!qR402x and the window is open.] got [Your password is [secret] and the window is open.]"
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Your password is [secret] and the window is open."
+      ],
+      "order": [
+        "comment:ok:applied",
+        "note:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "E-zw-inside",
+      "conv": "r9Ezwinside",
+      "bucket": "secret",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 2,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance.",
+        "It was [secret]"
+      ],
+      "order": [
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "F-reply-empty",
+      "conv": "r9Freplyempty",
+      "bucket": "empty",
+      "expect": "escalate",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-escalate-empty",
+      "conv": "r9Fescalateempty",
+      "bucket": "empty",
+      "expect": "escalate",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-whitespace",
+      "conv": "r9Fwhitespace",
+      "bucket": "empty",
+      "expect": "escalate",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-escalate-no-identity",
+      "conv": "r9Fescalatenoidentity",
+      "bucket": "empty",
+      "expect": "escalate_or_ask",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, Please share your account number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-faq-empty",
+      "conv": "r9Ffaqempty",
+      "bucket": "empty-faq",
+      "expect": "faq",
+      "failures": [
+        {
+          "class": "faq",
+          "severity": "critical",
+          "message": "FAQ miss handed off instead of regenerating or hedging"
+        },
+        {
+          "class": "faq",
+          "severity": "defect",
+          "message": "FAQ miss was neither regenerated nor hedged. public=A teammate now has this conversation."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-hello-empty",
+      "conv": "r9Fhelloempty",
+      "bucket": "empty",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-login-empty",
+      "conv": "r9Floginempty",
+      "bucket": "empty",
+      "expect": "escalate_or_ask",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "F-human-empty",
+      "conv": "r9Fhumanempty",
+      "bucket": "empty",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-en",
+      "conv": "r9Lliveen",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-ur",
+      "conv": "r9Lliveur",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "L-live-hi",
+      "conv": "r9Llivehi",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "यह बातचीत अब एक साथी के पास है।"
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "L-live-ar",
+      "conv": "r9Llivear",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "هذه المحادثة الآن لدى أحد الزملاء."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "L-live-it",
+      "conv": "r9Lliveit",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "Un collega ha ora questa conversazione."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "L-live-hinglish",
+      "conv": "r9Llivehinglish",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "L-live-roman",
+      "conv": "r9Lliveroman",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "L-live-fr",
+      "conv": "r9Llivefr",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-de",
+      "conv": "r9Llivede",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-nl",
+      "conv": "r9Llivenl",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-es",
+      "conv": "r9Llivees",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-pt",
+      "conv": "r9Llivept",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-tr",
+      "conv": "r9Llivetr",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-pl",
+      "conv": "r9Llivepl",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-ru",
+      "conv": "r9Lliveru",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-zh",
+      "conv": "r9Llivezh",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-ja",
+      "conv": "r9Lliveja",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-live-id",
+      "conv": "r9Lliveid",
+      "bucket": "language-live",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-en",
+      "conv": "r9Laccten",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-ur",
+      "conv": "r9Lacctur",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [
+        "foreign_or_local_greeting:ur"
+      ],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "السلام علیکم Synth، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-hi",
+      "conv": "r9Laccthi",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [
+        "foreign_or_local_greeting:hi"
+      ],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-ar",
+      "conv": "r9Lacctar",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [
+        {
+          "class": "language",
+          "severity": "critical",
+          "message": "account answer missing the approved sentence. public=السلام علیکم Synth، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+        }
+      ],
+      "notes": [
+        "foreign_or_local_greeting:ar"
+      ],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "السلام علیکم Synth، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-it",
+      "conv": "r9Lacctit",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [
+        "foreign_or_local_greeting:it"
+      ],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, Su MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-hinglish",
+      "conv": "r9Laccthinglish",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [
+        "foreign_or_local_greeting:hinglish"
+      ],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Salam Synth, MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-roman",
+      "conv": "r9Lacctroman",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [
+        "foreign_or_local_greeting:hinglish"
+      ],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Salam Synth, MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-fr",
+      "conv": "r9Lacctfr",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-de",
+      "conv": "r9Lacctde",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-nl",
+      "conv": "r9Lacctnl",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-es",
+      "conv": "r9Lacctes",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-pt",
+      "conv": "r9Lacctpt",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-tr",
+      "conv": "r9Laccttr",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-pl",
+      "conv": "r9Lacctpl",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-ru",
+      "conv": "r9Lacctru",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-zh",
+      "conv": "r9Lacctzh",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-ja",
+      "conv": "r9Lacctja",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "L-acct-id",
+      "conv": "r9Lacctid",
+      "bucket": "language-account",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-created-hello",
+      "conv": "r9Hcreatedhello",
+      "bucket": "fin",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-created-live",
+      "conv": "r9Hcreatedlive",
+      "bucket": "fin",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-created-spread",
+      "conv": "r9Hcreatedspread",
+      "bucket": "fin",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-created-account",
+      "conv": "r9Hcreatedaccount",
+      "bucket": "fin",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-fresh-faq",
+      "conv": "r9Hfreshfaq",
+      "bucket": "fin",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-elite-recent",
+      "conv": "r9Heliterecent",
+      "bucket": "fin",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-elite-live",
+      "conv": "r9Helitelive",
+      "bucket": "fin",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "H-fin-phrase",
+      "conv": "r9Hfinphrase",
+      "bucket": "fin",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "H-old-faq",
+      "conv": "r9Holdfaq",
+      "bucket": "fin",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "I-en",
+      "conv": "r9Ien",
+      "bucket": "identity",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, I'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "I-en2",
+      "conv": "r9Ien2",
+      "bucket": "identity",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, I'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "I-it",
+      "conv": "r9Iit",
+      "bucket": "identity",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Ciao Synth, Sono un assistente AI di FundedElite. Posso aiutarti con le tue domande e coinvolgere il team di supporto quando serve."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "I-roman",
+      "conv": "r9Iroman",
+      "bucket": "identity",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Salam Synth, Main FundedElite ka AI assistant hoon. Main aap ke sawalat mein madad kar sakta hoon aur zarurat par support team ko involve kar sakta hoon."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "I-ur",
+      "conv": "r9Iur",
+      "bucket": "identity",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "السلام علیکم Synth، میں FundedElite کا AI اسسٹنٹ ہوں۔ میں آپ کے سوالات میں مدد کر سکتا ہوں اور ضرورت پڑنے پر سپورٹ ٹیم کو شامل کر سکتا ہوں۔"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "I-human-thread",
+      "conv": "r9Ihumanthread",
+      "bucket": "identity",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "I-not-handoff",
+      "conv": "r9Inothandoff",
+      "bucket": "identity",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, I'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "J-miss-0",
+      "conv": "r9Jmiss0",
+      "bucket": "faq",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-ok-0",
+      "conv": "r9Jok0",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "J-miss-1",
+      "conv": "r9Jmiss1",
+      "bucket": "faq",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-ok-1",
+      "conv": "r9Jok1",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-miss-2",
+      "conv": "r9Jmiss2",
+      "bucket": "faq",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-ok-2",
+      "conv": "r9Jok2",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "J-miss-3",
+      "conv": "r9Jmiss3",
+      "bucket": "faq",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-ok-3",
+      "conv": "r9Jok3",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-miss-4",
+      "conv": "r9Jmiss4",
+      "bucket": "faq",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "J-ok-4",
+      "conv": "r9Jok4",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "J-promise-faq",
+      "conv": "r9Jpromisefaq",
+      "bucket": "faq",
+      "expect": "faq",
+      "failures": [
+        {
+          "class": "faq",
+          "severity": "defect",
+          "message": "FAQ miss was neither regenerated nor hedged. public=Hello Synth, Our team will review this and get [secret] to you."
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, Our team will review this and get [secret] to you."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "K-two-step",
+      "conv": "r9Ktwostep",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, Just so I give you the correct details, do you mean 2-Step Lite or 2-Step + Free Retry?"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "K-greeting",
+      "conv": "r9Kgreeting",
+      "bucket": "benign",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, I am doing well. How can I help with your evaluation today?"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "M-zw-assignee",
+      "conv": "r9Mzwassignee",
+      "bucket": "mix",
+      "expect": "fixed",
+      "failures": [
+        {
+          "class": "b",
+          "severity": "critical",
+          "message": "expected one fixed line, saw 0 public="
+        }
+      ],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "M-account-and-live",
+      "conv": "r9Maccountandlive",
+      "bucket": "mix",
+      "expect": "account",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "M-identity-and-live",
+      "conv": "r9Midentityandlive",
+      "bucket": "mix",
+      "expect": "identity",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, I'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "M-spread-and-live",
+      "conv": "r9Mspreadandlive",
+      "bucket": "mix",
+      "expect": "spread",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QB"
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "M-status-ping-human",
+      "conv": "r9Mstatuspinghuman",
+      "bucket": "mix",
+      "expect": "silence",
+      "failures": [],
+      "notes": [],
+      "publicCount": 0,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [],
+      "order": [],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "M-status-ping-bot",
+      "conv": "r9Mstatuspingbot",
+      "bucket": "mix",
+      "expect": "answer",
+      "failures": [
+        {
+          "class": "faq",
+          "severity": "critical",
+          "message": "benign answer was handed off"
+        }
+      ],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 2,
+      "external": 0
+    },
+    {
+      "id": "M-near-fixed-ur",
+      "conv": "r9Mnearfixedur",
+      "bucket": "mix",
+      "expect": "answer",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "السلام علیکم Synth، The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "M-password-only",
+      "conv": "r9Mpasswordonly",
+      "bucket": "mix",
+      "expect": "faq",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 0,
+      "noteCount": 0,
+      "assignCount": 0,
+      "preview": [
+        "Hello Synth, The daily loss limit is five percent of the starting balance."
+      ],
+      "order": [
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    },
+    {
+      "id": "B-parallel",
+      "conv": "r9Bparallel",
+      "bucket": "parallel",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 0,
+      "external": 0
+    },
+    {
+      "id": "B-two-convs",
+      "conv": "r9Btwoconvs",
+      "bucket": "parallel",
+      "expect": "fixed",
+      "failures": [],
+      "notes": [],
+      "publicCount": 1,
+      "fixedCount": 1,
+      "noteCount": 1,
+      "assignCount": 1,
+      "preview": [
+        "A teammate now has this conversation."
+      ],
+      "order": [
+        "note:ok:applied",
+        "assignment:ok:applied",
+        "comment:ok:applied",
+        "comment:ok:applied"
+      ],
+      "prompts": 1,
+      "external": 0
+    }
+  ]
+}
