@@ -581,7 +581,63 @@ function decide(input) {
   };
 }
 
-function classifyAssignment(result) {
+function responseHasErrorList(result) {
+  const blobs = [];
+  if (result && typeof result === 'object') blobs.push(result);
+  if (result && result.data && typeof result.data === 'object') blobs.push(result.data);
+  for (const blob of blobs) {
+    if (String(blob.type || '') === 'error.list') return true;
+    if (Array.isArray(blob.errors) && blob.errors.length) return true;
+  }
+  return false;
+}
+
+function resourcePartList(data) {
+  if (!data || typeof data !== 'object') return null;
+  if (Array.isArray(data.conversation_parts)) return data.conversation_parts;
+  if (data.conversation_parts && Array.isArray(data.conversation_parts.conversation_parts)) {
+    return data.conversation_parts.conversation_parts;
+  }
+  if (Array.isArray(data.parts)) return data.parts;
+  return null;
+}
+
+function resourceAssigneeId(data) {
+  if (!data || typeof data !== 'object') return '';
+  if (data.admin_assignee_id != null && String(data.admin_assignee_id) !== '' && String(data.admin_assignee_id) !== '0') {
+    return String(data.admin_assignee_id);
+  }
+  if (data.assignee_id != null && String(data.assignee_id) !== '' && String(data.assignee_id) !== '0') {
+    return String(data.assignee_id);
+  }
+  const assigned = data.assigned_to || data.assignee;
+  if (assigned && assigned.id != null && String(assigned.id) !== '' && String(assigned.id) !== '0') {
+    return String(assigned.id);
+  }
+  return '';
+}
+
+// Legacy synthetic transports return an empty object or a conversation shell
+// with no parts and no assignee. Those stay successful. A body that names the
+// resource must actually contain it: a note part, or the expected assignee.
+function expectedResourcePresent(data, expect) {
+  if (!expect || !expect.kind) return true;
+  if (!data || typeof data !== 'object') return true;
+  if (expect.kind === 'note') {
+    if (data.part_type) return String(data.part_type) === 'note';
+    const list = resourcePartList(data);
+    if (!list) return true;
+    return list.some((part) => part && String(part.part_type || '') === 'note');
+  }
+  if (expect.kind === 'assignment') {
+    const id = resourceAssigneeId(data);
+    if (!id) return true;
+    return id === String(expect.assigneeId || '');
+  }
+  return true;
+}
+
+function classifyAssignment(result, expect) {
   if (!result || typeof result !== 'object') return { ok: false, reason: 'timeout' };
   if (result.timedOut || result.timeout) return { ok: false, reason: 'timeout' };
   const status = Number(result.status || 0);
@@ -593,6 +649,15 @@ function classifyAssignment(result) {
   if (errors.length) return { ok: false, reason: 'partial' };
   if (result.unknown || result.partial || result.ok !== true) return { ok: false, reason: 'partial' };
   if (status < 200 || status >= 300) return { ok: false, reason: 'partial' };
+  // HTTP 200 with an error list is a failed write. data null is ambiguous.
+  // Neither is a confirmed note, assignment, or message.
+  if (responseHasErrorList(result)) return { ok: false, reason: 'failed' };
+  if (Object.prototype.hasOwnProperty.call(result, 'data') && result.data == null) {
+    return { ok: false, reason: 'partial' };
+  }
+  if (expect && expectedResourcePresent(result.data, expect) === false) {
+    return { ok: false, reason: 'failed' };
+  }
   return { ok: true, reason: 'assigned' };
 }
 
@@ -825,6 +890,29 @@ async function commit(ctx) {
     progress,
     reconcileFromParts(progress, src.parts, src.conversation, message, src.botId)
   );
+  // A stored "confirmed" flag is not enough after the conversation parts are
+  // gone. Replay rewrites the note and the assignment, then posts the fixed
+  // line only when those writes validate. An ambiguous hold is left alone.
+  const expectedAssignee = String(src.assigneeId || progress.assigneeId || '');
+  const partsNote = noteInParts(src.parts, src.botId);
+  const partsAssignee = assigneeFromParts(src.parts, src.conversation, src.botId);
+  const partsAssignOk = !!(expectedAssignee && partsAssignee && partsAssignee === expectedAssignee);
+  const seatHeld = assignmentAlreadyHeld(src.conversation, expectedAssignee);
+  if (
+    progress.noteConfirmed === true &&
+    progress.assignConfirmed === true &&
+    !progress.messageSent &&
+    !progress.noteAmbiguous &&
+    !progress.assignAmbiguous &&
+    !progress.messageAmbiguous &&
+    !partsNote &&
+    !partsAssignOk &&
+    !seatHeld
+  ) {
+    progress.noteConfirmed = false;
+    progress.assignConfirmed = false;
+    progress.phase = '';
+  }
   const transport = src.transport;
   if (!transport || typeof transport.postNote !== 'function' || typeof transport.assign !== 'function' || typeof transport.postMessage !== 'function') {
     return finish({ reason: 'no_transport', withhold: true, progress });
@@ -858,19 +946,22 @@ async function commit(ctx) {
   // stored as confirmed. A comment that mentions Account and Problem is not a note.
   const verifiedNote = noteInParts(src.parts, src.botId) || noteAlreadyPresent(src.parts, src.botId);
   let noteOk = verifiedNote || progress.noteConfirmed === true;
+  let wroteNote = false;
+  let wroteAssign = false;
   if (!verifiedNote && !progress.noteConfirmed) {
     if (progress.noteAmbiguous) {
       progress.noteConfirmed = false;
       return finish({ reason: 'note_ambiguous_held', withhold: true, progress });
     }
     const noteRes = await transport.postNote(redactCredentials(src.noteHtml || ''));
-    const noteClass = classifyAssignment(noteRes);
+    const noteClass = classifyAssignment(noteRes, { kind: 'note' });
     if (!noteClass.ok) {
       progress.noteConfirmed = false;
       if (ambiguousWrite(noteClass.reason)) progress.noteAmbiguous = true;
       return finish({ reason: 'note_' + noteClass.reason, withhold: true, progress });
     }
     noteOk = true;
+    wroteNote = true;
   }
   if (!noteOk) {
     progress.noteConfirmed = false;
@@ -880,18 +971,30 @@ async function commit(ctx) {
   progress.noteAmbiguous = false;
   progress.assigneeId = String(src.assigneeId || progress.assigneeId || '');
 
+  // Stored assignment confirmation without the assignment part, and without the
+  // seat already on the conversation, is not confirmed. Write it again.
+  if (
+    progress.assignConfirmed === true &&
+    !partsAssignOk &&
+    !assignmentAlreadyHeld(src.conversation, progress.assigneeId) &&
+    !progress.assignAmbiguous
+  ) {
+    progress.assignConfirmed = false;
+  }
+
   if (!progress.assignConfirmed && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
     // A 422 is definite and is retried. An ambiguous 500/timeout/partial is not.
     if (progress.assignAmbiguous) {
       return finish({ reason: 'assign_ambiguous_held', withhold: true, progress });
     }
     const asgRes = await transport.assign(progress.assigneeId);
-    const asgClass = classifyAssignment(asgRes);
+    const asgClass = classifyAssignment(asgRes, { kind: 'assignment', assigneeId: progress.assigneeId });
     if (!asgClass.ok) {
       if (ambiguousWrite(asgClass.reason)) progress.assignAmbiguous = true;
       else progress.phase = 'assignment-pending';
       return finish({ reason: 'assign_' + asgClass.reason, withhold: true, progress });
     }
+    wroteAssign = true;
   }
   progress.assignConfirmed = true;
   progress.assignAmbiguous = false;
@@ -900,8 +1003,17 @@ async function commit(ctx) {
   if (progress.messageAmbiguous && !messageAlreadyPresent(src.parts, message, src.botId)) {
     return finish({ reason: 'message_ambiguous_held', withhold: true, progress });
   }
+  // The fixed line is posted only when the note and the assignment are in the
+  // parts, were just written and validated, or the seat is already held.
+  const noteVerified = partsNote || wroteNote || progress.noteConfirmed === true;
+  const assignVerified =
+    partsAssignOk || wroteAssign || assignmentAlreadyHeld(src.conversation, progress.assigneeId);
+  if (!noteVerified || !assignVerified) {
+    progress.messageSent = false;
+    return finish({ reason: 'unverified_before_message', withhold: true, progress });
+  }
   const msgRes = await transport.postMessage(message);
-  const msgClass = classifyAssignment(msgRes);
+  const msgClass = classifyAssignment(msgRes, { kind: 'message' });
   if (!msgClass.ok) {
     if (ambiguousWrite(msgClass.reason)) progress.messageAmbiguous = true;
     return finish({ reason: 'message_' + msgClass.reason, withhold: true, progress });
@@ -932,9 +1044,103 @@ function isTerminalHedge(text) {
  * command. Luna-generated or templated text must not be posted. An empty or
  * unparsable owner body posts nothing.
  */
+function ownerAdminIdSet(opts) {
+  const o = opts || {};
+  const ids = new Set();
+  const list = Array.isArray(o.ownerAdminIds) ? o.ownerAdminIds.slice() : [];
+  if (o.ownerAdminId != null) list.push(o.ownerAdminId);
+  for (const id of list) {
+    if (id != null && String(id) !== '') ids.add(String(id));
+  }
+  return ids;
+}
+
+/**
+ * An owner command is an internal note whose author.type is admin and whose
+ * author.id is a configured owner admin id. A customer (author.type user),
+ * a matching name, or a matching email is not the owner. Fail closed.
+ */
+function authenticatedOwnerCommand(part, opts) {
+  const author = (part && part.author) || {};
+  const authorType = String(author.type || (part && part.author_type) || '').toLowerCase();
+  const authorId = String(author.id || '');
+  const partType = String((part && part.part_type) || '');
+  const typeOk = authorType === 'admin';
+  const idOk = !!authorId && ownerAdminIdSet(opts).has(authorId);
+  const channelOk = partType === 'note';
+  const ok = typeOk && idOk && channelOk;
+  let reason = 'owner-command';
+  if (!typeOk) reason = 'owner-auth-type';
+  else if (!idOk) reason = 'owner-auth-id';
+  else if (!channelOk) reason = 'owner-auth-channel';
+  return { ok, post: ok, reason, authorType, authorId };
+}
+
+const STATUS_PING_CLARIFY = "I don't have an open update on this conversation. What would you like me to check?";
+
+function hasPendingHandoffCase(state) {
+  const st = state || {};
+  if (st.escalateAwaitingFirstTeammate) return true;
+  if (st.lastEscalateAt) return true;
+  const prog = st.fixedHandoff;
+  if (!prog || typeof prog !== 'object') return false;
+  if (prog.phase === 'assignment-pending') return true;
+  if (prog.noteConfirmed && !prog.messageSent) return true;
+  if (prog.assignAmbiguous || prog.noteAmbiguous || prog.messageAmbiguous) return true;
+  return false;
+}
+
+function plainFaqCustomerLine(text) {
+  const q = String(text || '');
+  let title = '';
+  try {
+    const faq = require('./faq-kb');
+    const articles = faq && typeof faq.getArticles === 'function' ? faq.getArticles() : [];
+    const tokens = q.toLowerCase().split(/[^a-z0-9]+/).filter((word) => word.length >= 4);
+    let best = 0;
+    for (const article of articles) {
+      const hay = String((article && article.title) || '').toLowerCase();
+      let score = 0;
+      for (const token of tokens) if (hay.includes(token)) score += 1;
+      if (score > best) {
+        best = score;
+        title = String(article.title || '').split(' , ')[0].trim();
+      }
+    }
+    if (best < 2) title = '';
+  } catch (_) {
+    title = '';
+  }
+  if (title && !/team will review/i.test(title) && !Object.values(FIXED_MESSAGES).includes(title)) {
+    return 'The FAQ article "' + title + '" covers this. Which challenge is the question about?';
+  }
+  return 'Which challenge is this question about? I can quote that rule from the FAQ.';
+}
+
+function promisesTeamReview(text) {
+  return /\b(?:our\s+|the\s+)?team\s+will\s+review\b/i.test(String(text || ''));
+}
+
+function faqTeamReviewBlocked(clientText, draft) {
+  if (!promisesTeamReview(draft)) return false;
+  const client = String(clientText || '');
+  if (isPureLiveAgentAsk(client) || isStructuralHandoffAsk(client)) return false;
+  if (/\bmy\s+(?:payout|withdrawal)\s+(?:was|is|got)\b/i.test(client)) return false;
+  try {
+    const ero = require('./escalateRelatedOnly');
+    if (ero && typeof ero.isClearKbFaqAsk === 'function' && ero.isClearKbFaqAsk(client)) return true;
+  } catch (_) {
+    /* FAQ detector unavailable */
+  }
+  return /\b(?:daily\s+loss|drawdown|profit\s+target|leverage)\b/i.test(client) && /\b(?:what|how|is|are)\b/i.test(client);
+}
+
 function ownerPublicReplyDecision(opts) {
   const o = opts || {};
   const body = String(o.body == null ? '' : o.body).replace(/\s+/g, ' ').trim();
+  if (o.humanAssigned && o.authenticated === false) {
+    return { applies: true, post: false, verbatim: false, body: '', reason: 'owner-auth-failed' };
+  }
   if (!o.humanAssigned) {
     return { applies: false, post: true, verbatim: false, body, reason: 'not-human-assigned' };
   }
@@ -971,7 +1177,12 @@ module.exports = {
   HANDOFF_NOTE_MARKER,
   hasVerifiedNotePart,
   noteWrittenByThisBot,
+  authenticatedOwnerCommand,
   ownerPublicReplyDecision,
+  STATUS_PING_CLARIFY,
+  hasPendingHandoffCase,
+  plainFaqCustomerLine,
+  faqTeamReviewBlocked,
   hasAssignmentPart,
   fixedMessageFor,
   accountQuestionCustomerLine,

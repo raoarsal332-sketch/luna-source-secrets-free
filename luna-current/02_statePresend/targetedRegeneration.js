@@ -106,6 +106,18 @@ function isNegatedSpreadAsk(text) {
   }
 }
 
+function faqAnswerShouldNotPromiseReview(draft, ctx) {
+  try {
+    const handoff = require('../01_runtime/fixedMessageHandoff');
+    if (handoff && typeof handoff.faqTeamReviewBlocked === 'function') {
+      return handoff.faqTeamReviewBlocked(lastClientText({ ctx }), draft);
+    }
+  } catch (_) {
+    /* handoff unavailable */
+  }
+  return false;
+}
+
 function decideFallbackIntent(codes, opts) {
   // A policy value contradicting the approved evidence is understood but unanswerable by the
   // bot: it must go to a teammate, never to the generic checking line and never as the wrong
@@ -208,6 +220,12 @@ function safeFallback(draft, result, opts) {
     return holdOrAccountAnswer('missed-escalation-held', body, opts);
   }
 
+  // A FAQ answer that promises "the team will review" is not posted.
+  if (faqAnswerShouldNotPromiseReview(body, opts.ctx) || faqAnswerShouldNotPromiseReview(draft, opts.ctx)) {
+    if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'faq-team-review-held' };
+    return { body: HEDGE_REPLY, send: true, reason: 'faq-team-review-hedge' };
+  }
+
   // Re-validate the stripped body with the same context; only accept if clean.
   const re = presend.validate(body, opts.ctx || {});
   if (body && re.ok && body.split(/\s+/).length >= 2) return { body, send: true, reason: 'deterministic-fix' };
@@ -293,7 +311,11 @@ async function runWithRegeneration(p) {
     let regenerated = false;
     let result = presend.validate(draft, p.ctx);
     results.push(result);
-    while (!result.ok && attempts < maxRetries && typeof p.regenerate === 'function') {
+    while (
+      (!result.ok || faqAnswerShouldNotPromiseReview(draft, p.ctx)) &&
+      attempts < maxRetries &&
+      typeof p.regenerate === 'function'
+    ) {
       attempts += 1;
       let next = null;
       try { next = await p.regenerate(result.correctionInstruction, result.hardFails, p.ctx); } catch (_) { next = null; }
@@ -302,6 +324,12 @@ async function runWithRegeneration(p) {
       draft = next;
       result = presend.validate(draft, p.ctx);
       results.push(result);
+    }
+    if (faqAnswerShouldNotPromiseReview(draft, p.ctx)) {
+      if (!botOwnsConversation({ ctx: p.ctx })) {
+        return { body: '', send: false, attempts, regenerated, results, finalReason: 'faq-team-review-held' };
+      }
+      return { body: HEDGE_REPLY, send: true, attempts, regenerated, results, finalReason: 'faq-team-review-hedge' };
     }
     if (result.ok) {
       // A clean validation does not make the spread template eligible. Eligibility

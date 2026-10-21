@@ -165,23 +165,66 @@ function canonicalSecret(raw) {
 
 const RUN_STOP = /^(secret|password|token|pass|pin|otp|account|email|thanks|thank)$/i;
 
+// Ordinary dictionary and function words are not secrets. "password back"
+// still redacts that labeled occurrence, and it does not taint later "back".
+const ORDINARY_WORDS = new Set(
+  ('a an the and or but if so to of in on for from with at by as is was were be been being ' +
+    'it this that these those i you we they he she my your our their me him her us them ' +
+    'not no nor yes do does did doing done have has had having will would can could should ' +
+    'may might must shall please thanks thank hello hi hey ok okay back soon here there now ' +
+    'just only also very into over after before again still then than too well much many ' +
+    'more most other some any each both few own same such out up down off about above below ' +
+    'between through during without within further once team review update client message ' +
+    'help need want send share check look know mean call tell ask give take make see come ' +
+    'get let put keep hold turn next last first new old good fine sure right left true false ' +
+    'same different question answer status progress news waiting wait today tomorrow already ' +
+    'because while where when what which who how why all any been from your')
+    .split(/\s+/)
+    .filter(Boolean)
+);
+
+function isOrdinaryWord(token) {
+  const word = String(token || '').toLowerCase();
+  return !!word && ORDINARY_WORDS.has(word);
+}
+
+// A value-shaped token has a digit, an internal symbol, or is not a lone
+// dictionary word. A multi-word passphrase still counts when one word is not
+// ordinary. Edge punctuation does not turn "back" into a secret.
+function isValueShaped(full) {
+  const text = String(full || '').trim();
+  if (!text || /^\[secret\]$/i.test(text)) return false;
+  const body = text.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
+  if (!body) return false;
+  if (/\d/u.test(body)) return true;
+  if (/[^\p{L}\p{N}\s]/u.test(body)) return true;
+  const words = body.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) return words.some((word) => !isOrdinaryWord(word));
+  if (isOrdinaryWord(body)) return false;
+  if (/^\p{L}+$/u.test(body) && body.length < 8) return false;
+  return body.length >= 8;
+}
+
 function rememberSecret(raw) {
   const full = normalizeCredentialText(cleanSecretValue(raw));
   if (!full || full.length < 4) return;
   if (/^\[secret\]$/i.test(full)) return;
   if (/^(secret|password|token|pass|pin|otp)$/i.test(full)) return;
+  if (!isValueShaped(full)) return;
   const canon = canonicalSecret(full);
-  if (canon && canon.length >= 4 && !/^(secret|password|token|pass|pin|otp)$/i.test(canon)) {
+  if (canon && canon.length >= 4 && !/^(secret|password|token|pass|pin|otp)$/i.test(canon) && isValueShaped(canon)) {
     rememberedSecrets.add(canon);
   }
-  if (canon !== full) rememberedSecrets.add(full);
+  if (canon !== full && isValueShaped(full)) rememberedSecrets.add(full);
   // A symbol inside the secret means a later draft may quote only one
   // alphanumeric piece of it, including inside braces or quotes.
+  // Ordinary words inside that secret are not stored.
   if (!/[^\p{L}\p{N}\s]/u.test(full)) return;
   const runs = full.match(/[\p{L}\p{N}]{6,}/gu) || [];
   for (const run of runs) {
     const piece = normalizeCredentialText(run);
     if (!piece || piece.length < 6 || RUN_STOP.test(piece) || /^\[secret\]$/i.test(piece)) continue;
+    if (isOrdinaryWord(piece)) continue;
     rememberedSecrets.add(piece);
   }
 }

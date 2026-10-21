@@ -3334,6 +3334,7 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain) {
       humanAssigned: humanAssignedThread(full),
       verbatim: !!(plan && plan.verbatim),
       parsable: !(plan && plan.parsable === false) && !!body,
+      authenticated: !(plan && plan.authenticated === false),
       body,
     });
     // Human-assigned: only the owner's verbatim body is posted. Generated or
@@ -3467,9 +3468,19 @@ async function processAuthorizedNoteCommands(conversationId, full) {
     if (!partId || handled.has(partId)) continue;
     const author = part.author || {};
     const authorId = String(author.id || '');
-    // Only Arsal or Jerry may author an actionable command note (self-command OK without @tag)
-    if (!AUTHORIZED_NOTE_ADMIN_IDS.has(authorId)) {
+    // Owner commands require author.type admin, a configured owner admin id,
+    // and this internal note. A customer spoofing the id, name, or email is
+    // not the owner. On a human-assigned thread that posts nothing.
+    const ownerAuth = fixedMessageHandoff.authenticatedOwnerCommand(part, {
+      ownerAdminIds: [ARSAL_ID, JERRY_ID],
+    });
+    if (!ownerAuth.ok) {
       handled.add(partId);
+      if (humanAssignedThread(full)) {
+        console.log('AUTH_NOTE withheld', ownerAuth.reason, conversationId);
+      } else {
+        console.log('AUTH_NOTE skip', ownerAuth.reason, conversationId, authorId, partId);
+      }
       continue;
     }
     const rawBody = String(part.body || '');
@@ -3534,6 +3545,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
         humanAssigned: humanAssignedThread(full),
         verbatim: parsedCmd.verbatim !== false,
         parsable: parsedCmd.parsable !== false,
+        authenticated: ownerAuth.ok,
         body: cmdBody,
       });
       if (replyDecision.applies) {
@@ -4052,6 +4064,15 @@ const handleWebhook = async (req, res) => {
     }
     if (!text && imageAtts.length) {
       text = '(Client sent an image/screenshot with no accompanying text.)';
+    }
+
+    if (escalateRelatedOnly.isStatusPing(text)) {
+      const __stPing = getConvState(conversationId);
+      if (!fixedMessageHandoff.hasPendingHandoffCase(__stPing && __stPing.state)) {
+        console.log('STATUS_PING clarify no pending case', conversationId);
+        await postClientCommentOnce(conversationId, fixedMessageHandoff.STATUS_PING_CLARIFY, latestUser, clientName);
+        return res.sendStatus(200);
+      }
     }
 
     if (assistantIdentityGuard.isDirectIdentityQuestion(text)) {
@@ -4709,9 +4730,20 @@ const handleWebhook = async (req, res) => {
       return res.sendStatus(200);
     }
     if (!body) {
+      const __plainFaq =
+        typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' &&
+        escalateRelatedOnly.isClearKbFaqAsk(text) &&
+        !isClearlyAccountSpecificIssue(text) &&
+        !fixedMessageHandoff.isPureLiveAgentAsk(text);
+      if (__plainFaq) {
+        console.log('EMPTY faq body answer', conversationId);
+        await postClientCommentOnce(conversationId, fixedMessageHandoff.plainFaqCustomerLine(text), latestUser, clientName);
+        return res.sendStatus(200);
+      }
       if (
-        (typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' && escalateRelatedOnly.isClearKbFaqAsk(text)) ||
-        (typeof isGeneralPolicyQuestion === 'function' && isGeneralPolicyQuestion(text))
+        ((typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' && escalateRelatedOnly.isClearKbFaqAsk(text)) ||
+          (typeof isGeneralPolicyQuestion === 'function' && isGeneralPolicyQuestion(text))) &&
+        !__plainFaq
       ) {
         console.log('EMPTY faq body escalate', conversationId);
         await commitFixedMessageHandoff({
@@ -4921,6 +4953,11 @@ const handleWebhook = async (req, res) => {
       });
     } catch (__e) { /* observation must never affect the reply */ }
     /* LUNA_MAINTAINER_V1:END:observe */
+    if (fixedMessageHandoff.faqTeamReviewBlocked(text, body)) {
+      console.log('FAQ team-review hedge', conversationId);
+      body = UNSUPPORTED_NUMBER_HEDGE;
+      if (__presend) __presend.send = true;
+    }
     if (__presend.send) {
       await postClientCommentOnce(conversationId, body, latestUser, clientName); /* LUNA_STATE_PRESEND_V1:guardSend */
       return res.sendStatus(200);
