@@ -2163,6 +2163,7 @@ function isShortClientAck(text) {
     /^(?:ok(?:ay)?|sure|thanks?|thank you|thx|ty|got it|will do|alright|perfect|great|awesome|noted|understood|yes|yep|yeah|[,\s.!]|will do|thank(?:s| you)?)+$/i.test(t);
 }
 
+const UNSUPPORTED_NUMBER_HEDGE = "I can't confirm that figure from the approved details, so I won't guess a number.";
 const SPREAD_TEST_REPLY =
   'TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\n' +
   'Platform: MetaTrader 5\n' +
@@ -2507,7 +2508,13 @@ function shouldWaitForFin(full, latestUserText, topic) {
   }
 
   // Fresh tickets: always let Fin take the first shot (source-fallback must not race).
+  // A live-agent request is the exception, and only after ownership has already
+  // declined to post. That check runs before this function is called.
   if (topic === 'conversation.user.created') {
+    if (clientRequestedLiveAgent(text) || fixedMessageHandoff.isPureLiveAgentAsk(text)) {
+      console.log('FIN_WAIT bypass live-agent user.created', conversationId);
+      return false;
+    }
     console.log('SKIP fin-wait user.created', conversationId);
     return true;
   }
@@ -2766,7 +2773,8 @@ async function postReply(conversationId, messageType, body) {
   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
   // Redact before either shape is sent so a canary cannot leave in a note or a comment.
   const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
-  const finalBody = messageType === 'note' ? redacted : toHtml(redacted);
+  const exactTemplate = messageType !== 'note' && fixedMessageHandoff.isExactAllowedTemplate(redacted);
+  const finalBody = messageType === 'note' ? redacted : (exactTemplate ? redacted : toHtml(redacted));
   const r = await icRequest(
     'post',
     'https://api.intercom.io/conversations/' + conversationId + '/reply',
@@ -2826,6 +2834,7 @@ function arsalHasPublicClientReply(parts) {
 function ensureFirstReplyWelcomeIntro(body, clientName, parts, latestClientText = '') {
   let text = String(body || '').trim();
   if (!text) return text;
+  if (fixedMessageHandoff.isExactAllowedTemplate(text)) return text;
   if (arsalHasPublicClientReply(parts)) return text;
   /* MICHAN_TEAMMATE_HANDOFF_V1: never inject a welcome after human teammate public reply */
   if (
@@ -2884,6 +2893,11 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     return null;
   }
   let parts = gate.parts;
+  // The locked spread reply is posted byte for byte, including on the first
+  // message: no welcome prefix, no redaction, no later edit.
+  if (fixedMessageHandoff.isExactAllowedTemplate(String(body || ''))) {
+    return postReply(conversationId, 'comment', String(body));
+  }
   // Soft dedupe: never post the same public bot body twice in a row (identity asks etc.)
   try {
     const norm = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -3739,12 +3753,10 @@ const handleWebhook = async (req, res) => {
     }
 
     /* FIXED_MESSAGE_HANDOFF_R4:ownership_before_hook_a */
-    // Ownership runs before Hook A. `text` is declared later, so this uses the
-    // latest user body directly. A status ping while a human or another
-    // assignee owns the conversation stays silent, including the assignee this
-    // handoff just confirmed. Other messages still allow that confirmed
-    // assignee to finish the one fixed message. Account-number questions are
-    // not silenced here.
+    // Ownership runs before Hook A and before every later public path. `text`
+    // is declared later, so this uses the latest user body. A human owner, a
+    // human assignee, or a human reply suppresses the turn. No account-number
+    // answer, identity answer, or other new path posts on that thread.
     {
       const ownText = stripHtml(
         (latestUser && (latestUser.body || latestUser.text || latestUser.message)) || ''
@@ -3754,67 +3766,70 @@ const handleWebhook = async (req, res) => {
       const recoveredOwn = fixedMessageHandoff.reconcileFromParts({}, parts, full, '', ARSAL_ID);
       const oweFixedLine =
         fixedMessageHandoff.storesLookLost(progOwn) &&
-        recoveredOwn.noteConfirmed &&
-        recoveredOwn.assignConfirmed &&
-        !recoveredOwn.messageSent;
-      if (!fixedMessageHandoff.isAccountNumberQuestion(ownText)) {
-        const owned = teammateHandoffGates.classifyOwnership(full, parts, handoffOwnershipOpts());
-        if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent && !oweFixedLine) {
-          console.log('SKIP status-ping owned', owned.reason, conversationId);
-          return res.sendStatus(200);
-        }
-        const handoffAssigneeId = String(
-          (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
-            (oweFixedLine ? recoveredOwn.assigneeId : '') ||
-            ''
-        );
-        const deferEarly = teammateHandoffGates.shouldDeferToHumanTeammate(
+        fixedMessageHandoff.hasVerifiedNotePart(parts) &&
+        fixedMessageHandoff.hasAssignmentPart(parts, ARSAL_ID) &&
+        !recoveredOwn.messageSent &&
+        !fixedMessageHandoff.fixedLineAlreadyPublic(progOwn, parts);
+      const handoffAssigneeId = String(
+        (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
+          (oweFixedLine ? recoveredOwn.assigneeId : '') ||
+          ''
+      );
+      const owned = teammateHandoffGates.classifyOwnership(
+        full,
+        parts,
+        handoffOwnershipOpts(oweFixedLine ? { handoffAssigneeId } : {})
+      );
+      if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent && !oweFixedLine) {
+        console.log('SKIP status-ping owned', owned.reason, conversationId);
+        return res.sendStatus(200);
+      }
+      const humanCommented = fixedMessageHandoff.humanPublicComment(parts, handoffOwnershipOpts());
+      const foreignOwner = fixedMessageHandoff.foreignHumanOwns(
+        full,
+        recoveredOwn.assigneeId,
+        ARSAL_ID,
+        handoffOwnershipOpts()
+      );
+      if (
+        oweFixedLine &&
+        !owned.silent &&
+        !humanCommented &&
+        !foreignOwner &&
+        !fixedMessageHandoff.isAccountNumberQuestion(ownText)
+      ) {
+        const completion = fixedMessageHandoff.decide({
+          path: 'recovery',
+          latestText: ownText,
+          parts: (parts || []).filter((p) => {
+            const pt = String((p && p.part_type) || '');
+            return pt !== 'assignment' && pt !== 'assign';
+          }),
+          full,
+          botId: ARSAL_ID,
+          force: true,
+          handoffAssigneeId: recoveredOwn.assigneeId,
+          ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: recoveredOwn.assigneeId }),
+        });
+        await commitFixedMessageHandoff({
+          path: 'recovery',
+          decision: completion,
+          conversationId,
           full,
           parts,
-          ownText,
-          handoffOwnershipOpts({ handoffAssigneeId })
-        );
-        const humanCommented = fixedMessageHandoff.humanPublicComment(parts, handoffOwnershipOpts());
-        const foreignOwner = fixedMessageHandoff.foreignHumanOwns(
-          full,
-          recoveredOwn.assigneeId,
-          ARSAL_ID,
-          handoffOwnershipOpts()
-        );
-        if (oweFixedLine && !humanCommented && !foreignOwner) {
-          const completion = fixedMessageHandoff.decide({
-            path: 'recovery',
-            latestText: ownText,
-            parts: (parts || []).filter((p) => {
-              const pt = String((p && p.part_type) || '');
-              return pt !== 'assignment' && pt !== 'assign';
-            }),
-            full,
-            botId: ARSAL_ID,
-            force: true,
-            handoffAssigneeId: recoveredOwn.assigneeId,
-            ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: recoveredOwn.assigneeId }),
-          });
-          await commitFixedMessageHandoff({
-            path: 'recovery',
-            decision: completion,
-            conversationId,
-            full,
-            parts,
-            latestUser,
-            text: ownText,
-            problem: ownText,
-            clientName,
-            handoffAssigneeId: recoveredOwn.assigneeId,
-            preferAssigneeId: recoveredOwn.assigneeId,
-          });
-          console.log('FIXED_HANDOFF lost-state completion', conversationId);
-          return res.sendStatus(200);
-        }
-        if (deferEarly.skip) {
-          console.log('SKIP teammate-handoff', deferEarly.reason, conversationId);
-          return res.sendStatus(200);
-        }
+          latestUser,
+          text: ownText,
+          problem: ownText,
+          clientName,
+          handoffAssigneeId: recoveredOwn.assigneeId,
+          preferAssigneeId: recoveredOwn.assigneeId,
+        });
+        console.log('FIXED_HANDOFF lost-state completion', conversationId);
+        return res.sendStatus(200);
+      }
+      if (owned.silent || humanCommented || foreignOwner) {
+        console.log('SKIP teammate-handoff', owned.reason || 'human_owned', conversationId);
+        return res.sendStatus(200);
       }
     }
 
@@ -4015,13 +4030,11 @@ const handleWebhook = async (req, res) => {
 
     /* MICHAN_TEAMMATE_HANDOFF_V1:BEGIN:deferGate */
     {
-      if (!fixedMessageHandoff.isAccountNumberQuestion(text)) {
-        const handoffOpts = handoffOwnershipOpts();
-        const defer = teammateHandoffGates.shouldDeferToHumanTeammate(full, parts, text, handoffOpts);
-        if (defer.skip) {
-          console.log('SKIP teammate-handoff', defer.reason, conversationId);
-          return res.sendStatus(200);
-        }
+      const handoffOpts = handoffOwnershipOpts();
+      const defer = teammateHandoffGates.shouldDeferToHumanTeammate(full, parts, text, handoffOpts);
+      if (defer.skip) {
+        console.log('SKIP teammate-handoff', defer.reason, conversationId);
+        return res.sendStatus(200);
       }
     }
     /* MICHAN_TEAMMATE_HANDOFF_V1:END:deferGate */
@@ -4423,6 +4436,16 @@ const handleWebhook = async (req, res) => {
         console.log('ESCALATE->REPLY review-status-direct', conversationId);
       }
 
+      if (
+        fixedMessageHandoff.isSpreadTemplateDraft(parsed.body || '') &&
+        !isSpreadCheckAsk(text) &&
+        !fixedMessageHandoff.isAccountNumberQuestion(text)
+      ) {
+        parsed.action = 'REPLY';
+        parsed.body = UNSUPPORTED_NUMBER_HEDGE;
+        console.log('SPREAD_TEMPLATE not a handoff', conversationId);
+      }
+
       if (parsed.action === 'ESCALATE') {
       if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
         console.log('FIXED_HANDOFF main_escalate account-question exemption', conversationId);
@@ -4561,7 +4584,29 @@ const handleWebhook = async (req, res) => {
     // REPLY
     const __isScopeDecline = String(parsed.body || '').trim() === '[[SCOPE_DECLINE]]';
     let body = postProcessModelReply(parsed.body || '', conversationId);
+    if (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) {
+      body = fixedMessageHandoff.isAccountNumberQuestion(text)
+        ? fixedMessageHandoff.accountQuestionCustomerLine(text, '')
+        : UNSUPPORTED_NUMBER_HEDGE;
+    }
     if (!body) {
+      if (
+        (typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' && escalateRelatedOnly.isClearKbFaqAsk(text)) ||
+        (typeof isGeneralPolicyQuestion === 'function' && isGeneralPolicyQuestion(text))
+      ) {
+        console.log('EMPTY faq body escalate', conversationId);
+        await commitFixedMessageHandoff({
+          path: 'main_escalate',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: text,
+          actionNeeded: 'Please take this conversation.',
+        });
+        return res.sendStatus(200);
+      }
       console.log('SKIP empty reply body', conversationId);
       return res.sendStatus(200);
     }
@@ -4813,6 +4858,17 @@ const handleWebhook = async (req, res) => {
           }
         }
         let idsHeld = collectEscalateIds(full, bits, text) || {};
+        const __heldFails = (__presend && __presend.result && __presend.result.hardFails) || [];
+        const __unsupportedNumber = __heldFails.some((f) => f && f.code === 'UNSUPPORTED_NUMBER');
+        const __missedHuman = __heldFails.some((f) => f && f.code === 'MISSED_ESCALATION');
+        if (
+          !fixedMessageHandoff.isAccountNumberQuestion(text) &&
+          ((__unsupportedNumber && !__missedHuman) || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)))
+        ) {
+          console.log('PRESEND hedge instead of fixed line', conversationId);
+          await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
+          return res.sendStatus(200);
+        }
         /* FIXED_MESSAGE_HANDOFF_R3:missed_escalation */
         if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
           await postClientCommentOnce(conversationId, fixedMessageHandoff.accountQuestionCustomerLine(text, body||''), latestUser, clientName);

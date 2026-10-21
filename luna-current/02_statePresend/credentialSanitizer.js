@@ -36,6 +36,53 @@ function isExactAllowedTemplate(text) {
   return EXACT_ALLOW_HASHES.has(sha256Text(text));
 }
 
+// NFKC folds compatibility lookalikes. Format characters (ZWSP, ZWNJ, BOM, bidi
+// marks) are removed so a label or a secret cannot hide inside them.
+function normalizeCredentialText(text) {
+  return String(text == null ? '' : text).normalize('NFKC').replace(/\p{Cf}/gu, '');
+}
+
+function flexLabel(label) {
+  const chars = Array.from(String(label || ''));
+  let out = '';
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    if (/\s/u.test(ch)) {
+      out += '\\s+';
+      continue;
+    }
+    out += ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (i !== chars.length - 1) out += '\\s*';
+  }
+  return out;
+}
+
+const LATIN_LABELS = [
+  'one time password',
+  'one-time password',
+  'one time code',
+  'one-time code',
+  'one time pin',
+  'authentication code',
+  'verification code',
+  'security code',
+  'passphrase',
+  'passcode',
+  'password',
+  'api key',
+  'api-key',
+  'passwd',
+  'o.t.p',
+  'token',
+  'secret',
+  'pass',
+  'pwd',
+  'otp',
+  '2fa',
+  'mfa',
+  'pin',
+];
+
 const LABEL =
   'password|passcode|passphrase|passwd|pwd|pass|otp|o\\.t\\.p|one[\\s-]?time(?:\\s+(?:code|password|pin))?|pin|2fa|mfa|verification\\s+code|security\\s+code|auth(?:entication)?\\s+code|api[\\s-]?key|token|secret';
 
@@ -73,21 +120,28 @@ const STOP_WORD = 'and|but|please|account|email|thanks|thank';
 // Symbols stay inside the token. A password such as "a?b!" must not leave the
 // suffix after "?" in the note, the prompt, or the comment.
 const SECRET_TOKEN = '(?!(?:' + STOP_WORD + ')\\b)[^\\s<]{1,120}';
-// Brace-wrapped, tag-wrapped, or up to six tokens. A following "and account …" stops the value.
+// Brace-wrapped, tag-wrapped, or any number of chunks on the same line.
+// A following "and account …" stops the value. Spaces may separate every chunk.
 // The placeholder is a valid value so a second pass keeps it instead of eating the
 // letter before it ("password's [secret]" must stay unchanged).
 const SECRET_VALUE =
-  '(?:\\{[^{}]{1,240}\\}|<b>\\s*[^<]{1,240}\\s*</b>|' +
+  '(?:\\{[^{}]{1,400}\\}|<b>\\s*[^<]{1,400}\\s*</b>|' +
   SECRET_TOKEN +
-  '(?:\\s+' +
+  '(?:[ \\t]+' +
   SECRET_TOKEN +
-  '){0,5})';
+  ')*)';
 
 const CREDENTIAL_VALUE_RE = new RegExp(
   '(?<!\\[)(' + UNICODE_PASSWORD_LABEL + '|\\b(?:' + LABEL + ')\\b)(?!\\])(' + CREDENTIAL_SEP + ')(' + SECRET_VALUE + ')',
   'giu'
 );
 const UNICODE_CREDENTIAL_RE = CREDENTIAL_VALUE_RE;
+
+const FLEX_LABELS = LATIN_LABELS.concat(UNICODE_PASSWORD_LABEL.split('|')).sort((a, b) => Array.from(b).length - Array.from(a).length);
+const FLEX_LABEL_RE = new RegExp(
+  '(?<!\\[)(?<![A-Za-z0-9])(' + FLEX_LABELS.map(flexLabel).join('|') + ')(?![A-Za-z0-9])(?!\\])(' + CREDENTIAL_SEP + ')(' + SECRET_VALUE + ')',
+  'giu'
+);
 
 const BASE64_RE = /(?<![A-Za-z0-9+/])([A-Za-z0-9+/]{20,}={0,2})(?![A-Za-z0-9+/])/g;
 
@@ -103,11 +157,24 @@ function cleanSecretValue(raw) {
 }
 
 function rememberSecret(raw) {
-  const v = cleanSecretValue(raw);
+  const v = normalizeCredentialText(cleanSecretValue(raw));
   if (!v || v.length < 4) return;
   if (/^\[secret\]$/i.test(v)) return;
   if (/^(secret|password|token|pass|pin|otp)$/i.test(v)) return;
   rememberedSecrets.add(v);
+}
+
+function echoPattern(secret) {
+  const chars = Array.from(secret);
+  if (!chars.length || chars.length > 80) return null;
+  const body = chars.map((ch) => ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*');
+  // A second pass must remove the same span the label pass removed, including a
+  // brace or <b> wrapper. Otherwise "{secret}" becomes "{[secret]}" only on the
+  // replay, and the two calls disagree.
+  return new RegExp(
+    '(?<![A-Za-z0-9])(?:\\{\\s*|<(?:b|B)>\\s*)?(?:' + body + ')(?:\\s*\\}|\\s*</(?:b|B)>)?(?![A-Za-z0-9])',
+    'giu'
+  );
 }
 
 function replaceLabeledSecret(match, label, sep, value) {
@@ -136,8 +203,14 @@ function redactRememberedValues(text) {
   const secrets = [...rememberedSecrets].sort((a, b) => b.length - a.length);
   for (const secret of secrets) {
     if (!secret || secret.length < 4) continue;
-    if (!out.includes(secret)) continue;
-    out = out.split(secret).join('[secret]');
+    const key = normalizeCredentialText(secret);
+    if (!key || key.length < 4) continue;
+    const re = echoPattern(key);
+    // The pattern covers the exact secret, a spaced echo, and a brace or <b>
+    // wrapper. Splitting the bare secret first would leave the wrapper behind
+    // ("{[secret]}") and the next call would disagree with the first.
+    if (re) out = out.replace(re, '[secret]');
+    else if (out.includes(key)) out = out.split(key).join('[secret]');
   }
   return out;
 }
@@ -145,9 +218,13 @@ function redactRememberedValues(text) {
 function sanitizeCredentials(text) {
   const original = String(text == null ? '' : text);
   if (isExactAllowedTemplate(original)) return original;
-  // Count repeated base64 on the original so a copy inside a multi-token
-  // label value is removed, not only the copies that survive the label pass.
-  const repeated = redactRepeatedBase64(original);
+  // Normalize before counting so a repeated base64 token hidden by a format
+  // character is still the same token, including inside a label value.
+  // Known secrets are removed in normalized form before the label pass, so a
+  // spaced echo is not split into a label plus a leftover value.
+  const normalized = normalizeCredentialText(original);
+  const echoed = redactRememberedValues(normalized);
+  const repeated = redactRepeatedBase64(echoed);
   const labeled = repeated
     .replace(/\b(sk-[A-Za-z0-9_-]{16,})/g, (_m, tok) => {
       rememberSecret(tok);
@@ -157,7 +234,8 @@ function sanitizeCredentials(text) {
       rememberSecret(tok);
       return 'Bearer [secret]';
     })
-    .replace(CREDENTIAL_VALUE_RE, replaceLabeledSecret);
+    .replace(CREDENTIAL_VALUE_RE, replaceLabeledSecret)
+    .replace(FLEX_LABEL_RE, replaceLabeledSecret);
   return redactRememberedValues(labeled);
 }
 

@@ -56,6 +56,14 @@ const LATIN_MARKERS = Object.freeze({
   hi: ['kripya', 'kripaya', 'namaste', 'dhanyavaad', 'dhanyavad', 'aapko'],
   ur: ['assalam', 'assalamu', 'adaab', 'shukriya', 'meherbani', 'janab'],
   it: ['ciao', 'buongiorno', 'salve', 'grazie', 'vorrei', 'perche', 'voglio', 'parlare', 'operatore', 'assistenza', 'umano', 'umana', 'conto', 'numero', 'qual', 'mio', 'sono', 'della'],
+  fr: ['bonjour', 'bonsoir', 'merci', 'voudrais', 'parler', 'conseiller', 'compte', 'numero', 'quel', 'quelle', 'je', 'vous'],
+  de: ['hallo', 'danke', 'bitte', 'moechte', 'sprechen', 'kontonummer', 'konto', 'mein', 'wie', 'ich'],
+  nl: ['hallo', 'dank', 'alstublieft', 'graag', 'spreken', 'rekeningnummer', 'rekening', 'mijn', 'hoe'],
+  es: ['hola', 'gracias', 'quiero', 'hablar', 'cuenta', 'numero', 'cual', 'mi', 'por'],
+  pt: ['ola', 'obrigado', 'obrigada', 'quero', 'falar', 'conta', 'numero', 'qual', 'meu', 'minha'],
+  tr: ['merhaba', 'tesekkur', 'lutfen', 'istiyorum', 'konusmak', 'hesap', 'hesab', 'numara', 'nedir', 'benim', 'misiniz'],
+  pl: ['dzien', 'dziekuje', 'prosze', 'chce', 'rozmawiac', 'konta', 'numer', 'moj', 'jak'],
+  id: ['halo', 'terima', 'kasih', 'tolong', 'ingin', 'bicara', 'nomor', 'rekening', 'akun', 'saya'],
   en: ['the', 'please', 'what', 'how', 'my', 'your', 'hello', 'help'],
 });
 
@@ -77,6 +85,55 @@ const GRAMMAR = Object.freeze({
   en: {
     roles: ['agent', 'human', 'person', 'manager', 'supervisor', 'teammate', 'representative'],
     acts: ['talk', 'speak', 'connect', 'transfer', 'live', 'want', 'need'],
+  },
+  fr: {
+    roles: ['agent', 'humain', 'humaine', 'personne', 'conseiller', 'conseillère', 'operateur', 'opérateur'],
+    acts: ['parler', 'veux', 'voudrais', 'joindre', 'transfert', 'transfert'],
+  },
+  de: {
+    roles: ['mitarbeiter', 'mensch', 'person', 'berater', 'agent'],
+    acts: ['sprechen', 'moechte', 'möchte', 'verbinden', 'weiterleiten'],
+  },
+  nl: {
+    roles: ['medewerker', 'mens', 'persoon', 'agent'],
+    acts: ['spreken', 'wil', 'doorverbinden', 'verbinden'],
+  },
+  es: {
+    roles: ['agente', 'humano', 'persona', 'asesor'],
+    acts: ['hablar', 'quiero', 'conectar', 'transferir'],
+  },
+  pt: {
+    roles: ['agente', 'humano', 'pessoa', 'atendente'],
+    acts: ['falar', 'quero', 'ligar', 'transferir'],
+  },
+  tr: {
+    roles: ['temsilci', 'insan', 'operatör', 'operator'],
+    acts: ['konusmak', 'konuşmak', 'istiyorum', 'bagla', 'bağla'],
+  },
+  pl: {
+    roles: ['czlowiek', 'człowiek', 'konsultant', 'agent'],
+    acts: ['rozmawiac', 'rozmawiać', 'chce', 'chcę', 'polaczyc', 'połączyć'],
+  },
+  id: {
+    roles: ['agen', 'manusia', 'petugas', 'orang'],
+    acts: ['bicara', 'ingin', 'hubungkan', 'transfer'],
+  },
+  ru: {
+    roles: ['оператор', 'человек', 'сотрудник', 'агент'],
+    acts: ['хочу', 'говорить', 'соедините', 'переведите'],
+  },
+  zh: {
+    roles: ['人工', '客服', '代理人'],
+    acts: ['转接', '转给', '我要', '请接'],
+  },
+  ja: {
+    roles: ['担当者', 'オペレーター', '人間'],
+    acts: ['つなぐ', '代わり', '話したい', 'お願いします'],
+  },
+  // Roman Urdu/Hindi. The approved customer line stays Urdu script.
+  hinglish: {
+    roles: ['insaan', 'insan', 'banda', 'agent', 'human', 'person'],
+    acts: ['chahiye', 'chahie', 'baat', 'milao', 'jodo'],
   },
 });
 
@@ -104,6 +161,23 @@ function isExactAllowedTemplate(text) {
   );
 }
 
+// The spread template, or a near-miss of it, is not a handoff promise. It is
+// sent only when the customer's own message is an eligible spread ask.
+function isSpreadTemplateDraft(text) {
+  const raw = String(text || '');
+  if (!raw.trim()) return false;
+  if (isExactAllowedTemplate(raw)) return true;
+  if (raw.includes('QBG5FetfozKz7')) return true;
+  if (/TEST SPREAD ACCOUNT DETAILS/i.test(raw)) return true;
+  if (/Fundedelite-Server/i.test(raw) && /55188/.test(raw)) return true;
+  let hits = 0;
+  if (/MetaTrader 5/i.test(raw)) hits += 1;
+  if (/Fundedelite-Server/i.test(raw)) hits += 1;
+  if (/Account Number:\s*55188/.test(raw)) hits += 1;
+  if (/check spreads/i.test(raw)) hits += 1;
+  return hits >= 3;
+}
+
 function prepareNoteForEnglishPrompt(text) {
   const original = String(text == null ? '' : text);
   const redacted = redactCredentials(original);
@@ -128,7 +202,7 @@ function countMatches(re, text) {
 }
 
 function scoreWords(text, words) {
-  const t = String(text || '').toLowerCase();
+  const t = String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
   let n = 0;
   for (const w of words) {
     const re = new RegExp('(?:^|[^a-z])' + w + '(?:[^a-z]|$)', 'i');
@@ -138,17 +212,23 @@ function scoreWords(text, words) {
 }
 
 function detectLatinLanguage(text) {
-  const hi = scoreWords(text, LATIN_MARKERS.hi);
-  const ur = scoreWords(text, LATIN_MARKERS.ur);
-  const it = scoreWords(text, LATIN_MARKERS.it);
-  const en = scoreWords(text, LATIN_MARKERS.en);
+  const scores = {};
+  for (const lang of Object.keys(LATIN_MARKERS)) scores[lang] = scoreWords(text, LATIN_MARKERS[lang]);
   const south = scoreWords(text, SHARED_SOUTH_ASIAN);
-  if (hi > ur && hi >= it) return 'hi';
-  if (ur > hi && ur >= it) return 'ur';
-  if (it > en && it >= hi && it >= ur) return 'it';
+  let best = 'en';
+  let bestScore = scores.en || 0;
+  for (const lang of Object.keys(scores)) {
+    if (lang === 'en') continue;
+    const score = scores[lang] || 0;
+    if (score > bestScore) {
+      best = lang;
+      bestScore = score;
+    }
+  }
+  if (best !== 'en' && bestScore > (scores.en || 0)) return best;
   // Latin South Asian without Devanagari or Urdu-only letters is Hinglish.
   // The handoff line stays the approved Urdu line unless a Roman one is approved.
-  if (south > 0 && hi === 0 && ur === 0) return 'hinglish';
+  if (south > 0 && (scores.hi || 0) === 0 && (scores.ur || 0) === 0) return 'hinglish';
   return 'en';
 }
 
@@ -169,6 +249,12 @@ function detectLanguage(text) {
     if (urdu > 0 && urdu >= arOnly) return 'ur';
     return 'ar';
   }
+  const kana = (s.match(/[\u3040-\u30FF]/g) || []).length;
+  const han = (s.match(/[\u4E00-\u9FFF]/g) || []).length;
+  const cyr = (s.match(/[\u0400-\u04FF]/g) || []).length;
+  if (kana > 0 && kana + han >= latin) return 'ja';
+  if (han > 0 && han >= latin && han >= cyr) return 'zh';
+  if (cyr > 0 && cyr >= latin) return 'ru';
   return detectLatinLanguage(s);
 }
 
@@ -179,7 +265,11 @@ function containsToken(text, token, lang) {
   if (lang === 'en') {
     return new RegExp('(?:^|[^a-z])' + needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:[^a-z]|$)', 'i').test(raw);
   }
-  return raw.indexOf(needle) !== -1;
+  if (lang === 'ar') return raw.indexOf(needle) !== -1;
+  // Latin, Cyrillic, and CJK grammar is structural. Fold case and accents so
+  // "Menschen" and "möchte" still match the role and the act.
+  const fold = (s) => String(s || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  return fold(raw).indexOf(fold(needle)) !== -1;
 }
 
 function grammarHit(text, lang) {
@@ -206,10 +296,10 @@ function isAssistantIdentityQuestion(text) {
 
 function isStructuralHandoffAsk(text, lang) {
   const detected = lang || detectLanguage(text);
-  if (detected === 'ar' || detected === 'ur' || detected === 'hi' || detected === 'hinglish') {
-    return grammarHit(text, detected === 'hinglish' ? 'ur' : detected).hit;
-  }
-  if (grammarHit(text, 'en').hit) return true;
+  const grammarLang = detected === 'hinglish' ? 'hinglish' : detected;
+  if (GRAMMAR[grammarLang] && grammarHit(text, grammarLang).hit) return true;
+  if (detected === 'hinglish' && grammarHit(text, 'ur').hit) return true;
+  if (grammarLang !== 'en' && grammarHit(text, 'en').hit) return true;
   return softEdges.clientRequestedLiveAgent(text) || softEdges.finHandoffPhrase(text);
 }
 
@@ -242,9 +332,9 @@ function isPureLiveAgentAsk(text) {
 
 function isPureHandoff(text, lang) {
   const detected = lang || detectLanguage(text);
-  // Italian live-agent requests are a handoff even when the English grammar
-  // roles are absent. The customer line is the Italian fixed line.
-  if (detected === 'it' && isPureLiveAgentAsk(text)) return true;
+  // A non-English live-agent request is a handoff. The customer line is the
+  // approved translation when one exists, otherwise the English line.
+  if (detected !== 'en' && isPureLiveAgentAsk(text)) return true;
   if (!isStructuralHandoffAsk(text, lang)) return false;
   return stripHandoffTokens(text, lang).length < 28;
 }
@@ -272,14 +362,20 @@ function hasAccountNumberReference(text) {
   // Number-word plus account-word, with up to three words between them
   // ("numero di conto", "número de cuenta", "numéro de compte").
   if (
-    /\b(?:numer[oa]|num[eé]ro|n[uú]mero|nummer|kontonummer|rekeningnummer)\b(?:\s+\S+){0,3}\s+\b(?:conto|cuenta|compte|conta|konto|account)\b/i.test(
+    /\b(?:numer[oa]|num[eé]ro|n[uú]mero|nummer|numaras[ıi]|numer|nomor|kontonummer|rekeningnummer)\b(?:\s+\S+){0,3}\s+\b(?:conto|cuenta|compte|conta|konto|konta|account|hesap|akun|rekening|akaun)\b/i.test(
       s
     )
   ) {
     return true;
   }
-  if (/\b(?:conto|cuenta|compte|conta)\s+(?:numer[oa]|num[eé]ro|n[uú]mero)\b/i.test(s)) return true;
-  if (/\b(?:kontonummer|rekeningnummer)\b/i.test(s)) return true;
+  if (/\b(?:conto|cuenta|compte|conta|hesap|akun|rekening)\s+(?:numer[oa]|num[eé]ro|n[uú]mero|nummer|numaras[ıi]|numer|nomor)\b/i.test(s)) return true;
+  if (/\b(?:kontonummer|rekeningnummer|hesap\s+numaras[ıi]|numer\s+konta|nomor\s+(?:akun|rekening))\b/i.test(s)) return true;
+  // Turkish attaches suffixes: "hesap numaram", "hesabımın numarası".
+  if (/\bhesa[bp]\p{L}{0,8}\s+(?:\S+\s+){0,3}numara/iu.test(s)) return true;
+  if (/\bnumara\p{L}{0,8}\s+(?:\S+\s+){0,3}hesa[bp]/iu.test(s)) return true;
+  if (/номер\s+сч[её]та|номер\s+аккаунта/.test(s)) return true;
+  if (/账号|帳戶|账户|賬號/.test(s)) return true;
+  if (/口座番号|アカウント番号/.test(s)) return true;
   return false;
 }
 
@@ -298,6 +394,10 @@ function hasInterrogative(text) {
   if (/(?:^|\s)(?:ما|هل|كيف|اين|متى|لماذا|اخبر|قول)(?:\s|$)/.test(ar)) return true;
   if (/\b(?:what|how|when|where|why|which|who|whose|whom)\b/i.test(s)) return true;
   if (/\b(?:qual[ei]?|quale|come|dove|quando|perch[eé]|cosa)\b/i.test(s)) return true;
+  if (/\b(?:quel(?:le|s)?|comment|o[uù]|wie|wo|welche|cu[aá]l|c[oó]mo|d[oó]nde|onde|nedir|nas[ıi]l|jaki|gdzie|czy|apakah|berapa|bagaimana)\b/i.test(s)) return true;
+  if (/(?:что|как|где|какой|какая|какие)/.test(s)) return true;
+  if (/什么|什麼|哪|吗|嗎/.test(s)) return true;
+  if (/ですか|ますか|何|どこ/.test(s)) return true;
   if (/^(?:can|could|would|will|is|are|do|does|did|should|may)\b/i.test(s.trim())) return true;
   return false;
 }
@@ -348,7 +448,9 @@ function looksLikePromiseOrAsk(plain) {
 function accountQuestionCustomerLine(text, draft) {
   const lang = detectLanguage(text);
   const plain = stripHtml(draft || '').replace(/\s+/g, ' ').trim();
-  if (plain.length >= 12 && !looksLikePromiseOrAsk(plain)) return plain;
+  // A spread-template draft is not an account-number answer, even when the
+  // customer asked for the account number in the same turn.
+  if (plain.length >= 12 && !looksLikePromiseOrAsk(plain) && !isSpreadTemplateDraft(plain)) return plain;
   if (Object.prototype.hasOwnProperty.call(ACCOUNT_QUESTION_LINES, lang)) return ACCOUNT_QUESTION_LINES[lang];
   return ACCOUNT_QUESTION_LINES.en;
 }
@@ -507,16 +609,19 @@ function noteAlreadyPresent(parts, botId) {
 
 function noteInParts(parts) {
   for (const p of parts || []) {
-    if (!p) continue;
-    const pt = String(p.part_type || '');
-    const authorType = String((p.author || {}).type || '');
-    const noteLike = pt === 'note' || pt === '' || authorType === 'admin' || authorType === 'bot';
-    if (!noteLike) continue;
-    if (pt && pt !== 'note' && pt !== 'comment') continue;
+    if (!p || String(p.part_type || '') !== 'note') continue;
     const body = stripHtml(p.body || '');
     if (/\bAccount\s*:/i.test(body) && /\bProblem\s*:/i.test(body)) return true;
   }
   return false;
+}
+
+function hasVerifiedNotePart(parts) {
+  return noteInParts(parts);
+}
+
+function hasAssignmentPart(parts, botId) {
+  return !!assigneeFromParts(parts, {}, botId);
 }
 
 function assigneeFromParts(parts, conversation, botId) {
@@ -537,9 +642,8 @@ function assigneeFromParts(parts, conversation, botId) {
     }
   }
   if (bestId) return bestId;
-  const current =
-    conversation && conversation.admin_assignee_id != null ? String(conversation.admin_assignee_id) : '';
-  if (current && current !== '0' && current !== bot) return current;
+  void conversation;
+  void bot;
   return '';
 }
 
@@ -730,16 +834,28 @@ async function commit(ctx) {
     });
   }
 
-  if (!progress.noteConfirmed && !noteAlreadyPresent(src.parts, src.botId)) {
+  // A note is confirmed only after this write succeeds, or when a real note
+  // part is already in the conversation. A partial or failed write is never
+  // stored as confirmed. A comment that mentions Account and Problem is not a note.
+  const verifiedNote = noteInParts(src.parts) || noteAlreadyPresent(src.parts, src.botId);
+  let noteOk = verifiedNote || progress.noteConfirmed === true;
+  if (!verifiedNote && !progress.noteConfirmed) {
     if (progress.noteAmbiguous) {
+      progress.noteConfirmed = false;
       return finish({ reason: 'note_ambiguous_held', withhold: true, progress });
     }
     const noteRes = await transport.postNote(redactCredentials(src.noteHtml || ''));
     const noteClass = classifyAssignment(noteRes);
     if (!noteClass.ok) {
+      progress.noteConfirmed = false;
       if (ambiguousWrite(noteClass.reason)) progress.noteAmbiguous = true;
       return finish({ reason: 'note_' + noteClass.reason, withhold: true, progress });
     }
+    noteOk = true;
+  }
+  if (!noteOk) {
+    progress.noteConfirmed = false;
+    return finish({ reason: 'note_unverified', withhold: true, progress });
   }
   progress.noteConfirmed = true;
   progress.noteAmbiguous = false;
@@ -791,6 +907,9 @@ module.exports = {
   isAssistantIdentityQuestion,
   isPureLiveAgentAsk,
   isExactAllowedTemplate,
+  isSpreadTemplateDraft,
+  hasVerifiedNotePart,
+  hasAssignmentPart,
   fixedMessageFor,
   accountQuestionCustomerLine,
   ACCOUNT_QUESTION_LINES,

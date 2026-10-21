@@ -60,15 +60,34 @@ function isStatusPingOrFaq(text) {
   return false;
 }
 
+function draftIsSpreadTemplate(text) {
+  let handoff = null;
+  try {
+    handoff = require('../01_runtime/fixedMessageHandoff');
+  } catch (_) {
+    handoff = null;
+  }
+  return !!(handoff && typeof handoff.isSpreadTemplateDraft === 'function' && handoff.isSpreadTemplateDraft(text));
+}
+
+function customerAskedSpread(text) {
+  try {
+    const gate = require('../01_runtime/spreadAskGate');
+    if (gate && typeof gate.isSpreadCheckAsk === 'function') return gate.isSpreadCheckAsk(text);
+  } catch (_) { /* strict gate unavailable */ }
+  return false;
+}
+
 function decideFallbackIntent(codes, opts) {
   // A policy value contradicting the approved evidence is understood but unanswerable by the
   // bot: it must go to a teammate, never to the generic checking line and never as the wrong
-  // figure. A bot-owned status ping or FAQ is the exception: regenerate already ran, and the
-  // fallback hedges instead of opening a handoff.
-  if (codes.has(presend.HARD.UNSUPPORTED_NUMBER) || codes.has(presend.HARD.FORBIDDEN_DIAGNOSTIC_ACTION) || codes.has(presend.HARD.UNSUPPORTED_PROMISE)) {
-    if (codes.has(presend.HARD.UNSUPPORTED_NUMBER) && botOwnsConversation(opts) && isStatusPingOrFaq(lastClientText(opts))) {
-      return 'hedge';
-    }
+  // figure. An unsupported number, including a holding-time figure that survived regeneration,
+  // hedges instead. It must not open the fixed handoff line.
+  if (codes.has(presend.HARD.UNSUPPORTED_NUMBER)) {
+    if (botOwnsConversation(opts)) return 'hedge';
+    return 'unsupported-hold';
+  }
+  if (codes.has(presend.HARD.FORBIDDEN_DIAGNOSTIC_ACTION) || codes.has(presend.HARD.UNSUPPORTED_PROMISE)) {
     return 'escalate';
   }
   if (!codes.has(presend.HARD.MISSED_QUESTION) && !codes.has(presend.HARD.WRONG_TOPIC)) return null;
@@ -135,6 +154,14 @@ function safeFallback(draft, result, opts) {
   const accountAnswer = accountQuestionAnswer(body, opts);
   if (accountAnswer) return accountAnswer;
 
+  // The spread template is not a promise and not a handoff. It is only for an
+  // eligible spread ask, decided from the customer's message.
+  const asked = lastClientText(opts);
+  if ((draftIsSpreadTemplate(draft) || draftIsSpreadTemplate(body)) && !customerAskedSpread(asked)) {
+    if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'spread-template-held' };
+    return { body: HEDGE_REPLY, send: true, reason: 'spread-template-not-asked' };
+  }
+
   // Missed human handoff: hold so the engine can escalate, unless the client
   // asked for an account number. That question gets a real answer, never silence.
   if (codes.has(presend.HARD.MISSED_ESCALATION)) {
@@ -157,6 +184,7 @@ function safeFallback(draft, result, opts) {
   const intent = decideFallbackIntent(codes, opts);
   if (intent === 'clarify') return { body: CLARIFY_REPLY, send: true, reason: 'clarify-reply' };
   if (intent === 'hedge') return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
+  if (intent === 'unsupported-hold') return { body: '', send: false, reason: 'unsupported-number-held' };
   if (intent === 'escalate') return holdOrAccountAnswer('needs-escalate', body, opts);
 
   // Unfixable: use the engine's safe fallback message if given (and not itself a
@@ -227,7 +255,17 @@ async function runWithRegeneration(p) {
       result = presend.validate(draft, p.ctx);
       results.push(result);
     }
-    if (result.ok) return { body: draft, send: true, attempts, regenerated, results, finalReason: attempts ? 'regenerated-ok' : 'ok' };
+    if (result.ok) {
+      // A clean validation does not make the spread template eligible. Eligibility
+      // is the customer's message. Anything else hedges, and a human owner holds.
+      if (draftIsSpreadTemplate(draft) && !customerAskedSpread(lastClientText({ ctx: p.ctx }))) {
+        if (!botOwnsConversation({ ctx: p.ctx })) {
+          return { body: '', send: false, attempts, regenerated, results, finalReason: 'spread-template-held' };
+        }
+        return { body: HEDGE_REPLY, send: true, attempts, regenerated, results, finalReason: 'spread-template-not-asked' };
+      }
+      return { body: draft, send: true, attempts, regenerated, results, finalReason: attempts ? 'regenerated-ok' : 'ok' };
+    }
     const fb = safeFallback(draft, result, { ctx: p.ctx, fallbackReply: p.fallbackReply, imageAskGuard: p.ctx && p.ctx.guards && p.ctx.guards.imageAskGuard, conversationId: p.ctx && p.ctx.conversationId });
     return { body: fb.body, send: fb.send, attempts, regenerated, results, finalReason: fb.reason };
   } finally {

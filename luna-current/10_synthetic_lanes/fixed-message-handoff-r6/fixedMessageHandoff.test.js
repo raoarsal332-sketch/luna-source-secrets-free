@@ -322,7 +322,7 @@ tests.push(test('a bot-owned status ping or FAQ with an unsupported number hedge
     ctx: { assigneeId: 'human-1', botIds: ['seat-a', 'seat-e'], state: { last_client_message: 'any update?' } },
   });
   assert.strictEqual(owned.send, false);
-  assert.strictEqual(owned.reason, 'needs-escalate');
+  assert.strictEqual(owned.reason, 'unsupported-number-held');
   const humanAsk = targeted.safeFallback('', { hardFails: [{ code: 'MISSED_ESCALATION' }] }, {
     ctx: { state: { last_client_message: 'please get me a human' } },
   });
