@@ -51,7 +51,10 @@ function tokens(s, { keepStop = false } = {}) {
 
 function sentences(s) {
   const text = stripHtml(s).replace(/\n+/g, '. ');
-  return text.split(/(?<=[.!?])\s+|(?<=\?)/).map((x) => x.trim()).filter(Boolean);
+  // Devanagari danda, Arabic question mark, and fullwidth question mark end a
+  // sentence the same way "." and "?" do. A question mark still splits even
+  // when the next sentence is not separated by whitespace.
+  return text.split(/(?<=[.!?।？؟])\s+|(?<=[?؟？])/).map((x) => x.trim()).filter(Boolean);
 }
 
 function jaccard(a, b) {
@@ -168,7 +171,7 @@ function isGreetingOrSmallTalk(s) {
 // --- Ask detectors (what the bot is asking the client for) --------------------
 
 const ASK_PATTERNS = {
-  account_number: /\b(?:share|send|provide|give|tell|confirm|what(?:'s| is)|could you|can you|may i have|i need|please)\b[^.?!\n]{0,50}\b(?:account|login|trading account|acc)\s*(?:number|no\.?|id|#)/i,
+  account_number: /\b(?:share|send|provide|give|tell|confirm|what(?:'s| is)|could you|can you|may i have|i need|please)\b[^.?!\n।؟？]{0,50}\b(?:account|login|trading account|acc)\s*(?:number|no\.?|id|#)|(?:^|[^a-z0-9])(?:mera|meri|mere|mujhe|kya|kaise)\s+(?:\S+\s+){0,6}account\s*(?:number|no\.?|#)|(?:खाता|अकाउंट|अकाउण्ट|एकाउंट|अकाउन्ट)\s*(?:संख्या|नंबर|नम्बर)/iu,
   email: /\b(?:share|send|provide|give|tell|confirm|what(?:'s| is)|could you|can you|may i have|i need|please)\b[^.?!\n]{0,50}\b(?:e-?mail(?: address)?|registered email)\b/i,
   order_id: /\b(?:share|send|provide|give|tell|confirm|what(?:'s| is)|could you|can you|may i have|i need|please)\b[^.?!\n]{0,50}\b(?:order|payment|transaction|invoice)\s*(?:id|number|no\.?|reference)/i,
   screenshot: /\b(?:send|share|upload|attach|provide|forward|resend|re-send)\b[^.?!\n]{0,50}\b(?:screenshots?|screen shots?|images?|pictures?|photos?)\b/i,
@@ -181,10 +184,18 @@ function detectAsks(botText) {
   return out;
 }
 
+// \\b is ASCII-only, including under the u flag, so Devanagari interrogatives are
+// bounded by "not a Devanagari letter" instead. Hinglish tokens are bounded by
+// "not an ASCII letter" so "kya" does not match inside a longer Latin word.
+const DEVANAGARI_INTERROGATIVE = /(?:^|[^\u0900-\u097F])(?:क्या|कैसे|कहाँ|कहां|कब|क्यों|कौन|किस)(?:[^\u0900-\u097F]|$)/;
+const HINGLISH_INTERROGATIVE = /(?:^|[^a-z0-9])(?:kya|kaise|kahan|kab|kyun|kyon|kaun|kis)(?:[^a-z0-9]|$)/i;
+
 function isQuestionSentence(s) {
-  const t = s.trim();
+  const t = String(s || '').trim();
   if (!t) return false;
-  if (/\?\s*$/.test(t)) return true;
+  if (/[?؟？]\s*$/.test(t)) return true;
+  if (DEVANAGARI_INTERROGATIVE.test(t)) return true;
+  if (HINGLISH_INTERROGATIVE.test(t)) return true;
   return /^(?:can|could|would|will|how|what|when|where|why|which|who|is|are|do|does|did|should|may|am|please (?:tell|explain|let me know|advise|confirm)|i (?:want|need|would like) to know|let me know|any (?:idea|update)|tell me)\b/i.test(t);
 }
 
@@ -192,7 +203,8 @@ function isQuestionSentence(s) {
 // a reply answering only the first half score as complete, so the completeness gate never
 // fired and half the client's question was silently dropped. Split on a conjunction only
 // when BOTH sides still look like a real ask, so ordinary "X and Y" phrasing is untouched.
-const COMPOUND_SPLIT_RE = /\s+(?:,\s*)?(?:and|also|plus)\s+(?=(?:what|how|when|where|why|which|who|can|could|do|does|did|is|are|will|would|should|may|am)\b)/i;
+// "और" / "aur" are the same conjunction in Devanagari and Hinglish.
+const COMPOUND_SPLIT_RE = /\s+(?:,\s*)?(?:and|also|plus)\s+(?=(?:what|how|when|where|why|which|who|can|could|do|does|did|is|are|will|would|should|may|am)\b)|\s+aur\s+(?=(?:(?:\S+\s+){0,4})?(?:kya|kaise|kahan|kab|kyun|kyon|kaun|kis)\b)|\s+और\s+(?=(?:(?:\S+\s+){0,4})?(?:क्या|कैसे|कहाँ|कहां|कब|क्यों|कौन|किस))/iu;
 
 function splitCompoundQuestion(q) {
   const t = String(q || '').trim();
