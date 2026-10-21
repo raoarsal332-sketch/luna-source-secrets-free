@@ -570,10 +570,12 @@ function sanitizeEscalateProblem(text, account, email) {
   return t || 'Client needs backend / verification review.';
 }
 
-/** Arsal lock: internal notes always English (never Roman Urdu / Urdu / Italian for notes). */
+/** Arsal lock: internal notes always English (never Roman Urdu / Urdu / Italian / Hindi for notes). */
 function looksNonEnglishNote(text) {
   const t = String(text || '').trim();
   if (!t) return false;
+  // Devanagari (Hindi). Detected before any translation prompt is built.
+  if (/[\u0900-\u097F]/.test(t)) return true;
   // Urdu/Arabic script
   if (/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(t)) return true;
   // Common Roman Urdu / Urdu-Latin markers (word-ish)
@@ -588,9 +590,13 @@ function looksNonEnglishNote(text) {
 }
 
 async function ensureInternalNoteEnglish(text, label) {
-  const raw = String(text || '').trim();
+  // Redact the original before the translation prompt, and redact the model
+  // output before it can enter the note. A canary must not reach either.
+  const original = String(text || '').trim();
+  const raw = fixedMessageHandoff.redactCredentials(original);
   if (!raw) return raw;
   if (!looksNonEnglishNote(raw)) return raw;
+  const promptText = raw;
   try {
     const ai = await openai.chat.completions.create({
       model: control.getModel(),
@@ -598,12 +604,14 @@ async function ensureInternalNoteEnglish(text, label) {
         {
           role: 'system',
           content:
-            'Rewrite the following INTERNAL Intercom note field into clear English only. Keep meaning, names, numbers, emails, @mentions, and account IDs. No Roman Urdu, Urdu, Italian, or other languages. No greeting. Output only the rewritten note text.',
+            'Rewrite the following INTERNAL Intercom note field into clear English only. Keep meaning, names, numbers, emails, @mentions, and account IDs. No Roman Urdu, Urdu, Italian, Hindi, or other languages. No greeting. Output only the rewritten note text.',
         },
-        { role: 'user', content: (label ? '[' + label + ']\n' : '') + raw },
+        { role: 'user', content: (label ? '[' + label + ']\n' : '') + promptText },
       ],
     });
-    const out = (((ai.choices[0] || {}).message || {}).content || '').trim();
+    const out = fixedMessageHandoff.redactCredentials(
+      (((ai.choices[0] || {}).message || {}).content || '').trim()
+    );
     if (out) return out;
   } catch (e) {
     console.error('NOTE_EN_OVERLAY fail', label || '', e && e.message);
@@ -3709,6 +3717,40 @@ const handleWebhook = async (req, res) => {
       console.log('USER_PART_FROM_SOURCE', conversationId);
     }
 
+    /* FIXED_MESSAGE_HANDOFF_R4:ownership_before_hook_a */
+    // Ownership runs before Hook A. `text` is declared later, so this uses the
+    // latest user body directly. A status ping while a human or another
+    // assignee owns the conversation stays silent, including the assignee this
+    // handoff just confirmed. Other messages still allow that confirmed
+    // assignee to finish the one fixed message. Account-number questions are
+    // not silenced here.
+    {
+      const ownText = stripHtml(
+        (latestUser && (latestUser.body || latestUser.text || latestUser.message)) || ''
+      );
+      if (!fixedMessageHandoff.isAccountNumberQuestion(ownText)) {
+        const stPackOwn = getConvState(conversationId);
+        const progOwn = stPackOwn && stPackOwn.state && stPackOwn.state.fixedHandoff;
+        const owned = teammateHandoffGates.classifyOwnership(full, parts, handoffOwnershipOpts());
+        if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent) {
+          console.log('SKIP status-ping owned', owned.reason, conversationId);
+          return res.sendStatus(200);
+        }
+        const handoffAssigneeId =
+          progOwn && !progOwn.messageSent ? String(progOwn.assigneeId || '') : '';
+        const deferEarly = teammateHandoffGates.shouldDeferToHumanTeammate(
+          full,
+          parts,
+          ownText,
+          handoffOwnershipOpts({ handoffAssigneeId })
+        );
+        if (deferEarly.skip) {
+          console.log('SKIP teammate-handoff', deferEarly.reason, conversationId);
+          return res.sendStatus(200);
+        }
+      }
+    }
+
         /* escalate-related-only-v1: awaiting RELATED-only gate */
     {
       const stPackEro = (typeof stPack !== 'undefined' && stPack) || getConvState(conversationId);
@@ -3726,6 +3768,8 @@ const handleWebhook = async (req, res) => {
           {
             arsalId: typeof ARSAL_ID !== 'undefined' ? ARSAL_ID : '',
             eliteAiId: typeof ELITE_AI_ID !== 'undefined' ? ELITE_AI_ID : '',
+            assigneeId: full && full.admin_assignee_id != null ? String(full.admin_assignee_id) : '',
+            conversation: full,
           }
         );
         if (eroDec.cleared) {
@@ -3756,7 +3800,10 @@ const handleWebhook = async (req, res) => {
         }
       }
     }
-    if (arsalAlreadyRepliedAfter(parts, latestUser)) {
+    if (
+      arsalAlreadyRepliedAfter(parts, latestUser) &&
+      !fixedMessageHandoff.isAccountNumberQuestion(stripHtml((latestUser && latestUser.body) || ''))
+    ) {
       // Race recovery: we asked for account/email, client already supplied both (possibly
       // across messages / while AI was running), but the ask landed after their message so
       // the normal skip would leave them stuck. Escalate instead of re-asking.
@@ -3841,20 +3888,31 @@ const handleWebhook = async (req, res) => {
       const prog = stPackH.state && stPackH.state.fixedHandoff;
       if (prog && prog.noteConfirmed && !prog.messageSent) {
         /* FIXED_MESSAGE_HANDOFF_R3:recovery */
-        await commitFixedMessageHandoff({
-          path: 'recovery',
-          conversationId,
-          full,
-          parts,
-          text,
-          problem: text,
-          clientName,
-          latestUser,
-          actionNeeded: 'Please take this conversation.',
-          preferAssigneeId: prog.assigneeId || '',
-        });
-        console.log('FIXED_HANDOFF recovery', conversationId);
-        return res.sendStatus(200);
+        // Account-number questions are exempt before this return. The same
+        // branch is a 422 retry (assignConfirmed false) and a 500 / ambiguous
+        // hold (assignAmbiguous). Neither may send the fixed line or stop
+        // the webhook from answering the question.
+        if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+          console.log('FIXED_HANDOFF recovery account-question exemption', conversationId, {
+            failure422: prog.assignConfirmed !== true,
+            failure500: prog.assignAmbiguous === true,
+          });
+        } else {
+          await commitFixedMessageHandoff({
+            path: 'recovery',
+            conversationId,
+            full,
+            parts,
+            text,
+            problem: text,
+            clientName,
+            latestUser,
+            actionNeeded: 'Please take this conversation.',
+            preferAssigneeId: prog.assigneeId || '',
+          });
+          console.log('FIXED_HANDOFF recovery', conversationId);
+          return res.sendStatus(200);
+        }
       }
     }
 
@@ -3866,11 +3924,13 @@ const handleWebhook = async (req, res) => {
 
     /* MICHAN_TEAMMATE_HANDOFF_V1:BEGIN:deferGate */
     {
-      const handoffOpts = handoffOwnershipOpts();
-      const defer = teammateHandoffGates.shouldDeferToHumanTeammate(full, parts, text, handoffOpts);
-      if (defer.skip) {
-        console.log('SKIP teammate-handoff', defer.reason, conversationId);
-        return res.sendStatus(200);
+      if (!fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        const handoffOpts = handoffOwnershipOpts();
+        const defer = teammateHandoffGates.shouldDeferToHumanTeammate(full, parts, text, handoffOpts);
+        if (defer.skip) {
+          console.log('SKIP teammate-handoff', defer.reason, conversationId);
+          return res.sendStatus(200);
+        }
       }
     }
     /* MICHAN_TEAMMATE_HANDOFF_V1:END:deferGate */
@@ -4368,18 +4428,27 @@ const handleWebhook = async (req, res) => {
         .filter(Boolean)
         .join('\n');
       /* FIXED_MESSAGE_HANDOFF_R3:main_escalate */
-      await commitFixedMessageHandoff({
-        path: 'main_escalate',
-        conversationId,
-        full,
-        parts,
-        latestUser,
-        text,
-        problem: problemWithExtras,
-        account: ids.account,
-        email: ids.email,
-        actionNeeded: parsed.actionNeeded || 'Please take this conversation.',
-      });
+      if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        console.log('FIXED_HANDOFF main_escalate account-question exemption', conversationId);
+        const draft = String(parsed.body || '').trim();
+        const plain = stripHtml(draft);
+        if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
+          await postClientCommentOnce(conversationId, draft, latestUser, clientName);
+        }
+      } else {
+        await commitFixedMessageHandoff({
+          path: 'main_escalate',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: problemWithExtras,
+          account: ids.account,
+          email: ids.email,
+          actionNeeded: parsed.actionNeeded || 'Please take this conversation.',
+        });
+      }
       return res.sendStatus(200);
       } // end remaining ESCALATE after possible ESCALATE->REPLY conversion
     }
@@ -4442,18 +4511,26 @@ const handleWebhook = async (req, res) => {
         if (known.account || known.email) {
           parsed.action = 'ESCALATE';
           /* FIXED_MESSAGE_HANDOFF_R3:presend_escalate */
-          await commitFixedMessageHandoff({
-            path: 'presend_escalate',
-            conversationId,
-            full,
-            parts,
-            latestUser,
-            text,
-            problem: text,
-            account: known.account || '',
-            email: known.email || '',
-            actionNeeded: 'Please take this conversation.',
-          });
+          if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+            console.log('FIXED_HANDOFF presend account-question exemption', conversationId);
+            const plain = stripHtml(body || '');
+            if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
+              await postClientCommentOnce(conversationId, body, latestUser, clientName);
+            }
+          } else {
+            await commitFixedMessageHandoff({
+              path: 'presend_escalate',
+              conversationId,
+              full,
+              parts,
+              latestUser,
+              text,
+              problem: text,
+              account: known.account || '',
+              email: known.email || '',
+              actionNeeded: 'Please take this conversation.',
+            });
+          }
           return res.sendStatus(200);
         }
         // Nothing known and blocked , strip is unsafe; skip send rather than re-ask
@@ -4630,18 +4707,27 @@ const handleWebhook = async (req, res) => {
           if (!identityGate.ready) return res.sendStatus(200);
         }
         /* FIXED_MESSAGE_HANDOFF_R3:missed_escalation */
-        await commitFixedMessageHandoff({
-          path: 'missed_escalation',
-          conversationId,
-          full,
-          parts,
-          latestUser,
-          text,
-          problem: text,
-          account: idsHeld.account || '',
-          email: idsHeld.email || '',
-          actionNeeded: 'Please take this conversation.',
-        });
+        if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+          console.log('FIXED_HANDOFF missed account-question', conversationId);
+          const draft = String(body || '').trim();
+          const plain = stripHtml(draft);
+          if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
+            await postClientCommentOnce(conversationId, draft, latestUser, clientName);
+          }
+        } else {
+          await commitFixedMessageHandoff({
+            path: 'missed_escalation',
+            conversationId,
+            full,
+            parts,
+            latestUser,
+            text,
+            problem: text,
+            account: idsHeld.account || '',
+            email: idsHeld.email || '',
+            actionNeeded: 'Please take this conversation.',
+          });
+        }
       } catch (e) {
         console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
       }

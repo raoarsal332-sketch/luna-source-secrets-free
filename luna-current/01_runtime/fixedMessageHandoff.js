@@ -10,17 +10,42 @@
  * are not a welcome. Handoff asks in Urdu, Arabic, and Hindi are chosen by script
  * and language, and the fixed lines state only the assignment that just succeeded.
  *
+ * Account-number questions are exempt on every path, including recovery and
+ * missed escalation, and they are decided before ownership silence. Credential
+ * values are removed from the original text, including after ' and ’, before a
+ * note or a translation prompt is built.
+ *
  * approved is false. This module does not deploy, call Intercom, or read secrets.
  */
 
 const softEdges = require('./softEdges');
 const teammateHandoffGates = require('./teammateHandoffGates');
 
-let sharedRedact = null;
+let credentialSanitizer = null;
 try {
-  sharedRedact = require('../02_statePresend/credentialSanitizer').sanitizeCredentials;
+  credentialSanitizer = require('../02_statePresend/credentialSanitizer');
 } catch (_) {
-  sharedRedact = null;
+  credentialSanitizer = null;
+}
+
+// Same separators as the shared sanitizer, applied here to the original text.
+// ' and ’ (U+2019), including a possessive 's, are separators. Arabic, Urdu,
+// and Devanagari password labels have no ASCII word boundary.
+const CREDENTIAL_SEP = "(?:['\u2019]s)?[\\s:='\"\u2018\u2019\u201C\u201D-]*(?:is|was|:|=)?[\\s:='\"\u2018\u2019\u201C\u201D-]*";
+const CREDENTIAL_LABEL =
+  'password|passcode|passphrase|passwd|pwd|pass|otp|pin|2fa|mfa|token|secret';
+// One expression, applied to the original text. Unicode labels are not behind
+// \\b. The placeholder is not fed through a second label pass.
+const CREDENTIAL_VALUE_RE = new RegExp(
+  '(كلمة المرور|پاس ورڈ|पासवर्ड|\\b(?:' + CREDENTIAL_LABEL + ')\\b)(' + CREDENTIAL_SEP + ')(\\S+)',
+  'giu'
+);
+
+function applyCredentialPattern(text) {
+  return String(text == null ? '' : text)
+    .replace(/\bsk-[A-Za-z0-9_-]{16,}/g, '[secret]')
+    .replace(/\bBearer\s+[A-Za-z0-9._-]{16,}/gi, 'Bearer [secret]')
+    .replace(CREDENTIAL_VALUE_RE, (_m, label, sep) => label + sep + '[secret]');
 }
 
 const STATUS = Object.freeze({
@@ -73,22 +98,24 @@ function stripHtml(s) {
 }
 
 function redactCredentials(text) {
-  let t = String(text == null ? '' : text);
-  if (typeof sharedRedact === 'function') t = sharedRedact(t);
-  else {
-    t = t
-      .replace(/\bsk-[A-Za-z0-9_-]{16,}/g, '[secret]')
-      .replace(/\bBearer\s+[A-Za-z0-9._-]{16,}/gi, 'Bearer [secret]')
-      .replace(
-        /\b(password|passcode|pass|otp|pin|2fa|mfa|token|secret)\b([\s:=-]*(?:is|was|:|=)?[\s:=-]*)(\S+)/gi,
-        (_, label, sep) => label + sep + '[secret]'
-      );
+  // Complete pattern on the original text, once. A narrower first pass that
+  // treats only "'s" as the value would leave the real secret beside a
+  // placeholder, and a later pass would no longer see the label next to it.
+  const original = String(text == null ? '' : text);
+  if (credentialSanitizer && typeof credentialSanitizer.sanitizeCredentials === 'function') {
+    return credentialSanitizer.sanitizeCredentials(original);
   }
-  t = t.replace(
-    /\b(pwd|passwd|passphrase)\b([\s:=-]*(?:is|was|:|=)?[\s:=-]*)(\S+)/gi,
-    (_, label, sep) => label + sep + '[secret]'
-  );
-  return t;
+  return applyCredentialPattern(original);
+}
+
+function prepareNoteForEnglishPrompt(text) {
+  const original = String(text == null ? '' : text);
+  const redacted = redactCredentials(original);
+  return {
+    text: redacted,
+    promptText: redacted,
+    devanagari: /[\u0900-\u097F]/.test(original),
+  };
 }
 
 function normalizeArabic(s) {
@@ -223,13 +250,31 @@ function hasAccountNumberReference(text) {
   if (/\b(account\s*(number|no\.?|#)|a\/?c\s*no\.?|acct\s*(number|no\.?))\b/i.test(s)) return true;
   if (/رقم\s*(?:ال)?حساب/.test(normalizeArabic(s))) return true;
   if (/اکاؤنٹ\s*نمبر|اکاونٹ\s*نمبر/.test(s)) return true;
-  if (/खाता\s*(संख्या|नंबर)|अकाउंट\s*नंबर/.test(s)) return true;
+  if (/(?:खाता|अकाउंट|अकाउण्ट|एकाउंट|अकाउन्ट)\s*(?:संख्या|नंबर|नम्बर)/.test(s)) return true;
   if (/\b(account|acct)\b/i.test(s) && /(?<!\d)\d{5,12}(?!\d)/.test(s)) return true;
   return false;
 }
 
+// Interrogatives that mark an account reference as a question. "is" alone is
+// not one: "my account number is 189143" supplies an identity, it does not ask.
+const DEVANAGARI_INTERROGATIVE = /(?:^|[^\u0900-\u097F])(?:क्या|कैसे|कहाँ|कहां|कब|क्यों|कौन|किस)(?:[^\u0900-\u097F]|$)/;
+const HINGLISH_INTERROGATIVE = /(?:^|[^a-z0-9])(?:kya|kaise|kahan|kab|kyun|kyon|kaun|kis)(?:[^a-z0-9]|$)/i;
+
+function hasInterrogative(text) {
+  const s = String(text || '');
+  if (/[?؟？]/.test(s)) return true;
+  if (DEVANAGARI_INTERROGATIVE.test(s)) return true;
+  if (HINGLISH_INTERROGATIVE.test(s)) return true;
+  if (/(?:کیا|کیسے|کہاں|کب|کیوں|کون)/.test(s)) return true;
+  const ar = normalizeArabic(s);
+  if (/(?:^|\s)(?:ما|هل|كيف|اين|متى|لماذا)(?:\s|$)/.test(ar)) return true;
+  if (/\b(?:what|how|when|where|why|which|who|whose|whom)\b/i.test(s)) return true;
+  if (/^(?:can|could|would|will|is|are|do|does|did|should|may)\b/i.test(s.trim())) return true;
+  return false;
+}
+
 function isAccountNumberQuestion(text) {
-  return hasAccountNumberReference(text);
+  return hasAccountNumberReference(text) && hasInterrogative(text);
 }
 
 function arsalSpoke(parts, botId) {
@@ -255,6 +300,20 @@ function decide(input) {
   const parts = src.parts || [];
   const path = src.path || 'welcome';
   const lang = detectLanguage(text);
+  // An account-number question is answered on the normal path. This is before
+  // ownership silence and before the force flag, so recovery, missed
+  // escalation, and a human assignee cannot turn it into the fixed line or
+  // into silence.
+  if (isAccountNumberQuestion(text)) {
+    return {
+      action: 'route_normal',
+      route: 'normal',
+      silent: false,
+      reason: 'account_number_question',
+      message: null,
+      language: lang,
+    };
+  }
   const ownershipOpts = Object.assign({}, src.ownershipOpts, {
     handoffAssigneeId:
       src.handoffAssigneeId ||
@@ -268,16 +327,6 @@ function decide(input) {
       silent: true,
       route: null,
       reason: ownership.reason,
-      message: null,
-      language: lang,
-    };
-  }
-  if (path === 'welcome' && isAccountNumberQuestion(text)) {
-    return {
-      action: 'route_normal',
-      route: 'normal',
-      silent: false,
-      reason: 'account_number_question',
       message: null,
       language: lang,
     };
@@ -525,6 +574,7 @@ module.exports = {
   STATUS,
   FIXED_MESSAGES,
   redactCredentials,
+  prepareNoteForEnglishPrompt,
   detectLanguage,
   isStructuralHandoffAsk,
   isAccountNumberQuestion,

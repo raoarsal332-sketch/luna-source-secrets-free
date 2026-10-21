@@ -6,18 +6,30 @@
  * introduced by a credential label (or obvious key/token shapes) are replaced.
  */
 
-const LABEL = String.raw`password|passcode|pass|otp|o\.t\.p|one[\s-]?time(?:\s+(?:code|password|pin))?|pin|2fa|mfa|verification\s+code|security\s+code|auth(?:entication)?\s+code|api[\s-]?key|token|secret`;
+const LABEL = String.raw`password|passcode|passphrase|passwd|pwd|pass|otp|o\.t\.p|one[\s-]?time(?:\s+(?:code|password|pin))?|pin|2fa|mfa|verification\s+code|security\s+code|auth(?:entication)?\s+code|api[\s-]?key|token|secret`;
 
+// Apostrophe and U+2019 are separators, including a possessive 's / ’s, so the
+// value after "password's …" is the secret and not the two letters "'s".
+const CREDENTIAL_SEP = "(?:['\u2019]s)?[\\s:='\"\u2018\u2019\u201C\u201D-]*(?:is|was|:|=)?[\\s:='\"\u2018\u2019\u201C\u201D-]*";
+
+// One pass. A second pass would see the word "secret" inside the placeholder
+// and redact that placeholder again. Unicode labels have no ASCII \\b.
+const UNICODE_PASSWORD_LABEL = 'كلمة المرور|پاس ورڈ|पासवर्ड';
 const CREDENTIAL_VALUE_RE = new RegExp(
-  String.raw`\b(${LABEL})\b([\s:=-]*(?:is|was|:|=)?[\s:=-]*)(\S+)`,
-  'gi'
+  '(' + UNICODE_PASSWORD_LABEL + '|\\b(?:' + LABEL + ')\\b)(' + CREDENTIAL_SEP + ')(\\S+)',
+  'giu'
 );
+const UNICODE_CREDENTIAL_RE = CREDENTIAL_VALUE_RE;
+
+function replaceLabeledSecret(_m, label, sep) {
+  return label + sep + '[secret]';
+}
 
 function sanitizeCredentials(text) {
   return String(text == null ? '' : text)
     .replace(/\bsk-[A-Za-z0-9_-]{16,}/g, '[secret]')
     .replace(/\bBearer\s+[A-Za-z0-9._-]{16,}/gi, 'Bearer [secret]')
-    .replace(CREDENTIAL_VALUE_RE, (m, label, sep) => `${label}${sep}[secret]`);
+    .replace(CREDENTIAL_VALUE_RE, replaceLabeledSecret);
 }
 
 function sanitizeDeep(value, seen) {
@@ -33,4 +45,10 @@ function sanitizeDeep(value, seen) {
   return out;
 }
 
-module.exports = { sanitizeCredentials, sanitizeDeep, CREDENTIAL_VALUE_RE };
+module.exports = {
+  sanitizeCredentials,
+  sanitizeDeep,
+  CREDENTIAL_VALUE_RE,
+  UNICODE_CREDENTIAL_RE,
+  CREDENTIAL_SEP,
+};
