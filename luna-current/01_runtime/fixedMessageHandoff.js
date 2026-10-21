@@ -913,6 +913,10 @@ async function commit(ctx) {
     progress.assignConfirmed = false;
     progress.phase = '';
   }
+  // The note part was removed after the assignment stuck. The stored flag is
+  // not the note. Rewrite it, then post the fixed line once. An assignment that
+  // is not on the seat yet keeps the flag so a pending retry does not add a
+  // second note, and an ambiguous hold still makes no calls.
   const transport = src.transport;
   if (!transport || typeof transport.postNote !== 'function' || typeof transport.assign !== 'function' || typeof transport.postMessage !== 'function') {
     return finish({ reason: 'no_transport', withhold: true, progress });
@@ -945,6 +949,16 @@ async function commit(ctx) {
   // part is already in the conversation. A partial or failed write is never
   // stored as confirmed. A comment that mentions Account and Problem is not a note.
   const verifiedNote = noteInParts(src.parts, src.botId) || noteAlreadyPresent(src.parts, src.botId);
+  if (
+    !verifiedNote &&
+    progress.noteConfirmed === true &&
+    !progress.noteAmbiguous &&
+    !progress.assignAmbiguous &&
+    !progress.messageAmbiguous &&
+    (partsAssignOk || assignmentAlreadyHeld(src.conversation, src.assigneeId || progress.assigneeId))
+  ) {
+    progress.noteConfirmed = false;
+  }
   let noteOk = verifiedNote || progress.noteConfirmed === true;
   let wroteNote = false;
   let wroteAssign = false;
@@ -1153,6 +1167,88 @@ function ownerPublicReplyDecision(opts) {
   return { applies: true, post: true, verbatim: true, body, reason: 'owner-command' };
 }
 
+function isLegitimateClarification(text) {
+  const q = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!q || q.length > 220) return false;
+  if (/\d/.test(q)) return false;
+  if (/\bteam\s+will\s+review\b/i.test(q)) return false;
+  if (q === APPROVED_NUMBER_HEDGE) return false;
+  return /\bplease tell me which challenge you mean\b/i.test(q)
+    || /\bwhich challenge (?:do )?you mean\b/i.test(q);
+}
+
+function partsWithoutOwnAssignment(parts, assigneeId) {
+  const id = String(assigneeId || '');
+  if (!id) return parts || [];
+  return (parts || []).filter((part) => {
+    if (!part) return false;
+    const pt = String(part.part_type || '');
+    if (pt !== 'assignment' && pt !== 'assign') return true;
+    const assigned = part.assigned_to || part.assignee || {};
+    const target = String((assigned && assigned.id) || part.assignee_id || '');
+    return target !== id;
+  });
+}
+
+/**
+ * The note is gone and the ticket progress may be gone, but the op record says
+ * Luna assigned this handoff. That seat is not a human owner. Resume when the
+ * assignment is still the current seat, or hold when it is not verified.
+ * A different human, an ambiguous write, or a line that is already public does
+ * not resume and does not post again.
+ */
+function resumeLostHandoff(opts) {
+  const o = opts || {};
+  const progress = Object.assign(blankProgress(), o.progress || {});
+  const op = o.opRecord || null;
+  const botId = String(o.botId || '');
+  const parts = o.parts || [];
+  const conversation = o.conversation || {};
+  const empty = { resume: false, hold: false, reason: '', assigneeId: '', handoffAssigneeId: '' };
+  if (progress.messageSent || fixedLineAlreadyPublic(progress, parts)) {
+    return Object.assign({}, empty, { reason: 'already_sent' });
+  }
+  if (progress.assignAmbiguous || progress.noteAmbiguous || progress.messageAmbiguous) {
+    return Object.assign({}, empty, { reason: 'ambiguous_held' });
+  }
+  const opAssignee = op && op.status === 'confirmed' && op.kind === 'assignment' && String(op.madeBy || '') === botId
+    ? String(op.assigneeId || '')
+    : '';
+  const assigneeId = opAssignee || String(progress.assigneeId || '');
+  if (!assigneeId) return Object.assign({}, empty, { reason: 'no_op_record' });
+  const notePresent = noteInParts(parts, botId);
+  if (notePresent && progress.noteConfirmed === true) {
+    return {
+      resume: false,
+      hold: false,
+      reason: 'note_still_present',
+      assigneeId,
+      handoffAssigneeId: assigneeId,
+    };
+  }
+  const current = conversation.admin_assignee_id != null ? String(conversation.admin_assignee_id) : '';
+  const partsAssignee = assigneeFromParts(parts, conversation, botId);
+  const verified = current === assigneeId || partsAssignee === assigneeId;
+  if (!verified) {
+    const otherHuman = current && current !== '0' && current !== botId && current !== assigneeId;
+    if (otherHuman) return Object.assign({}, empty, { reason: 'foreign_owner' });
+    return {
+      resume: true,
+      hold: true,
+      reason: 'assignment_unverified',
+      assigneeId,
+      handoffAssigneeId: '',
+    };
+  }
+  return {
+    resume: true,
+    hold: false,
+    reason: 'op_assignment',
+    assigneeId,
+    handoffAssigneeId: assigneeId,
+  };
+}
+
 function isPublicCustomerReply(part) {
   if (!part) return false;
   const pt = String(part.part_type || '');
@@ -1172,7 +1268,10 @@ module.exports = {
   isPureLiveAgentAsk,
   isExactAllowedTemplate,
   isTerminalHedge,
+  isLegitimateClarification,
   isPublicCustomerReply,
+  partsWithoutOwnAssignment,
+  resumeLostHandoff,
   isSpreadTemplateDraft,
   HANDOFF_NOTE_MARKER,
   hasVerifiedNotePart,

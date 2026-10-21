@@ -186,7 +186,7 @@ function isClearKbFaqAsk(text) {
 
   // General payout minimum / schedule FAQ (not "where is MY payout")
   if (
-    /\b(payout\s*min(imum)?|minimum\s*payout|how\s+(much|long).{0,40}payout|payout\s*(time|schedule|policy))\b/.test(
+    /\b(payouts?\s*min(imum)?|minimum\s*payouts?|how\s+(much|long).{0,60}payouts?|payouts?\s*(?:time|schedule|policy|take))\b/.test(
       q
     ) &&
     !/\b(my\s+payout|where\s+is\s+my|still\s+waiting\s+on\s+my)\b/.test(q)
@@ -250,6 +250,10 @@ function isClearKbFaqAsk(text) {
 function isStatusPing(text) {
   const q = normalizeText(text);
   if (!q) return false;
+  // KB intent wins. "Is news trading allowed?" and "How long do payouts take?"
+  // are FAQ questions. A status ping is only short update/status phrasing with
+  // no FAQ intent.
+  if (isClearKbFaqAsk(q)) return false;
   return (
     /\b(any\s+update|updates?|news\??|how\s+long|still\s+waiting|waiting\s+for|eta|when\s+will|when\s+can|status|progress|heard\s+back|follow\s*up|following\s*up|checking\s+in|check\s*in)\b/.test(
       q

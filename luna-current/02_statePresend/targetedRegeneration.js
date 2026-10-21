@@ -106,6 +106,15 @@ function isNegatedSpreadAsk(text) {
   }
 }
 
+function legitimateClarifier(text) {
+  try {
+    const handoff = require('../01_runtime/fixedMessageHandoff');
+    return !!(handoff && typeof handoff.isLegitimateClarification === 'function' && handoff.isLegitimateClarification(text));
+  } catch (_) {
+    return false;
+  }
+}
+
 function faqAnswerShouldNotPromiseReview(draft, ctx) {
   try {
     const handoff = require('../01_runtime/fixedMessageHandoff');
@@ -180,6 +189,14 @@ function safeFallback(draft, result, opts) {
   if (String(draft || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY || String(T.stripHtml(draft) || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY) {
     if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'unsupported-number-held' };
     return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
+  }
+  // A real "which challenge do you mean" question is not an unsupported figure.
+  if (legitimateClarifier(draft) || legitimateClarifier(T.stripHtml(draft))) {
+    return {
+      body: String(T.stripHtml(draft) || draft).replace(/\s+/g, ' ').trim(),
+      send: true,
+      reason: 'challenge-clarifier',
+    };
   }
   let body = T.stripHtml(draft);
   const codes = new Set(result.hardFails.map((f) => f.code));
@@ -307,6 +324,16 @@ async function runWithRegeneration(p) {
       }
       return { body: HEDGE_REPLY, send: true, attempts: 0, regenerated: false, results: [], finalReason: 'unsupported-number-hedge' };
     }
+    if (legitimateClarifier(draft)) {
+      return {
+        body: String(draft).replace(/\s+/g, ' ').trim(),
+        send: true,
+        attempts: 0,
+        regenerated: false,
+        results: [],
+        finalReason: 'challenge-clarifier',
+      };
+    }
     let attempts = 0;
     let regenerated = false;
     let result = presend.validate(draft, p.ctx);
@@ -320,6 +347,16 @@ async function runWithRegeneration(p) {
       let next = null;
       try { next = await p.regenerate(result.correctionInstruction, result.hardFails, p.ctx); } catch (_) { next = null; }
       if (typeof next !== 'string' || !next.trim()) break;
+      if (legitimateClarifier(next)) {
+        return {
+          body: String(next).replace(/\s+/g, ' ').trim(),
+          send: true,
+          attempts,
+          regenerated: true,
+          results,
+          finalReason: 'challenge-clarifier',
+        };
+      }
       regenerated = true;
       draft = next;
       result = presend.validate(draft, p.ctx);

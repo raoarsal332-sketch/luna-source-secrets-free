@@ -130,11 +130,29 @@ async function icRequest(method, url, data, tag) {
       });
       last = r;
       if (r.status < 400) {
-        if (isWrite && !writeOpStore.isValidWriteSuccess(r.data)) {
-          if (opId) writeOpStore.set(opId, { status: 'unknown', reason: 'malformed-success' });
-          return { ok: false, unknown: true, status: r.status, data: r.data, reason: 'malformed-success' };
+        if (isWrite) {
+          const verdict = writeOpStore.classifyWriteOutcome(data, r.data, r.status);
+          if (!verdict.confirm) {
+            if (opId) {
+              writeOpStore.set(opId, {
+                status: verdict.unknown ? 'unknown' : 'failed',
+                reason: verdict.reason,
+              });
+            }
+            return {
+              ok: false,
+              unknown: !!verdict.unknown,
+              status: r.status,
+              data: r.data,
+              reason: verdict.reason,
+            };
+          }
+          if (opId) {
+            const saved = Object.assign({}, verdict.record || { status: 'confirmed' });
+            if (saved.kind === 'assignment') saved.conversationId = writeOpStore.conversationIdFromUrl(url);
+            writeOpStore.set(opId, saved);
+          }
         }
-        if (opId) writeOpStore.set(opId, { status: 'confirmed' });
         return { ok: true, status: r.status, data: r.data };
       }
       if (r.status === 429) {
@@ -3717,7 +3735,7 @@ async function commitFixedMessageHandoff(opts) {
     email: o.email || '',
     preferAssigneeId: prefer,
   });
-  const assigneeId = progress.assigneeId || built.assigneeId;
+  const assigneeId = progress.assigneeId || o.handoffAssigneeId || o.preferAssigneeId || built.assigneeId;
   const result = await fixedMessageHandoff.commit({
     decision,
     noteHtml: built.html,
@@ -3858,39 +3876,52 @@ const handleWebhook = async (req, res) => {
         fixedMessageHandoff.hasAssignmentPart(parts, ARSAL_ID) &&
         !recoveredOwn.messageSent &&
         !fixedMessageHandoff.fixedLineAlreadyPublic(progOwn, parts);
+      const opAssign = writeOpStore.latestHandoffAssignment(conversationId, ARSAL_ID);
+      const lost = fixedMessageHandoff.resumeLostHandoff({
+        progress: progOwn,
+        parts,
+        conversation: full,
+        botId: ARSAL_ID,
+        opRecord: opAssign,
+      });
       const pendingAssignee = String(
         (progOwn && progOwn.noteConfirmed && !progOwn.messageSent && progOwn.assigneeId) || ''
       );
       const handoffAssigneeId = String(
         pendingAssignee ||
           (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
+          lost.handoffAssigneeId ||
           (oweFixedLine ? recoveredOwn.assigneeId : '') ||
           ''
       );
-      const pendingHandoff = !!(oweFixedLine || pendingAssignee);
+      const pendingHandoff = !!(oweFixedLine || pendingAssignee || lost.handoffAssigneeId);
+      const ownershipParts = lost.handoffAssigneeId
+        ? fixedMessageHandoff.partsWithoutOwnAssignment(parts, lost.handoffAssigneeId)
+        : parts;
       const owned = teammateHandoffGates.classifyOwnership(
         full,
-        parts,
+        ownershipParts,
         handoffOwnershipOpts(pendingHandoff ? { handoffAssigneeId } : {})
       );
       if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent && !oweFixedLine) {
         console.log('SKIP status-ping owned', owned.reason, conversationId);
         return res.sendStatus(200);
       }
-      const humanCommented = fixedMessageHandoff.humanPublicComment(parts, handoffOwnershipOpts());
+      const humanCommented = fixedMessageHandoff.humanPublicComment(ownershipParts, handoffOwnershipOpts());
       const foreignOwner = fixedMessageHandoff.foreignHumanOwns(
         full,
-        pendingAssignee || recoveredOwn.assigneeId,
+        pendingAssignee || lost.handoffAssigneeId || recoveredOwn.assigneeId,
         ARSAL_ID,
         handoffOwnershipOpts(pendingHandoff ? { handoffAssigneeId } : {})
       );
       if (
-        oweFixedLine &&
+        (oweFixedLine || lost.resume) &&
         !owned.silent &&
         !humanCommented &&
         !foreignOwner &&
         !fixedMessageHandoff.isAccountNumberQuestion(ownText)
       ) {
+        const seat = String(lost.assigneeId || recoveredOwn.assigneeId || handoffAssigneeId || '');
         const completion = fixedMessageHandoff.decide({
           path: 'recovery',
           latestText: ownText,
@@ -3901,8 +3932,8 @@ const handleWebhook = async (req, res) => {
           full,
           botId: ARSAL_ID,
           force: true,
-          handoffAssigneeId: recoveredOwn.assigneeId,
-          ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: recoveredOwn.assigneeId }),
+          handoffAssigneeId: seat,
+          ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: seat }),
         });
         await commitFixedMessageHandoff({
           path: 'recovery',
@@ -3914,8 +3945,8 @@ const handleWebhook = async (req, res) => {
           text: ownText,
           problem: ownText,
           clientName,
-          handoffAssigneeId: recoveredOwn.assigneeId,
-          preferAssigneeId: recoveredOwn.assigneeId,
+          handoffAssigneeId: seat,
+          preferAssigneeId: seat,
         });
         console.log('FIXED_HANDOFF lost-state completion', conversationId);
         return res.sendStatus(200);
