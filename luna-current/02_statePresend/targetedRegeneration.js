@@ -64,6 +64,28 @@ function decideFallbackIntent(codes, opts) {
  * Deterministic fallback when regeneration is unavailable or still fails.
  * Returns { body, send, reason }.
  */
+function accountQuestionAnswer(draft, opts) {
+  let handoff = null;
+  try {
+    handoff = require('../01_runtime/fixedMessageHandoff');
+  } catch (_) {
+    handoff = null;
+  }
+  if (!handoff || typeof handoff.isAccountNumberQuestion !== 'function') return null;
+  const state = opts && opts.ctx && opts.ctx.state;
+  const last = (state && state.last_client_message) || '';
+  if (!handoff.isAccountNumberQuestion(last)) return null;
+  const line = handoff.accountQuestionCustomerLine(last, draft);
+  if (!line || !String(line).trim()) return null;
+  return { body: String(line).trim(), send: true, reason: 'account-question-answer' };
+}
+
+function holdOrAccountAnswer(reason, draft, opts) {
+  const answered = accountQuestionAnswer(draft, opts);
+  if (answered) return answered;
+  return { body: '', send: false, reason: reason };
+}
+
 function safeFallback(draft, result, opts) {
   opts = opts || {};
   let body = T.stripHtml(draft);
@@ -86,9 +108,15 @@ function safeFallback(draft, result, opts) {
     try { body = opts.imageAskGuard.hookD(opts.conversationId, body); } catch (_) { /* ignore */ }
   }
 
-  // Missed human handoff: never send a normal/fallback reply — hold so the engine can escalate.
+  // A cleared or rejected draft must not become silence when the client asked
+  // for an account number. Prefer a usable draft, otherwise the MT5 fact line.
+  const accountAnswer = accountQuestionAnswer(body, opts);
+  if (accountAnswer) return accountAnswer;
+
+  // Missed human handoff: hold so the engine can escalate, unless the client
+  // asked for an account number. That question gets a real answer, never silence.
   if (codes.has(presend.HARD.MISSED_ESCALATION)) {
-    return { body: '', send: false, reason: 'missed-escalation-held' };
+    return holdOrAccountAnswer('missed-escalation-held', body, opts);
   }
 
   // Re-validate the stripped body with the same context; only accept if clean.
@@ -106,7 +134,7 @@ function safeFallback(draft, result, opts) {
   // clarify or an escalate is possible instead (Arsal requirement - see CLAUDE.md task notes).
   const intent = decideFallbackIntent(codes, opts);
   if (intent === 'clarify') return { body: CLARIFY_REPLY, send: true, reason: 'clarify-reply' };
-  if (intent === 'escalate') return { body: '', send: false, reason: 'needs-escalate' };
+  if (intent === 'escalate') return holdOrAccountAnswer('needs-escalate', body, opts);
 
   // Unfixable: use the engine's safe fallback message if given (and not itself a
   // repeat of any recent reply), otherwise hold.
@@ -123,11 +151,11 @@ function safeFallback(draft, result, opts) {
     if (critical) {
       const fbCheck = presend.validate(opts.fallbackReply, opts.ctx || {});
       const stillBad = (fbCheck.hardFails || []).some((f) => f.code === presend.HARD.WRONG_TOPIC || f.code === presend.HARD.REPEATED_IMAGE_ASK || f.code === presend.HARD.MISSED_ESCALATION);
-      if (stillBad) return { body: '', send: false, reason: 'critical-unfixable-held' };
+      if (stillBad) return holdOrAccountAnswer('critical-unfixable-held', body, opts);
     }
     return { body: opts.fallbackReply, send: true, reason: 'fallback-reply' };
   }
-  return { body: '', send: false, reason: critical ? 'critical-unfixable-held' : 'unfixable-held' };
+  return holdOrAccountAnswer(critical ? 'critical-unfixable-held' : 'unfixable-held', body, opts);
 }
 
 // Keys processed recently (webhook redelivery protection). Cleared after RECENT_MS.
