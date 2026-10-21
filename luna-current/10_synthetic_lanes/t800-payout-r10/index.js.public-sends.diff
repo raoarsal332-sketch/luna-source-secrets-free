@@ -1,0 +1,102 @@
+diff --git a/luna-current/01_runtime/index.js b/luna-current/01_runtime/index.js
+--- a/luna-current/01_runtime/index.js
++++ b/luna-current/01_runtime/index.js
+@@ -2839,6 +2839,39 @@
+ // serialized, not dropped.
+ const clientSendLocks = new Map();
+ 
++// T800 payout R10. Runs for every public comment that goes through
++// postClientCommentOnce, including identity recovery, the Fin welcome,
++// and review-status, and also for the owner REPLY and the authorized-note
++// REPLY. The postgate suppression branch and the missed-escalation greet
++// and personal-question arms are guarded too. This is not a presend-only hook.
++// The statePresend directory under 01_runtime is absent; this helper does not require it.
++// Fail closed: a throw, a silent result, or an empty body becomes the
++// visible hedge. The original draft is not posted, and the send is not dropped.
++function payoutGuardPublicBody(body, parts) {
++  const hedge = "I can't confirm that. Our team will confirm.";
++  try {
++    const payoutGuard = require('../10_synthetic_lanes/t800-payout-r10/payoutClaimGuard');
++    const payoutParts = (Array.isArray(parts) ? parts : []).map((p) => Object.assign({}, p, {
++      body: typeof stripHtml === 'function' ? stripHtml((p && (p.body || p.text)) || '') : ((p && (p.body || p.text)) || ''),
++    }));
++    const payout = payoutGuard.guardPublicBody(body, {
++      messages: payoutGuard.partsToMessages(payoutParts, [
++        typeof ARSAL_ID !== 'undefined' ? ARSAL_ID : '',
++        typeof ELITE_AI_ID !== 'undefined' ? ELITE_AI_ID : '',
++      ]),
++    });
++    if (!payout || payout.silent || payout.send !== true || !payout.body) {
++      console.error('PAYOUT_GUARD_FAIL_CLOSED', payout && payout.reason);
++      return hedge;
++    }
++    if (payout.failClosed || payout.replaced) console.log('PAYOUT_GUARD_VISIBLE_HEDGE', payout.reason);
++    return payout.body;
++  } catch (err) {
++    console.error('[payoutClaimGuard] fail-closed', err && err.message);
++    return hedge;
++  }
++}
++
+ async function postClientCommentOnce(conversationId, body, userPart, clientName) {
+   const lockKey = String(conversationId);
+   const prev = clientSendLocks.get(lockKey) || Promise.resolve();
+@@ -2975,6 +3008,10 @@
+       const fbHits = fallback && fallback !== finalBody ? await verdict(fallback) : hits;
+       if (fbHits.length) {
+         console.log('POSTGATE_SUPPRESSED', conversationId, 'candidate=' + hits.join(',') + ' fallback=' + fbHits.join(','));
++        const payoutBody = payoutGuardPublicBody(finalBody, parts);
++        if (payoutBody !== finalBody) {
++          finalBody = payoutBody;
++        } else
+         return null;
+       }
+       console.log('POSTGATE_REVALIDATE_FELLBACK', conversationId, hits.join(','));
+@@ -2988,6 +3025,7 @@
+     return null;
+   }
+ 
++  finalBody = payoutGuardPublicBody(finalBody, parts);
+   return postReply(conversationId, 'comment', finalBody);
+ }
+ 
+@@ -3277,6 +3315,7 @@
+     control.clearAiOff(conversationId);
+     // Owner-dictated public REPLY: never welcome-intro, never already-replied skip (Escalations often have prior Arsal notes).
+     let out = postProcessModelReply(body, conversationId);
++    out = payoutGuardPublicBody(out, typeof partsOf === 'function' ? partsOf(full) : []);
+     const r = await postReply(conversationId, 'comment', out);
+     if (r && r.status >= 200 && r.status < 300) {
+       await postReply(conversationId, 'note', 'Sent to client.');
+@@ -3449,6 +3488,7 @@
+       control.clearAiOff(conversationId);
+       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
+       let out = postProcessModelReply(cmdBody, conversationId);
++      out = payoutGuardPublicBody(out, typeof partsOf === 'function' ? partsOf(full) : []);
+       const r = await postReply(conversationId, 'comment', out);
+       if (r && r.status >= 200 && r.status < 300) {
+         await postReply(conversationId, 'note', 'Sent to client.');
+@@ -4516,7 +4556,7 @@
+           const greetBody =
+             (body && String(body).trim()) ||
+             "Hey — I'm doing well, thanks for asking. How can I help with your FundedElite account today?";
+-          await postClientCommentOnce(conversationId, greetBody, latestUser, clientName);
++          await postClientCommentOnce(conversationId, payoutGuardPublicBody(greetBody, parts), latestUser, clientName);
+           return res.sendStatus(200);
+         }
+         // Personal questions must never force teammate escalate via MISSED_QUESTION hold.
+@@ -4525,12 +4565,12 @@
+           !/\b(?:fundedelite|account|payout|challenge|login|kyc)\b/i.test(String(text || ''))
+         ) {
+           console.log('PRESEND_MISSED_ESCALATION skip personal', conversationId, __presend.reason || '');
+-          const personalBody = assistantIdentityGuard.enforceAssistantIdentityReply(
++          const personalBody = payoutGuardPublicBody(assistantIdentityGuard.enforceAssistantIdentityReply(
+             text,
+             body || '',
+             conversationId,
+             []
+-          );
++          ), parts);
+           await postClientCommentOnce(conversationId, personalBody, latestUser, clientName);
+           return res.sendStatus(200);
+         }
