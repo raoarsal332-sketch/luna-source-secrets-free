@@ -1,0 +1,15 @@
+{
+  "phase": "hang-corrected",
+  "why": "A bare unresolved Promise does not keep Node alive, so the first suite hang exited before the write was acknowledged. The corrected harness holds a timer and was killed with timeout exit 124 while blocked inside the Intercom POST.",
+  "killedAfterWriteLogged": true,
+  "recordedPostBody": "Hello Review,<br><br>I can help with a frozen platform. Do not send the password again.",
+  "secretBytesInThatBody": 0,
+  "ticketStateAtKill": {},
+  "writeOpStatusAtKill": "confirmed",
+  "resume": {
+    "verdict": "pass",
+    "secretBytes": 0,
+    "replayedRawSecret": false,
+    "freshWebhookSentScrubbedReply": true
+  }
+}
