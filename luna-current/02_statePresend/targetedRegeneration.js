@@ -129,6 +129,10 @@ function holdOrAccountAnswer(reason, draft, opts) {
 
 function safeFallback(draft, result, opts) {
   opts = opts || {};
+  if (String(draft || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY || String(T.stripHtml(draft) || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY) {
+    if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'unsupported-number-held' };
+    return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
+  }
   let body = T.stripHtml(draft);
   const codes = new Set(result.hardFails.map((f) => f.code));
 
@@ -241,6 +245,12 @@ async function runWithRegeneration(p) {
   try {
     const results = [];
     let draft = p.draft;
+    if (String(draft || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY) {
+      if (!botOwnsConversation({ ctx: p.ctx })) {
+        return { body: '', send: false, attempts: 0, regenerated: false, results: [], finalReason: 'unsupported-number-held' };
+      }
+      return { body: HEDGE_REPLY, send: true, attempts: 0, regenerated: false, results: [], finalReason: 'unsupported-number-hedge' };
+    }
     let attempts = 0;
     let regenerated = false;
     let result = presend.validate(draft, p.ctx);

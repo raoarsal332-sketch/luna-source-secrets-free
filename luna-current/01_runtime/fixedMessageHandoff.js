@@ -744,6 +744,7 @@ function blankProgress() {
     assignConfirmed: false,
     assignAmbiguous: false,
     assigneeId: '',
+    phase: '',
     messageSent: false,
     messageAmbiguous: false,
   };
@@ -824,6 +825,7 @@ async function commit(ctx) {
       });
     }
     progress.assignConfirmed = true;
+    progress.phase = 'completed';
     progress.assigneeId = String(src.assigneeId || progress.assigneeId || '');
     return finish({
       ok: true,
@@ -862,6 +864,7 @@ async function commit(ctx) {
   progress.assigneeId = String(src.assigneeId || progress.assigneeId || '');
 
   if (!progress.assignConfirmed && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
+    // A 422 is definite and is retried. An ambiguous 500/timeout/partial is not.
     if (progress.assignAmbiguous) {
       return finish({ reason: 'assign_ambiguous_held', withhold: true, progress });
     }
@@ -869,11 +872,13 @@ async function commit(ctx) {
     const asgClass = classifyAssignment(asgRes);
     if (!asgClass.ok) {
       if (ambiguousWrite(asgClass.reason)) progress.assignAmbiguous = true;
+      else progress.phase = 'assignment-pending';
       return finish({ reason: 'assign_' + asgClass.reason, withhold: true, progress });
     }
   }
   progress.assignConfirmed = true;
   progress.assignAmbiguous = false;
+  if (progress.phase === 'assignment-pending') progress.phase = '';
 
   if (progress.messageAmbiguous && !messageAlreadyPresent(src.parts, message, src.botId)) {
     return finish({ reason: 'message_ambiguous_held', withhold: true, progress });
@@ -885,6 +890,7 @@ async function commit(ctx) {
     return finish({ reason: 'message_' + msgClass.reason, withhold: true, progress });
   }
   progress.messageSent = true;
+  progress.phase = 'completed';
   return finish({
     ok: true,
     sent: true,
@@ -894,6 +900,20 @@ async function commit(ctx) {
     message,
     progress,
   });
+}
+
+const APPROVED_NUMBER_HEDGE = "I can't confirm that figure from the approved details, so I won't guess a number.";
+
+function isTerminalHedge(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim() === APPROVED_NUMBER_HEDGE;
+}
+
+// An internal note is not an answer. Only a public customer-facing reply is.
+function isPublicCustomerReply(part) {
+  if (!part) return false;
+  const pt = String(part.part_type || '');
+  if (pt === 'note' || pt === 'assignment' || pt === 'assign' || pt === 'open' || pt === 'close') return false;
+  return !!stripHtml(part.body || '');
 }
 
 module.exports = {
@@ -907,6 +927,8 @@ module.exports = {
   isAssistantIdentityQuestion,
   isPureLiveAgentAsk,
   isExactAllowedTemplate,
+  isTerminalHedge,
+  isPublicCustomerReply,
   isSpreadTemplateDraft,
   hasVerifiedNotePart,
   hasAssignmentPart,

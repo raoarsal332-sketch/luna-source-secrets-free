@@ -1752,6 +1752,7 @@ postProcessModelReply = (function (origPostProcessModelReply) {
   return function postProcessModelReply() {
     const raw = arguments[0];
     if (fixedMessageHandoff.isExactAllowedTemplate(raw)) return String(raw);
+    if (fixedMessageHandoff.isTerminalHedge(raw)) return String(raw).replace(/\s+/g, ' ').trim();
     const out = origPostProcessModelReply.apply(this, arguments);
     const cleaned = softEdges.postProcessStripJunk(out);
     if (cleaned === null) {
@@ -2515,6 +2516,12 @@ function shouldWaitForFin(full, latestUserText, topic) {
       console.log('FIN_WAIT bypass live-agent user.created', conversationId);
       return false;
     }
+    // An eligible spread ask is the same kind of exception: ownership has already
+    // run, and the locked reply is posted by the spread path below.
+    if (typeof isSpreadCheckAsk === 'function' && isSpreadCheckAsk(text)) {
+      console.log('FIN_WAIT bypass spread user.created', conversationId);
+      return false;
+    }
     console.log('SKIP fin-wait user.created', conversationId);
     return true;
   }
@@ -2774,7 +2781,7 @@ async function postReply(conversationId, messageType, body) {
   // Redact before either shape is sent so a canary cannot leave in a note or a comment.
   const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
   const exactTemplate = messageType !== 'note' && fixedMessageHandoff.isExactAllowedTemplate(redacted);
-  const finalBody = messageType === 'note' ? redacted : (exactTemplate ? redacted : toHtml(redacted));
+  const finalBody = messageType === 'note' || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
   const r = await icRequest(
     'post',
     'https://api.intercom.io/conversations/' + conversationId + '/reply',
@@ -2800,7 +2807,8 @@ function arsalAlreadyRepliedAfter(parts, userPart) {
   for (const p of parts) {
     const a = p.author || {};
     if (String(a.id || '') !== ARSAL_ID) continue;
-    if (!p.body) continue;
+    // Our own internal note is not an answer. Only a public customer-facing reply is.
+    if (!fixedMessageHandoff.isPublicCustomerReply(p)) continue;
     if (Number(p.created_at || 0) > after) return true;
   }
   return false;
@@ -2897,6 +2905,10 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
   // message: no welcome prefix, no redaction, no later edit.
   if (fixedMessageHandoff.isExactAllowedTemplate(String(body || ''))) {
     return postReply(conversationId, 'comment', String(body));
+  }
+  // The approved number hedge is terminal: no welcome, no 2-step clarifier, no rephrase.
+  if (fixedMessageHandoff.isTerminalHedge(String(body || ''))) {
+    return postReply(conversationId, 'comment', String(body || '').replace(/\s+/g, ' ').trim());
   }
   // Soft dedupe: never post the same public bot body twice in a row (identity asks etc.)
   try {
@@ -3770,15 +3782,20 @@ const handleWebhook = async (req, res) => {
         fixedMessageHandoff.hasAssignmentPart(parts, ARSAL_ID) &&
         !recoveredOwn.messageSent &&
         !fixedMessageHandoff.fixedLineAlreadyPublic(progOwn, parts);
+      const pendingAssignee = String(
+        (progOwn && progOwn.noteConfirmed && !progOwn.messageSent && progOwn.assigneeId) || ''
+      );
       const handoffAssigneeId = String(
-        (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
+        pendingAssignee ||
+          (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
           (oweFixedLine ? recoveredOwn.assigneeId : '') ||
           ''
       );
+      const pendingHandoff = !!(oweFixedLine || pendingAssignee);
       const owned = teammateHandoffGates.classifyOwnership(
         full,
         parts,
-        handoffOwnershipOpts(oweFixedLine ? { handoffAssigneeId } : {})
+        handoffOwnershipOpts(pendingHandoff ? { handoffAssigneeId } : {})
       );
       if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent && !oweFixedLine) {
         console.log('SKIP status-ping owned', owned.reason, conversationId);
@@ -3787,9 +3804,9 @@ const handleWebhook = async (req, res) => {
       const humanCommented = fixedMessageHandoff.humanPublicComment(parts, handoffOwnershipOpts());
       const foreignOwner = fixedMessageHandoff.foreignHumanOwns(
         full,
-        recoveredOwn.assigneeId,
+        pendingAssignee || recoveredOwn.assigneeId,
         ARSAL_ID,
-        handoffOwnershipOpts()
+        handoffOwnershipOpts(pendingHandoff ? { handoffAssigneeId } : {})
       );
       if (
         oweFixedLine &&
@@ -3956,6 +3973,7 @@ const handleWebhook = async (req, res) => {
     try { __imageAskGuard.hookA(conversationId); } catch (__e) { console.error('[imageAskGuard.hookA] guard hook failed', __e && __e.message); }
     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookA */
     let text = stripHtml(latestUser.body || '');
+    let __originalDraft = '';
     const repeatedClientQuestion = isRepeatedClientQuestion(text, collectClientMessageTexts(full).slice(0, -1));
     /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookB */
     try { __imageAskGuard.hookB(conversationId, text); } catch (__e) { console.error('[imageAskGuard.hookB] guard hook failed', __e && __e.message); }
@@ -4298,6 +4316,7 @@ const handleWebhook = async (req, res) => {
     const rawOut = __lunaChat.rawOut;
     /* LUNA_TOOLS_V1:END:runChat */
     const parsed = parseAction(rawOut);
+    __originalDraft = String((parsed && parsed.body) || '');
     console.log('AI_ACTION', conversationId, parsed.action, parsed.kind || '');
 
     // Client asked for human/manager: do not keep REPLY-ing. Escalate (fail closed).
@@ -4437,13 +4456,27 @@ const handleWebhook = async (req, res) => {
       }
 
       if (
-        fixedMessageHandoff.isSpreadTemplateDraft(parsed.body || '') &&
+        (fixedMessageHandoff.isSpreadTemplateDraft(__originalDraft) || fixedMessageHandoff.isSpreadTemplateDraft(parsed.body || '')) &&
         !isSpreadCheckAsk(text) &&
         !fixedMessageHandoff.isAccountNumberQuestion(text)
       ) {
-        parsed.action = 'REPLY';
-        parsed.body = UNSUPPORTED_NUMBER_HEDGE;
         console.log('SPREAD_TEMPLATE not a handoff', conversationId);
+        if (fixedMessageHandoff.isPureLiveAgentAsk(text) || clientWantsHumanTeammate(text)) {
+          await commitFixedMessageHandoff({
+            path: 'main_escalate',
+            conversationId,
+            full,
+            parts,
+            latestUser,
+            text,
+            problem: text,
+            liveAgent: true,
+            actionNeeded: 'Please take this conversation.',
+          });
+        } else {
+          await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
+        }
+        return res.sendStatus(200);
       }
 
       if (parsed.action === 'ESCALATE') {
@@ -4584,10 +4617,32 @@ const handleWebhook = async (req, res) => {
     // REPLY
     const __isScopeDecline = String(parsed.body || '').trim() === '[[SCOPE_DECLINE]]';
     let body = postProcessModelReply(parsed.body || '', conversationId);
-    if (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) {
-      body = fixedMessageHandoff.isAccountNumberQuestion(text)
-        ? fixedMessageHandoff.accountQuestionCustomerLine(text, '')
-        : UNSUPPORTED_NUMBER_HEDGE;
+    if (fixedMessageHandoff.isSpreadTemplateDraft(__originalDraft || body) && !isSpreadCheckAsk(text)) {
+      if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        body = fixedMessageHandoff.accountQuestionCustomerLine(text, '');
+      } else if (fixedMessageHandoff.isPureLiveAgentAsk(text) || clientWantsHumanTeammate(text)) {
+        await commitFixedMessageHandoff({
+          path: 'main_escalate',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: text,
+          liveAgent: true,
+          actionNeeded: 'Please take this conversation.',
+        });
+        return res.sendStatus(200);
+      } else {
+        console.log('SPREAD_TEMPLATE hedge terminal', conversationId);
+        await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
+        return res.sendStatus(200);
+      }
+    }
+    if (fixedMessageHandoff.isTerminalHedge(body)) {
+      console.log('HEDGE terminal', conversationId);
+      await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
+      return res.sendStatus(200);
     }
     if (!body) {
       if (
@@ -4597,6 +4652,20 @@ const handleWebhook = async (req, res) => {
         console.log('EMPTY faq body escalate', conversationId);
         await commitFixedMessageHandoff({
           path: 'main_escalate',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: text,
+          actionNeeded: 'Please take this conversation.',
+        });
+        return res.sendStatus(200);
+      }
+      if (isClearlyAccountSpecificIssue(text) && !fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        console.log('EMPTY escalation body presend_escalate', conversationId);
+        await commitFixedMessageHandoff({
+          path: 'presend_escalate',
           conversationId,
           full,
           parts,
@@ -4861,9 +4930,11 @@ const handleWebhook = async (req, res) => {
         const __heldFails = (__presend && __presend.result && __presend.result.hardFails) || [];
         const __unsupportedNumber = __heldFails.some((f) => f && f.code === 'UNSUPPORTED_NUMBER');
         const __missedHuman = __heldFails.some((f) => f && f.code === 'MISSED_ESCALATION');
+        const __originalSpread =
+          fixedMessageHandoff.isSpreadTemplateDraft(__originalDraft) && !isSpreadCheckAsk(text);
         if (
           !fixedMessageHandoff.isAccountNumberQuestion(text) &&
-          ((__unsupportedNumber && !__missedHuman) || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)))
+          ((__unsupportedNumber && !__missedHuman) || __originalSpread || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) || fixedMessageHandoff.isTerminalHedge(body) || fixedMessageHandoff.isTerminalHedge(__originalDraft))
         ) {
           console.log('PRESEND hedge instead of fixed line', conversationId);
           await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);

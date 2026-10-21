@@ -156,23 +156,35 @@ function cleanSecretValue(raw) {
   return v;
 }
 
+function canonicalSecret(raw) {
+  const full = normalizeCredentialText(cleanSecretValue(raw));
+  if (!full) return '';
+  // Edge punctuation is not part of the token. Internal symbols stay.
+  return full.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
+}
+
 function rememberSecret(raw) {
-  const v = normalizeCredentialText(cleanSecretValue(raw));
-  if (!v || v.length < 4) return;
-  if (/^\[secret\]$/i.test(v)) return;
-  if (/^(secret|password|token|pass|pin|otp)$/i.test(v)) return;
-  rememberedSecrets.add(v);
+  const full = normalizeCredentialText(cleanSecretValue(raw));
+  if (!full || full.length < 4) return;
+  if (/^\[secret\]$/i.test(full)) return;
+  if (/^(secret|password|token|pass|pin|otp)$/i.test(full)) return;
+  const canon = canonicalSecret(full);
+  if (canon && canon.length >= 4 && !/^(secret|password|token|pass|pin|otp)$/i.test(canon)) {
+    rememberedSecrets.add(canon);
+  }
+  if (canon !== full) rememberedSecrets.add(full);
 }
 
 function echoPattern(secret) {
-  const chars = Array.from(secret);
-  if (!chars.length || chars.length > 80) return null;
+  const canonical = canonicalSecret(secret) || normalizeCredentialText(secret);
+  if (!canonical || canonical.length < 4 || canonical.length > 80) return null;
+  const chars = Array.from(canonical);
   const body = chars.map((ch) => ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*');
-  // A second pass must remove the same span the label pass removed, including a
-  // brace or <b> wrapper. Otherwise "{secret}" becomes "{[secret]}" only on the
-  // replay, and the two calls disagree.
+  const edge = '[\\p{P}\\p{S}]*';
+  // Leading and trailing punctuation are outside the token. Braces and <b>
+  // wrappers are part of the same span the label pass removes.
   return new RegExp(
-    '(?<![A-Za-z0-9])(?:\\{\\s*|<(?:b|B)>\\s*)?(?:' + body + ')(?:\\s*\\}|\\s*</(?:b|B)>)?(?![A-Za-z0-9])',
+    '(?<![A-Za-z0-9])(?:\\{\\s*|<(?:b|B)>\\s*)?' + edge + '(?:' + body + ')' + edge + '(?:\\s*\\}|\\s*</(?:b|B)>)?(?![A-Za-z0-9])',
     'giu'
   );
 }
@@ -226,13 +238,13 @@ function sanitizeCredentials(text) {
   const echoed = redactRememberedValues(normalized);
   const repeated = redactRepeatedBase64(echoed);
   const labeled = repeated
-    .replace(/\b(sk-[A-Za-z0-9_-]{16,})/g, (_m, tok) => {
-      rememberSecret(tok);
+    .replace(/\b(sk-[A-Za-z0-9_-]{16,})([\p{P}\p{S}]*)/gu, (_m, tok, punct) => {
+      rememberSecret(tok + (punct || ''));
       return '[secret]';
     })
-    .replace(/\bBearer\s+([A-Za-z0-9._-]{16,})/gi, (_m, tok) => {
-      rememberSecret(tok);
-      return 'Bearer [secret]';
+    .replace(/\b(Bearer)\s+([A-Za-z0-9._-]{16,})([\p{P}\p{S}]*)/giu, (_m, label, tok, punct) => {
+      rememberSecret(tok + (punct || ''));
+      return label + ' [secret]';
     })
     .replace(CREDENTIAL_VALUE_RE, replaceLabeledSecret)
     .replace(FLEX_LABEL_RE, replaceLabeledSecret);
