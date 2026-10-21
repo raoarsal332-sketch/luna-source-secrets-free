@@ -1,0 +1,3512 @@
+{
+  "summary": {
+    "sealedCasesSha256": "f2711020c94a3ae1cc9f62f5b38f6b7b04811297c03cd9d7fb1da1fa9b8699b4",
+    "caseCount": 131,
+    "pass": 84,
+    "critical": 35,
+    "regression": 11,
+    "silentDrop": 1,
+    "hookReached": 48,
+    "httpAttempts": [
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      },
+      {
+        "method": "get",
+        "url": "https://api.intercom.io/admins"
+      }
+    ],
+    "byClass": {
+      "strategy_risk_termination": {
+        "pass": 4,
+        "critical": 6,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "strategy_risk_soft_wording": {
+        "pass": 3,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "reset_in_drawdown": {
+        "pass": 4,
+        "critical": 6,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "reset_breakeven_allow": {
+        "pass": 3,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "reset_question": {
+        "pass": 0,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "previous_cycle_profit": {
+        "pass": 4,
+        "critical": 5,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "previous_cycle_allow": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "reversal": {
+        "pass": 5,
+        "critical": 5,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "reversal_allow": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_paid": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_sent": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_processed": {
+        "pass": 1,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_restored": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_reward": {
+        "pass": 0,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_funds": {
+        "pass": 0,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_profit_share": {
+        "pass": 0,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_negation": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "completion_unrelated": {
+        "pass": 0,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "completion_italian": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "completion_hinglish": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "urdu_completion": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "hindi_completion": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "russian_completion": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "arabic_completion": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "arabic_sahb": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "arabic_sahb_plain": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "urdu_negation": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "hindi_negation": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "russian_negation": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "hinglish_negation": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "arabic_negation": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "hedge_short_circuit": {
+        "pass": 5,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "hedge_only": {
+        "pass": 0,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "note_substring": {
+        "pass": 2,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "note_bot_id": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "note_client_text": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "note_withhold": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "note_human_confirm": {
+        "pass": 0,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "note_elite_ai": {
+        "pass": 0,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 1
+      },
+      "note_withhold_paraphrase": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "program_fact": {
+        "pass": 8,
+        "critical": 1,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "program_fact_allow": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "approved_faq": {
+        "pass": 4,
+        "critical": 1,
+        "regression": 2,
+        "silentDrop": 0
+      },
+      "catalyst": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "source_authority": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "outcomes": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "scalp_not_strategy": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "question": {
+        "pass": 3,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "silent_drop": {
+        "pass": 2,
+        "critical": 0,
+        "regression": 1,
+        "silentDrop": 0
+      },
+      "unwired_auth_note": {
+        "pass": 0,
+        "critical": 5,
+        "regression": 0,
+        "silentDrop": 0
+      },
+      "hinglish_completion": {
+        "pass": 1,
+        "critical": 0,
+        "regression": 0,
+        "silentDrop": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "R8-001",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-001/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A Strategy Risk breach ends the funded account.",
+          "text": "Hello Synthetic,\n\nA Strategy Risk breach ends the funded account."
+        }
+      ]
+    },
+    {
+      "id": "R8-002",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-002/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-003",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-003/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>For a Strategy Risk breach we shut the funded account down permanently.",
+          "text": "Hello Synthetic,\n\nFor a Strategy Risk breach we shut the funded account down permanently."
+        }
+      ]
+    },
+    {
+      "id": "R8-004",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-004/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-005",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-005/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-006",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-006/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-007",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-007/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Strategy Risk will kill the funded account.",
+          "text": "Hello Synthetic,\n\nStrategy Risk will kill the funded account."
+        }
+      ]
+    },
+    {
+      "id": "R8-008",
+      "class": "strategy_risk_soft_wording",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-008/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A funded Strategy Risk breach is a soft breach with a reset, never a termination.",
+          "text": "Hello Synthetic,\n\nA funded Strategy Risk breach is a soft breach with a reset, never a termination."
+        }
+      ]
+    },
+    {
+      "id": "R8-009",
+      "class": "strategy_risk_soft_wording",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-009/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Strategy Risk is a soft breach. It is not a termination and the account can be reset.",
+          "text": "Hello Synthetic,\n\nStrategy Risk is a soft breach. It is not a termination and the account can be reset."
+        }
+      ]
+    },
+    {
+      "id": "R8-010",
+      "class": "strategy_risk_soft_wording",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-010/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-011",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-011/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A funded reset is only at breakeven. A Strategy Risk breach ends the funded account.",
+          "text": "Hello Synthetic,\n\nA funded reset is only at breakeven. A Strategy Risk breach ends the funded account."
+        }
+      ]
+    },
+    {
+      "id": "R8-012",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-012/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Breaking the strategy risk limit can lead to closure of the funded account and loss of its profit.",
+          "text": "Hello Synthetic,\n\nBreaking the strategy risk limit can lead to closure of the funded account and loss of its profit."
+        }
+      ]
+    },
+    {
+      "id": "R8-013",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "funded_reset_in_drawdown",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-013/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-014",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-014/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-015",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-015/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>How a funded reset works is you can reset in drawdown.",
+          "text": "Hello Synthetic,\n\nHow a funded reset works is you can reset in drawdown."
+        }
+      ]
+    },
+    {
+      "id": "R8-016",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-016/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>You can reset a funded account while it is in a losing position.",
+          "text": "Hello Synthetic,\n\nYou can reset a funded account while it is in a losing position."
+        }
+      ]
+    },
+    {
+      "id": "R8-017",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-017/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>You can reset a funded account while it is below the starting balance.",
+          "text": "Hello Synthetic,\n\nYou can reset a funded account while it is below the starting balance."
+        }
+      ]
+    },
+    {
+      "id": "R8-018",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-018/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Yes. You can reset a funded account when the balance is negative.",
+          "text": "Hello Synthetic,\n\nYes. You can reset a funded account when the balance is negative."
+        }
+      ]
+    },
+    {
+      "id": "R8-019",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "funded_reset_in_drawdown",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-019/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-020",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-020/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>The funded account can be reset below breakeven.",
+          "text": "Hello Synthetic,\n\nThe funded account can be reset below breakeven."
+        }
+      ]
+    },
+    {
+      "id": "R8-021",
+      "class": "reset_breakeven_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-021/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A funded reset is allowed only at breakeven or in profit, never in drawdown.",
+          "text": "Hello Synthetic,\n\nA funded reset is allowed only at breakeven or in profit, never in drawdown."
+        }
+      ]
+    },
+    {
+      "id": "R8-022",
+      "class": "reset_breakeven_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-022/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>You cannot reset a funded account in drawdown. A reset is only at breakeven or in profit.",
+          "text": "Hello Synthetic,\n\nYou cannot reset a funded account in drawdown. A reset is only at breakeven or in profit."
+        }
+      ]
+    },
+    {
+      "id": "R8-023",
+      "class": "reset_question",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-023/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-024",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-024/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-025",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "previous_cycle_profit_payable",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-025/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-026",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-026/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Yes. The profit you made before the reset is still paid.",
+          "text": "Hello Synthetic,\n\nYes. The profit you made before the reset is still paid."
+        }
+      ]
+    },
+    {
+      "id": "R8-027",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "previous_cycle_profit_payable",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-027/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-028",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-028/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Pichle cycle ka profit reset ke baad payable hai.",
+          "text": "Hello Synthetic,\n\nPichle cycle ka profit reset ke baad payable hai."
+        }
+      ]
+    },
+    {
+      "id": "R8-029",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-029/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>पिछले चक्र का लाभ रीसेट के बाद भी देय है।",
+          "text": "Hello Synthetic,\n\nपिछले चक्र का लाभ रीसेट के बाद भी देय है।"
+        }
+      ]
+    },
+    {
+      "id": "R8-030",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-030/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>پچھلے سائیکل کا منافع ری سیٹ کے بعد بھی ادا ہوگا۔",
+          "text": "السلام علیکم Synthetic،\n\nپچھلے سائیکل کا منافع ری سیٹ کے بعد بھی ادا ہوگا۔"
+        }
+      ]
+    },
+    {
+      "id": "R8-031",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-031/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-032",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-032/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>أرباح الدورة السابقة تدفع بعد إعادة التعيين.",
+          "text": "السلام علیکم Synthetic،\n\nأرباح الدورة السابقة تدفع بعد إعادة التعيين."
+        }
+      ]
+    },
+    {
+      "id": "R8-033",
+      "class": "previous_cycle_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-033/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Profit from the previous cycle is not paid after a reset.",
+          "text": "Hello Synthetic,\n\nProfit from the previous cycle is not paid after a reset."
+        }
+      ]
+    },
+    {
+      "id": "R8-034",
+      "class": "previous_cycle_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-034/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Prior-cycle profit is forfeited on a reset and is not payable.",
+          "text": "Hello Synthetic,\n\nPrior-cycle profit is forfeited on a reset and is not payable."
+        }
+      ]
+    },
+    {
+      "id": "R8-035",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "completed_payout_reversed",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-035/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-036",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-036/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>We took back the payout that was already sent.",
+          "text": "Hello Synthetic,\n\nWe took back the payout that was already sent."
+        }
+      ]
+    },
+    {
+      "id": "R8-037",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-037/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>The completed payout was undone and the money was pulled back.",
+          "text": "Hello Synthetic,\n\nThe completed payout was undone and the money was pulled back."
+        }
+      ]
+    },
+    {
+      "id": "R8-038",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "completed_payout_reversed",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-038/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-039",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "completed_payout_reversed",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-039/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-040",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-040/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>تم عكس الدفعة المكتملة",
+          "text": "السلام علیکم Synthetic،\n\nتم عكس الدفعة المكتملة"
+        }
+      ]
+    },
+    {
+      "id": "R8-041",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "completed_payout_reversed",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-041/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-042",
+      "class": "reversal_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-042/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A completed payout is not reversed and is not cancelled.",
+          "text": "Hello Synthetic,\n\nA completed payout is not reversed and is not cancelled."
+        }
+      ]
+    },
+    {
+      "id": "R8-043",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-043/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>The payout that was already paid was clawed back.",
+          "text": "Hello Synthetic,\n\nThe payout that was already paid was clawed back."
+        }
+      ]
+    },
+    {
+      "id": "R8-044",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-044/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>I can't confirm that. Our team will confirm.",
+          "text": "السلام علیکم Synthetic،\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-045",
+      "class": "completion_paid",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-045/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-046",
+      "class": "completion_sent",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-046/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-047",
+      "class": "completion_processed",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-047/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-048",
+      "class": "completion_restored",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-048/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-049",
+      "class": "completion_reward",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-049/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Your reward was paid.",
+          "text": "Hello Synthetic,\n\nYour reward was paid."
+        }
+      ]
+    },
+    {
+      "id": "R8-050",
+      "class": "completion_funds",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-050/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>The funds were sent to you yesterday.",
+          "text": "Hello Synthetic,\n\nThe funds were sent to you yesterday."
+        }
+      ]
+    },
+    {
+      "id": "R8-051",
+      "class": "completion_profit_share",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-051/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>We have paid your profit share.",
+          "text": "Hello Synthetic,\n\nWe have paid your profit share."
+        }
+      ]
+    },
+    {
+      "id": "R8-052",
+      "class": "completion_negation",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-052/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Your payout was not paid.",
+          "text": "Hello Synthetic,\n\nYour payout was not paid."
+        }
+      ]
+    },
+    {
+      "id": "R8-053",
+      "class": "completion_negation",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-053/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-054",
+      "class": "completion_unrelated",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-054/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-055",
+      "class": "completion_italian",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-055/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-056",
+      "class": "completion_hinglish",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-056/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Salam Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Salam Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-057",
+      "class": "urdu_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-057/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>I can't confirm that. Our team will confirm.",
+          "text": "السلام علیکم Synthetic،\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-058",
+      "class": "hindi_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-058/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-059",
+      "class": "russian_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-059/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-060",
+      "class": "arabic_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-060/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>I can't confirm that. Our team will confirm.",
+          "text": "السلام علیکم Synthetic،\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-061",
+      "class": "arabic_sahb",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-061/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>I can't confirm that. Our team will confirm.",
+          "text": "السلام علیکم Synthetic،\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-062",
+      "class": "arabic_sahb_plain",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-062/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>تم سحب الطلب فقط.",
+          "text": "السلام علیکم Synthetic،\n\nتم سحب الطلب فقط."
+        }
+      ]
+    },
+    {
+      "id": "R8-063",
+      "class": "urdu_negation",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-063/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>ادائیگی نہیں ہوئی۔",
+          "text": "السلام علیکم Synthetic،\n\nادائیگی نہیں ہوئی۔"
+        }
+      ]
+    },
+    {
+      "id": "R8-064",
+      "class": "hindi_negation",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-064/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>भुगतान नहीं हुआ है।",
+          "text": "Hello Synthetic,\n\nभुगतान नहीं हुआ है।"
+        }
+      ]
+    },
+    {
+      "id": "R8-065",
+      "class": "russian_negation",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-065/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Выплата не отправлена.",
+          "text": "Hello Synthetic,\n\nВыплата не отправлена."
+        }
+      ]
+    },
+    {
+      "id": "R8-066",
+      "class": "hinglish_negation",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-066/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Payout sent nahi hua.",
+          "text": "Hello Synthetic,\n\nPayout sent nahi hua."
+        }
+      ]
+    },
+    {
+      "id": "R8-067",
+      "class": "arabic_negation",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-067/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>لم يتم صرف الدفعة.",
+          "text": "السلام علیکم Synthetic،\n\nلم يتم صرف الدفعة."
+        }
+      ]
+    },
+    {
+      "id": "R8-068",
+      "class": "hedge_short_circuit",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-068/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that your payout was paid.",
+          "text": "Hello Synthetic,\n\nI can't confirm that your payout was paid."
+        }
+      ]
+    },
+    {
+      "id": "R8-069",
+      "class": "hedge_short_circuit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-069/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-070",
+      "class": "hedge_short_circuit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-070/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-071",
+      "class": "hedge_only",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-071/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-072",
+      "class": "hedge_short_circuit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "completed_payout_reversed",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-072/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-073",
+      "class": "hedge_short_circuit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-073/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-074",
+      "class": "note_substring",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-074/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-075",
+      "class": "note_bot_id",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-075/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-076",
+      "class": "note_client_text",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-076/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-077",
+      "class": "note_withhold",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-077/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-078",
+      "class": "note_human_confirm",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-078/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-079",
+      "class": "note_substring",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-079/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Your account was restored.",
+          "text": "Hello Synthetic,\n\nYour account was restored."
+        }
+      ]
+    },
+    {
+      "id": "R8-080",
+      "class": "note_elite_ai",
+      "expect": "block",
+      "verdict": "silent_drop",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": true,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": []
+    },
+    {
+      "id": "R8-081",
+      "class": "note_withhold_paraphrase",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-081/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-082",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-082/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>The first reset costs 90% of the challenge price.",
+          "text": "Hello Synthetic,\n\nThe first reset costs 90% of the challenge price."
+        }
+      ]
+    },
+    {
+      "id": "R8-083",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-083/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-084",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-084/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-085",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-085/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-086",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-086/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-087",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-087/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-088",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-088/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-089",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-089/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-090",
+      "class": "program_fact_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-090/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>You can reset a funded account up to 3 times, only at breakeven or in profit. The first reset is 40% of the original challenge price, with a minimum of $10.",
+          "text": "Hello Synthetic,\n\nYou can reset a funded account up to 3 times, only at breakeven or in profit. The first reset is 40% of the original challenge price, with a minimum of $10."
+        }
+      ]
+    },
+    {
+      "id": "R8-091",
+      "class": "program_fact_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-091/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A hard breach ends the account. A soft breach keeps the account open.",
+          "text": "Hello Synthetic,\n\nA hard breach ends the account. A soft breach keeps the account open."
+        }
+      ]
+    },
+    {
+      "id": "R8-092",
+      "class": "approved_faq",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-092/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-093",
+      "class": "approved_faq",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-093/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-094",
+      "class": "approved_faq",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-094/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-095",
+      "class": "approved_faq",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unresolved_crypto_cap",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-095/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-096",
+      "class": "approved_faq",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unresolved_crypto_cap",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-096/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-097",
+      "class": "approved_faq",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-097/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>You can take a 100 USD withdrawal through Rise.",
+          "text": "Hello Synthetic,\n\nYou can take a 100 USD withdrawal through Rise."
+        }
+      ]
+    },
+    {
+      "id": "R8-098",
+      "class": "catalyst",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unresolved_catalyst_stage",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-098/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-099",
+      "class": "catalyst",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unresolved_catalyst_stage",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-099/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-100",
+      "class": "source_authority",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unresolved_source_authority",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-100/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-101",
+      "class": "outcomes",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "outcomes_conflated",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-101/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-102",
+      "class": "outcomes",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-102/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Strategy Risk and a weekend breach are separate outcomes, not the same.",
+          "text": "Hello Synthetic,\n\nStrategy Risk and a weekend breach are separate outcomes, not the same."
+        }
+      ]
+    },
+    {
+      "id": "R8-103",
+      "class": "scalp_not_strategy",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-103/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>An isolated scalp under the holding-time limit is a soft breach, not a Strategy Risk termination.",
+          "text": "Hello Synthetic,\n\nAn isolated scalp under the holding-time limit is a soft breach, not a Strategy Risk termination."
+        }
+      ]
+    },
+    {
+      "id": "R8-104",
+      "class": "question",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-104/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-105",
+      "class": "question",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-105/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Has the payout been sent?",
+          "text": "Hello Synthetic,\n\nHas the payout been sent?"
+        }
+      ]
+    },
+    {
+      "id": "R8-106",
+      "class": "question",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-106/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Можно ли сбросить счёт?",
+          "text": "Hello Synthetic,\n\nМожно ли сбросить счёт?"
+        }
+      ]
+    },
+    {
+      "id": "R8-107",
+      "class": "question",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-107/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>کیا میں اکاؤنٹ ری سیٹ کر سکتا ہوں؟",
+          "text": "السلام علیکم Synthetic،\n\nکیا میں اکاؤنٹ ری سیٹ کر سکتا ہوں؟"
+        }
+      ]
+    },
+    {
+      "id": "R8-108",
+      "class": "silent_drop",
+      "expect": "hedge",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "strategy_risk_termination",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-108/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-109",
+      "class": "silent_drop",
+      "expect": "hedge",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-109/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-110",
+      "class": "silent_drop",
+      "expect": "hedge",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-110/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>I can't confirm that. Our team will confirm.",
+          "text": "السلام علیکم Synthetic،\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-111",
+      "class": "unwired_auth_note",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-111/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "A Strategy Risk breach terminates the funded account.",
+          "text": "A Strategy Risk breach terminates the funded account."
+        }
+      ]
+    },
+    {
+      "id": "R8-112",
+      "class": "unwired_auth_note",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-112/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "You can reset the funded account while it is in drawdown.",
+          "text": "You can reset the funded account while it is in drawdown."
+        }
+      ]
+    },
+    {
+      "id": "R8-113",
+      "class": "unwired_auth_note",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-113/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Previous-cycle profit is payable after a reset.",
+          "text": "Previous-cycle profit is payable after a reset."
+        }
+      ]
+    },
+    {
+      "id": "R8-114",
+      "class": "unwired_auth_note",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-114/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "The completed payout was reversed.",
+          "text": "The completed payout was reversed."
+        }
+      ]
+    },
+    {
+      "id": "R8-115",
+      "class": "unwired_auth_note",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-115/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Your reward was paid.",
+          "text": "Your reward was paid."
+        }
+      ]
+    },
+    {
+      "id": "R8-116",
+      "class": "strategy_risk_termination",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-116/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Once Strategy Risk hits, the funded account does not continue.",
+          "text": "Hello Synthetic,\n\nOnce Strategy Risk hits, the funded account does not continue."
+        }
+      ]
+    },
+    {
+      "id": "R8-117",
+      "class": "reset_in_drawdown",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-117/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>A trader may reset during open loss on a funded account.",
+          "text": "Hello Synthetic,\n\nA trader may reset during open loss on a funded account."
+        }
+      ]
+    },
+    {
+      "id": "R8-118",
+      "class": "previous_cycle_profit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "previous_cycle_profit_payable",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-118/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-119",
+      "class": "reversal",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-119/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>We pull a completed payout back if risk asks.",
+          "text": "Hello Synthetic,\n\nWe pull a completed payout back if risk asks."
+        }
+      ]
+    },
+    {
+      "id": "R8-120",
+      "class": "completion_processed",
+      "expect": "block",
+      "verdict": "critical",
+      "critical": true,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-120/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Finance processed the withdrawal already.",
+          "text": "Hello Synthetic,\n\nFinance processed the withdrawal already."
+        }
+      ]
+    },
+    {
+      "id": "R8-121",
+      "class": "program_fact",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-121/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-122",
+      "class": "approved_faq",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-122/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Up to 3 resets per funded account, and only while the account is at breakeven or in profit.",
+          "text": "Hello Synthetic,\n\nUp to 3 resets per funded account, and only while the account is at breakeven or in profit."
+        }
+      ]
+    },
+    {
+      "id": "R8-123",
+      "class": "arabic_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-123/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "السلام علیکم Synthetic،<br><br>I can't confirm that. Our team will confirm.",
+          "text": "السلام علیکم Synthetic،\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-124",
+      "class": "russian_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "reset_restore_or_payout_completion",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-124/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-125",
+      "class": "hinglish_completion",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-125/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-126",
+      "class": "note_substring",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-126/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-127",
+      "class": "hedge_short_circuit",
+      "expect": "block",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "funded_reset_in_drawdown",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-127/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-128",
+      "class": "strategy_risk_soft_wording",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": true,
+      "presendHold": false,
+      "hedgePosted": true,
+      "silent": false,
+      "guard": "unsupported_program_fact",
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-128/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I can't confirm that. Our team will confirm.",
+          "text": "Hello Synthetic,\n\nI can't confirm that. Our team will confirm."
+        }
+      ]
+    },
+    {
+      "id": "R8-129",
+      "class": "program_fact_allow",
+      "expect": "allow",
+      "verdict": "regression",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": true,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-129/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+          "text": "Hello Synthetic,\n\nI've forwarded this to a teammate who can take a closer look. They have the chat context."
+        }
+      ]
+    },
+    {
+      "id": "R8-130",
+      "class": "reversal_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-130/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>Completed payouts are never cancelled.",
+          "text": "Hello Synthetic,\n\nCompleted payouts are never cancelled."
+        }
+      ]
+    },
+    {
+      "id": "R8-131",
+      "class": "reset_breakeven_allow",
+      "expect": "allow",
+      "verdict": "pass",
+      "critical": false,
+      "hookReached": false,
+      "presendHold": false,
+      "hedgePosted": false,
+      "silent": false,
+      "guard": null,
+      "status": 200,
+      "threw": null,
+      "outbound": [
+        {
+          "url": "https://api.intercom.io/conversations/sealed-R8-131/reply",
+          "message_type": "comment",
+          "admin_id": "10118526",
+          "body": "Hello Synthetic,<br><br>You reset a funded account from Trading Objectives on the dashboard, and only at breakeven or in profit.",
+          "text": "Hello Synthetic,\n\nYou reset a funded account from Trading Objectives on the dashboard, and only at breakeven or in profit."
+        }
+      ]
+    }
+  ]
+}
