@@ -1,0 +1,44 @@
+diff --git a/luna-current/01_runtime/index.js b/luna-current/01_runtime/index.js
+--- a/luna-current/01_runtime/index.js
++++ b/luna-current/01_runtime/index.js
+@@ -4486,7 +4486,39 @@ async function processAuthorizedNoteCommands(conversationId, full) {
+     } catch (__e) { /* observation must never affect the reply */ }
+     /* LUNA_MAINTAINER_V1:END:observe */
+     if (__presend.send) {
+-      await postClientCommentOnce(conversationId, body, latestUser, clientName); /* LUNA_STATE_PRESEND_V1:guardSend */
++      // T800 payout R8 proposed hook. 01_runtime/statePresend is absent in this
++      // tree, so this block does not require that directory and does not call the presend gate.
++      // Fail closed: a throw, a silent result, or a missing body becomes the
++      // visible hedge. The original draft is not posted, and the send is not dropped.
++      let __payoutBody = body;
++      try {
++        const __payoutGuard = require('../10_synthetic_lanes/t800-payout-r8/payoutClaimGuard');
++        const __payoutParts = (typeof parts !== 'undefined' ? parts : []).map((p) => Object.assign({}, p, {
++          body: typeof stripHtml === 'function' ? stripHtml((p && p.body) || '') : ((p && p.body) || ''),
++        }));
++        const __payout = __payoutGuard.beforeSend(body, {
++          messages: __payoutGuard.partsToMessages(__payoutParts, [
++            typeof ARSAL_ID !== 'undefined' ? ARSAL_ID : '',
++            typeof ELITE_AI_ID !== 'undefined' ? ELITE_AI_ID : '',
++          ]),
++          knowledge: typeof __presendKnowledge !== 'undefined' ? __presendKnowledge : null,
++        });
++        if (!__payout || __payout.silent || !__payout.body || __payout.failClosed) {
++          __payoutBody = __payoutGuard.CLIENT_MESSAGE;
++          console.error('PAYOUT_GUARD_FAIL_CLOSED', conversationId, __payout && __payout.reason);
++        } else {
++          __payoutBody = __payout.body;
++          if (__payout.replaced) console.log('PAYOUT_GUARD_VISIBLE_HEDGE', conversationId, __payout.result && __payout.result.reason);
++        }
++      } catch (__e) {
++        console.error('[payoutClaimGuard] fail-closed', conversationId, __e && __e.message);
++        __payoutBody = "I can't confirm that. Our team will confirm.";
++      }
++      if (!__payoutBody) {
++        __payoutBody = "I can't confirm that. Our team will confirm.";
++        console.error('PAYOUT_GUARD_FAIL_CLOSED_EMPTY', conversationId);
++      }
++      await postClientCommentOnce(conversationId, __payoutBody, latestUser, clientName); /* LUNA_STATE_PRESEND_V1:guardSend */
+       return res.sendStatus(200);
+     }
+     // Fail-closed hold for missed human handoff: perform escalate instead of silence.
