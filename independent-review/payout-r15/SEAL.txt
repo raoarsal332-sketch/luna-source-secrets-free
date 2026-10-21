@@ -1,0 +1,14 @@
+Payout claim guard R15 independent seal
+Frozen candidate: 966e9d3d0ba97d56be69d7a95abfc16c3502f4ea
+SHA256SUMS.txt: 4140f0988d9c9ca2f2236abc09fc0fd7d73e2108908578548fcc6ede5e0dbb47
+payoutClaimGuard.js: 5423924f242857351f9262fc960e7a72670a4b5cc1d4860044dba51e60968514
+approved.lock.json: edaf54aa92659e7b3dd633835a125ccb9506fc33b4ea96e29fb6c17bd20cf667
+index.js.public-sends.diff: d4a1fc292ad129a6a55577e5899ccba2cad9ed9764ea333dc151e76fc70a338d
+
+sealed-cases.json sha256: 57463c6b04847f9d90836afb139bc0bfc3ca06f151bde047d583a158f0d16ece
+cases: 450
+faq: 168
+languages: en ur roman hi ar hinglish
+sealed-before-run: yes
+author-tests-read: no
+review-branches-read: no
