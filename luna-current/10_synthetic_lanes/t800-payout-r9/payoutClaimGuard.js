@@ -17,17 +17,20 @@
  *   - Previous-cycle profit is not payable after a reset.
  *   - Completed payouts are not reversed.
  *
+ * The current official Help Centre (faq.fundedelite.com) is the primary
+ * public-policy reference. The repo FAQ file is secondary. Owner-final
+ * exceptions still override both where they differ.
+ *
  * Help Centre facts used as approved statements, not as a block list:
  *   - 17437398 soft-breach payout still processed at a 30% profit split.
  *   - 17437285 one-instrument risk is 50% of the daily loss limit (1.5% when that is the half).
  *   - 17437410 first reset fee is 40% of the original challenge cost, minimum $10.
- *   - 17437354 Rise is for $500 or more only.
+ *   - 17437354 how you are paid: Rise is for withdrawals of $500 or more at $40;
+ *     crypto (USDC) is any amount, the only method below $500, at 3%.
  *   - Weekend holding is allowed and is not termination. Weekend trading is a different outcome.
  *
  * Still unresolved, so those claims stay hedged:
- *   crypto amount cap versus a live any-amount rule,
- *   FAQ versus Help Centre authority,
- *   Catalyst stage-erasure.
+ *   Catalyst stage-reset, either direction.
  *
  * Not applied to index.js. The proposed hook is index.js.public-sends.diff.
  * 01_runtime/statePresend is absent; this module does not require it.
@@ -54,11 +57,14 @@ const APPROVED = Object.freeze({
   resetFeePercent: 40,
   resetFeeMinimumUsd: 10,
   riseMinimumUsd: 500,
+  riseFeeUsd: 40,
+  cryptoFeePercent: 3,
+  cryptoOnlyBelowUsd: 500,
   articles: Object.freeze({
     softBreachPayout: '17437398',
     halfDailyLoss: '17437285',
     resetFee: '17437410',
-    riseMinimum: '17437354',
+    payoutMethod: '17437354',
   }),
 });
 
@@ -123,6 +129,7 @@ function isPureQuestion(sentence) {
 
 function strategyRiskDomain(sentence) {
   return /\bstrategy\s+risk\b/i.test(sentence)
+    || /riesgo\s+de\s+estrategia|risque\s+de\s+strat[eé]gie|rischio\s+di\s+strategia|стратег\w*\s+риск/i.test(sentence)
     || /स्ट्र(?:ै|े)टजी\s*रिस्क|रणनीति\s*जोखिम/.test(sentence)
     || /سٹریٹیجی\s*رسک|مخاطر\s+الاستراتيج/.test(sentence);
 }
@@ -146,7 +153,8 @@ function affirmsAccountEnd(sentence) {
   if (/\b(?:funded\s+)?account\s+(?:ends|ended)\b/i.test(stripped)) return true;
   if (/\b(?:it|this)\s+ends\b/i.test(stripped)) return true;
   if (/\b(?:does\s+not|do\s+not|will\s+not|won't|no\s+longer)\s+continues?\b/i.test(stripped)) return true;
-  if (/बंद|समाप्त|खत्म|ختم|بند|إغلاق|اغلاق|ينتهي/.test(stripped) && strategyRiskDomain(sentence)) return true;
+  if (/\b(?:abolish\w*|suspend\w*|deactivat\w*|liquidat\w*|wipes?|wiped)\s+(?:the\s+|your\s+|a\s+)?(?:funded\s+)?(?:account|trading)\b/i.test(stripped)) return true;
+  if (strategyRiskDomain(sentence) && /बंद|समाप्त|खत्म|ختم|بند|إغلاق|اغلاق|ينتهي|cierra|cierre|ferme|chiude|encerra|fecha|закрыва|прекращ|ликвида/i.test(stripped)) return true;
   return false;
 }
 
@@ -242,8 +250,9 @@ function isDrawdownClock(sentence) {
 }
 
 function lossCondition(sentence) {
-  return /\b(?:los(?:e|ing|es|t)|losses|negative|open\s+loss|below\s+(?:the\s+)?(?:starting|initial)\s+balance|in\s+(?:a\s+)?drawdown|under\s*water|in\s+the\s+red|at\s+a\s+loss)\b/i.test(sentence)
-    || /घाट|नुकसान|नकारात्मक|نقصان|گھاٹا|خسار/.test(sentence);
+  return /\b(?:los(?:e|ing|es|t)|losses|negative|open\s+loss|below\s+(?:the\s+)?(?:starting|initial)\s+balance|in\s+(?:a\s+)?drawdown|under\s*water|in\s+the\s+red|at\s+a\s+loss|deficit|in\s+minus)\b/i.test(sentence)
+    || /p[eé]rdid[ao]|en\s+p[eé]rdida|pierde|perte|perdita|perda|убыт/i.test(sentence)
+    || /घाट|नुकसान|नकारात्मक|लॉस|نقصان|گھاٹا|خسار/.test(sentence);
 }
 
 function grantsReset(sentence) {
@@ -252,7 +261,11 @@ function grantsReset(sentence) {
   return /\b(?:can|may|allowed\s+to|able\s+to|eligible\s+to)\s+(?:be\s+)?reset\b/i.test(sentence)
     || /\bcan\s+be\s+reset\b/i.test(sentence)
     || /\bbe\s+reset\b/i.test(sentence)
-    || /\breset\s+(?:is|are)\s+(?:allowed|possible|available|eligible)\b/i.test(sentence);
+    || /\beligible\s+for\s+(?:a\s+)?reset\b/i.test(sentence)
+    || /\breset(?:table)?\b/i.test(sentence) && /\b(?:offered|granted)\b/i.test(sentence)
+    || /\breset\s+(?:is|are|gets)\s+(?:allowed|possible|available|eligible|offered|granted)\b/i.test(sentence)
+    || ((/\breset\w*/i.test(sentence) || /रीसेट|ری\s?سیٹ|إعادة\s+تعيين|сброс/.test(sentence))
+      && /सकता|सकती|يمكن|можно|pued(?:e|es|en)|puoi|pouvez/i.test(sentence));
 }
 
 function lossIsNegated(sentence) {
@@ -275,7 +288,7 @@ function approvedResetCondition(sentence) {
 
 function isResetEligibilitySentence(sentence) {
   if (isDrawdownClock(sentence)) return false;
-  const reset = /\breset\b/i.test(sentence) || /रीसेट|ری\s?سیٹ|إعادة\s+تعيين/.test(sentence);
+  const reset = /\breset\w*/i.test(sentence) || /रीसेट|ری\s?سیٹ|إعادة\s+تعيين|сброس/.test(sentence);
   if (!reset) return false;
   return grantsReset(sentence)
     || /\b(?:cannot|can't|not\s+allowed|eligible|eligibility)\b/i.test(sentence)
@@ -290,12 +303,13 @@ function judgeResetEligibility(sentence) {
 }
 
 function previousProfitDomain(sentence) {
-  const latin = /\b(?:previous|prior|last|earlier|pichl[ae]|puran[ae]|pehle)\b/i.test(sentence)
-    && /\b(?:profits?|munafa|nafa)\b/i.test(sentence);
+  const latin = /\b(?:previous|prior|last|earlier|pichl[ae]|puran[ae]|pehle|anterior|previo|pr[eé]c[eé]dent|precedente|vorherig)\b/i.test(sentence)
+    && /\b(?:profits?|munafa|nafa|beneficios?|b[eé]n[eé]fices?|guadagn\w*|lucros?)\b/i.test(sentence);
+  const cyrillic = /предыдущ|прошл/i.test(sentence) && /прибыл|профит/i.test(sentence);
   const hindi = /पिछल[ेाा]|पूर्व/.test(sentence) && /लाभ|प्रॉफिट|मुनाफा|नफा/.test(sentence);
   const urdu = /پچھل[ےا]|سابقہ/.test(sentence) && /منافع|نفع|پرافٹ/.test(sentence);
   const arabic = /السابق(?:ة)?/.test(sentence) && /(?:ربح|أرباح|ارباح)/.test(sentence);
-  return latin || hindi || urdu || arabic;
+  return latin || cyrillic || hindi || urdu || arabic;
 }
 
 function previousProfitDenied(sentence) {
@@ -306,6 +320,8 @@ function previousProfitDenied(sentence) {
   if (/\b(?:nahi|nahin|nai)\s+(?:hai|he|payable|paid|milega|milta|milti)\b/i.test(sentence)) return true;
   if (/नहीं|نہیں|نهیں/.test(sentence)) return true;
   if (/(?:غير|ليس|لن|(?:^|[\s،])لا(?:[\s،]|$))/.test(sentence) && /(?:ربح|أرباح|ارباح)/.test(sentence)) return true;
+  if (/\b(?:n'est\s+pas|ne\s+sont\s+pas|no\s+es|no\s+se\s+paga|non\s+[eè]\s+pagabile|n[aã]o\s+[eé])\b/i.test(sentence)) return true;
+  if (/(?:^|\s)не(?:\s|$)/i.test(sentence) && /прибыл|профит/i.test(sentence)) return true;
   return false;
 }
 
@@ -316,11 +332,13 @@ function judgePreviousProfit(sentence) {
 }
 
 function hasStatusNoun(sentence) {
-  return /\b(?:payouts?|withdrawals?|payments?|refunds?|rewards?|funds?|disbursements?)\b/i.test(sentence);
+  return /\b(?:payouts?|withdrawals?|payments?|refunds?|rewards?|funds?|disbursements?|remittances?|settlements?)\b/i.test(sentence)
+    || /भुगतान|पेआउट|इनाम|ادائیگی|انعام|выплат|вознагражден/i.test(sentence);
 }
 
 function hasTakeBack(sentence) {
-  return /\b(?:revers\w*|cancel(?:led|ed|lation|ing)?|took\s+back|taken\s+back|take\s+back|undone|undo|clawed\s+back|claw\s+back|pull(?:ed)?\s+back)\b/i.test(sentence);
+  return /\b(?:revers\w*|cancel(?:led|ed|lation|ing)?|took\s+back|taken\s+back|take\s+back|undone|\bundo\b|claw(?:ed)?\s*back|clawback|pull(?:ed)?\s+back|retract\w*|recoup\w*|storn\w*|annull\w*)\b/i.test(sentence)
+    || /वापस|واپس|استرجع|استرداد|отмен|аннулир/i.test(sentence);
 }
 
 function reversalNegated(sentence) {
@@ -372,7 +390,7 @@ function multilingualCompletion(sentence) {
   if (/[\u0600-\u06FF]/.test(sentence) && /(?:گیا|گئی|گئے|چکا|چکی|دیا|ہوا|ہوئی)/.test(sentence) && /(?:ادائیگی|ادا|بھیج|بحال|منسوخ|ریورس|ری\s?سیٹ|واپس)/.test(sentence)) {
     return clip(sentence);
   }
-  if (/[\u0900-\u097F]/.test(sentence) && /(?:गया|गई|चुका|दिया|किया|हुआ|हुई)/.test(sentence) && /(?:भुगतान|पेआउट|रीसेट|रद्द|वापस|बहाल|भेज)/.test(sentence)) {
+  if (/[\u0900-\u097F]/.test(sentence) && !/सकता|सकती|सकते|नहीं/.test(sentence) && /(?:गया|गई|चुका|दिया|हुआ|हुई)/.test(sentence) && /(?:भुगतान|पेआउट|रीसेट|रद्द|वापस|बहाल|भेज)/.test(sentence)) {
     return clip(sentence);
   }
   if (/(оплач|отправ|обработ|восстанов|отмен|аннулир|выплач)[а-яё]{1,8}/i.test(sentence)
@@ -414,8 +432,8 @@ function feeNumbers(sentence) {
 }
 
 function isResetPriceSentence(sentence) {
-  return (/\breset\b/i.test(sentence) || /रीसेट|ری\s?سیٹ/.test(sentence))
-    && /\b(?:fee|fees|cost|price|charge|charges|%|percent|\$|usd)\b/i.test(sentence);
+  return (/\breset\w*/i.test(sentence) || /रीसेट|ری\s?سیٹ|إعادة\s+تعيين/.test(sentence))
+    && (/\b(?:fee|fees|cost|price|charge|charges|tarifa|precio|frais|tassa|percent|usd)\b|%|\$|फीस|فیس|رسوم/i.test(sentence));
 }
 
 function approvedResetPrice(sentence) {
@@ -438,21 +456,87 @@ function judgeResetPrice(sentence) {
   return bad('reset_price', 'reset_price');
 }
 
-function riseMinimum(sentence) {
-  if (!/\b500\b/.test(sentence)) return false;
-  if (/\b(?:maximum|up\s+to|no\s+more\s+than|under|below|any\s+amount|no\s+(?:withdrawal\s+)?limit|unlimited)\b/i.test(sentence)) return false;
-  return /\b(?:or\s+more|at\s+least|minimum|or\s+above|and\s+above|≥|more\s+than|or\s+higher)\b/i.test(sentence);
+function mentionsCrypto(sentence) {
+  return /\bcrypto(?:currency)?\b|\busdc\b|क्रिप्टो|کریپٹو|крипто/i.test(sentence);
+}
+
+function mentionsRise(sentence) {
+  return /\brise\b/i.test(sentence);
+}
+
+function moneyValues(sentence) {
+  const values = [];
+  const re = /(?:\$|usd\s*)(\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?|\b(\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?\s*usd\b/gi;
+  let match;
+  while ((match = re.exec(sentence))) values.push(Number((match[1] || match[2]).replace(/,/g, '')));
+  return values;
+}
+
+function pairDiffersBy(values, gap) {
+  for (let i = 0; i < values.length; i += 1) {
+    for (let j = 0; j < values.length; j += 1) {
+      if (values[i] - values[j] === gap) return true;
+    }
+  }
+  return false;
+}
+
+function cryptoNetMatches(sentence) {
+  const values = moneyValues(sentence).filter((n) => n > 0);
+  for (let i = 0; i < values.length; i += 1) {
+    for (let j = 0; j < values.length; j += 1) {
+      if (values[i] > values[j] && Math.abs(values[j] / values[i] - 0.97) < 0.001) return true;
+    }
+  }
+  return false;
+}
+
+function cryptoContradicts(sentence) {
+  if (/\b(?:cap(?:ped|s)?|maximum|max|up\s+to|no\s+more\s+than|limited\s+to)\b/i.test(sentence) && /\b500\b/.test(sentence)) return true;
+  if (percentValues(sentence).some((n) => n !== APPROVED.cryptoFeePercent)) return true;
+  return false;
+}
+
+function approvedCryptoRule(sentence) {
+  if (cryptoContradicts(sentence)) return false;
+  const anyAmount = /\bany\s+amount\b|\bnot\s+capped\b|\buncapped\b|\bno\s+(?:maximum|cap)\b/i.test(sentence);
+  const onlyBelow = /\b(?:only|exclusiv\w*)\b/i.test(sentence)
+    && /\b(?:below|under)\b/i.test(sentence)
+    && /\b500\b/.test(sentence);
+  const fee = percentValues(sentence).includes(APPROVED.cryptoFeePercent);
+  return anyAmount || onlyBelow || fee || cryptoNetMatches(sentence);
+}
+
+function riseContradicts(sentence) {
+  if (/\b(?:maximum|max|up\s+to|no\s+more\s+than|any\s+amount|no\s+(?:withdrawal\s+)?limit|unlimited)\b/i.test(sentence)) return true;
+  if (/\b(?:below|under)\s+\$?\s*500\b/i.test(sentence) && /\brise\b/i.test(sentence) && !mentionsCrypto(sentence)) return true;
+  return false;
+}
+
+function approvedRiseRule(sentence) {
+  if (riseContradicts(sentence)) return false;
+  const minimum = /\b500\b/.test(sentence)
+    && /\b(?:or\s+more|and\s+above|or\s+above|at\s+least|minimum|or\s+higher|and\s+over)\b/i.test(sentence);
+  const amounts = moneyValues(sentence);
+  const fee = amounts.includes(APPROVED.riseFeeUsd)
+    && amounts.every((n) => n === APPROVED.riseFeeUsd || n === APPROVED.riseMinimumUsd)
+    && /\b(?:fee|fees|deduct\w*|charge\w*)\b/i.test(sentence);
+  const net = pairDiffersBy(amounts, APPROVED.riseFeeUsd) && amounts.some((n) => n > APPROVED.riseFeeUsd);
+  if (amounts.some((n) => n !== APPROVED.riseFeeUsd && n !== APPROVED.riseMinimumUsd) && !net) return false;
+  return minimum || fee || net;
 }
 
 function judgePayoutMethod(sentence) {
-  if (/\bcrypto\b/i.test(sentence) && /\b(?:\$|usd|500|limit|cap|maximum|minimum|any\s+amount|unlimited|no\s+limit)\b/i.test(sentence)) {
-    return bad('unresolved_crypto_cap', 'unresolved');
-  }
-  if (!/\brise\b/i.test(sentence)) return null;
-  const amount = /\b(?:\$|usd|limit|minimum|maximum|cap|amount|500|any\s+amount|unlimited)\b/i.test(sentence);
-  if (!amount) return null;
-  if (riseMinimum(sentence)) return ok('help_centre_17437354', 'payout_method');
-  return bad('payout_method_amount', 'payout_method');
+  const crypto = mentionsCrypto(sentence);
+  const rise = mentionsRise(sentence);
+  if (!crypto && !rise) return null;
+  const ruleTalk = /\b(?:fee|fees|limit|cap(?:ped|s)?|maximum|minimum|any\s+amount|only\s+method|exclusiv\w*|or\s+more|at\s+least|below|under)\b|%|percent\b/i.test(sentence)
+    || cryptoNetMatches(sentence)
+    || (rise && pairDiffersBy(moneyValues(sentence), APPROVED.riseFeeUsd));
+  if (!ruleTalk) return null;
+  if (crypto && !approvedCryptoRule(sentence)) return bad('payout_method_amount', 'payout_method');
+  if (rise && !approvedRiseRule(sentence)) return bad('payout_method_amount', 'payout_method');
+  return ok('help_centre_17437354', 'payout_method');
 }
 
 function judgeWeekend(sentence) {
@@ -476,13 +560,23 @@ function judgeWeekend(sentence) {
   return null;
 }
 
+function judgeSourceAuthority(sentence) {
+  const help = /\bhelp\s*cent(?:re|er)\b|faq\.fundedelite\.com/i.test(sentence);
+  const faq = /\bfaq\b/i.test(sentence);
+  if (!help || !faq) return null;
+  const faqPrimary = /\bfaq\b[\s\S]{0,48}\b(?:overrides?|outranks?|supersed\w*|primary|source\s+of\s+truth|wins|prevails)\b/i.test(sentence);
+  const helpPrimary = /\bhelp\s*cent(?:re|er)\b[\s\S]{0,64}\b(?:primary|source\s+of\s+truth|outranks?|overrides?)\b/i.test(sentence)
+    || /faq\.fundedelite\.com/i.test(sentence) && /\bprimary\b/i.test(sentence)
+    || /\bfaq\b[\s\S]{0,40}\bsecondary\b/i.test(sentence);
+  if (helpPrimary && !faqPrimary) return ok('help_centre_primary', 'source_authority');
+  return bad('source_authority', 'source_authority');
+}
+
 function judgeUnresolved(sentence) {
-  if (/\bfaq\b/i.test(sentence) && /\bhelp\s*cent(?:re|er)\b/i.test(sentence)
-    && /\b(?:overrides?|outranks?|supersed\w*|instead\s+of|rather\s+than|authorit\w*|source\s+of\s+truth|wins|prevails)\b/i.test(sentence)) {
-    return bad('unresolved_source_authority', 'unresolved');
-  }
+  const authority = judgeSourceAuthority(sentence);
+  if (authority) return authority;
   if (/\bcatalyst\b/i.test(sentence)
-    && /\b(?:eras\w*|wip(?:e|ed|es|ing)|clean\s+slate|stay\s+won|earlier\s+stages?|previous\s+stages?|stages?\s+(?:are\s+)?(?:kept|lost|erased|preserved))\b/i.test(sentence)) {
+    && /\b(?:stage|reset|eras\w*|wip(?:e|ed|es|ing)|clean\s+slate|stay\s+won|earlier\s+stages?|previous\s+stages?|kept|lost|preserved)\b/i.test(sentence)) {
     return bad('unresolved_catalyst_stage', 'unresolved');
   }
   return null;
@@ -545,6 +639,7 @@ function noteDenies(text, span) {
   const needle = normalize(span);
   if (/\b(?:is\s+not\s+true|not\s+correct|do\s+not\s+confirm|don't\s+confirm|cannot\s+confirm|can't\s+confirm|did\s+not\s+happen|never\s+happened)\b/i.test(hay)) return true;
   if (/\b(?:not|never|n't|did\s+not|was\s+not|were\s+not|has\s+not|have\s+not|no)\b(?:\s+\w+){0,5}\s+(?:confirm\w*|verif\w*|approv\w*|attest\w*|true|correct)\b/i.test(text)) return true;
+  if (needle && hay.includes(needle) && /नहीं|نہیں|نهیں|(?:^|\s)لا(?:\s|$)|(?:^|\s)не(?:\s|$)|不是|ない/.test(text)) return true;
   if (!needle || !hay.includes(needle)) return false;
   const at = hay.indexOf(needle);
   const before = hay.slice(Math.max(0, at - 48), at);

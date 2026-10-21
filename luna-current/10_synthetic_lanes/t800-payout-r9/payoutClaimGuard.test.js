@@ -43,8 +43,11 @@ test('candidate stays unapproved and the hedge is the visible fallback', () => {
   assert.strictEqual(guard.APPROVED.resetFeePercent, 40);
   assert.strictEqual(guard.APPROVED.resetFeeMinimumUsd, 10);
   assert.strictEqual(guard.APPROVED.riseMinimumUsd, 500);
+  assert.strictEqual(guard.APPROVED.riseFeeUsd, 40);
+  assert.strictEqual(guard.APPROVED.cryptoFeePercent, 3);
+  assert.strictEqual(guard.APPROVED.cryptoOnlyBelowUsd, 500);
   assert.strictEqual(guard.APPROVED.articles.resetFee, '17437410');
-  assert.strictEqual(guard.APPROVED.articles.riseMinimum, '17437354');
+  assert.strictEqual(guard.APPROVED.articles.payoutMethod, '17437354');
   assert.strictEqual(guard.APPROVED.articles.softBreachPayout, '17437398');
   assert.strictEqual(guard.APPROVED.articles.halfDailyLoss, '17437285');
   assert.ok(guard.HEDGE_RE.test(guard.CLIENT_MESSAGE));
@@ -67,6 +70,11 @@ test('termination synonyms do not match an approved Strategy Risk statement', ()
     'A Strategy Risk breach closes the funded account.',
     'A Strategy Risk breach may result in funded account closure.',
     'A Strategy Risk breach has no reset.',
+    'A Strategy Risk breach abolishes the account.',
+    'A Strategy Risk breach will suspend the funded account.',
+    'A Strategy Risk breach wipes the account.',
+    'Una infracción de Strategy Risk cierra la cuenta.',
+    'स्ट्रेटजी रिस्क पर अकाउंट बंद हो जाता है।',
   ];
   for (const draft of drafts) {
     const result = guard.evaluateResetRestoreClaim({ draft });
@@ -99,6 +107,9 @@ test('reset is allowed only at breakeven or in profit', () => {
     'The account can be reset below the starting balance.',
     'The account can be reset.',
     'You may reset while in drawdown.',
+    'The account is eligible for a reset.',
+    'A reset is offered.',
+    'अकाउंट को लॉस में रीसेट किया जा सकता है।',
   ];
   for (const draft of blocked) held(guard.evaluateResetRestoreClaim({ draft }), 'reset_condition');
 
@@ -143,6 +154,9 @@ test('previous-cycle profit is held in Hinglish, Hindi, Urdu, and Arabic unless 
     'پچھلے منافع ملے گا۔',
     'الربح السابق مستحق.',
     'Previous-cycle profit is payable after a reset.',
+    'Pehle cycle ka munafa milega.',
+    'El beneficio del ciclo anterior es pagadero.',
+    'Прибыль предыдущего цикла выплачивается.',
   ];
   for (const draft of payable) held(guard.evaluateResetRestoreClaim({ draft }), 'previous_cycle_profit');
 
@@ -152,6 +166,8 @@ test('previous-cycle profit is held in Hinglish, Hindi, Urdu, and Arabic unless 
     'پچھلے منافع نہیں ملے گا۔',
     'الربح السابق غير قابل للدفع.',
     'Previous-cycle profit is not payable after a reset.',
+    'Le profit du cycle précédent n\'est pas payable.',
+    'Прибыль предыдущего цикла не выплачивается.',
   ];
   for (const draft of denied) allowed(guard.evaluateResetRestoreClaim({ draft }), 'owner_rule');
 });
@@ -163,6 +179,8 @@ test('take-back wording and completion nouns are not approved reversals', () => 
     'The reward was clawed back.',
     'They pull back the funds.',
     'The payout was cancelled.',
+    'They retracted the reward.',
+    'The settlement was recouped.',
   ]) {
     held(guard.evaluateResetRestoreClaim({ draft }), 'payout_reversal');
   }
@@ -181,6 +199,7 @@ test('reward, funds, and Finance processed are completions until a real attestat
     'Your reward was paid.',
     'Your funds were sent.',
     'Finance processed the withdrawal.',
+    'The settlement was paid.',
   ];
   for (const draft of drafts) held(guard.evaluateResetRestoreClaim({ draft }), 'payout_completion');
 
@@ -227,21 +246,48 @@ test('reset price must be 40 percent with a 10 USD minimum', () => {
   }), 'help_centre_17437410');
   for (const draft of [
     'The reset fee is 25%.',
+    'The reset fee is 15%.',
     'The reset fee is 25% with a minimum of $10.',
     'The reset fee is $50.',
+    'The reset fee is $7.',
     'The reset fee is 40% of the profit.',
+    'La tarifa de reset es 15%.',
   ]) {
     held(guard.evaluateResetRestoreClaim({ draft }), 'reset_price');
   }
 });
 
-test('Rise is 500 USD or more, and the old no-limit line is not approved', () => {
+test('payout method follows live article 17437354, not the repo crypto cap', () => {
   allowed(guard.evaluateResetRestoreClaim({
     draft: 'Rise is for $500 or more only.',
   }), 'help_centre_17437354');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'The Rise fee is $40 per withdrawal.',
+  }), 'help_centre_17437354');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'A $4,800 reward through Rise arrives as $4,760.',
+  }), 'help_centre_17437354');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'A crypto payout can be any amount.',
+  }), 'help_centre_17437354');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'Crypto is the only method below $500.',
+  }), 'help_centre_17437354');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'The crypto fee is 3%.',
+  }), 'help_centre_17437354');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'A $400 crypto reward arrives as $388.',
+  }), 'help_centre_17437354');
+  held(guard.evaluateResetRestoreClaim({
+    draft: 'Crypto payouts are capped at 500 USD.',
+    knowledge: [{ text: 'Crypto payouts have a maximum request of 500 USD gross per payout cycle.' }],
+  }), 'payout_method_amount');
+  held(guard.evaluateResetRestoreClaim({ draft: 'The crypto fee is 5%.' }), 'payout_method_amount');
   held(guard.evaluateResetRestoreClaim({ draft: 'Rise has no withdrawal limit.' }), 'payout_method_amount');
   held(guard.evaluateResetRestoreClaim({ draft: 'Rise has a maximum of $500.' }), 'payout_method_amount');
   held(guard.evaluateResetRestoreClaim({ draft: 'You can withdraw any amount on Rise.' }), 'payout_method_amount');
+  held(guard.evaluateResetRestoreClaim({ draft: 'The Rise fee is $25.' }), 'payout_method_amount');
 });
 
 test('supported soft-breach, half daily loss, and weekend holding are allowed', () => {
@@ -302,19 +348,21 @@ test('a hedge does not short-circuit a later or embedded contradiction', () => {
   }), 'hedge_kept');
 });
 
-test('unresolved crypto, source authority, and Catalyst stage claims stay hedged', () => {
-  held(guard.evaluateResetRestoreClaim({
-    draft: 'Crypto payouts are capped at 500 USD.',
-    knowledge: [{ text: 'Crypto payouts have a maximum request of 500 USD gross per payout cycle.' }],
-  }), 'unresolved_crypto_cap');
-  held(guard.evaluateResetRestoreClaim({
-    draft: 'A crypto payout can be any amount.',
-  }), 'unresolved_crypto_cap');
+test('Help Centre is primary, and Catalyst stage-reset stays hedged', () => {
   held(guard.evaluateResetRestoreClaim({
     draft: 'The FAQ overrides the Help Centre on this rule.',
-  }), 'unresolved_source_authority');
+  }), 'source_authority');
+  held(guard.evaluateResetRestoreClaim({
+    draft: 'The repo FAQ is the source of truth over the Help Centre.',
+  }), 'source_authority');
+  allowed(guard.evaluateResetRestoreClaim({
+    draft: 'The official Help Centre is the primary reference and the repo FAQ is secondary.',
+  }), 'help_centre_primary');
   held(guard.evaluateResetRestoreClaim({
     draft: 'A Catalyst reset erases earlier stages.',
+  }), 'unresolved_catalyst_stage');
+  held(guard.evaluateResetRestoreClaim({
+    draft: 'A Catalyst reset keeps the earlier stage.',
   }), 'unresolved_catalyst_stage');
   held(guard.evaluateResetRestoreClaim({
     draft: 'Payout ho gaya hai.',
