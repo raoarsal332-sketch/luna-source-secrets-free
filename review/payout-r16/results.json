@@ -1,0 +1,498 @@
+{
+  "frozenCommit": "d41437495687ae23c32d5e69594a249ed9cce8a7",
+  "sealHash": "60e8197f430f08ad31fe375c6660fece12965475ef171d430004e804f5e0cbc0",
+  "sealed": true,
+  "summary": {
+    "cases": 720,
+    "faqCases": 180,
+    "scripts": 90,
+    "unsupported": 68,
+    "wrongBody": 0,
+    "bypass": 2,
+    "eraseKeep": 36,
+    "silent": 102,
+    "faqReg": 71,
+    "falseHold": 2,
+    "nonEn": 27,
+    "over": 7,
+    "falseHoldDenom": 238,
+    "nonEnDenom": 525,
+    "falseHoldRate": 0.008403361344537815,
+    "nonEnRate": 0.05142857142857143,
+    "critical": 106,
+    "trips": 0,
+    "helpFetches": 1279,
+    "helpHosts": [
+      "faq.fundedelite.com"
+    ],
+    "pass": false
+  },
+  "examples": {
+    "unsupported": [
+      {
+        "id": "r16-0012",
+        "lang": "en",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [
+          "Open Verification, choose the document type, and upload a clear selfie plus the photo page of your passport. Rise is free for every withdrawal."
+        ],
+        "forbiddenHit": [
+          "Rise is free for every withdrawal"
+        ]
+      },
+      {
+        "id": "r16-0016",
+        "lang": "en",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "جی ہاں، مکمل پے آؤٹ واپس لے لیا گیا۔"
+        ],
+        "forbiddenHit": [
+          "مکمل پے آؤٹ واپس لے لیا گیا"
+        ]
+      },
+      {
+        "id": "r16-0048",
+        "lang": "en",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "لا، الاحتفاظ خلال نهاية الأسبوع مخالفة دائما."
+        ],
+        "forbiddenHit": [
+          "الاحتفاظ خلال نهاية الأسبوع مخالفة دائما"
+        ]
+      },
+      {
+        "id": "r16-0060",
+        "lang": "en",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [
+          "Open Verification, choose the document type, and upload a clear selfie plus the photo page of your passport. Rise is free for every withdrawal."
+        ],
+        "forbiddenHit": [
+          "Rise is free for every withdrawal"
+        ]
+      },
+      {
+        "id": "r16-0064",
+        "lang": "en",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "جی ہاں، مکمل پے آؤٹ واپس لے لیا گیا۔"
+        ],
+        "forbiddenHit": [
+          "مکمل پے آؤٹ واپس لے لیا گیا"
+        ]
+      },
+      {
+        "id": "r16-0067",
+        "lang": "en",
+        "kind": "policy",
+        "topic": "rise_fee",
+        "posts": [
+          "Rise is free for every withdrawal."
+        ],
+        "forbiddenHit": [
+          "Rise is free for every withdrawal"
+        ]
+      },
+      {
+        "id": "r16-0096",
+        "lang": "en",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "لا، الاحتفاظ خلال نهاية الأسبوع مخالفة دائما."
+        ],
+        "forbiddenHit": [
+          "الاحتفاظ خلال نهاية الأسبوع مخالفة دائما"
+        ]
+      },
+      {
+        "id": "r16-0112",
+        "lang": "en",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "جی ہاں، مکمل پے آؤٹ واپس لے لیا گیا۔"
+        ],
+        "forbiddenHit": [
+          "مکمل پے آؤٹ واپس لے لیا گیا"
+        ]
+      }
+    ],
+    "wrong_body": [],
+    "bypass": [
+      {
+        "id": "r16-0015",
+        "lang": "en",
+        "kind": "defer",
+        "topic": "defer_window",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0023",
+        "lang": "en",
+        "kind": "defer",
+        "topic": "defer_window",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      }
+    ],
+    "erase_keep": [
+      {
+        "id": "r16-0029",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0045",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0085",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0093",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0109",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0245",
+        "lang": "roman",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0253",
+        "lang": "roman",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0269",
+        "lang": "roman",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      }
+    ],
+    "silent_drop": [
+      {
+        "id": "r16-0027",
+        "lang": "en",
+        "kind": "policy",
+        "topic": "reset_previous",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0028",
+        "lang": "en",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0029",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0043",
+        "lang": "en",
+        "kind": "policy",
+        "topic": "weekend_hold",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0044",
+        "lang": "en",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0045",
+        "lang": "en",
+        "kind": "erase",
+        "topic": "catalyst_stage_memory",
+        "posts": [],
+        "forbiddenHit": []
+      }
+    ],
+    "faq_regression": [
+      {
+        "id": "r16-0026",
+        "lang": "en",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0041",
+        "lang": "en",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "Hello Nadia, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0042",
+        "lang": "en",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0074",
+        "lang": "en",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0089",
+        "lang": "en",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "Hello Nadia, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0090",
+        "lang": "en",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      }
+    ],
+    "false_hold": [
+      {
+        "id": "r16-0145",
+        "lang": "ur",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0193",
+        "lang": "ur",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+        ],
+        "forbiddenHit": []
+      }
+    ],
+    "non_english": [
+      {
+        "id": "r16-0246",
+        "lang": "roman",
+        "kind": "forward",
+        "topic": "localized_forward",
+        "posts": [
+          "Thanks for checking in , our team already has this and is reviewing it. We will message you here when there is an update."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0262",
+        "lang": "roman",
+        "kind": "forward",
+        "topic": "localized_forward",
+        "posts": [
+          "I've sent this to a teammate for review. They have your account details and the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0264",
+        "lang": "roman",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "A funded reset is allowed only while the account is at breakeven or in profit. It is not allowed in a loss or in drawdown."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0270",
+        "lang": "roman",
+        "kind": "forward",
+        "topic": "localized_forward",
+        "posts": [
+          "Our team has already been informed and is reviewing this. We will update you here as soon as there is progress."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0286",
+        "lang": "roman",
+        "kind": "forward",
+        "topic": "localized_forward",
+        "posts": [
+          "I've sent this to a teammate for review. They have your account details and the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0302",
+        "lang": "roman",
+        "kind": "forward",
+        "topic": "localized_forward",
+        "posts": [
+          "I've sent this to a teammate for review. They have your account details and the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0304",
+        "lang": "roman",
+        "kind": "owner",
+        "topic": "owner_dictated",
+        "posts": [
+          "I can't confirm that. Our team will confirm."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0334",
+        "lang": "roman",
+        "kind": "forward",
+        "topic": "localized_forward",
+        "posts": [
+          "I've sent this to a teammate for review. They have your account details and the chat context."
+        ],
+        "forbiddenHit": []
+      }
+    ],
+    "over_capture": [
+      {
+        "id": "r16-0076",
+        "lang": "en",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [
+          "This is already with our team for review. Please hang tight, we will follow up on Intercom as soon as there is news."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0145",
+        "lang": "ur",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0193",
+        "lang": "ur",
+        "kind": "faq",
+        "topic": "faq",
+        "posts": [
+          "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0316",
+        "lang": "roman",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [
+          "Our team has already been informed and is reviewing this. We will update you here as soon as there is progress."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0388",
+        "lang": "hi",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [
+          "I've forwarded this to a teammate who can take a closer look. They have the chat context."
+        ],
+        "forbiddenHit": []
+      },
+      {
+        "id": "r16-0676",
+        "lang": "hinglish",
+        "kind": "mixed",
+        "topic": "kyc_and_rise",
+        "posts": [
+          "Our team has your case and is looking into it. No need to resend the same details , we will update you here."
+        ],
+        "forbiddenHit": []
+      }
+    ]
+  },
+  "trips": []
+}
