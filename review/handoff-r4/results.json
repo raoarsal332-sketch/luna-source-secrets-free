@@ -1,0 +1,502 @@
+{
+  "commit": "45e533d60b4b0e8eef7d1607e77a9bbdf8439662",
+  "caseFileSha256": "2612830135d5154f9bbbf3188db4b84528ca05927f0df3dd28632a2a9b505087",
+  "harnessSha256": "145916406f2c2dff27dc5000f96a17047ec04066f4208c72fbbf9809fcaba946",
+  "cases": 172,
+  "scored": 171,
+  "passed": 143,
+  "failed": 28,
+  "observed": 1,
+  "byClass": {
+    "order": {
+      "pass": 11,
+      "fail": 0
+    },
+    "assignment-failure": {
+      "pass": 23,
+      "fail": 0
+    },
+    "retry-replay": {
+      "pass": 9,
+      "fail": 0
+    },
+    "ownership": {
+      "pass": 62,
+      "fail": 0
+    },
+    "account-question": {
+      "pass": 23,
+      "fail": 19
+    },
+    "credentials": {
+      "pass": 6,
+      "fail": 9
+    },
+    "faq-spread": {
+      "pass": 8,
+      "fail": 0
+    },
+    "fixed-text": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "R4I-113",
+      "class": "account-question",
+      "title": "welcome account question hg with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-113 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-113"
+        ]
+      }
+    },
+    {
+      "id": "R4I-114",
+      "class": "account-question",
+      "title": "welcome account question hg without mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-114 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-114"
+        ]
+      }
+    },
+    {
+      "id": "R4I-115",
+      "class": "account-question",
+      "title": "welcome account question mx with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-115 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-115"
+        ]
+      }
+    },
+    {
+      "id": "R4I-125",
+      "class": "account-question",
+      "title": "recovery 500-hold account question hg with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "FIXED_HANDOFF recovery account-question exemption R4I-125 [object Object]",
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-125 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-125"
+        ]
+      }
+    },
+    {
+      "id": "R4I-126",
+      "class": "account-question",
+      "title": "recovery 500-hold account question hg without mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "FIXED_HANDOFF recovery account-question exemption R4I-126 [object Object]",
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-126 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-126"
+        ]
+      }
+    },
+    {
+      "id": "R4I-127",
+      "class": "account-question",
+      "title": "recovery 500-hold account question mx with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "FIXED_HANDOFF recovery account-question exemption R4I-127 [object Object]",
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-127 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-127"
+        ]
+      }
+    },
+    {
+      "id": "R4I-133",
+      "class": "account-question",
+      "title": "recovery 422-hold account question hg",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "FIXED_HANDOFF recovery account-question exemption R4I-133 [object Object]",
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-133 needs-escalate",
+          "FIXED_HANDOFF missed account-question R4I-133"
+        ]
+      }
+    },
+    {
+      "id": "R4I-135",
+      "class": "account-question",
+      "title": "missed-escalation account question en with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-135 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-135"
+        ]
+      }
+    },
+    {
+      "id": "R4I-136",
+      "class": "account-question",
+      "title": "missed-escalation account question en without mark",
+      "reasons": [
+        "identity re-ask is not an answer to an account-number question",
+        "answer invented a promise"
+      ],
+      "extra": {
+        "bodies": [
+          "Hello Synthetic, Can you send the account number linked to this issue? I’ll pass it to a teammate once I have it."
+        ],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-136 missed-escalation-held",
+          "IDENTITY_BEFORE_ESCALATE asked missing R4I-136 [object Object]"
+        ]
+      }
+    },
+    {
+      "id": "R4I-137",
+      "class": "account-question",
+      "title": "missed-escalation account question ur with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include اکاؤنٹ نمبر"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-137 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-137"
+        ]
+      }
+    },
+    {
+      "id": "R4I-138",
+      "class": "account-question",
+      "title": "missed-escalation account question ur without mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include اکاؤنٹ نمبر"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-138 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-138"
+        ]
+      }
+    },
+    {
+      "id": "R4I-139",
+      "class": "account-question",
+      "title": "missed-escalation account question ar with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include رقم الحساب"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-139 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-139"
+        ]
+      }
+    },
+    {
+      "id": "R4I-140",
+      "class": "account-question",
+      "title": "missed-escalation account question ar without mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include رقم الحساب"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-140 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-140"
+        ]
+      }
+    },
+    {
+      "id": "R4I-141",
+      "class": "account-question",
+      "title": "missed-escalation account question hi with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include खाता नंबर"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-141 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-141"
+        ]
+      }
+    },
+    {
+      "id": "R4I-142",
+      "class": "account-question",
+      "title": "missed-escalation account question hi without mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include खाता नंबर"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-142 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-142"
+        ]
+      }
+    },
+    {
+      "id": "R4I-143",
+      "class": "account-question",
+      "title": "missed-escalation account question hg with mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-143 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-143"
+        ]
+      }
+    },
+    {
+      "id": "R4I-144",
+      "class": "account-question",
+      "title": "missed-escalation account question hg without mark",
+      "reasons": [
+        "account question was swallowed",
+        "answer did not include account number"
+      ],
+      "extra": {
+        "bodies": [],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-144 missed-escalation-held",
+          "FIXED_HANDOFF missed account-question R4I-144"
+        ]
+      }
+    },
+    {
+      "id": "R4I-145",
+      "class": "account-question",
+      "title": "missed-escalation account question mx with mark",
+      "reasons": [
+        "identity re-ask is not an answer to an account-number question",
+        "answer invented a promise"
+      ],
+      "extra": {
+        "bodies": [
+          "السلام علیکم Synthetic، Can you send the account number linked to this issue? I’ll pass it to a teammate once I have it."
+        ],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-145 missed-escalation-held",
+          "IDENTITY_BEFORE_ESCALATE asked missing R4I-145 [object Object]"
+        ]
+      }
+    },
+    {
+      "id": "R4I-146",
+      "class": "account-question",
+      "title": "missed-escalation account question mx without mark",
+      "reasons": [
+        "identity re-ask is not an answer to an account-number question",
+        "answer invented a promise"
+      ],
+      "extra": {
+        "bodies": [
+          "السلام علیکم Synthetic، Can you send the account number linked to this issue? I’ll pass it to a teammate once I have it."
+        ],
+        "pathLogs": [
+          "PRESEND_MISSED_ESCALATION_ESCALATE R4I-146 missed-escalation-held",
+          "IDENTITY_BEFORE_ESCALATE asked missing R4I-146 [object Object]"
+        ]
+      }
+    },
+    {
+      "id": "R4I-148",
+      "class": "credentials",
+      "title": "credential shape curly-apostrophe never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:CANARYCURL"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:CANARYCURL"
+        ]
+      }
+    },
+    {
+      "id": "R4I-152",
+      "class": "credentials",
+      "title": "credential shape spaced-devanagari-label never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:CANARYDEVA"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:CANARYDEVA"
+        ]
+      }
+    },
+    {
+      "id": "R4I-153",
+      "class": "credentials",
+      "title": "credential shape split-latin never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:CANARYALPHA, note:CANARYBETA, prompt:CANARYBETA"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:CANARYALPHA",
+          "note:CANARYBETA",
+          "prompt:CANARYBETA"
+        ]
+      }
+    },
+    {
+      "id": "R4I-154",
+      "class": "credentials",
+      "title": "credential shape split-devanagari-value never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:गुप्तशब्द, prompt:दूसराशब्द"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:गुप्तशब्द",
+          "prompt:दूसराशब्द"
+        ]
+      }
+    },
+    {
+      "id": "R4I-156",
+      "class": "credentials",
+      "title": "credential shape base64-split never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached note:QUJDREVG, prompt:QUJDREVG"
+      ],
+      "extra": {
+        "hits": [
+          "note:QUJDREVG",
+          "prompt:QUJDREVG"
+        ]
+      }
+    },
+    {
+      "id": "R4I-157",
+      "class": "credentials",
+      "title": "credential shape html-entity-colon never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:CANARYHTML"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:CANARYHTML"
+        ]
+      }
+    },
+    {
+      "id": "R4I-158",
+      "class": "credentials",
+      "title": "credential shape html-tags never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:CANARYTAG"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:CANARYTAG"
+        ]
+      }
+    },
+    {
+      "id": "R4I-160",
+      "class": "credentials",
+      "title": "credential shape substantive-prompt never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached prompt:CANARYPROMPT"
+      ],
+      "extra": {
+        "hits": [
+          "prompt:CANARYPROMPT"
+        ]
+      }
+    },
+    {
+      "id": "R4I-161",
+      "class": "credentials",
+      "title": "credential shape account-question-echo never reaches a note, prompt, or customer line",
+      "reasons": [
+        "credential canary reached comment:CANARYECHO, prompt:CANARYECHO",
+        "echoed credential on the customer line or prompt"
+      ],
+      "extra": {
+        "hits": [
+          "comment:CANARYECHO",
+          "prompt:CANARYECHO"
+        ],
+        "pathLogs": []
+      }
+    }
+  ],
+  "observedDetail": [
+    {
+      "id": "R4I-043",
+      "class": "retry-replay",
+      "title": "replay with ticket state and opstore lost and a stale conversation read",
+      "ok": true,
+      "reasons": [
+        "OBSERVED stale read posted again: note,assignment,comment"
+      ],
+      "scored": false,
+      "replayWrites": [
+        "note",
+        "assignment",
+        "comment"
+      ],
+      "observedDuplicate": true
+    }
+  ]
+}
