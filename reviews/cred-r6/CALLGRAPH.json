@@ -1,0 +1,254 @@
+[
+  {
+    "line": 95,
+    "text": "async function icRequest(method, url, data, tag) {"
+  },
+  {
+    "line": 109,
+    "text": "const __writeDecision = __credentialGuardR6.guardOutboundWrite(url, data);"
+  },
+  {
+    "line": 416,
+    "text": "const r = await icRequest("
+  },
+  {
+    "line": 1204,
+    "text": "await postClientCommentOnce(conversationId, ask, latestUser, clientName);"
+  },
+  {
+    "line": 1228,
+    "text": "await postClientCommentOnce(conversationId, retryAsk, latestUser, clientName);"
+  },
+  {
+    "line": 1454,
+    "text": "await postReply(conversationId, 'note', html);"
+  },
+  {
+    "line": 1509,
+    "text": "await postReply(conversationId, 'note', html);"
+  },
+  {
+    "line": 1548,
+    "text": "await postReply(conversationId, 'note', html);"
+  },
+  {
+    "line": 2335,
+    "text": "const posted = await postClientCommentOnce(conversationId, statusOut, latestUser, clientName);"
+  },
+  {
+    "line": 2738,
+    "text": "const r = await icRequest("
+  },
+  {
+    "line": 2751,
+    "text": "async function postReply(conversationId, messageType, body, guardCtx) {"
+  },
+  {
+    "line": 2759,
+    "text": "__guarded = __credentialGuardR6.guardSend({"
+  },
+  {
+    "line": 2779,
+    "text": "const r = await icRequest("
+  },
+  {
+    "line": 2790,
+    "text": "return icRequest("
+  },
+  {
+    "line": 2875,
+    "text": "async function postClientCommentOnce(conversationId, body, userPart, clientName, guardCtx) {"
+  },
+  {
+    "line": 2896,
+    "text": "__credentialGuardR6.rememberClientParts(conversationId, parts);"
+  },
+  {
+    "line": 3025,
+    "text": "return postReply(conversationId, 'comment', finalBody, guardCtx);"
+  },
+  {
+    "line": 3209,
+    "text": "return axios.post("
+  },
+  {
+    "line": 3264,
+    "text": "__credentialGuardR6.rememberClientParts(conversationId, partsOf(full));"
+  },
+  {
+    "line": 3269,
+    "text": "await postReply(conversationId, 'note', authConfirmText('STOP', plain));"
+  },
+  {
+    "line": 3274,
+    "text": "await postReply(conversationId, 'note', authConfirmText('RESUME', plain));"
+  },
+  {
+    "line": 3279,
+    "text": "await postReply(conversationId, 'note', authConfirmText('CLOSE', plain));"
+  },
+  {
+    "line": 3286,
+    "text": "await postReply(conversationId, 'note', 'Okay, reopening this ticket.');"
+  },
+  {
+    "line": 3290,
+    "text": "await postReply(conversationId, 'note', body ? ('Okay, noted. ' + body).slice(0, 500) : 'Okay, noted.');"
+  },
+  {
+    "line": 3296,
+    "text": "await postReply(conversationId, 'note', noteBody);"
+  },
+  {
+    "line": 3304,
+    "text": "await postReply(conversationId, 'note', html);"
+  },
+  {
+    "line": 3309,
+    "text": "await postReply(conversationId, 'note', 'I could not draft a client reply from that instruction , please clarify.');"
+  },
+  {
+    "line": 3315,
+    "text": "const r = await postReply(conversationId, 'comment', out);"
+  },
+  {
+    "line": 3317,
+    "text": "await postReply(conversationId, 'note', 'Sent to client.');"
+  },
+  {
+    "line": 3320,
+    "text": "await postReply(conversationId, 'note', 'Tried to send your message to the client but Intercom returned an error.');"
+  },
+  {
+    "line": 3324,
+    "text": "await postReply(conversationId, 'note', 'Okay, noted.');"
+  },
+  {
+    "line": 3375,
+    "text": "__credentialGuardR6.rememberClientParts(conversationId, partsOf(full));"
+  },
+  {
+    "line": 3469,
+    "text": "await postReply(conversationId, 'note', confirm);"
+  },
+  {
+    "line": 3488,
+    "text": "const r = await postReply(conversationId, 'comment', out);"
+  },
+  {
+    "line": 3490,
+    "text": "await postReply(conversationId, 'note', 'Sent to client.');"
+  },
+  {
+    "line": 3493,
+    "text": "await postReply(conversationId, 'note', 'Tried to send your message to the client but Intercom returned an error.');"
+  },
+  {
+    "line": 3500,
+    "text": "await postReply(conversationId, 'note', html);"
+  },
+  {
+    "line": 3506,
+    "text": "await postReply(conversationId, 'note', 'Okay, reopening this ticket.');"
+  },
+  {
+    "line": 3510,
+    "text": "await postReply(conversationId, 'note', 'Okay, skipping as requested.');"
+  },
+  {
+    "line": 3529,
+    "text": "await postReply("
+  },
+  {
+    "line": 3670,
+    "text": "await postClientCommentOnce(conversationId, holdBody, latestUser, nameEro);"
+  },
+  {
+    "line": 3725,
+    "text": "await postClientCommentOnce(conversationId, clientMsg, null, clientNameRec); // null userPart: identity ask already after latestUser"
+  },
+  {
+    "line": 3741,
+    "text": "const noteRes = await postReply(conversationId, 'note', built.html);"
+  },
+  {
+    "line": 3811,
+    "text": "await postClientCommentOnce(conversationId, welcome, latestUser, clientName);"
+  },
+  {
+    "line": 3819,
+    "text": "__credentialGuardR6.rememberClientText(conversationId, text);"
+  },
+  {
+    "line": 3820,
+    "text": "await postClientCommentOnce(conversationId, SPREAD_TEST_REPLY, latestUser, clientName);"
+  },
+  {
+    "line": 3828,
+    "text": "await postClientCommentOnce(conversationId, body, latestUser, clientName);"
+  },
+  {
+    "line": 4084,
+    "text": "await postClientCommentOnce(conversationId, personalBody, latestUser, clientName);"
+  },
+  {
+    "line": 4247,
+    "text": "await postClientCommentOnce(conversationId, ask2, latestUser, clientName);"
+  },
+  {
+    "line": 4254,
+    "text": "await postClientCommentOnce(conversationId, ask, latestUser, clientName);"
+  },
+  {
+    "line": 4274,
+    "text": "await postClientCommentOnce(conversationId, clientMsg, latestUser, clientName);"
+  },
+  {
+    "line": 4294,
+    "text": "const noteRes = await postReply(conversationId, 'note', built.html);"
+  },
+  {
+    "line": 4393,
+    "text": "await postClientCommentOnce(conversationId, askOnly, latestUser, clientName);"
+  },
+  {
+    "line": 4410,
+    "text": "await postClientCommentOnce(conversationId, clientMsg, latestUser, clientName);"
+  },
+  {
+    "line": 4426,
+    "text": "const noteRes = await postReply(conversationId, 'note', built.html);"
+  },
+  {
+    "line": 4526,
+    "text": "await postClientCommentOnce(conversationId, body, latestUser, clientName); /* LUNA_STATE_PRESEND_V1:guardSend */"
+  },
+  {
+    "line": 4556,
+    "text": "await postClientCommentOnce(conversationId, greetBody, latestUser, clientName);"
+  },
+  {
+    "line": 4571,
+    "text": "await postClientCommentOnce(conversationId, personalBody, latestUser, clientName);"
+  },
+  {
+    "line": 4615,
+    "text": "await postClientCommentOnce(conversationId, clientMsg, latestUser, clientName);"
+  },
+  {
+    "line": 4631,
+    "text": "const noteRes = await postReply(conversationId, 'note', built.html);"
+  },
+  {
+    "line": 4767,
+    "text": "const r = await axios.post('https://api.intercom.io/conversations/search', body, {"
+  },
+  {
+    "line": 4895,
+    "text": "const r = await axios.post('https://api.intercom.io/conversations/search', body, {"
+  },
+  {
+    "line": 4929,
+    "text": "const r = await axios.post('https://api.intercom.io/conversations/search', body, {"
+  }
+]
