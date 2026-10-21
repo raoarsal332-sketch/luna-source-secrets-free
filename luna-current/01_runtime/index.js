@@ -651,6 +651,7 @@ async function buildEscalateNoteAndAssignee({ problem, actionNeeded, account, em
   }
 
   const html =
+    '<!-- ' + fixedMessageHandoff.HANDOFF_NOTE_MARKER + ' -->' +
     boldNoteLabel('Account:') +
     ' ' +
     acct +
@@ -2775,13 +2776,13 @@ async function fetchConversation(id) {
   return r.data;
 }
 
-async function postReply(conversationId, messageType, body) {
+async function postReply(conversationId, messageType, body, opts) {
   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
   // Redact before either shape is sent so a canary cannot leave in a note or a comment.
   const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
   const exactTemplate = messageType !== 'note' && fixedMessageHandoff.isExactAllowedTemplate(redacted);
-  const finalBody = messageType === 'note' || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
+  const finalBody = messageType === 'note' || (opts && opts.verbatim) || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
   const r = await icRequest(
     'post',
     'https://api.intercom.io/conversations/' + conversationId + '/reply',
@@ -3094,7 +3095,7 @@ function polishOwnerDictatedClientBody(s) {
   return t;
 }
 
-function extractOwnerSendToClientBody(plain) {
+function extractOwnerSendToClientBody(plain, opts) {
   const raw = String(plain || '');
   const stripped = typeof stripOwnerMentionPrefix === 'function' ? stripOwnerMentionPrefix(raw) : raw;
   const hay = stripped + '\n' + raw;
@@ -3102,14 +3103,14 @@ function extractOwnerSendToClientBody(plain) {
     return null;
   }
   let m = raw.match(/\[([^\]]+)\]/);
-  if (m && String(m[1] || '').trim()) {
-    return polishOwnerDictatedClientBody(String(m[1]).trim());
+  if (!(m && String(m[1] || '').trim())) {
+    m = raw.match(/["\u201C]([^"\u201D]+)["\u201D]/) || raw.match(/'([^']+)'/);
   }
-  m = raw.match(/["\u201C]([^"\u201D]+)["\u201D]/) || raw.match(/'([^']+)'/);
-  if (m && String(m[1] || '').trim()) {
-    return polishOwnerDictatedClientBody(String(m[1]).trim());
-  }
-  return null;
+  const inner = m && String(m[1] || '').trim();
+  if (!inner) return null;
+  // On a human-assigned thread the owner body is posted verbatim, not polished.
+  if (opts && opts.verbatim) return inner;
+  return polishOwnerDictatedClientBody(inner);
 }
 
 function parseAuthorizedNoteCommand(plain, opts) {
@@ -3120,18 +3121,20 @@ function parseAuthorizedNoteCommand(plain, opts) {
 
   // Structured REPLY: / NOTE: (after optional @mentions) , prefer before soft RESUME "reply now"
   const stripped = stripOwnerMentionPrefix(raw);
-  let sm = stripped.match(/^REPLY\s*[:\-]\s*([\s\S]+)/i);
-  if (sm && String(sm[1] || '').trim()) {
-    return { cmd: 'REPLY', body: String(sm[1]).trim() };
+  let sm = stripped.match(/^REPLY\s*[:\-]\s*([\s\S]*)$/i);
+  if (sm) {
+    const body = String(sm[1] || '').trim();
+    // Empty or unparsable owner text is still a REPLY command, and it posts nothing.
+    return { cmd: 'REPLY', body, verbatim: true, parsable: !!body };
   }
   sm = stripped.match(/^NOTE\s*[:\-]\s*([\s\S]+)/i);
   if (sm && String(sm[1] || '').trim()) {
     return { cmd: 'NOTE', body: String(sm[1]).trim() };
   }
   // Deterministic: send this message to client [ ... ] / quotes → REPLY (before please→FOLLOW)
-  const sendBody = extractOwnerSendToClientBody(raw);
+  const sendBody = extractOwnerSendToClientBody(raw, { verbatim: !!(opts && opts.verbatim) });
   if (sendBody) {
-    return { cmd: 'REPLY', body: sendBody };
+    return { cmd: 'REPLY', body: sendBody, verbatim: true, parsable: true };
   }
   if (/^(?:SKIP)\b/i.test(stripped) || /\bskip\s+(this|the)\s+(ticket|one|message|chat)\b/i.test(t)) {
     return { cmd: 'SKIP', body: '' };
@@ -3277,6 +3280,12 @@ async function interpretOwnerCommandViaLlm(conversationId, full, plain, authorId
   return parseOwnerCommandAction(rawOut);
 }
 
+function humanAssignedThread(full) {
+  if (teammateHandoffGates.isAssignedToHumanTeammate(full, handoffOwnershipOpts())) return true;
+  const team = full && full.team_assignee_id != null ? String(full.team_assignee_id) : '';
+  return !!(team && team !== '0' && (team === String(RISK_TEAM_ID) || team === String(ESCALATIONS_TEAM_ID)));
+}
+
 async function executeOwnerActionPlan(conversationId, full, plan, plain) {
   const action = String((plan && plan.action) || 'NOOP').toUpperCase();
   let body = String((plan && plan.body) || '').trim();
@@ -3321,9 +3330,32 @@ async function executeOwnerActionPlan(conversationId, full, plan, plain) {
     return 'NOTE';
   }
   if (action === 'REPLY') {
+    const decision = fixedMessageHandoff.ownerPublicReplyDecision({
+      humanAssigned: humanAssignedThread(full),
+      verbatim: !!(plan && plan.verbatim),
+      parsable: !(plan && plan.parsable === false) && !!body,
+      body,
+    });
+    // Human-assigned: only the owner's verbatim body is posted. Generated or
+    // empty text posts nothing. Bot-assigned keeps the existing draft path.
+    if (decision.applies) {
+      if (!decision.post) {
+        console.log('OWNER_REPLY withheld', decision.reason, conversationId);
+        return 'WITHHELD';
+      }
+      control.clearAiOff(conversationId);
+      const r = await postReply(conversationId, 'comment', decision.body, { verbatim: true });
+      if (r && r.status >= 200 && r.status < 300) {
+        await postReply(conversationId, 'note', 'Sent to client.');
+      } else {
+        console.log('OWNER_REPLY_FAIL', conversationId, r && r.status);
+        await postReply(conversationId, 'note', 'Tried to send your message to the client but Intercom returned an error.');
+      }
+      return 'REPLY';
+    }
     if (!body) {
-      await postReply(conversationId, 'note', 'I could not draft a client reply from that instruction , please clarify.');
-      return 'CLARIFY';
+      console.log('OWNER_REPLY withheld owner-body-empty', conversationId);
+      return 'WITHHELD';
     }
     control.clearAiOff(conversationId);
     // Owner-dictated public REPLY: never welcome-intro, never already-replied skip (Escalations often have prior Arsal notes).
@@ -3465,6 +3497,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
     const parsedCmd = parseAuthorizedNoteCommand(plain, {
       fromAuthorizedAuthor: true,
       mentionsAuthorized,
+      verbatim: humanAssignedThread(full),
     });
     if (!parsedCmd || !parsedCmd.cmd) {
       handled.add(partId);
@@ -3497,6 +3530,32 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       }
       acted = cmd;
     } else if (cmd === 'REPLY') {
+      const replyDecision = fixedMessageHandoff.ownerPublicReplyDecision({
+        humanAssigned: humanAssignedThread(full),
+        verbatim: parsedCmd.verbatim !== false,
+        parsable: parsedCmd.parsable !== false,
+        body: cmdBody,
+      });
+      if (replyDecision.applies) {
+        if (!replyDecision.post) {
+          console.log('AUTH_NOTE REPLY withheld', replyDecision.reason, conversationId);
+          acted = 'WITHHELD';
+        } else {
+          control.clearAiOff(conversationId);
+          const r = await postReply(conversationId, 'comment', replyDecision.body, { verbatim: true });
+          if (r && r.status >= 200 && r.status < 300) {
+            await postReply(conversationId, 'note', 'Sent to client.');
+          } else {
+            console.log('AUTH_NOTE REPLY_FAIL', conversationId, r && r.status);
+            await postReply(conversationId, 'note', 'Tried to send your message to the client but Intercom returned an error.');
+          }
+          console.log('AUTH_NOTE REPLY', conversationId, authorId, partId);
+          acted = 'REPLY';
+        }
+      } else if (!cmdBody) {
+        console.log('AUTH_NOTE REPLY withheld owner-body-empty', conversationId);
+        acted = 'WITHHELD';
+      } else {
       control.clearAiOff(conversationId);
       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
       let out = postProcessModelReply(cmdBody, conversationId);
@@ -3509,6 +3568,7 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       }
       console.log('AUTH_NOTE REPLY', conversationId, authorId, partId);
       acted = 'REPLY';
+      }
     } else if (cmd === 'NOTE') {
       const enBody = await ensureInternalNoteEnglish(cmdBody, 'AUTH_NOTE NOTE');
       const html = await enrichNoteMentionsHtml(enBody);
@@ -3529,13 +3589,17 @@ async function processAuthorizedNoteCommands(conversationId, full) {
       // Flexible owner/Jerry command , interpret via model and execute allowed actions
       control.clearAiOff(conversationId);
       try {
-        const exactSend = extractOwnerSendToClientBody(plain);
+        const exactSend = extractOwnerSendToClientBody(plain, { verbatim: humanAssignedThread(full) });
         const mentionNote = extractOwnerMentionAskReplyBody(plain);
         const plan = exactSend
-          ? { action: 'REPLY', body: exactSend }
+          ? { action: 'REPLY', body: exactSend, verbatim: true, parsable: true }
           : mentionNote
             ? { action: 'NOTE', body: mentionNote }
             : await interpretOwnerCommandViaLlm(conversationId, full, plain, authorId);
+        if (plan && String(plan.action || '').toUpperCase() === 'REPLY' && !exactSend) {
+          plan.verbatim = false;
+          plan.parsable = !!String(plan.body || '').trim();
+        }
         const done = await executeOwnerActionPlan(conversationId, full, plan, plain);
         console.log('AUTH_NOTE FOLLOW->', done, conversationId, authorId, partId);
         acted = 'FOLLOW:' + done;
@@ -3778,7 +3842,7 @@ const handleWebhook = async (req, res) => {
       const recoveredOwn = fixedMessageHandoff.reconcileFromParts({}, parts, full, '', ARSAL_ID);
       const oweFixedLine =
         fixedMessageHandoff.storesLookLost(progOwn) &&
-        fixedMessageHandoff.hasVerifiedNotePart(parts) &&
+        fixedMessageHandoff.hasVerifiedNotePart(parts, ARSAL_ID) &&
         fixedMessageHandoff.hasAssignmentPart(parts, ARSAL_ID) &&
         !recoveredOwn.messageSent &&
         !fixedMessageHandoff.fixedLineAlreadyPublic(progOwn, parts);
@@ -4932,9 +4996,11 @@ const handleWebhook = async (req, res) => {
         const __missedHuman = __heldFails.some((f) => f && f.code === 'MISSED_ESCALATION');
         const __originalSpread =
           fixedMessageHandoff.isSpreadTemplateDraft(__originalDraft) && !isSpreadCheckAsk(text);
+        const __faqMiss = typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' && escalateRelatedOnly.isClearKbFaqAsk(text) && !isClearlyAccountSpecificIssue(text);
+        const __spreadNegated = __spreadAskGate.explain(text).reason === 'negated-spread' && !isClearlyAccountSpecificIssue(text);
         if (
           !fixedMessageHandoff.isAccountNumberQuestion(text) &&
-          ((__unsupportedNumber && !__missedHuman) || __originalSpread || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) || fixedMessageHandoff.isTerminalHedge(body) || fixedMessageHandoff.isTerminalHedge(__originalDraft))
+          ((__unsupportedNumber && !__missedHuman) || __originalSpread || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) || fixedMessageHandoff.isTerminalHedge(body) || fixedMessageHandoff.isTerminalHedge(__originalDraft) || __faqMiss || __spreadNegated)
         ) {
           console.log('PRESEND hedge instead of fixed line', conversationId);
           await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);

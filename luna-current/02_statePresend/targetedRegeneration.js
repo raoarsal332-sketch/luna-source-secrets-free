@@ -78,6 +78,34 @@ function customerAskedSpread(text) {
   return false;
 }
 
+function knowledgeUnanswerable(codes, opts) {
+  if (codes && codes.has && codes.has(presend.HARD.KNOWLEDGE_GAP_UNSAFE)) return true;
+  const knowledge = opts && opts.ctx && opts.ctx.knowledge;
+  const level = knowledge && knowledge.level;
+  return level === 'none' || level === 'conflicting';
+}
+
+function looksLikeOwnCase(text) {
+  return /\b(my\s+(?:payout|withdrawal)\s+(?:was|is|got)|i\s+was\s+breached|my\s+account\s+(?:was|is|got)\s+(?:disabled|breached|banned|rejected))\b/i.test(String(text || ''));
+}
+
+function isKbFaqQuestion(text) {
+  try {
+    const ero = require('../01_runtime/escalateRelatedOnly');
+    if (ero && typeof ero.isClearKbFaqAsk === 'function' && ero.isClearKbFaqAsk(text)) return true;
+  } catch (_) { /* FAQ list unavailable */ }
+  return /\b(?:drawdown|daily\s+loss|profit\s+target|leverage|holding\s+time|consistency|news\s+trading)\b/i.test(String(text || ''));
+}
+
+function isNegatedSpreadAsk(text) {
+  try {
+    const gate = require('../01_runtime/spreadAskGate');
+    return !!(gate && typeof gate.explain === 'function' && gate.explain(text).reason === 'negated-spread');
+  } catch (_) {
+    return false;
+  }
+}
+
 function decideFallbackIntent(codes, opts) {
   // A policy value contradicting the approved evidence is understood but unanswerable by the
   // bot: it must go to a teammate, never to the generic checking line and never as the wrong
@@ -93,6 +121,14 @@ function decideFallbackIntent(codes, opts) {
   if (!codes.has(presend.HARD.MISSED_QUESTION) && !codes.has(presend.HARD.WRONG_TOPIC)) return null;
   const state = opts.ctx && opts.ctx.state;
   const lastClient = (state && state.last_client_message) || '';
+  // A non-answering FAQ draft regenerates earlier. If that still misses, hedge.
+  // Escalate only when the KB truly cannot answer, or the ask is the client's own case.
+  if (codes.has(presend.HARD.MISSED_QUESTION) && !codes.has(presend.HARD.MISSED_ESCALATION)) {
+    if (looksLikeOwnCase(lastClient) || knowledgeUnanswerable(codes, opts)) return 'escalate';
+    if (isKbFaqQuestion(lastClient) || isNegatedSpreadAsk(lastClient)) {
+      return botOwnsConversation(opts) ? 'faq-hedge' : 'faq-hold';
+    }
+  }
   const understood = T.extractQuestions(lastClient).length > 0 || T.extractTopics(lastClient).length > 0;
   if (understood) return 'escalate';
   const recentBotReplies = state && Array.isArray(state.last_bot_replies) ? state.last_bot_replies.slice() : [];
@@ -188,7 +224,9 @@ function safeFallback(draft, result, opts) {
   const intent = decideFallbackIntent(codes, opts);
   if (intent === 'clarify') return { body: CLARIFY_REPLY, send: true, reason: 'clarify-reply' };
   if (intent === 'hedge') return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
+  if (intent === 'faq-hedge') return { body: HEDGE_REPLY, send: true, reason: 'faq-miss-hedge' };
   if (intent === 'unsupported-hold') return { body: '', send: false, reason: 'unsupported-number-held' };
+  if (intent === 'faq-hold') return { body: '', send: false, reason: 'faq-miss-held' };
   if (intent === 'escalate') return holdOrAccountAnswer('needs-escalate', body, opts);
 
   // Unfixable: use the engine's safe fallback message if given (and not itself a

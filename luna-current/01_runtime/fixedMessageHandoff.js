@@ -596,28 +596,41 @@ function classifyAssignment(result) {
   return { ok: true, reason: 'assigned' };
 }
 
-function noteAlreadyPresent(parts, botId) {
+// Written into our escalate note. A human note with the same Account/Problem
+// shape does not carry it, and does not count unless its author is this bot.
+const HANDOFF_NOTE_MARKER = 'LUNA_HANDOFF_NOTE';
+
+function noteShapeOrMarker(part) {
+  if (!part || String(part.part_type || '') !== 'note') return false;
+  const raw = String(part.body || '');
+  if (raw.includes(HANDOFF_NOTE_MARKER)) return true;
+  const body = stripHtml(raw);
+  return /\bAccount\s*:/i.test(body) && /\bProblem\s*:/i.test(body);
+}
+
+// botId empty keeps the one-argument shape check used by older suites.
+// When the bot id is known, the author must be that bot. A human-authored
+// note with the same shape never counts; the opstore flag is separate.
+function noteWrittenByThisBot(part, botId) {
+  if (!noteShapeOrMarker(part)) return false;
   const id = String(botId || '');
+  if (!id) return true;
+  return String((part.author || {}).id || '') === id;
+}
+
+function noteAlreadyPresent(parts, botId) {
   for (const p of parts || []) {
-    if (!p || String(p.part_type || '') !== 'note') continue;
-    if (id && String((p.author || {}).id || '') !== id) continue;
-    const body = stripHtml(p.body || '');
-    if (/\bAccount\s*:/i.test(body) && /\bProblem\s*:/i.test(body)) return true;
+    if (noteWrittenByThisBot(p, botId)) return true;
   }
   return false;
 }
 
-function noteInParts(parts) {
-  for (const p of parts || []) {
-    if (!p || String(p.part_type || '') !== 'note') continue;
-    const body = stripHtml(p.body || '');
-    if (/\bAccount\s*:/i.test(body) && /\bProblem\s*:/i.test(body)) return true;
-  }
-  return false;
+function noteInParts(parts, botId) {
+  return noteAlreadyPresent(parts, botId);
 }
 
-function hasVerifiedNotePart(parts) {
-  return noteInParts(parts);
+function hasVerifiedNotePart(parts, botId) {
+  return noteInParts(parts, botId);
 }
 
 function hasAssignmentPart(parts, botId) {
@@ -666,7 +679,11 @@ function fixedLineInParts(parts, message) {
  */
 function reconcileFromParts(progress, parts, conversation, message, botId) {
   const out = Object.assign(blankProgress(), progress || {});
-  if (noteInParts(parts) || noteAlreadyPresent(parts, '')) {
+  // Only this bot's note, or an opstore record of our own write, confirms the note.
+  if (progress && progress.noteConfirmed === true) {
+    out.noteConfirmed = true;
+    out.noteAmbiguous = false;
+  } else if (noteInParts(parts, botId)) {
     out.noteConfirmed = true;
     out.noteAmbiguous = false;
   }
@@ -839,7 +856,7 @@ async function commit(ctx) {
   // A note is confirmed only after this write succeeds, or when a real note
   // part is already in the conversation. A partial or failed write is never
   // stored as confirmed. A comment that mentions Account and Problem is not a note.
-  const verifiedNote = noteInParts(src.parts) || noteAlreadyPresent(src.parts, src.botId);
+  const verifiedNote = noteInParts(src.parts, src.botId) || noteAlreadyPresent(src.parts, src.botId);
   let noteOk = verifiedNote || progress.noteConfirmed === true;
   if (!verifiedNote && !progress.noteConfirmed) {
     if (progress.noteAmbiguous) {
@@ -909,6 +926,27 @@ function isTerminalHedge(text) {
 }
 
 // An internal note is not an answer. Only a public customer-facing reply is.
+/**
+ * Public reply on a human-assigned thread.
+ * The authenticated owner's verbatim dictated body may be posted as an owner
+ * command. Luna-generated or templated text must not be posted. An empty or
+ * unparsable owner body posts nothing.
+ */
+function ownerPublicReplyDecision(opts) {
+  const o = opts || {};
+  const body = String(o.body == null ? '' : o.body).replace(/\s+/g, ' ').trim();
+  if (!o.humanAssigned) {
+    return { applies: false, post: true, verbatim: false, body, reason: 'not-human-assigned' };
+  }
+  if (o.parsable === false || !body) {
+    return { applies: true, post: false, verbatim: false, body: '', reason: 'owner-body-empty' };
+  }
+  if (!o.verbatim) {
+    return { applies: true, post: false, verbatim: false, body: '', reason: 'generated-on-human-thread' };
+  }
+  return { applies: true, post: true, verbatim: true, body, reason: 'owner-command' };
+}
+
 function isPublicCustomerReply(part) {
   if (!part) return false;
   const pt = String(part.part_type || '');
@@ -930,7 +968,10 @@ module.exports = {
   isTerminalHedge,
   isPublicCustomerReply,
   isSpreadTemplateDraft,
+  HANDOFF_NOTE_MARKER,
   hasVerifiedNotePart,
+  noteWrittenByThisBot,
+  ownerPublicReplyDecision,
   hasAssignmentPart,
   fixedMessageFor,
   accountQuestionCustomerLine,

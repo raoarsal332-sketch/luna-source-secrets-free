@@ -163,6 +163,8 @@ function canonicalSecret(raw) {
   return full.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
 }
 
+const RUN_STOP = /^(secret|password|token|pass|pin|otp|account|email|thanks|thank)$/i;
+
 function rememberSecret(raw) {
   const full = normalizeCredentialText(cleanSecretValue(raw));
   if (!full || full.length < 4) return;
@@ -173,6 +175,15 @@ function rememberSecret(raw) {
     rememberedSecrets.add(canon);
   }
   if (canon !== full) rememberedSecrets.add(full);
+  // A symbol inside the secret means a later draft may quote only one
+  // alphanumeric piece of it, including inside braces or quotes.
+  if (!/[^\p{L}\p{N}\s]/u.test(full)) return;
+  const runs = full.match(/[\p{L}\p{N}]{6,}/gu) || [];
+  for (const run of runs) {
+    const piece = normalizeCredentialText(run);
+    if (!piece || piece.length < 6 || RUN_STOP.test(piece) || /^\[secret\]$/i.test(piece)) continue;
+    rememberedSecrets.add(piece);
+  }
 }
 
 function echoPattern(secret) {
@@ -181,10 +192,12 @@ function echoPattern(secret) {
   const chars = Array.from(canonical);
   const body = chars.map((ch) => ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*');
   const edge = '[\\p{P}\\p{S}]*';
-  // Leading and trailing punctuation are outside the token. Braces and <b>
-  // wrappers are part of the same span the label pass removes.
+  // Leading and trailing punctuation are outside the token. Braces, quotes,
+  // and <b> wrappers are part of the same span the label pass removes.
+  const open = '(?:\\{\\s*|<(?:b|B)>\\s*|[\'"\u2018\u201C]\\s*)?';
+  const close = '(?:\\s*\\}|\\s*</(?:b|B)>|\\s*[\'"\u2019\u201D])?';
   return new RegExp(
-    '(?<![A-Za-z0-9])(?:\\{\\s*|<(?:b|B)>\\s*)?' + edge + '(?:' + body + ')' + edge + '(?:\\s*\\}|\\s*</(?:b|B)>)?(?![A-Za-z0-9])',
+    '(?<![A-Za-z0-9])' + open + edge + '(?:' + body + ')' + edge + close + '(?![A-Za-z0-9])',
     'giu'
   );
 }
