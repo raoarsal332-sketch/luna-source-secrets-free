@@ -59,6 +59,7 @@ const softEdges = require('./softEdges');
 const escalateRelatedOnly = require('./escalateRelatedOnly');
 /* MICHAN_TEAMMATE_HANDOFF_V1:BEGIN:require */
 const teammateHandoffGates = require('./teammateHandoffGates');
+const fixedMessageHandoff = require('./fixedMessageHandoff');
 /* MICHAN_TEAMMATE_HANDOFF_V1:END:require */
 
 const app = express();
@@ -543,7 +544,9 @@ function rewriteBareNumberOrderLabels(text, account) {
 }
 
 function sanitizeEscalateProblem(text, account, email) {
-  let t = rewriteBareNumberOrderLabels(String(text || '').replace(/\r\n/g, '\n').trim(), account);
+  // Credentials are removed before any note field or customer line is built.
+  let t = fixedMessageHandoff.redactCredentials(String(text || ''));
+  t = rewriteBareNumberOrderLabels(t.replace(/\r\n/g, '\n').trim(), account);
   // Drop structured fields the note already has above Problem
   t = t.replace(/^\s*(Account|Email|Order(?:\/challenge)?(?:\s*ID)?|Action needed|KIND|BODY|CLIENT|ACTION_NEEDED)\s*:.*$/gim, '');
   t = t.replace(/\bRegistered email\s*:?\s*/gi, '');
@@ -567,10 +570,12 @@ function sanitizeEscalateProblem(text, account, email) {
   return t || 'Client needs backend / verification review.';
 }
 
-/** Arsal lock: internal notes always English (never Roman Urdu / Urdu / Italian for notes). */
+/** Arsal lock: internal notes always English (never Roman Urdu / Urdu / Italian / Hindi for notes). */
 function looksNonEnglishNote(text) {
   const t = String(text || '').trim();
   if (!t) return false;
+  // Devanagari (Hindi). Detected before any translation prompt is built.
+  if (/[\u0900-\u097F]/.test(t)) return true;
   // Urdu/Arabic script
   if (/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(t)) return true;
   // Common Roman Urdu / Urdu-Latin markers (word-ish)
@@ -585,9 +590,13 @@ function looksNonEnglishNote(text) {
 }
 
 async function ensureInternalNoteEnglish(text, label) {
-  const raw = String(text || '').trim();
+  // Redact the original before the translation prompt, and redact the model
+  // output before it can enter the note. A canary must not reach either.
+  const original = String(text || '').trim();
+  const raw = fixedMessageHandoff.redactCredentials(original);
   if (!raw) return raw;
   if (!looksNonEnglishNote(raw)) return raw;
+  const promptText = raw;
   try {
     const ai = await openai.chat.completions.create({
       model: control.getModel(),
@@ -595,12 +604,14 @@ async function ensureInternalNoteEnglish(text, label) {
         {
           role: 'system',
           content:
-            'Rewrite the following INTERNAL Intercom note field into clear English only. Keep meaning, names, numbers, emails, @mentions, and account IDs. No Roman Urdu, Urdu, Italian, or other languages. No greeting. Output only the rewritten note text.',
+            'Rewrite the following INTERNAL Intercom note field into clear English only. Keep meaning, names, numbers, emails, @mentions, and account IDs. No Roman Urdu, Urdu, Italian, Hindi, or other languages. No greeting. Output only the rewritten note text.',
         },
-        { role: 'user', content: (label ? '[' + label + ']\n' : '') + raw },
+        { role: 'user', content: (label ? '[' + label + ']\n' : '') + promptText },
       ],
     });
-    const out = (((ai.choices[0] || {}).message || {}).content || '').trim();
+    const out = fixedMessageHandoff.redactCredentials(
+      (((ai.choices[0] || {}).message || {}).content || '').trim()
+    );
     if (out) return out;
   } catch (e) {
     console.error('NOTE_EN_OVERLAY fail', label || '', e && e.message);
@@ -622,7 +633,9 @@ async function buildEscalateNoteAndAssignee({ problem, actionNeeded, account, em
     em = 'Not provided';
   }
   let problemText = sanitizeEscalateProblem(problem, account, email);
-  let task = String(actionNeeded || 'Please review this case and guide the client.').trim();
+  let task = fixedMessageHandoff.redactCredentials(
+    String(actionNeeded || 'Please review this case and guide the client.').trim()
+  );
   problemText = await ensureInternalNoteEnglish(problemText, 'Problem');
   task = await ensureInternalNoteEnglish(task, 'Action needed');
 
@@ -3509,6 +3522,117 @@ async function processAuthorizedNoteCommands(conversationId, full) {
   }
 }
 
+function handoffOwnershipOpts(extra) {
+  return Object.assign(
+    {
+      arsalId: ARSAL_ID,
+      eliteAiId: ELITE_AI_ID,
+      jerryId: JERRY_ID,
+      riskTeamId: RISK_TEAM_ID,
+      escalationsTeamId: ESCALATIONS_TEAM_ID,
+    },
+    extra || {}
+  );
+}
+
+function preferredEscalateAssigneeId(full) {
+  const existing = full && full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
+  if (
+    existing &&
+    existing !== '0' &&
+    existing !== ARSAL_ID &&
+    existing !== ELITE_AI_ID
+  ) {
+    return existing;
+  }
+  return '';
+}
+
+/**
+ * Shared sequence for welcome, identity recovery, main escalate, pre-send escalate,
+ * and missed escalation: successful note, successful assignment, one fixed message.
+ * Assignment 500 / timeout / 422 / partial success does not set escalateAwaitingFirstTeammate.
+ */
+async function commitFixedMessageHandoff(opts) {
+  const o = opts || {};
+  const conversationId = o.conversationId;
+  const full = o.full || {};
+  const parts = o.parts || partsOf(full);
+  const text = String(o.text || '');
+  const stPack = getConvState(conversationId);
+  const turnId = String(
+    (o.latestUser && (o.latestUser.id || o.latestUser.created_at)) || o.turnId || ''
+  );
+  const progress = fixedMessageHandoff.progressForTurn(
+    stPack.state && stPack.state.fixedHandoff,
+    turnId,
+    o.path
+  );
+  const decision =
+    o.decision ||
+    fixedMessageHandoff.decide({
+      path: o.path,
+      latestText: text,
+      parts,
+      full,
+      botId: ARSAL_ID,
+      finHandoff: !!o.finHandoff,
+      liveAgent: !!o.liveAgent,
+      force: o.path !== 'welcome',
+      handoffAssigneeId: progress.assigneeId || '',
+      ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: progress.assigneeId || '' }),
+    });
+  if (decision.route === 'normal' || decision.action === 'silence' || decision.silent) {
+    return Object.assign({ sent: false, setAwaiting: false }, decision);
+  }
+
+  const prefer = progress.assigneeId || o.preferAssigneeId || preferredEscalateAssigneeId(full);
+  const built = await buildEscalateNoteAndAssignee({
+    problem: o.problem != null ? o.problem : text,
+    actionNeeded: o.actionNeeded || 'Please take this conversation.',
+    account: o.account || '',
+    email: o.email || '',
+    preferAssigneeId: prefer,
+  });
+  const assigneeId = progress.assigneeId || built.assigneeId;
+  const result = await fixedMessageHandoff.commit({
+    decision,
+    noteHtml: built.html,
+    assigneeId,
+    parts,
+    botId: ARSAL_ID,
+    conversation: full,
+    progress,
+    transport: o.transport || {
+      postNote: (html) => postReply(conversationId, 'note', html),
+      assign: (id) => assignToTeammate(conversationId, id),
+      postMessage: (body) => postReply(conversationId, 'comment', body),
+    },
+  });
+  stPack.state.fixedHandoff = result.progress;
+  if (result.setAwaiting) {
+    stPack.state.escalateAwaitingFirstTeammate = true;
+    stPack.state.lastEscalateAt = Math.floor(Date.now() / 1000);
+    stPack.state.lastEscalateAssigneeId = (result.progress && result.progress.assigneeId) || assigneeId || '';
+    stPack.state.escalateTeammateExplainedAt = 0;
+    stPack.state.deferredRelatedReply = null;
+    const ctx = escalateRelatedOnly.buildEscalateContext({
+      problem: o.problem != null ? o.problem : text,
+      noteBody: built.problemText || '',
+      clientTexts: collectClientMessageTexts(full),
+    });
+    stPack.state.lastEscalateProblem = ctx.lastEscalateProblem;
+    stPack.state.lastEscalateNoteSnippet = ctx.lastEscalateNoteSnippet;
+    stPack.state.lastEscalateTopic = ctx.lastEscalateTopic;
+    stPack.state.lastEscalateTopics = ctx.lastEscalateTopics;
+    console.log('FIXED_HANDOFF sent', o.path, conversationId, stPack.state.lastEscalateAssigneeId);
+  } else {
+    console.log('FIXED_HANDOFF withheld', result.reason, conversationId);
+  }
+  saveConvState(stPack.id, stPack.state);
+  return result;
+}
+
 const handleWebhook = async (req, res) => {
   const topic = (req.body && req.body.topic) || 'none';
   const conversation = req.body && req.body.data && req.body.data.item;
@@ -3593,6 +3717,40 @@ const handleWebhook = async (req, res) => {
       console.log('USER_PART_FROM_SOURCE', conversationId);
     }
 
+    /* FIXED_MESSAGE_HANDOFF_R4:ownership_before_hook_a */
+    // Ownership runs before Hook A. `text` is declared later, so this uses the
+    // latest user body directly. A status ping while a human or another
+    // assignee owns the conversation stays silent, including the assignee this
+    // handoff just confirmed. Other messages still allow that confirmed
+    // assignee to finish the one fixed message. Account-number questions are
+    // not silenced here.
+    {
+      const ownText = stripHtml(
+        (latestUser && (latestUser.body || latestUser.text || latestUser.message)) || ''
+      );
+      if (!fixedMessageHandoff.isAccountNumberQuestion(ownText)) {
+        const stPackOwn = getConvState(conversationId);
+        const progOwn = stPackOwn && stPackOwn.state && stPackOwn.state.fixedHandoff;
+        const owned = teammateHandoffGates.classifyOwnership(full, parts, handoffOwnershipOpts());
+        if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent) {
+          console.log('SKIP status-ping owned', owned.reason, conversationId);
+          return res.sendStatus(200);
+        }
+        const handoffAssigneeId =
+          progOwn && !progOwn.messageSent ? String(progOwn.assigneeId || '') : '';
+        const deferEarly = teammateHandoffGates.shouldDeferToHumanTeammate(
+          full,
+          parts,
+          ownText,
+          handoffOwnershipOpts({ handoffAssigneeId })
+        );
+        if (deferEarly.skip) {
+          console.log('SKIP teammate-handoff', deferEarly.reason, conversationId);
+          return res.sendStatus(200);
+        }
+      }
+    }
+
         /* escalate-related-only-v1: awaiting RELATED-only gate */
     {
       const stPackEro = (typeof stPack !== 'undefined' && stPack) || getConvState(conversationId);
@@ -3610,6 +3768,8 @@ const handleWebhook = async (req, res) => {
           {
             arsalId: typeof ARSAL_ID !== 'undefined' ? ARSAL_ID : '',
             eliteAiId: typeof ELITE_AI_ID !== 'undefined' ? ELITE_AI_ID : '',
+            assigneeId: full && full.admin_assignee_id != null ? String(full.admin_assignee_id) : '',
+            conversation: full,
           }
         );
         if (eroDec.cleared) {
@@ -3640,7 +3800,10 @@ const handleWebhook = async (req, res) => {
         }
       }
     }
-    if (arsalAlreadyRepliedAfter(parts, latestUser)) {
+    if (
+      arsalAlreadyRepliedAfter(parts, latestUser) &&
+      !fixedMessageHandoff.isAccountNumberQuestion(stripHtml((latestUser && latestUser.body) || ''))
+    ) {
       // Race recovery: we asked for account/email, client already supplied both (possibly
       // across messages / while AI was running), but the ask landed after their message so
       // the normal skip would leave them stuck. Escalate instead of re-asking.
@@ -3675,43 +3838,23 @@ const handleWebhook = async (req, res) => {
         // HARD BLOCK: never escalate / never send "sent to teammate" with empty or placeholder identity.
         if (!needAccountRec && !needEmailRec && hasUsableEscalateIdentity(recIds, resolvedRec.declinedAccount, resolvedRec.declinedEmail)) {
         console.log('IDENTITY_RECOVERY escalate', conversationId, recIds.account, recIds.email);
-        const bitsRec = contactBits(full);
-        const clientNameRec = (bitsRec && bitsRec.name) || '';
         const clientTexts = collectClientMessageTexts(full);
         const problemRec =
           clientTexts.slice(-6).filter(Boolean).join(' | ') ||
-          'Client provided account and email after identity ask , please review.';
-        let clientMsg = postProcessModelReply(
-          "I've sent this to a teammate for review. They have your account details and the chat context.",
-          conversationId
-        );
-        clientMsg = rewriteBareNumberOrderLabels(clientMsg, recIds.account);
-        await postClientCommentOnce(conversationId, clientMsg, null, clientNameRec); // null userPart: identity ask already after latestUser
-        const existingAssignee =
-          full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
-        const built = await buildEscalateNoteAndAssignee({
+          'Client provided account and email after identity ask. Please review.';
+        /* FIXED_MESSAGE_HANDOFF_R3:identity_recovery */
+        await commitFixedMessageHandoff({
+          path: 'identity_recovery',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text: problemRec,
           problem: [problemRec, ...(resolvedRec.noteExtraLines || [])].filter(Boolean).join('\n'),
-          actionNeeded: 'Please review this case and guide the client.',
           account: recIds.account,
           email: recIds.email,
-          preferAssigneeId:
-            existingAssignee &&
-            existingAssignee !== '0' &&
-            existingAssignee !== ARSAL_ID &&
-            existingAssignee !== ELITE_AI_ID
-              ? existingAssignee
-              : '',
+          actionNeeded: 'Please take this conversation.',
         });
-        const noteRes = await postReply(conversationId, 'note', built.html);
-        if (!noteRes.ok) {
-          console.error('ESCALATE_NOTE_FAILED — not marking awaiting', conversationId, noteRes.status);
-          return res.sendStatus(200);
-        }
-        if (built.assigneeId) {
-          const asgRes = await assignToTeammateIfNeeded(full, conversationId, built.assigneeId);
-          if (!asgRes.ok) console.error('ESCALATE_ASSIGN_FAILED', conversationId, asgRes.status);
-        }
-        console.log('ESCALATED identity-recovery', conversationId, built.assigneeId);
         return res.sendStatus(200);
         }
       }
@@ -3740,6 +3883,39 @@ const handleWebhook = async (req, res) => {
       text = '(Client sent an image/screenshot with no accompanying text.)';
     }
 
+    {
+      const stPackH = getConvState(conversationId);
+      const prog = stPackH.state && stPackH.state.fixedHandoff;
+      if (prog && prog.noteConfirmed && !prog.messageSent) {
+        /* FIXED_MESSAGE_HANDOFF_R3:recovery */
+        // Account-number questions are exempt before this return. The same
+        // branch is a 422 retry (assignConfirmed false) and a 500 / ambiguous
+        // hold (assignAmbiguous). Neither may send the fixed line or stop
+        // the webhook from answering the question.
+        if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+          console.log('FIXED_HANDOFF recovery account-question exemption', conversationId, {
+            failure422: prog.assignConfirmed !== true,
+            failure500: prog.assignAmbiguous === true,
+          });
+        } else {
+          await commitFixedMessageHandoff({
+            path: 'recovery',
+            conversationId,
+            full,
+            parts,
+            text,
+            problem: text,
+            clientName,
+            latestUser,
+            actionNeeded: 'Please take this conversation.',
+            preferAssigneeId: prog.assigneeId || '',
+          });
+          console.log('FIXED_HANDOFF recovery', conversationId);
+          return res.sendStatus(200);
+        }
+      }
+    }
+
     // Fin / Elite AI wait , hard gate before FAQ/AI/deterministic public replies
     if (shouldWaitForFin(full, text, topic)) {
       return res.sendStatus(200);
@@ -3748,35 +3924,55 @@ const handleWebhook = async (req, res) => {
 
     /* MICHAN_TEAMMATE_HANDOFF_V1:BEGIN:deferGate */
     {
-      const handoffOpts = { arsalId: ARSAL_ID, eliteAiId: ELITE_AI_ID, jerryId: JERRY_ID };
-      const defer = teammateHandoffGates.shouldDeferToHumanTeammate(full, parts, text, handoffOpts);
-      if (defer.skip) {
-        console.log('SKIP teammate-handoff', defer.reason, conversationId);
-        return res.sendStatus(200);
+      if (!fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        const handoffOpts = handoffOwnershipOpts();
+        const defer = teammateHandoffGates.shouldDeferToHumanTeammate(full, parts, text, handoffOpts);
+        if (defer.skip) {
+          console.log('SKIP teammate-handoff', defer.reason, conversationId);
+          return res.sendStatus(200);
+        }
       }
     }
     /* MICHAN_TEAMMATE_HANDOFF_V1:END:deferGate */
 
-    // After Fin handoff / live-agent ask: first Arsal public reply stays short locked welcome
-    // (do not invent breach quizzes on join unless client already stated a clear ask).
-    /* MICHAN_TEAMMATE_HANDOFF_V1:BEGIN:finHandoffGuard */
-    if (
-      !arsalHasPublicClientReply(parts) &&
-      !teammateHandoffGates.humanTeammateAlreadyRepliedPublic(parts, {
-        arsalId: ARSAL_ID,
-        eliteAiId: ELITE_AI_ID,
-      }) &&
-      (finHandoffInHistory(parts) ||
-        clientRequestedLiveAgent(text) ||
-        clientRequestedLiveAgentAfterLastElite(parts)) &&
-      isVagueOrLiveAgentOnlyAsk(text)
-    ) {
-      const welcome = postProcessModelReply(lockedFinHandoffWelcome(clientName, text), conversationId);
-      await postClientCommentOnce(conversationId, welcome, latestUser, clientName);
-      console.log('FIN_HANDOFF_WELCOME', conversationId);
-      return res.sendStatus(200);
+    // After Fin handoff / live-agent ask: note, then assignment, then one fixed message.
+    // Account-number questions fall through to the normal answer / escalation path.
+    /* FIXED_MESSAGE_HANDOFF_R3:welcome */
+    {
+      const welcomeDecision = fixedMessageHandoff.decide({
+        path: 'welcome',
+        latestText: text,
+        parts,
+        full,
+        botId: ARSAL_ID,
+        finHandoff: finHandoffInHistory(parts),
+        liveAgent: clientRequestedLiveAgent(text) || clientRequestedLiveAgentAfterLastElite(parts),
+        ownershipOpts: handoffOwnershipOpts(),
+      });
+      if (welcomeDecision.action === 'silence') {
+        console.log('FIN_HANDOFF_WELCOME silence', welcomeDecision.reason, conversationId);
+        return res.sendStatus(200);
+      }
+      if (welcomeDecision.action === 'fixed_message') {
+        await commitFixedMessageHandoff({
+          path: 'welcome',
+          decision: welcomeDecision,
+          conversationId,
+          full,
+          parts,
+          text,
+          problem: text,
+          clientName,
+          latestUser,
+          actionNeeded: 'Please take this conversation.',
+        });
+        console.log('FIN_HANDOFF_WELCOME', conversationId);
+        return res.sendStatus(200);
+      }
+      if (welcomeDecision.reason === 'account_number_question') {
+        console.log('FIN_HANDOFF_WELCOME route account-number', conversationId);
+      }
     }
-    /* MICHAN_TEAMMATE_HANDOFF_V1:END:finHandoffGuard */
 
     // Behavior locks v2: spread test account (direct reply, no escalate)
     if (isSpreadCheckAsk(text)) {
@@ -4228,80 +4424,30 @@ const handleWebhook = async (req, res) => {
         console.log('ESCALATE FAQ_CONFIRM , identity gate skipped', conversationId, { kind });
       }
 
-      let clientMsg = postProcessModelReply(
-        parsed.client ||
-          "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
-        conversationId
-      );
-      clientMsg = rewriteBareNumberOrderLabels(clientMsg, ids.account);
-      await postClientCommentOnce(conversationId, clientMsg, latestUser, clientName);
-
-      const existingAssignee =
-        full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
       const problemWithExtras = [parsed.body || text, ...(resolvedId.noteExtraLines || [])]
         .filter(Boolean)
         .join('\n');
-      const built = await buildEscalateNoteAndAssignee({
-        problem: problemWithExtras,
-        actionNeeded: parsed.actionNeeded || '',
-        account: ids.account,
-        email: ids.email,
-        preferAssigneeId:
-          existingAssignee &&
-          existingAssignee !== '0' &&
-          existingAssignee !== ARSAL_ID &&
-          existingAssignee !== ELITE_AI_ID
-            ? existingAssignee
-            : '',
-      });
-      const noteRes = await postReply(conversationId, 'note', built.html);
-      if (!noteRes.ok) {
-        console.error('ESCALATE_NOTE_FAILED — not marking awaiting', conversationId, noteRes.status);
-        return res.sendStatus(200);
-      }
-      if (built.assigneeId) {
-        const asgRes = await assignToTeammateIfNeeded(full, conversationId, built.assigneeId);
-        if (!asgRes.ok) console.error('ESCALATE_ASSIGN_FAILED', conversationId, asgRes.status);
-      }
-      console.log(
-        'ESCALATED note+assign',
-        conversationId,
-        built.teammate ? built.teammate.name : 'Jerry-fallback',
-        built.assigneeId
-      );
-      {
-        const stPack = getConvState(conversationId);
-        stPack.state.lastEscalateAt = Math.floor(Date.now() / 1000);
-        stPack.state.lastEscalateAssigneeId = built.assigneeId || '';
-        
-        /* escalate-related-only-v1: store escalate context */
-        {
-          const __ctx = escalateRelatedOnly.buildEscalateContext({
-            problem:
-              (typeof problem !== 'undefined' && problem) ||
-              (typeof problemRec !== 'undefined' && problemRec) ||
-              (typeof parsed !== 'undefined' && parsed && (parsed.body || parsed.client)) ||
-              '',
-            // buildEscalateNoteAndAssignee() returns { html, teammate, assigneeId, problemText } -
-            // there is no `.note` field (that was always undefined here, so this snippet was
-            // silently always empty). Use the sanitized problem text it actually returns.
-            noteBody:
-              (typeof built !== 'undefined' && built && built.problemText) ||
-              '',
-            clientTexts:
-              typeof collectClientMessageTexts === 'function'
-                ? collectClientMessageTexts(typeof full !== 'undefined' ? full : {})
-                : [],
-          });
-          stPack.state.lastEscalateProblem = __ctx.lastEscalateProblem;
-          stPack.state.lastEscalateNoteSnippet = __ctx.lastEscalateNoteSnippet;
-          stPack.state.lastEscalateTopic = __ctx.lastEscalateTopic;
-          stPack.state.lastEscalateTopics = __ctx.lastEscalateTopics;
+      /* FIXED_MESSAGE_HANDOFF_R3:main_escalate */
+      if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        console.log('FIXED_HANDOFF main_escalate account-question exemption', conversationId);
+        const draft = String(parsed.body || '').trim();
+        const plain = stripHtml(draft);
+        if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
+          await postClientCommentOnce(conversationId, draft, latestUser, clientName);
         }
-stPack.state.escalateAwaitingFirstTeammate = true;
-        stPack.state.escalateTeammateExplainedAt = 0;
-        stPack.state.deferredRelatedReply = null;
-        saveConvState(stPack.id, stPack.state);
+      } else {
+        await commitFixedMessageHandoff({
+          path: 'main_escalate',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: problemWithExtras,
+          account: ids.account,
+          email: ids.email,
+          actionNeeded: parsed.actionNeeded || 'Please take this conversation.',
+        });
       }
       return res.sendStatus(200);
       } // end remaining ESCALATE after possible ESCALATE->REPLY conversion
@@ -4364,38 +4510,27 @@ stPack.state.escalateAwaitingFirstTeammate = true;
         // Both known (or ask also blocked): do not send the re-ask; escalate with what we have.
         if (known.account || known.email) {
           parsed.action = 'ESCALATE';
-          // Fall into a minimal escalate using known ids (inline, avoid re-ask loop)
-          let clientMsg = postProcessModelReply(
-            "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
-            conversationId
-          );
-          clientMsg = rewriteBareNumberOrderLabels(clientMsg, known.account);
-          await postClientCommentOnce(conversationId, clientMsg, latestUser, clientName);
-          const existingAssignee =
-            full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
-          const built = await buildEscalateNoteAndAssignee({
-            problem: text,
-            actionNeeded: 'Please review this case and guide the client.',
-            account: known.account || 'Not provided',
-            email: known.email || 'Not provided',
-            preferAssigneeId:
-              existingAssignee &&
-              existingAssignee !== '0' &&
-              existingAssignee !== ARSAL_ID &&
-              existingAssignee !== ELITE_AI_ID
-                ? existingAssignee
-                : '',
-          });
-          const noteRes = await postReply(conversationId, 'note', built.html);
-          if (!noteRes.ok) {
-            console.error('ESCALATE_NOTE_FAILED — not marking awaiting', conversationId, noteRes.status);
-            return res.sendStatus(200);
+          /* FIXED_MESSAGE_HANDOFF_R3:presend_escalate */
+          if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+            console.log('FIXED_HANDOFF presend account-question exemption', conversationId);
+            const plain = stripHtml(body || '');
+            if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
+              await postClientCommentOnce(conversationId, body, latestUser, clientName);
+            }
+          } else {
+            await commitFixedMessageHandoff({
+              path: 'presend_escalate',
+              conversationId,
+              full,
+              parts,
+              latestUser,
+              text,
+              problem: text,
+              account: known.account || '',
+              email: known.email || '',
+              actionNeeded: 'Please take this conversation.',
+            });
           }
-          if (built.assigneeId) {
-            const asgRes = await assignToTeammateIfNeeded(full, conversationId, built.assigneeId);
-            if (!asgRes.ok) console.error('ESCALATE_ASSIGN_FAILED', conversationId, asgRes.status);
-          }
-          console.log('ESCALATED after REPLY preSend block', conversationId, built.assigneeId);
           return res.sendStatus(200);
         }
         // Nothing known and blocked , strip is unsafe; skip send rather than re-ask
@@ -4571,43 +4706,27 @@ stPack.state.escalateAwaitingFirstTeammate = true;
           idsHeld = identityGate.ids || idsHeld;
           if (!identityGate.ready) return res.sendStatus(200);
         }
-        let clientMsg = postProcessModelReply(
-          "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
-          conversationId
-        );
-        await postClientCommentOnce(conversationId, clientMsg, latestUser, clientName);
-        const existingAssignee =
-          full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
-        const built = await buildEscalateNoteAndAssignee({
-          problem: text,
-          actionNeeded: 'Client requested a human teammate / manager / live agent. Please take over.',
-          account: idsHeld.account || 'Not provided',
-          email: idsHeld.email || 'Not provided',
-          preferAssigneeId:
-            existingAssignee &&
-            existingAssignee !== '0' &&
-            existingAssignee !== ARSAL_ID &&
-            existingAssignee !== ELITE_AI_ID
-              ? existingAssignee
-              : '',
-        });
-        const noteRes = await postReply(conversationId, 'note', built.html);
-        if (noteRes.ok) {
-          if (built.assigneeId) {
-            const asgRes = await assignToTeammateIfNeeded(full, conversationId, built.assigneeId);
-            if (!asgRes.ok) console.error('ESCALATE_ASSIGN_FAILED', conversationId, asgRes.status);
+        /* FIXED_MESSAGE_HANDOFF_R3:missed_escalation */
+        if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+          console.log('FIXED_HANDOFF missed account-question', conversationId);
+          const draft = String(body || '').trim();
+          const plain = stripHtml(draft);
+          if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
+            await postClientCommentOnce(conversationId, draft, latestUser, clientName);
           }
-          // Mark awaiting teammate like normal escalate path
-          {
-            const { state, id } = getConvState(conversationId);
-            state.escalateAwaitingFirstTeammate = true;
-            state.lastEscalateAt = Math.floor(Date.now() / 1000);
-            state.lastEscalateProblem = String(text || '').slice(0, 500);
-            saveConvState(id, state);
-          }
-          console.log('ESCALATED after MISSED_ESCALATION presend hold', conversationId, built.assigneeId);
         } else {
-          console.error('ESCALATE_NOTE_FAILED after MISSED_ESCALATION', conversationId, noteRes.status);
+          await commitFixedMessageHandoff({
+            path: 'missed_escalation',
+            conversationId,
+            full,
+            parts,
+            latestUser,
+            text,
+            problem: text,
+            account: idsHeld.account || '',
+            email: idsHeld.email || '',
+            actionNeeded: 'Please take this conversation.',
+          });
         }
       } catch (e) {
         console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
