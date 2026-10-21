@@ -1,0 +1,2169 @@
+{
+  "verdict": "NEEDS CHANGES",
+  "seal": "5cef086c0756a665371a6d1421c584f7287140330c08d6fe1645f3d37cff1019",
+  "totals": {
+    "n": 180,
+    "pass": 157,
+    "critical": 23,
+    "regression": 0,
+    "overblock": 0,
+    "harness": 0
+  },
+  "results": [
+    {
+      "id": "r7c0001",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0002",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0003",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0004",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0005",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0006",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0007",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0008",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0009",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0010",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0011",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0012",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0013",
+      "class": "human-silence",
+      "property": "a",
+      "title": "teammate_author / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0014",
+      "class": "human-silence",
+      "property": "a",
+      "title": "teammate_author / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0015",
+      "class": "human-silence",
+      "property": "a",
+      "title": "teammate_author / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0016",
+      "class": "human-silence",
+      "property": "a",
+      "title": "teammate_author / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0017",
+      "class": "human-silence",
+      "property": "a",
+      "title": "teammate_author / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0018",
+      "class": "human-silence",
+      "property": "a",
+      "title": "teammate_author / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0019",
+      "class": "human-silence",
+      "property": "a",
+      "title": "admin_no_type / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0020",
+      "class": "human-silence",
+      "property": "a",
+      "title": "admin_no_type / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0021",
+      "class": "human-silence",
+      "property": "a",
+      "title": "admin_no_type / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0022",
+      "class": "human-silence",
+      "property": "a",
+      "title": "admin_no_type / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0023",
+      "class": "human-silence",
+      "property": "a",
+      "title": "admin_no_type / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0024",
+      "class": "human-silence",
+      "property": "a",
+      "title": "admin_no_type / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0025",
+      "class": "human-silence",
+      "property": "a",
+      "title": "ambiguous / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0026",
+      "class": "human-silence",
+      "property": "a",
+      "title": "ambiguous / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0027",
+      "class": "human-silence",
+      "property": "a",
+      "title": "ambiguous / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0028",
+      "class": "human-silence",
+      "property": "a",
+      "title": "ambiguous / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0029",
+      "class": "human-silence",
+      "property": "a",
+      "title": "ambiguous / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0030",
+      "class": "human-silence",
+      "property": "a",
+      "title": "ambiguous / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0031",
+      "class": "human-silence",
+      "property": "a",
+      "title": "risk / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0032",
+      "class": "human-silence",
+      "property": "a",
+      "title": "risk / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0033",
+      "class": "human-silence",
+      "property": "a",
+      "title": "risk / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0034",
+      "class": "human-silence",
+      "property": "a",
+      "title": "risk / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0035",
+      "class": "human-silence",
+      "property": "a",
+      "title": "risk / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0036",
+      "class": "human-silence",
+      "property": "a",
+      "title": "risk / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0037",
+      "class": "human-silence",
+      "property": "a",
+      "title": "escalations / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0038",
+      "class": "human-silence",
+      "property": "a",
+      "title": "escalations / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0039",
+      "class": "human-silence",
+      "property": "a",
+      "title": "escalations / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0040",
+      "class": "human-silence",
+      "property": "a",
+      "title": "escalations / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0041",
+      "class": "human-silence",
+      "property": "a",
+      "title": "escalations / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0042",
+      "class": "human-silence",
+      "property": "a",
+      "title": "escalations / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0043",
+      "class": "human-silence",
+      "property": "a",
+      "title": "stale / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0044",
+      "class": "human-silence",
+      "property": "a",
+      "title": "stale / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0045",
+      "class": "human-silence",
+      "property": "a",
+      "title": "stale / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0046",
+      "class": "human-silence",
+      "property": "a",
+      "title": "stale / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0047",
+      "class": "human-silence",
+      "property": "a",
+      "title": "stale / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0048",
+      "class": "human-silence",
+      "property": "a",
+      "title": "stale / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0049",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign / account posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0050",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign / identity posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0051",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign / live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0052",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign / faq posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0053",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign / spread posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0054",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign / urdu-live posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0055",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human assignee replay twice / live",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0056",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human assignee replay twice / faq",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0057",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human assignee replay twice / account",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0058",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_assignee deferred status ping posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0059",
+      "class": "human-silence",
+      "property": "a",
+      "title": "human_reply deferred status ping posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0060",
+      "class": "human-silence",
+      "property": "a",
+      "title": "foreign deferred status ping posts nothing public",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0061",
+      "class": "sequence",
+      "property": "b",
+      "title": "live agent posts the fixed line only after note and assignment",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0062",
+      "class": "sequence",
+      "property": "b",
+      "title": "note HTTP 500 withholds the fixed line and does not confirm the note",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:500"
+      ]
+    },
+    {
+      "id": "r7c0063",
+      "class": "sequence",
+      "property": "b",
+      "title": "note timeout withholds the fixed line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0064",
+      "class": "sequence",
+      "property": "b",
+      "title": "note 422 is not confirmed and a later attempt can complete once",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:422",
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0065",
+      "class": "sequence",
+      "property": "b",
+      "title": "note 200 without a write id is not confirmed",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200"
+      ]
+    },
+    {
+      "id": "r7c0066",
+      "class": "sequence",
+      "property": "b",
+      "title": "note 200 with an errors array is partial and not confirmed",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200"
+      ]
+    },
+    {
+      "id": "r7c0067",
+      "class": "sequence",
+      "property": "b",
+      "title": "a public comment that mentions Account and Problem is not a confirmed note",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0068",
+      "class": "sequence",
+      "property": "b",
+      "title": "assignment HTTP 500 after a good note withholds the line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200",
+        "assignment:500"
+      ]
+    },
+    {
+      "id": "r7c0069",
+      "class": "sequence",
+      "property": "b",
+      "title": "assignment timeout withholds the line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200"
+      ]
+    },
+    {
+      "id": "r7c0070",
+      "class": "sequence",
+      "property": "b",
+      "title": "assignment 422 withholds the line and a later attempt completes once",
+      "level": "critical",
+      "reasons": [
+        "expected exactly one fixed line en, saw 0",
+        "fixed line was not preceded by a successful assignment"
+      ],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200",
+        "assignment:422"
+      ]
+    },
+    {
+      "id": "r7c0071",
+      "class": "sequence",
+      "property": "b",
+      "title": "assignment 200 with errors is partial and withholds the line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200",
+        "assignment:200"
+      ]
+    },
+    {
+      "id": "r7c0072",
+      "class": "sequence",
+      "property": "b",
+      "title": "message HTTP 500 after note and assignment does not publish the line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:500"
+      ]
+    },
+    {
+      "id": "r7c0073",
+      "class": "sequence",
+      "property": "b",
+      "title": "lost store with note and assignment posts the fixed line once",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0074",
+      "class": "sequence",
+      "property": "b",
+      "title": "lost store with only a note does not post the fixed line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0075",
+      "class": "sequence",
+      "property": "b",
+      "title": "lost store with only an assignment does not post the fixed line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0076",
+      "class": "sequence",
+      "property": "b",
+      "title": "lost store with note, assignment, and the line already public does not duplicate",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0077",
+      "class": "sequence",
+      "property": "b",
+      "title": "incomplete note plus assignment is not a lost-store completion",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0078",
+      "class": "sequence",
+      "property": "b",
+      "title": "same webhook replay after success does not post a second fixed line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0079",
+      "class": "sequence",
+      "property": "b",
+      "title": "a later live-agent turn does not post a second fixed line when history remains",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0080",
+      "class": "sequence",
+      "property": "b",
+      "title": "a later turn whose fetch dropped the handoff parts does not post a second line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0081",
+      "class": "sequence",
+      "property": "b",
+      "title": "two concurrent deliveries of one live-agent webhook post one line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0082",
+      "class": "sequence",
+      "property": "b",
+      "title": "lost-store account question does not finish as the fixed line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0083",
+      "class": "false-promise",
+      "property": "c",
+      "title": "unsupported daily-loss figure is hedged, not handed off",
+      "level": "critical",
+      "reasons": [
+        "missing hedge"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0084",
+      "class": "false-promise",
+      "property": "c",
+      "title": "regenerated handoff promise is not sent for an unsupported number",
+      "level": "critical",
+      "reasons": [
+        "missing hedge"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0085",
+      "class": "false-promise",
+      "property": "c",
+      "title": "exact spread template drafted for a payout question is not sent",
+      "level": "critical",
+      "reasons": [
+        "missing hedge",
+        "hedge path posted the fixed handoff line",
+        "forbidden text present: A teammate now has this conversation."
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0086",
+      "class": "false-promise",
+      "property": "c",
+      "title": "one-character spread near-miss is not sent and is not a handoff",
+      "level": "critical",
+      "reasons": [
+        "missing hedge",
+        "hedge path posted the fixed handoff line",
+        "forbidden text present: A teammate now has this conversation."
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0087",
+      "class": "false-promise",
+      "property": "c",
+      "title": "three-hit spread near-miss without a spread ask is not sent",
+      "level": "critical",
+      "reasons": [
+        "missing hedge",
+        "hedge path posted the fixed handoff line",
+        "forbidden text present: A teammate now has this conversation."
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0088",
+      "class": "false-promise",
+      "property": "c",
+      "title": "regenerated spread template on a non-spread question is not sent",
+      "level": "critical",
+      "reasons": [
+        "missing hedge"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0089",
+      "class": "spread",
+      "property": "d",
+      "title": "first reply to an eligible spread ask is the locked bytes",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0090",
+      "class": "spread",
+      "property": "d",
+      "title": "later eligible spread ask is still the locked bytes",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0091",
+      "class": "spread",
+      "property": "d",
+      "title": "bare spreads question is the locked bytes",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0092",
+      "class": "spread",
+      "property": "d",
+      "title": "what are your spreads is the locked bytes",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0093",
+      "class": "spread",
+      "property": "d",
+      "title": "please check the spreads is the locked bytes",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0094",
+      "class": "spread",
+      "property": "d",
+      "title": "spread the word is not the locked reply",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0095",
+      "class": "spread",
+      "property": "d",
+      "title": "spreadsheet is not the locked reply",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0096",
+      "class": "spread",
+      "property": "d",
+      "title": "positions spread across accounts is not the locked reply",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0097",
+      "class": "spread",
+      "property": "d",
+      "title": "not about spreads does not send the locked reply",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0098",
+      "class": "spread",
+      "property": "d",
+      "title": "MT5 login words without spread do not send the locked reply",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0099",
+      "class": "spread",
+      "property": "d",
+      "title": "user.created eligible spread ask is recorded, not scored as a format miss",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0100",
+      "class": "secret",
+      "property": "e",
+      "title": "secret plain stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: plain"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0101",
+      "class": "secret",
+      "property": "e",
+      "title": "secret nfkc stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: nfkc"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0102",
+      "class": "secret",
+      "property": "e",
+      "title": "secret zwlabel stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: zwlabel"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0103",
+      "class": "secret",
+      "property": "e",
+      "title": "secret spaced stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: spaced"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0104",
+      "class": "secret",
+      "property": "e",
+      "title": "secret symbols stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: symbols"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0105",
+      "class": "secret",
+      "property": "e",
+      "title": "secret apos stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: apos"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0106",
+      "class": "secret",
+      "property": "e",
+      "title": "secret braces stays out of prompts, notes, and public replies",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0107",
+      "class": "secret",
+      "property": "e",
+      "title": "secret bold stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: bold"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0108",
+      "class": "secret",
+      "property": "e",
+      "title": "secret b64 stays out of prompts, notes, and public replies",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0109",
+      "class": "secret",
+      "property": "e",
+      "title": "secret echo stays out of prompts, notes, and public replies",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0110",
+      "class": "secret",
+      "property": "e",
+      "title": "secret ar stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: ar"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0111",
+      "class": "secret",
+      "property": "e",
+      "title": "secret ur stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: ur"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0112",
+      "class": "secret",
+      "property": "e",
+      "title": "secret hi stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: hi"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0113",
+      "class": "secret",
+      "property": "e",
+      "title": "secret otp stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: otp"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0114",
+      "class": "secret",
+      "property": "e",
+      "title": "secret apikey stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: apikey"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0115",
+      "class": "secret",
+      "property": "e",
+      "title": "secret bearer stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: bearer"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0116",
+      "class": "secret",
+      "property": "e",
+      "title": "secret sk stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: sk"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0117",
+      "class": "secret",
+      "property": "e",
+      "title": "secret zwvalue stays out of prompts, notes, and public replies",
+      "level": "critical",
+      "reasons": [
+        "synthetic secret leaked: zwvalue"
+      ],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0118",
+      "class": "secret",
+      "property": "e",
+      "title": "live-agent note redacts plain",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0119",
+      "class": "secret",
+      "property": "e",
+      "title": "live-agent note redacts nfkc",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0120",
+      "class": "secret",
+      "property": "e",
+      "title": "live-agent note redacts zwlabel",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0121",
+      "class": "secret",
+      "property": "e",
+      "title": "live-agent note redacts b64",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0122",
+      "class": "language",
+      "property": "language",
+      "title": "en live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0123",
+      "class": "language",
+      "property": "language",
+      "title": "en account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0124",
+      "class": "language",
+      "property": "language",
+      "title": "ur live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0125",
+      "class": "language",
+      "property": "language",
+      "title": "ur account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0126",
+      "class": "language",
+      "property": "language",
+      "title": "ur-roman live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0127",
+      "class": "language",
+      "property": "language",
+      "title": "ur-roman account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0128",
+      "class": "language",
+      "property": "language",
+      "title": "hi live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0129",
+      "class": "language",
+      "property": "language",
+      "title": "hi account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0130",
+      "class": "language",
+      "property": "language",
+      "title": "ar live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0131",
+      "class": "language",
+      "property": "language",
+      "title": "ar account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0132",
+      "class": "language",
+      "property": "language",
+      "title": "hinglish live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0133",
+      "class": "language",
+      "property": "language",
+      "title": "hinglish account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0134",
+      "class": "language",
+      "property": "language",
+      "title": "it live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0135",
+      "class": "language",
+      "property": "language",
+      "title": "it account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0136",
+      "class": "language",
+      "property": "language",
+      "title": "fr live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0137",
+      "class": "language",
+      "property": "language",
+      "title": "fr account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0138",
+      "class": "language",
+      "property": "language",
+      "title": "de live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0139",
+      "class": "language",
+      "property": "language",
+      "title": "de account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0140",
+      "class": "language",
+      "property": "language",
+      "title": "nl live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0141",
+      "class": "language",
+      "property": "language",
+      "title": "nl account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0142",
+      "class": "language",
+      "property": "language",
+      "title": "es live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0143",
+      "class": "language",
+      "property": "language",
+      "title": "es account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0144",
+      "class": "language",
+      "property": "language",
+      "title": "pt live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0145",
+      "class": "language",
+      "property": "language",
+      "title": "pt account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0146",
+      "class": "language",
+      "property": "language",
+      "title": "tr live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0147",
+      "class": "language",
+      "property": "language",
+      "title": "tr account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0148",
+      "class": "language",
+      "property": "language",
+      "title": "pl live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0149",
+      "class": "language",
+      "property": "language",
+      "title": "pl account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0150",
+      "class": "language",
+      "property": "language",
+      "title": "ru live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0151",
+      "class": "language",
+      "property": "language",
+      "title": "ru account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0152",
+      "class": "language",
+      "property": "language",
+      "title": "zh live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0153",
+      "class": "language",
+      "property": "language",
+      "title": "zh account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0154",
+      "class": "language",
+      "property": "language",
+      "title": "ja live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0155",
+      "class": "language",
+      "property": "language",
+      "title": "ja account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0156",
+      "class": "language",
+      "property": "language",
+      "title": "id live-agent uses the approved line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0157",
+      "class": "language",
+      "property": "language",
+      "title": "id account-number question uses the approved fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0158",
+      "class": "language",
+      "property": "language",
+      "title": "Arabic account question with diacritics still uses the Arabic fact",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0159",
+      "class": "language",
+      "property": "language",
+      "title": "ASCII German moechte live-agent uses the English line",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0160",
+      "class": "fin-wait",
+      "property": "fin",
+      "title": "user.created live-agent request bypasses fin-wait",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0161",
+      "class": "fin-wait",
+      "property": "fin",
+      "title": "user.created ordinary FAQ stays in fin-wait",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0162",
+      "class": "fin-wait",
+      "property": "fin",
+      "title": "user.created account-number question is answered, not handed off",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0163",
+      "class": "fin-wait",
+      "property": "fin",
+      "title": "fresh user.replied FAQ stays in fin-wait",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0164",
+      "class": "fin-wait",
+      "property": "fin",
+      "title": "fresh user.replied live-agent request is not held for fin",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0165",
+      "class": "fin-wait",
+      "property": "fin",
+      "title": "fresh user.replied account question is answered",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0166",
+      "class": "identity",
+      "property": "identity",
+      "title": "are you a bot is answered, not handed off",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0167",
+      "class": "identity",
+      "property": "identity",
+      "title": "are you a real person is not a handoff",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0168",
+      "class": "identity",
+      "property": "identity",
+      "title": "Roman Urdu identity question is not a handoff",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0169",
+      "class": "identity",
+      "property": "identity",
+      "title": "Italian identity question is not a handoff",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0170",
+      "class": "identity",
+      "property": "identity",
+      "title": "I want a real person is a handoff, not an identity answer",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0171",
+      "class": "identity",
+      "property": "identity",
+      "title": "personal family question is not a handoff",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0172",
+      "class": "empty-body",
+      "property": "empty",
+      "title": "empty model body on a policy FAQ escalates",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0173",
+      "class": "empty-body",
+      "property": "empty",
+      "title": "empty model body on what are the rules escalates",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0174",
+      "class": "empty-body",
+      "property": "empty",
+      "title": "empty model body on a rejected payout is not silence",
+      "level": "critical",
+      "reasons": [
+        "expected exactly one fixed line en, saw 0",
+        "fixed line was not preceded by a successful note",
+        "fixed line was not preceded by a successful assignment"
+      ],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0175",
+      "class": "empty-body",
+      "property": "empty",
+      "title": "empty customer body does not invent a public reply",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 0,
+      "writeKinds": []
+    },
+    {
+      "id": "r7c0176",
+      "class": "regression",
+      "property": "regression",
+      "title": "greeting is not a handoff",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0177",
+      "class": "regression",
+      "property": "regression",
+      "title": "non-numeric FAQ answer still ships",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0178",
+      "class": "regression",
+      "property": "regression",
+      "title": "supplying an account number is not treated as an account-number question",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0179",
+      "class": "regression",
+      "property": "regression",
+      "title": "short thanks after a prior reply is not a handoff",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "comment:200"
+      ]
+    },
+    {
+      "id": "r7c0180",
+      "class": "regression",
+      "property": "regression",
+      "title": "medium live-agent request still hands off",
+      "level": "pass",
+      "reasons": [],
+      "publicCount": 1,
+      "writeKinds": [
+        "note:200",
+        "assignment:200",
+        "comment:200"
+      ]
+    }
+  ]
+}
