@@ -1,0 +1,4096 @@
+{
+  "freeze": "c4553a93f20751b84ebdca5fb21cc7703af84a03",
+  "summary": {
+    "ran": 230,
+    "passed": 225,
+    "failed": 5,
+    "productCritical": 0,
+    "leaks": 0,
+    "regressions": 0,
+    "unnecessaryHandoff": 1,
+    "defects": 3,
+    "overBlock": 1,
+    "failedIds": [
+      "c-wrong-assignee-then-retry",
+      "d-account-ar",
+      "e-faq-empty-is-news-trading-allowed",
+      "d-account-fresh-arabic",
+      "g-later-please"
+    ],
+    "failures": [
+      {
+        "id": "c-wrong-assignee-then-retry",
+        "group": "c-writes",
+        "classes": [
+          "defect"
+        ],
+        "failures": [
+          {
+            "check": "fixed",
+            "got": 0,
+            "want": 1
+          },
+          {
+            "check": "fixedLine",
+            "got": [],
+            "want": "A teammate now has this conversation."
+          }
+        ],
+        "publicText": "",
+        "counts": {
+          "comments": 0,
+          "notes": 1,
+          "assignments": 1,
+          "fixed": 0,
+          "modelCalls": 0,
+          "http": 8
+        }
+      },
+      {
+        "id": "d-account-ar",
+        "group": "d-language",
+        "classes": [
+          "defect"
+        ],
+        "failures": [
+          {
+            "check": "publicHas",
+            "got": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+            "want": "في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+          }
+        ],
+        "publicText": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+        "counts": {
+          "comments": 1,
+          "notes": 0,
+          "assignments": 0,
+          "fixed": 0,
+          "modelCalls": 0,
+          "http": 4
+        }
+      },
+      {
+        "id": "e-faq-empty-is-news-trading-allowed",
+        "group": "e-unnecessary",
+        "classes": [
+          "unnecessary-handoff"
+        ],
+        "failures": [
+          {
+            "check": "publicHasAny",
+            "got": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+            "want": [
+              "FAQ",
+              "challenge"
+            ]
+          }
+        ],
+        "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+        "counts": {
+          "comments": 1,
+          "notes": 0,
+          "assignments": 0,
+          "fixed": 0,
+          "modelCalls": 0,
+          "http": 4
+        }
+      },
+      {
+        "id": "d-account-fresh-arabic",
+        "group": "d-language",
+        "classes": [
+          "defect"
+        ],
+        "failures": [
+          {
+            "check": "publicHas",
+            "got": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+            "want": "في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+          }
+        ],
+        "publicText": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+        "counts": {
+          "comments": 1,
+          "notes": 0,
+          "assignments": 0,
+          "fixed": 0,
+          "modelCalls": 0,
+          "http": 4
+        }
+      },
+      {
+        "id": "g-later-please",
+        "group": "g-credential",
+        "classes": [
+          "over-block"
+        ],
+        "failures": [
+          {
+            "check": "publicHas",
+            "got": "I can't confirm that figure from the approved details, so I won't guess a number.",
+            "want": "Please"
+          }
+        ],
+        "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+        "counts": {
+          "comments": 1,
+          "notes": 0,
+          "assignments": 0,
+          "fixed": 0,
+          "modelCalls": 2,
+          "http": 7
+        }
+      }
+    ]
+  },
+  "results": [
+    {
+      "id": "a-human-assignee-live-en",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-assignee-faq",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-assignee-account",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-assignee-update",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-assignee-spread",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-live-ur",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-live-ar",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-live-hi",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-live-roman",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-live-hinglish",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-public-reply",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-author-teammate",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-admin-body-no-part-type",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-ambiguous-assignee",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-stale-assignment",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-risk-team",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-escalations-team",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-reopen-human-live",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-reopen-human-update",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-reopen-closed-human-faq",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-reopen-human-urdu",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-aioff-live",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-aioff-faq",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-aioff-account",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-aioff-reopen",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-faq",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-reopen",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-replies-disabled",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-created-faq",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-created-hello",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-elite-recent",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-fresh-reply",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-jerry-assigned-faq",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-jerry-assigned-live",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-name-not-enough-to-speak",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-user-arsal-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-user-arsal-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-user-jerry-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-user-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-lead-arsal-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-lead-arsal-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-lead-jerry-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-lead-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-contact-arsal-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-contact-arsal-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-contact-jerry-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-contact-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-bot-arsal-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-bot-arsal-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-bot-jerry-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-bot-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-teammate-arsal-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-teammate-arsal-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-teammate-jerry-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-spoof-teammate-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-reply-not-note-arsal-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-reply-not-note-jerry-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-admin-wrong-id-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-user-email-only-bot",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-reply-not-note-arsal-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-reply-not-note-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-admin-wrong-id-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-user-email-only-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-missing-type",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-arsal-no-mention",
+      "group": "b-owner",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-arsal-reply-bot-thread",
+      "group": "b-owner",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 3
+      },
+      "publicText": "The login email has the account number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-arsal-reply-human-thread-verbatim",
+      "group": "b-owner",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 3
+      },
+      "publicText": "the login email has the account number",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-jerry-reply-bot-thread",
+      "group": "b-owner",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 3
+      },
+      "publicText": "The login email has the account number.",
+      "jerryOwnerAdmin": true
+    },
+    {
+      "id": "b-jerry-reply-human-thread-verbatim",
+      "group": "b-owner",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 3
+      },
+      "publicText": "please send the login email line",
+      "jerryOwnerAdmin": true
+    },
+    {
+      "id": "b-spoof-stop-does-not-aioff",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-happy-en",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-errors",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-error-list",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-error-list-id",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-null",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-wrong-assignee",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-422",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-500",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-assign-timeout",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-note-errors",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-note-error-list",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-note-null",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-note-500",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-message-null-after-verified-assign",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-partial-then-replay",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 8
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-500-not-replayed",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 8
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-timeout-not-replayed",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 8
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-422-then-retry",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 2,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 10
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-wrong-assignee-then-retry",
+      "group": "c-writes",
+      "klass": "defect",
+      "ok": false,
+      "failures": [
+        {
+          "check": "fixed",
+          "got": 0,
+          "want": 1
+        },
+        {
+          "check": "fixedLine",
+          "got": [],
+          "want": "A teammate now has this conversation."
+        }
+      ],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 8
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-store-wipe-flags-fail-closed",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-store-wipe-flags-rewrite",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-restart-mid-note",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-human-note-not-ours",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-redelivery-no-second-line",
+      "group": "c-writes",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 7
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-handoff-en",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-en",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-handoff-ur",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-ur",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "السلام علیکم Casey، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-handoff-ar",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "هذه المحادثة الآن لدى أحد الزملاء.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-ar",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": false,
+      "failures": [
+        {
+          "check": "publicHas",
+          "got": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+          "want": "في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+        }
+      ],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-handoff-hi",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "यह बातचीत अब एक साथी के पास है।",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-hi",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-handoff-roman",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-roman",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Salam Casey, MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-handoff-hinglish",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-hinglish",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Salam Casey, MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-italian-handoff",
+      "group": "d-language",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "Un collega ha ora questa conversazione.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-substantive-urdu-not-pure",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 4
+      },
+      "publicText": "السلام علیکم Casey، The daily loss limit depends on the challenge rules in the FAQ.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-is-the-daily-loss-limit",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-is-the-daily-loss-limit",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ article \"2-Step Challenge + FREE RETRY\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-is-the-maximum-drawdown",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-is-the-maximum-drawdown",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ article \"How are Daily and Total Drawdown calculated?\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-is-the-profit-target",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-is-the-profit-target",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ article \"Catalyst Challenge Profit targets\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-leverage-is-allowed",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 4
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-leverage-is-allowed",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 5
+      },
+      "publicText": "Hello Casey, The FAQ article \"What is the leverage of the challenges we offer?\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-is-the-catalyst-challenge",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The answer is in the challenge rules for that FAQ. I can quote the matching rule if you name the challenge.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-is-the-catalyst-challenge",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ article \"What is a Trading Challenge or evaluation?\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-is-the-minimum-payout",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-is-the-minimum-payout",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, Which challenge is this question about? I can quote that rule from the FAQ.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-is-news-trading-allowed",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-is-news-trading-allowed",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": false,
+      "failures": [
+        {
+          "check": "publicHasAny",
+          "got": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+          "want": [
+            "FAQ",
+            "challenge"
+          ]
+        }
+      ],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-answer-what-are-the-rules",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The answer is in the challenge rules for that FAQ. I can quote the matching rule if you name the challenge.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-empty-what-are-the-rules",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ article \"What Happens If I Break the Rules?\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-status-ping-bot",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-status-ping-awaiting",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "Hello Casey, This is already with our team for review. Please hang tight, we will follow up on Intercom as soon as there is news.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-hello-not-handoff",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 4
+      },
+      "publicText": "Hello, how can I help with your challenge?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-empty-hello",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-faq-model-escalate",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is defined by the challenge rules in the FAQ.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-regen-what-is-the-daily-loss-limit",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-hedge-what-is-the-daily-loss-limit",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-regen-what-is-the-maximum-drawdown",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-hedge-what-is-the-maximum-drawdown",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-regen-what-is-the-profit-target",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-hedge-what-is-the-profit-target",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-regen-what-leverage-is-allowed",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 4
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-hedge-what-leverage-is-allowed",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 4
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-own-payout-not-faq-hedge",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The team will review your payout.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-human-thread-no-hedge",
+      "group": "f-review",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-symbol-echo",
+      "group": "g-credential",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. Your password [secret] and [secret] should not be repeated.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-symbol-in-handoff-note",
+      "group": "g-credential",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-simple-echo",
+      "group": "g-credential",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The profit target is in the FAQ. Do not echo [secret]",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-password-back",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I will be back soon.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-ordinary-words",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. Please review the message. Thanks. The team can help.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-please",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can please from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-thanks",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can thanks from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-update",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can update from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-review",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can review from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-status",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can status from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-message",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can message from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-help",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can help from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-word-team",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. I can team from the rules.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-passphrase-echo",
+      "group": "g-credential",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-bearer-echo",
+      "group": "g-credential",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 5
+      },
+      "publicText": "Hello Casey, Leverage is in the FAQ. Bearer [secret]",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-short-word-not-remembered",
+      "group": "g-credential",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is in the FAQ. A cat is not a secret [secret]",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-spread-exact",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 3
+      },
+      "publicText": "[exact-allowed-template]",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-spread-not-on-faq",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-hedge-terminal",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-identity-not-handoff",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-fin-created-live-bypass",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-account-not-welcome-handoff",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-negated-spread",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The daily loss limit is defined by the challenge rules in the FAQ.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-assignment-pending-recovery-account",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-thanks-after-human",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-ok-after-human",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-human-arabic-handoff",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-human-hindi-account",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-human-roman-account",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-paused-account",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-aioff-hinglish",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-fin-elite-account",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-risk-live",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-more-escalations-update",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-edge-note-timeout",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-edge-note-422",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-edge-assign-and-note-null",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-edge-comment-errors-after-ok",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-edge-comment-500-after-ok",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-edge-comment-timeout-after-ok",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-any-update",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-any-updates",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-status",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-checking-in",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-still-waiting",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-how-long",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-is-there-any-update",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-ping-following-up",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, I don't have an open update on this conversation. What would you like me to check?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-is-the-daily-loss-limit",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-is-the-maximum-drawdown",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-is-the-profit-target",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-leverage-is-allowed",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-is-the-catalyst-challenge",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-is-the-minimum-payout",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-is-news-trading-allowed",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-human-faq-what-are-the-rules",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-user-stop-replying",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-user-ping",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-user-note-please-summarize",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-lead-stop-replying",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-lead-ping",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-lead-note-please-summarize",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-bot-stop-replying",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-bot-ping",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-cmd-bot-note-please-summarize",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-personal-not-handoff",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 5
+      },
+      "publicText": "Hello Casey, I will ask a teammate.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-french-handoff-english-line",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 0,
+        "http": 6
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-reopen-bot-owned-still-not-over-human",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-empty-object",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-data-array",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 5
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-fresh-urdu",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "السلام علیکم Casey، MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-fresh-hindi",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "Hello Casey, MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "d-account-fresh-arabic",
+      "group": "d-language",
+      "klass": "defect",
+      "ok": false,
+      "failures": [
+        {
+          "check": "publicHas",
+          "got": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+          "want": "في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+        }
+      ],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "e-empty-whitespace-faq",
+      "group": "e-unnecessary",
+      "klass": "unnecessary-handoff",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ article \"2-Step Challenge + FREE RETRY\" covers this. Which challenge is the question about?",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-symbol-fragment-only",
+      "group": "g-credential",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 1,
+        "http": 8
+      },
+      "publicText": "Hello Casey, The FAQ covers the daily loss limit. [secret]",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "b-contact-jerry-human",
+      "group": "b-owner",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "h-handoff-not-on-substantive-english",
+      "group": "h-regression",
+      "klass": "regression",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 1,
+        "assignments": 1,
+        "fixed": 1,
+        "modelCalls": 1,
+        "http": 10
+      },
+      "publicText": "A teammate now has this conversation.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live-en",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live-ur",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live-ar",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live-hi",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live-roman",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-paused-live-hinglish",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 0
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-created-live-held-no-en",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-created-live-held-no-ur",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-created-live-held-no-ar",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "a-fin-created-live-held-no-hi",
+      "group": "a-silence",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 1
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "c-note-empty-object",
+      "group": "c-writes",
+      "klass": "product-critical",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 0,
+        "notes": 1,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 0,
+        "http": 4
+      },
+      "publicText": "",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "g-later-please",
+      "group": "g-credential",
+      "klass": "over-block",
+      "ok": false,
+      "failures": [
+        {
+          "check": "publicHas",
+          "got": "I can't confirm that figure from the approved details, so I won't guess a number.",
+          "want": "Please"
+        }
+      ],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    },
+    {
+      "id": "f-hedge-not-fixed-line",
+      "group": "f-review",
+      "klass": "defect",
+      "ok": true,
+      "failures": [],
+      "counts": {
+        "comments": 1,
+        "notes": 0,
+        "assignments": 0,
+        "fixed": 0,
+        "modelCalls": 2,
+        "http": 7
+      },
+      "publicText": "I can't confirm that figure from the approved details, so I won't guess a number.",
+      "jerryOwnerAdmin": false
+    }
+  ]
+}
