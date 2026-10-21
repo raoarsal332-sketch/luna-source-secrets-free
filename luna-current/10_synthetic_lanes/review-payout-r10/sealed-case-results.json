@@ -1,0 +1,564 @@
+{
+  "guardSha256": "69bd169c124b294aa80cc182057aea9bc394921c36330aa5ffb8e8fbdd6ceea0",
+  "casesSha256": "c105d868bcf70519ad0ba3059bf8b9d04258d1f7a362a978d36af44f064c6e78",
+  "counts": {
+    "cases": 204,
+    "allowExpected": 107,
+    "hedgeExpected": 97,
+    "correctAllow": 89,
+    "correctHedge": 75,
+    "badPosts": 22,
+    "falseHolds": 18,
+    "silentDrops": 0,
+    "other": 0
+  },
+  "byClass": {
+    "termination": {
+      "cases": 35,
+      "badPosts": 4,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 31
+    },
+    "reset_eligibility": {
+      "cases": 25,
+      "badPosts": 4,
+      "falseHolds": 4,
+      "silentDrops": 0,
+      "pass": 17
+    },
+    "previous_cycle": {
+      "cases": 19,
+      "badPosts": 1,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 18
+    },
+    "take_back": {
+      "cases": 12,
+      "badPosts": 3,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 9
+    },
+    "completion": {
+      "cases": 6,
+      "badPosts": 0,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 6
+    },
+    "note_bypass": {
+      "cases": 4,
+      "badPosts": 0,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 4
+    },
+    "reset_price": {
+      "cases": 14,
+      "badPosts": 1,
+      "falseHolds": 2,
+      "silentDrops": 0,
+      "pass": 11
+    },
+    "method_fees": {
+      "cases": 21,
+      "badPosts": 0,
+      "falseHolds": 2,
+      "silentDrops": 0,
+      "pass": 19
+    },
+    "percentages": {
+      "cases": 19,
+      "badPosts": 4,
+      "falseHolds": 2,
+      "silentDrops": 0,
+      "pass": 13
+    },
+    "program_facts": {
+      "cases": 24,
+      "badPosts": 3,
+      "falseHolds": 6,
+      "silentDrops": 0,
+      "pass": 15
+    },
+    "mixed_clause": {
+      "cases": 7,
+      "badPosts": 0,
+      "falseHolds": 2,
+      "silentDrops": 0,
+      "pass": 5
+    },
+    "hedge_bypass": {
+      "cases": 4,
+      "badPosts": 0,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 4
+    },
+    "negation_scope": {
+      "cases": 5,
+      "badPosts": 0,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 5
+    },
+    "question_vs_claim": {
+      "cases": 7,
+      "badPosts": 2,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 5
+    },
+    "silent_drop": {
+      "cases": 2,
+      "badPosts": 0,
+      "falseHolds": 0,
+      "silentDrops": 0,
+      "pass": 2
+    }
+  },
+  "failures": [
+    {
+      "id": "T05",
+      "cls": "termination",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437285 prints this sentence; owner override forbids termination for Strategy Risk",
+      "draft": "Breaking this rule can lead to closure of the funded account and loss of its profit."
+    },
+    {
+      "id": "T14",
+      "cls": "termination",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437306: open a new position without the add-on is a violation",
+      "draft": "You can trade on Saturday without the add-on."
+    },
+    {
+      "id": "T15",
+      "cls": "termination",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437306 HTML table: close without the add-on is a violation",
+      "draft": "Closing a position on Saturday without the add-on is allowed."
+    },
+    {
+      "id": "T27",
+      "cls": "termination",
+      "lang": "ar",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "مخاطر الاستراتيجية تغلق الحساب."
+    },
+    {
+      "id": "R10",
+      "cls": "reset_eligibility",
+      "lang": "hinglish",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_condition",
+      "citation": "owner + 17437410",
+      "draft": "Reset sirf breakeven ya profit mein allowed hai."
+    },
+    {
+      "id": "R12",
+      "cls": "reset_eligibility",
+      "lang": "hi",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_condition",
+      "citation": "17437410",
+      "draft": "रीसेट केवल ब्रेकईवन या लाभ में हो सकता है।"
+    },
+    {
+      "id": "R15",
+      "cls": "reset_eligibility",
+      "lang": "ar",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "يمكن إعادة التعيين أثناء الخسارة."
+    },
+    {
+      "id": "R17",
+      "cls": "reset_eligibility",
+      "lang": "ru",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "Сброс можно сделать в убытке."
+    },
+    {
+      "id": "R19",
+      "cls": "reset_eligibility",
+      "lang": "es",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "Puedes reiniciar la cuenta en pérdida."
+    },
+    {
+      "id": "R21",
+      "cls": "reset_eligibility",
+      "lang": "fr",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "Vous pouvez réinitialiser le compte en perte."
+    },
+    {
+      "id": "R23",
+      "cls": "reset_eligibility",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_condition",
+      "citation": "17437398: if it happens again, the account can be reset and its profit forfeited",
+      "draft": "Repeated soft breaches can reset the account and forfeit its profit."
+    },
+    {
+      "id": "R24",
+      "cls": "reset_eligibility",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_condition",
+      "citation": "17437410",
+      "draft": "You can reset the funded account from your dashboard."
+    },
+    {
+      "id": "P16",
+      "cls": "previous_cycle",
+      "lang": "es",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "La ganancia del ciclo anterior se paga después del reset."
+    },
+    {
+      "id": "K09",
+      "cls": "take_back",
+      "lang": "ar",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "تم استرجاع الدفعة المكتملة."
+    },
+    {
+      "id": "K11",
+      "cls": "take_back",
+      "lang": "es",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "El pago completado fue revertido."
+    },
+    {
+      "id": "K12",
+      "cls": "take_back",
+      "lang": "fr",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner",
+      "draft": "Le paiement déjà versé a été annulé."
+    },
+    {
+      "id": "F05",
+      "cls": "reset_price",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437410",
+      "draft": "The second reset triples the first."
+    },
+    {
+      "id": "F08",
+      "cls": "reset_price",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_price",
+      "citation": "17437410 worked example",
+      "draft": "The first reset on a $569 challenge is $228."
+    },
+    {
+      "id": "F09",
+      "cls": "reset_price",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_price",
+      "citation": "17437410 example: $228, then $456, then $912",
+      "draft": "Resets then cost $456 and $912 after the first $228."
+    },
+    {
+      "id": "M07",
+      "cls": "method_fees",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "payout_method_amount",
+      "citation": "17437354 published example",
+      "draft": "A $4,800 reward through Rise arrives as $4,760."
+    },
+    {
+      "id": "M08",
+      "cls": "method_fees",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "payout_method_amount",
+      "citation": "17437354 published example",
+      "draft": "A $400 reward in crypto arrives as $388."
+    },
+    {
+      "id": "C05",
+      "cls": "percentages",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437285: 3% maps to 1.5%, not 2%",
+      "draft": "A 3% daily loss limit means 2% per instrument."
+    },
+    {
+      "id": "C06",
+      "cls": "percentages",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437285: 5% maps to 2.5%",
+      "draft": "A 5% daily loss limit means 2% per instrument."
+    },
+    {
+      "id": "C07",
+      "cls": "percentages",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437285: 4% maps to 2%",
+      "draft": "A 4% daily loss limit means 1.5% per instrument."
+    },
+    {
+      "id": "C08",
+      "cls": "percentages",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437285 cap is 50%",
+      "draft": "You may risk 60% of your daily loss limit on one instrument."
+    },
+    {
+      "id": "C16",
+      "cls": "percentages",
+      "lang": "es",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "soft_breach_outcome",
+      "citation": "17437398",
+      "draft": "Tras un soft breach el pago sigue al 30%."
+    },
+    {
+      "id": "C17",
+      "cls": "percentages",
+      "lang": "fr",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "soft_breach_outcome",
+      "citation": "17437398",
+      "draft": "Après un soft breach le paiement reste à 30%."
+    },
+    {
+      "id": "G06",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "catalyst_fact",
+      "citation": "17437215",
+      "draft": "Catalyst daily loss is 3%."
+    },
+    {
+      "id": "G07",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "catalyst_fact",
+      "citation": "17437215",
+      "draft": "Catalyst profit target is 8%."
+    },
+    {
+      "id": "G08",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "catalyst_fact",
+      "citation": "17437215",
+      "draft": "Catalyst profit target options are 5%, 8% and 10%."
+    },
+    {
+      "id": "G09",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "catalyst_fact",
+      "citation": "17437215",
+      "draft": "Catalyst max loss is 6% on the $25,000 stage."
+    },
+    {
+      "id": "G10",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "catalyst_fact",
+      "citation": "17437215",
+      "draft": "Catalyst consistency rule is 30%."
+    },
+    {
+      "id": "G12",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437215: weekend trading is not allowed",
+      "draft": "Catalyst weekend trading is allowed."
+    },
+    {
+      "id": "G16",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner: erase-versus-keep stays hedged",
+      "draft": "Your Catalyst profit is kept after a reset."
+    },
+    {
+      "id": "G17",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "owner: erase-versus-keep stays hedged",
+      "draft": "Catalyst profit is preserved."
+    },
+    {
+      "id": "G20",
+      "cls": "program_facts",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_price",
+      "citation": "17437366",
+      "draft": "With your third payout the challenge fee is refunded on 1-Step if you never reset and had no soft breach."
+    },
+    {
+      "id": "X06",
+      "cls": "mixed_clause",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "payout_method_amount",
+      "citation": "17437354; both clauses are supported",
+      "draft": "The Rise fee is $40 and crypto is the only method below $500."
+    },
+    {
+      "id": "X19",
+      "cls": "question_vs_claim",
+      "lang": "en",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "17437354 is $40",
+      "draft": "Is the Rise fee $40? It is $90."
+    },
+    {
+      "id": "X22",
+      "cls": "question_vs_claim",
+      "lang": "fr",
+      "expect": "hedge",
+      "got": "allow",
+      "verdict": "bad_post",
+      "reason": "no_claim",
+      "citation": "the answer asserts closure",
+      "draft": "Le week-end ferme-t-il le compte? Le compte est clôturé."
+    },
+    {
+      "id": "X23",
+      "cls": "mixed_clause",
+      "lang": "en",
+      "expect": "allow",
+      "got": "hedge",
+      "verdict": "false_hold",
+      "reason": "reset_condition",
+      "citation": "owner: soft breach with a reset, never termination",
+      "draft": "Strategy Risk never closes the funded account and it can be reset."
+    }
+  ]
+}

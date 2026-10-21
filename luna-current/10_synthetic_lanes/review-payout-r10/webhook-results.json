@@ -1,0 +1,250 @@
+{
+  "scratch": "/tmp/r10-review-scratch",
+  "patch": "patching file luna-current/01_runtime/index.js",
+  "hedge": "I can't confirm that. Our team will confirm.",
+  "paths": [
+    {
+      "path": "authorized-note-reply-unsafe",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": true,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "6918bd908d1904884106399c5f07dc61cda3e42aafdf4cbe0b0e7c602f2c5385"
+      ],
+      "bodies": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "logs": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE weekend_trading_outcome",
+        "OUT synth-auth-unsafe 200 ok",
+        "AUTH_NOTE REPLY synth-auth-unsafe 10118526 n1"
+      ],
+      "error": null
+    },
+    {
+      "path": "authorized-note-reply-safe",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "9841cc938537fc4abdd0e75d305cc83965e81dc23e8275375e0bd323f24f5436"
+      ],
+      "bodies": [
+        "A Strategy Risk breach is a soft breach with a reset."
+      ],
+      "logs": [
+        "OUT synth-auth-safe 200 ok",
+        "AUTH_NOTE REPLY synth-auth-safe 10118526 n1"
+      ],
+      "error": null
+    },
+    {
+      "path": "authorized-note-send-this-message",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": true,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "6918bd908d1904884106399c5f07dc61cda3e42aafdf4cbe0b0e7c602f2c5385"
+      ],
+      "bodies": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "logs": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE payout_reversal",
+        "OUT synth-auth-send 200 ok",
+        "AUTH_NOTE REPLY synth-auth-send 10118526 n1"
+      ],
+      "error": null
+    },
+    {
+      "path": "authorized-note-follow-reply",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": true,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "6918bd908d1904884106399c5f07dc61cda3e42aafdf4cbe0b0e7c602f2c5385"
+      ],
+      "bodies": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "logs": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE weekend_trading_outcome",
+        "OUT synth-auth-follow 200 ok",
+        "AUTH_NOTE FOLLOW-> REPLY synth-auth-follow 10118526 n1"
+      ],
+      "error": null
+    },
+    {
+      "path": "fin-welcome",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "03a80105b92a31ad18c2800b7a6e72d103361dc3e13d28761a3811e10e587a00"
+      ],
+      "bodies": [
+        "Hello Synthetic, how can I help?"
+      ],
+      "logs": [
+        "OUT synth-fin 200 ok",
+        "FIN_HANDOFF_WELCOME synth-fin"
+      ],
+      "error": null
+    },
+    {
+      "path": "spread-test",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": true,
+      "bodySha256": [
+        "f403ae99e99ef839591892be9cc711386cb1689b5698494191b607b2d7822b9b"
+      ],
+      "bodies": [
+        "Hello Synthetic,<br><br>TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server<br><br>Platform: MetaTrader 5<br><br>Server: Fundedelite-Server<br><br>Account Number: 55188<br><br>Password: [redacted-synthetic-template]<br><br>Use this account to check spreads."
+      ],
+      "logs": [
+        "OUT synth-spread 200 ok",
+        "SPREAD_TEST_REPLY synth-spread"
+      ],
+      "error": null
+    },
+    {
+      "path": "review-status",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "ce1bd6cbc7810c46db8ce7ee0d0295b8e4ba480dd4b5073ec598f3c720bd926a"
+      ],
+      "bodies": [
+        "Hello Synthetic,<br><br>You'll get an update from our team on Intercom or email once the review is done, you won't need to follow up manually."
+      ],
+      "logs": [
+        "OUT synth-review 200 ok",
+        "REVIEW_STATUS_DIRECT synth-review"
+      ],
+      "error": null
+    },
+    {
+      "path": "identity-recovery",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "399b5bbbfc2a1f3a1a69838ba8a94d15db37735f8a3a4df1a54fd421bf827de3"
+      ],
+      "bodies": [
+        "I've sent this to a teammate for review. They have your account details and the chat context."
+      ],
+      "logs": [
+        "IDENTITY_RECOVERY escalate synth-identity 88442211 ",
+        "OUT synth-identity 200 ok"
+      ],
+      "error": null
+    },
+    {
+      "path": "missed-escalation-greet",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "7a6983ee5c4d334dad37b0ebe86c54d6e7d50c09c80f01e143a0dff3ad0f91af"
+      ],
+      "bodies": [
+        "Hey — I'm doing well, thanks for asking. How can I help with your FundedElite account today?"
+      ],
+      "logs": [
+        "PRESEND_MISSED_ESCALATION_ESCALATE synth-greet needs-escalate",
+        "PRESEND_MISSED_ESCALATION skip smalltalk synth-greet needs-escalate",
+        "OUT synth-greet 200 ok"
+      ],
+      "error": null
+    },
+    {
+      "path": "missed-escalation-personal",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "2045b75d9ca30b372c7e150e791ecd9b04e3902b0bdb7ed4ee0fdd0eadf055ca"
+      ],
+      "bodies": [
+        "Hello Synthetic,<br><br>Personal topics aren't something I can discuss here. How can I help with FundedElite?"
+      ],
+      "logs": [
+        "PRESEND_MISSED_ESCALATION_ESCALATE synth-personal needs-escalate",
+        "PRESEND_MISSED_ESCALATION skip personal synth-personal needs-escalate",
+        "OUT synth-personal 200 ok"
+      ],
+      "error": null
+    },
+    {
+      "path": "postgate-suppression-payout",
+      "publicComments": 1,
+      "silent": false,
+      "containsHedge": true,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [
+        "6918bd908d1904884106399c5f07dc61cda3e42aafdf4cbe0b0e7c602f2c5385"
+      ],
+      "bodies": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "logs": [
+        "POSTGATE_SUPPRESSED synth-postgate-payout candidate=INTERNAL_INFO_LEAK fallback=INTERNAL_INFO_LEAK",
+        "PAYOUT_GUARD_VISIBLE_HEDGE payout_method_amount",
+        "POSTGATE_REVALIDATE_FELLBACK synth-postgate-payout INTERNAL_INFO_LEAK",
+        "PAYOUT_GUARD_VISIBLE_HEDGE payout_method_amount",
+        "OUT synth-postgate-payout 200 ok"
+      ],
+      "error": null
+    },
+    {
+      "path": "postgate-suppression-non-payout",
+      "publicComments": 0,
+      "silent": true,
+      "containsHedge": false,
+      "containsUnsafeWeekend": false,
+      "containsTakeBack": false,
+      "containsSpreadMarker": false,
+      "bodySha256": [],
+      "bodies": [],
+      "logs": [
+        "POSTGATE_SUPPRESSED synth-postgate-leak candidate=INTERNAL_INFO_LEAK fallback=INTERNAL_INFO_LEAK"
+      ],
+      "error": null
+    }
+  ]
+}
