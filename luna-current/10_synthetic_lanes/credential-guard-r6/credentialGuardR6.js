@@ -3,14 +3,16 @@
 /**
  * Credential guard R6 — frozen staging candidate.
  *
- * Fixes the R5 review (NEEDS CHANGES / NO-GO) from the written summaries only.
- * The reviewer's case file was not read. Not wired into index.js, statePresend,
- * or the maintainer. Not a release. approved is false until a different agent
- * reviews it.
+ * Fixes the R5 review summaries and the later owner requirements:
+ * every public outbound path is checked before posting, detection is
+ * normalized token equality, and the 55188 template is a narrow exact-text
+ * exception. Not wired into index.js, statePresend, or the maintainer.
+ * approved is false until a different agent reviews it.
  *
- * The fixed client message follows the existing credentials rule: do not repeat
- * a pasted secret, tell the client to change it immediately, and escalate it as
- * a security event. It states no account, payout, or lock outcome.
+ * The fixed client message follows the existing credentials rule: do not
+ * repeat a pasted secret, tell the client to change it immediately, and
+ * escalate it as a security event. It states no account, payout, or lock
+ * outcome.
  */
 
 const STATUS = Object.freeze({
@@ -23,6 +25,15 @@ const STATUS = Object.freeze({
 
 const FIXED_MESSAGE =
   'Please change that immediately. I will not repeat it back. I am escalating this as a security event for the team.';
+
+/** Canonical 55188 spread-test template. Same bytes as index.js SPREAD_TEST_REPLY. */
+const SPREAD_TEST_REPLY =
+  'TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\n' +
+  'Platform: MetaTrader 5\n' +
+  'Server: Fundedelite-Server\n' +
+  'Account Number: 55188\n' +
+  'Password: QBG5FetfozKz7^a?J!\n\n' +
+  'Use this account to check spreads.';
 
 /** Password inside the existing 55188 spread-test template in index.js. */
 const TEMPLATE_PASSWORD = 'QBG5FetfozKz7^a?J!';
@@ -57,7 +68,14 @@ const LABEL_RE = new RegExp(
   'giu'
 );
 
+const DIAGNOSTIC_DROP = new Set([
+  'body', 'draft', 'clientText', 'clienttext', 'raw', 'password', 'secret', 'secrets',
+  'data', 'message', 'stack', 'text', 'payload', 'html', 'error', 'err',
+]);
+
 const secretsByConversation = new Map();
+const lastAskByConversation = new Map();
+const opQueue = [];
 
 function normalizeForMatch(text) {
   let s = String(text == null ? '' : text).normalize('NFKC');
@@ -106,6 +124,13 @@ function readToken(text, index) {
   return { raw, end: index + m[0].length };
 }
 
+function isShaped(value) {
+  if (/\d/.test(value)) return true;
+  if (/[A-Z]/.test(value) && /[a-z]/.test(value)) return true;
+  if (/[^\p{L}\p{N}]/u.test(value)) return true;
+  return false;
+}
+
 function tryBase64(token, minLen) {
   const t = String(token || '').trim();
   const min = minLen == null ? 12 : minLen;
@@ -124,17 +149,15 @@ function tryBase64(token, minLen) {
   return decoded;
 }
 
-function acceptValue(label, token, explicitSep) {
+function acceptValue(label, token, explicitSep, hadCopula) {
   const value = cleanToken(token);
   if (!value || value.length > 128) return null;
   const lower = value.toLowerCase();
-  if (!explicitSep && STOP.has(lower)) return null;
-  if (label.toLowerCase() === 'pass') {
-    const shaped = /\d/.test(value) || /[A-Z]/.test(value) || value.length >= 4;
-    const short = value.length >= 1 && value.length <= 3 && !STOP.has(lower);
-    if (!explicitSep && !shaped && !short) return null;
-    if (STOP.has(lower)) return null;
-  }
+  if (STOP.has(lower)) return null;
+  // A bare label plus an ordinary word ("password reset") is not a secret.
+  // A copula, a separator, or a shaped token is required.
+  if (!explicitSep && !hadCopula && !isShaped(value)) return null;
+  if (String(label || '').toLowerCase() === 'pass' && !explicitSep && !hadCopula && !isShaped(value)) return null;
   return value;
 }
 
@@ -154,6 +177,7 @@ function extractSecrets(text) {
     const label = String(match[1] || '');
     const sep = String(match[2] || '') + String(match[3] || '');
     const explicitSep = /[:=]/.test(sep);
+    const hadCopula = !!match[3];
     let cursor = match.index + match[0].length;
     let token = readToken(prepared, cursor);
     if (token && !explicitSep && STOP.has(token.raw.toLowerCase())) {
@@ -164,7 +188,7 @@ function extractSecrets(text) {
       if (match.index === LABEL_RE.lastIndex) LABEL_RE.lastIndex += 1;
       continue;
     }
-    const value = acceptValue(label, token.raw, explicitSep);
+    const value = acceptValue(label, token.raw, explicitSep, hadCopula);
     if (value && !seen.has(value)) {
       seen.add(value);
       found.push({ value, label });
@@ -187,36 +211,39 @@ function extractSecrets(text) {
   return found;
 }
 
-function escapeReg(text) {
-  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function boundedIncludes(haystack, secret) {
-  const needle = String(secret || '');
-  if (!needle) return false;
-  if (needle.length >= 4) return haystack.includes(needle);
-  const re = new RegExp('(?:^|[^\\p{L}\\p{N}])' + escapeReg(needle) + '(?:$|[^\\p{L}\\p{N}])', 'iu');
-  return re.test(haystack);
-}
-
-function containsSecret(haystack, secret) {
+function tokenMatches(token, secret) {
   const needle = normalizeForMatch(secret);
   if (!needle) return false;
-  const prepared = prepare(haystack);
-  if (boundedIncludes(prepared, needle) || boundedIncludes(prepared.toLowerCase(), needle.toLowerCase())) return true;
-  if (needle.length >= 4) {
-    const foldedHay = leetFold(prepared).toLowerCase();
-    const foldedNeedle = leetFold(needle).toLowerCase();
-    if (foldedHay.includes(foldedNeedle)) return true;
-    const b64 = Buffer.from(needle).toString('base64');
-    if (b64.length >= 8 && String(haystack).includes(b64)) return true;
+  const forms = [normalizeForMatch(token), normalizeForMatch(cleanToken(token))];
+  const needles = [needle, normalizeForMatch(cleanToken(secret))];
+  for (const form of forms) {
+    if (!form) continue;
+    for (const item of needles) {
+      if (!item) continue;
+      if (form.toLowerCase() === item.toLowerCase()) return true;
+      if (item.length >= 4 && form.length >= 4 && leetFold(form).toLowerCase() === leetFold(item).toLowerCase()) {
+        return true;
+      }
+    }
   }
-  const tokens = String(haystack).match(/[A-Za-z0-9+/]{8,}={0,2}/g) || [];
-  for (const token of tokens) {
-    const decoded = tryBase64(token, 8);
+  return false;
+}
+
+function containsSecret(haystack, secret, depth) {
+  const needle = normalizeForMatch(secret);
+  if (!needle || typeof haystack !== 'string') return false;
+  const limit = depth == null ? 2 : depth;
+  if (limit < 0) return false;
+  const prepared = prepare(haystack);
+  const parts = prepared.split(/\s+/);
+  for (const part of parts) {
+    if (!part) continue;
+    if (tokenMatches(part, needle)) return true;
+    const decoded = tryBase64(cleanToken(part), 8);
     if (!decoded) continue;
-    const decodedNorm = normalizeForMatch(decoded);
-    if (boundedIncludes(decodedNorm, needle) || boundedIncludes(decodedNorm.toLowerCase(), needle.toLowerCase())) return true;
+    const decodedNorm = normalizeForMatch(decoded).trim();
+    if (decodedNorm.toLowerCase() === needle.toLowerCase()) return true;
+    if (decoded !== haystack && containsSecret(decoded, secret, limit - 1)) return true;
   }
   return false;
 }
@@ -241,13 +268,15 @@ function rememberValues(conversationId, values) {
   if (!id) return;
   const bag = secretsByConversation.get(id) || [];
   for (const value of values) {
-    if (value && !bag.includes(value)) bag.push(value);
+    if (typeof value === 'string' && value && !bag.includes(value)) bag.push(value);
   }
   secretsByConversation.set(id, bag);
 }
 
 function rememberClientText(conversationId, text) {
-  rememberValues(conversationId, extractSecrets(text).map((hit) => hit.value));
+  const id = String(conversationId || '');
+  rememberValues(id, extractSecrets(text).map((hit) => hit.value));
+  if (id) lastAskByConversation.set(id, String(text == null ? '' : text));
 }
 
 function rememberClientParts(conversationId, parts) {
@@ -265,31 +294,106 @@ function secretsFor(conversationId) {
 
 function resetStore() {
   secretsByConversation.clear();
+  lastAskByConversation.clear();
+  opQueue.length = 0;
+}
+
+function addSecret(values, value) {
+  if (typeof value !== 'string' || !value) return;
+  if (!values.includes(value)) values.push(value);
 }
 
 function collectSecrets(input) {
   const values = [];
-  function add(value) {
-    if (value && !values.includes(value)) values.push(value);
-  }
   for (const text of clientTextsFrom(input.history)) {
-    for (const hit of extractSecrets(text)) add(hit.value);
+    for (const hit of extractSecrets(text)) addSecret(values, hit.value);
   }
   for (const text of input.clientTexts || []) {
-    for (const hit of extractSecrets(text)) add(hit.value);
+    if (typeof text !== 'string') {
+      const err = new Error('validation_error');
+      err.code = 'validation_error';
+      throw err;
+    }
+    for (const hit of extractSecrets(text)) addSecret(values, hit.value);
   }
-  for (const value of input.knownSecrets || []) add(value);
-  for (const value of secretsFor(input.conversationId)) add(value);
+  for (const value of input.knownSecrets || []) {
+    if (typeof value !== 'string') {
+      const err = new Error('validation_error');
+      err.code = 'validation_error';
+      throw err;
+    }
+    addSecret(values, value);
+  }
+  for (const value of secretsFor(input.conversationId)) addSecret(values, value);
   return values;
 }
 
+function latestClientAsk(ctx) {
+  const texts = [];
+  for (const text of clientTextsFrom(ctx.history)) texts.push(text);
+  for (const text of ctx.clientTexts || []) {
+    if (typeof text === 'string') texts.push(text);
+  }
+  if (typeof ctx.clientText === 'string') texts.push(ctx.clientText);
+  if (texts.length) return texts[texts.length - 1];
+  if (ctx.conversationId && lastAskByConversation.has(String(ctx.conversationId))) {
+    return lastAskByConversation.get(String(ctx.conversationId)) || '';
+  }
+  return '';
+}
+
+function plainFromHtml(body) {
+  return String(body)
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+function isExactSpreadTemplate(body) {
+  if (typeof body !== 'string') return false;
+  if (body === SPREAD_TEST_REPLY) return true;
+  return plainFromHtml(body) === SPREAD_TEST_REPLY;
+}
+
+function isExplicitSpreadTestRequest(text) {
+  const t = normalizeForMatch(text).toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!t) return false;
+  if (/\bspread some light\b/.test(t)) return false;
+  if (/\bproblem spread\b/.test(t)) return false;
+  if (/\brisk spread\b/.test(t)) return false;
+  if (/\b(?:payouts?|withdrawn|withdrawal|withdraw)\b/.test(t)) return false;
+  if (/\b(?:not|never|don't|dont|do not)\s+(?:please\s+)?(?:check|test|testing)\s+(?:(?:the|your|our|my)\s+)?spreads?\b/.test(t)) return false;
+  if (/\b(?:not|never|don't|dont|do not)\s+(?:a\s+|the\s+)?spread\s+(?:check|test)\b/.test(t)) return false;
+  if (/\b(?:check|test|testing)\s+(?:(?:the|your|our|my)\s+)?spreads?\b/.test(t)) return true;
+  if (/\bspread\s+(?:check|test)(?:\s+account)?\b/.test(t)) return true;
+  if (/\bspread[\s-]+test\s+account\b/.test(t)) return true;
+  if (/\bsend me the spread[\s-]+test account\b/.test(t)) return true;
+  if (/\b(?:check|test)\s+karo\s+(?:(?:the|your|our|my)\s+)?spreads?\b/.test(t)) return true;
+  if (/\bspreads?\s+(?:check|test)\s+karo\b/.test(t)) return true;
+  if (/स्प्रेड\s+(?:चेक|टेस्ट|जांच|जाँच)/.test(t)) return true;
+  if (/سپریڈ\s+(?:چیک|ٹیسٹ|جانچ)/.test(t)) return true;
+  if (/(?:تحقق|افحص|اختبر|فحص)\s+(?:ال)?سبريد/.test(t)) return true;
+  return false;
+}
+
 function flexReplace(text, secret) {
-  const chars = [...String(secret || '')];
-  if (!chars.length) return text;
-  const body = chars.map(escapeReg).join('[\\u200B-\\u200F\\uFEFF]*');
-  const pattern = chars.length >= 4 ? body : '(?:^|[^\\p{L}\\p{N}])(?:' + body + ')(?=$|[^\\p{L}\\p{N}])';
-  const re = new RegExp(pattern, 'giu');
-  return String(text).replace(re, (m) => (chars.length >= 4 ? '[secret]' : m.replace(new RegExp(body, 'iu'), '[secret]')));
+  const needle = normalizeForMatch(secret);
+  if (!needle) return String(text);
+  return String(text).replace(/\S+/g, (token) => {
+    if (tokenMatches(token, needle)) return '[secret]';
+    const decoded = tryBase64(cleanToken(normalizeForMatch(token)), 8);
+    if (!decoded) return token;
+    const decodedNorm = normalizeForMatch(decoded).trim();
+    if (decodedNorm.toLowerCase() === needle.toLowerCase()) return '[secret]';
+    if (tokenMatches(decodedNorm, needle)) return '[secret]';
+    return token;
+  });
 }
 
 function redactText(text, extraSecrets) {
@@ -299,92 +403,324 @@ function redactText(text, extraSecrets) {
   const values = extractSecrets(out).map((hit) => hit.value).concat(extraSecrets || [], [TEMPLATE_PASSWORD]);
   const seen = new Set();
   for (const value of values) {
-    if (!value || seen.has(value)) continue;
+    if (typeof value !== 'string' || !value || seen.has(value)) continue;
     seen.add(value);
     out = flexReplace(out, value);
-    if (value.length >= 4) {
-      const b64 = Buffer.from(value).toString('base64');
-      if (b64.length >= 12) out = out.split(b64).join('[secret]');
-    }
   }
   return out;
 }
 
 function redactTurnMeta(meta) {
-  const copy = Object.assign({}, meta || {});
-  const fromClient = extractSecrets(copy.clientText || '').map((hit) => hit.value);
-  if (copy.clientText) copy.clientText = redactText(copy.clientText);
-  if (copy.body) copy.body = redactText(copy.body, fromClient);
+  const source = meta || {};
+  const fromClient = extractSecrets(source.clientText || '').map((hit) => hit.value);
+  const copy = {};
+  for (const key of Object.keys(source)) {
+    const value = source[key];
+    if (typeof value !== 'string') {
+      copy[key] = value;
+      continue;
+    }
+    let next = redactText(value, fromClient);
+    const residual = fromClient.some((item) => containsSecret(next, item))
+      || extractSecrets(next).some((hit) => containsSecret(next, hit.value));
+    copy[key] = residual ? '[redacted]' : next;
+  }
   return copy;
 }
 
-function isExplicitSpreadTestRequest(text) {
-  const t = normalizeForMatch(text).toLowerCase();
-  if (!t.trim()) return false;
-  if (/\bspread some light\b/.test(t)) return false;
-  if (/\bproblem spread\b/.test(t)) return false;
-  if (/\brisk spread\b/.test(t)) return false;
-  if (/\b(?:check|test|testing)\b[\s\S]{0,48}\bspreads?\b|\bspreads?\b[\s\S]{0,48}\b(?:check|test|testing)\b|\bspread[\s-]*(?:check|test)\b/.test(t)) {
-    return true;
+function redactDiagnostic(value, depth) {
+  const level = depth == null ? 0 : depth;
+  if (level > 4) return '[redacted]';
+  if (value == null) return null;
+  if (typeof value === 'string') {
+    const next = redactText(value);
+    if (extractSecrets(value).some((hit) => containsSecret(next, hit.value))) return '[redacted]';
+    return next;
   }
-  if (/\bspreads?\b[\s\S]{0,40}\b(?:check|test)\b[\s\S]{0,24}\b(?:karo|kar\s*do|karna|karni|chahiye)\b/.test(t)) return true;
-  if (/\b(?:check|test)\b[\s\S]{0,24}\b(?:karo|kar\s*do|karna|karni|chahiye)\b[\s\S]{0,40}\bspreads?\b/.test(t)) return true;
-  if (/स्प्रेड/.test(t) && /(?:चेक|टेस्ट|जांच|जाँच|परीक्षण)/.test(t)) return true;
-  if (/سپریڈ/.test(t) && /(?:چیک|ٹیسٹ|جانچ)/.test(t)) return true;
-  if (/(?:السبريد|سبريد)/.test(t) && /(?:تحقق|افحص|اختبر|فحص|اختبار)/.test(t)) return true;
-  return false;
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (typeof value !== 'object') return '[redacted]';
+  if (Array.isArray(value)) return value.slice(0, 8).map((item) => redactDiagnostic(item, level + 1));
+  const out = {};
+  for (const key of Object.keys(value)) {
+    if (DIAGNOSTIC_DROP.has(key)) continue;
+    out[key] = redactDiagnostic(value[key], level + 1);
+  }
+  return out;
 }
 
-/**
- * Scan an outbound body against every client secret in history, plus the
- * spread-template password unless this send is an explicit spread test.
- */
-function guardSend(input) {
-  const ctx = input || {};
-  const messageType = String(ctx.messageType || 'comment');
-  const body = String(ctx.body == null ? '' : ctx.body);
-  const secrets = collectSecrets(ctx);
-  const explicit = !!ctx.explicitSpreadTest;
-  const echoed = secrets.filter((value) => containsSecret(body, value));
-  const templateHit = containsSecret(body, TEMPLATE_PASSWORD);
-  const base = {
+function baseResult() {
+  return {
     version: STATUS.candidate,
     frozen: true,
     approved: false,
     release: false,
     wired: false,
     silent: false,
-    secretsChecked: secrets.length,
   };
-  if (templateHit && !explicit) {
-    if (messageType === 'note') {
-      return Object.assign(base, {
-        action: 'redact',
-        reason: 'template_password',
-        body: redactText(body, secrets),
-      });
-    }
-    return Object.assign(base, {
-      action: 'fixed_message',
-      reason: 'template_password',
-      body: FIXED_MESSAGE,
+}
+
+function blocked(reason) {
+  return Object.assign(baseResult(), {
+    action: 'block',
+    reason: reason,
+    post: false,
+    posted: false,
+    blocked: true,
+    body: null,
+    diagnostic: { reason: reason },
+  });
+}
+
+function allowed(reason, body, secretsChecked) {
+  return Object.assign(baseResult(), {
+    action: 'allow',
+    reason: reason,
+    post: true,
+    posted: false,
+    blocked: false,
+    body: body,
+    secretsChecked: secretsChecked,
+    diagnostic: { reason: reason },
+  });
+}
+
+function sameToken(left, right) {
+  return normalizeForMatch(left).toLowerCase() === normalizeForMatch(right).toLowerCase();
+}
+
+function watchList(secrets, draftHits) {
+  const values = secrets.slice();
+  for (const value of draftHits) addSecret(values, value);
+  if (!values.some((value) => sameToken(value, TEMPLATE_PASSWORD))) values.push(TEMPLATE_PASSWORD);
+  return values;
+}
+
+function stillHas(text, secrets) {
+  return secrets.some((value) => containsSecret(text, value));
+}
+
+function decide(ctx) {
+  if (typeof ctx.body !== 'string') return blocked('non_string');
+  const body = ctx.body;
+  const messageType = String(ctx.messageType || 'comment');
+  const secrets = collectSecrets(ctx);
+  const eligible = isExplicitSpreadTestRequest(latestClientAsk(ctx));
+  const exact = isExactSpreadTemplate(body);
+  if (exact && eligible) {
+    const others = secrets.filter((value) => !sameToken(value, TEMPLATE_PASSWORD));
+    if (stillHas(body, others)) return blocked('residual_secret');
+    return allowed('spread_template', body, secrets.length);
+  }
+  if (exact && !eligible) return blocked('spread_not_eligible');
+
+  const draftHits = extractSecrets(body)
+    .map((hit) => hit.value)
+    .filter((value) => !sameToken(value, TEMPLATE_PASSWORD));
+  const watch = watchList(secrets, draftHits);
+  const echoed = secrets.some((value) => containsSecret(body, value));
+  const introduced = draftHits.some((value) => containsSecret(body, value));
+  const templateHit = containsSecret(body, TEMPLATE_PASSWORD);
+  if (!echoed && !introduced && !templateHit) return allowed('clean', body, secrets.length);
+
+  let reason = 'draft_secret';
+  if (templateHit && !echoed) reason = 'template_password';
+  else if (echoed) reason = 'history_echo';
+
+  if (messageType === 'note') {
+    const redacted = redactText(body, watch);
+    if (stillHas(redacted, watch)) return blocked('residual_secret');
+    return Object.assign(baseResult(), {
+      action: 'redact',
+      reason: reason,
+      post: true,
+      posted: false,
+      blocked: false,
+      body: redacted,
+      secretsChecked: secrets.length,
+      diagnostic: { reason: 'redact' },
     });
   }
-  if (echoed.length) {
-    if (messageType === 'note') {
-      return Object.assign(base, {
-        action: 'redact',
-        reason: 'history_echo',
-        body: redactText(body, secrets),
-      });
-    }
-    return Object.assign(base, {
-      action: 'fixed_message',
-      reason: 'history_echo',
-      body: FIXED_MESSAGE,
-    });
+
+  if (stillHas(FIXED_MESSAGE, watch)) return blocked('unsanitizable');
+  return Object.assign(baseResult(), {
+    action: 'fixed_message',
+    reason: reason,
+    post: true,
+    posted: false,
+    blocked: false,
+    body: FIXED_MESSAGE,
+    secretsChecked: secrets.length,
+    diagnostic: { reason: reason },
+  });
+}
+
+function guardSend(input) {
+  try {
+    return decide(input || {});
+  } catch (_) {
+    return blocked('validation_error');
   }
-  return Object.assign(base, { action: 'allow', reason: 'clean', body });
+}
+
+function conversationIdFromUrl(url) {
+  const match = /conversations\/([^/?#]+)/.exec(String(url || ''));
+  return match ? match[1] : '';
+}
+
+function guardOutboundWrite(url, data) {
+  try {
+    if (!data || typeof data !== 'object' || !Object.prototype.hasOwnProperty.call(data, 'body')) {
+      return { post: true, blocked: false, posted: false, data: data, reason: 'no_public_body', diagnostic: { reason: 'no_public_body' } };
+    }
+    const decision = guardSend({
+      conversationId: conversationIdFromUrl(url),
+      messageType: String(data.message_type || '') === 'note' ? 'note' : 'comment',
+      body: data.body,
+    });
+    if (!decision.post || decision.body !== data.body) {
+      const reason = decision.post ? 'unsanitizable' : decision.reason;
+      return { post: false, blocked: true, posted: false, data: null, reason: reason, diagnostic: { reason: reason } };
+    }
+    return { post: true, blocked: false, posted: false, data: data, reason: decision.reason, diagnostic: { reason: decision.reason } };
+  } catch (_) {
+    return { post: false, blocked: true, posted: false, data: null, reason: 'validation_error', diagnostic: { reason: 'validation_error' } };
+  }
+}
+
+function snapshot(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function enqueuePublicOp(input) {
+  const ctx = input || {};
+  const decision = guardSend(ctx);
+  if (!decision.post || decision.action !== 'allow' || decision.body !== ctx.body) {
+    return {
+      ok: false,
+      queued: false,
+      posted: false,
+      post: false,
+      blocked: true,
+      reason: decision.reason || 'blocked',
+      diagnostic: { reason: decision.reason || 'blocked' },
+    };
+  }
+  const rec = {
+    id: 'op-' + (opQueue.length + 1),
+    conversationId: String(ctx.conversationId || ''),
+    messageType: String(ctx.messageType || 'comment'),
+    body: decision.body,
+  };
+  opQueue.push(rec);
+  return {
+    ok: true,
+    queued: true,
+    posted: false,
+    post: false,
+    blocked: false,
+    id: rec.id,
+    reason: 'queued',
+    diagnostic: { reason: 'queued' },
+  };
+}
+
+function restoreQueuedOp(record) {
+  const src = record || {};
+  opQueue.push({
+    id: String(src.id || ('op-restored-' + (opQueue.length + 1))),
+    conversationId: String(src.conversationId || ''),
+    messageType: String(src.messageType || 'comment'),
+    body: src.body,
+  });
+  return { restored: true, posted: false, id: opQueue[opQueue.length - 1].id };
+}
+
+function inspectQueue() {
+  return opQueue.map((op) => ({
+    id: op.id,
+    bytes: typeof op.body === 'string' ? op.body.length : -1,
+  }));
+}
+
+function flushQueue(transport) {
+  const posted = [];
+  const blockedItems = [];
+  const pending = opQueue.splice(0);
+  const deliver = transport && typeof transport.record === 'function'
+    ? transport.record.bind(transport)
+    : null;
+  for (const op of pending) {
+    const decision = guardSend({
+      conversationId: op.conversationId,
+      messageType: op.messageType,
+      body: op.body,
+    });
+    if (!decision.post || decision.action !== 'allow' || decision.body !== op.body) {
+      blockedItems.push({ id: op.id, reason: decision.reason || 'blocked', posted: false });
+      continue;
+    }
+    const payload = {
+      conversationId: op.conversationId,
+      messageType: op.messageType,
+      body: decision.body,
+    };
+    if (deliver) deliver(snapshot(payload));
+    posted.push(snapshot(payload));
+  }
+  return { posted: posted, blocked: blockedItems };
+}
+
+function createRecordingTransport() {
+  const records = [];
+  function push(entry) {
+    records.push(snapshot(entry));
+    return { ok: true, posted: true };
+  }
+  return {
+    records: records,
+    postReply(conversationId, messageType, body) {
+      return push({ via: 'postReply', conversationId: conversationId, messageType: messageType, body: body });
+    },
+    postClientCommentOnce(conversationId, body, userPart, clientName) {
+      return push({
+        via: 'postClientCommentOnce',
+        conversationId: conversationId,
+        body: body,
+        userPart: userPart || null,
+        clientName: clientName || '',
+      });
+    },
+    record(payload) {
+      return push(payload);
+    },
+  };
+}
+
+function closedChokeResult() {
+  return {
+    ok: false,
+    blocked: true,
+    posted: false,
+    post: false,
+    reason: 'validation_error',
+    body: null,
+    diagnostic: { reason: 'validation_error' },
+  };
+}
+
+function chokeResult(decision) {
+  if (!decision || !decision.post) {
+    return {
+      ok: false,
+      blocked: true,
+      posted: false,
+      post: false,
+      reason: decision && decision.reason ? decision.reason : 'blocked',
+      body: null,
+      diagnostic: { reason: decision && decision.reason ? decision.reason : 'blocked' },
+    };
+  }
+  return null;
 }
 
 function createChoke(raw) {
@@ -395,22 +731,38 @@ function createChoke(raw) {
   }
   return {
     postReply(conversationId, messageType, body, guardCtx) {
-      const decision = guardSend(Object.assign({ conversationId, messageType, body }, guardCtx || {}));
+      let decision;
+      try {
+        decision = guardSend(Object.assign({ conversationId: conversationId, messageType: messageType, body: body }, guardCtx || {}));
+      } catch (_) {
+        return closedChokeResult();
+      }
+      const held = chokeResult(decision);
+      if (held) return held;
       return post(conversationId, messageType, decision.body, guardCtx);
     },
     postClientCommentOnce(conversationId, body, userPart, clientName, guardCtx) {
-      const ctx = guardCtx || {};
-      if (ctx.parts) rememberClientParts(conversationId, ctx.parts);
-      if (userPart) rememberClientParts(conversationId, [userPart]);
-      const decision = guardSend({
-        conversationId,
-        messageType: 'comment',
-        body,
-        history: ctx.history,
-        clientTexts: ctx.clientTexts,
-        explicitSpreadTest: !!ctx.explicitSpreadTest,
-      });
-      return once(conversationId, decision.body, userPart, clientName, ctx);
+      let decision;
+      try {
+        const ctx = guardCtx || {};
+        if (ctx.parts) rememberClientParts(conversationId, ctx.parts);
+        if (userPart) rememberClientParts(conversationId, [userPart]);
+        const clientTexts = Array.isArray(ctx.clientTexts) ? ctx.clientTexts.slice() : [];
+        if (userPart) clientTexts.push(String(userPart.body || userPart.text || ''));
+        decision = guardSend({
+          conversationId: conversationId,
+          messageType: 'comment',
+          body: body,
+          history: ctx.history,
+          clientTexts: clientTexts,
+          clientText: ctx.clientText,
+        });
+      } catch (_) {
+        return closedChokeResult();
+      }
+      const held = chokeResult(decision);
+      if (held) return held;
+      return once(conversationId, decision.body, userPart, clientName, guardCtx || {});
     },
   };
 }
@@ -418,6 +770,7 @@ function createChoke(raw) {
 module.exports = {
   STATUS,
   FIXED_MESSAGE,
+  SPREAD_TEST_REPLY,
   TEMPLATE_PASSWORD,
   normalizeForMatch,
   prepare,
@@ -429,7 +782,15 @@ module.exports = {
   resetStore,
   redactText,
   redactTurnMeta,
+  redactDiagnostic,
   isExplicitSpreadTestRequest,
+  isExactSpreadTemplate,
   guardSend,
+  guardOutboundWrite,
+  enqueuePublicOp,
+  restoreQueuedOp,
+  inspectQueue,
+  flushQueue,
+  createRecordingTransport,
   createChoke,
 };
