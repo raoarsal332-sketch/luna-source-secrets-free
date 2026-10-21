@@ -1,0 +1,310 @@
+diff --git a/luna-current/01_runtime/index.js b/luna-current/01_runtime/index.js
+--- a/luna-current/01_runtime/index.js	2026-10-21 18:01:48.311864840 +0000
++++ b/luna-current/01_runtime/index.js	2026-10-21 18:01:48.315864792 +0000
+@@ -26,6 +26,8 @@
+ let __maintainer = { observe: () => [], sweepAnalytics: () => [] };
+ try { __maintainer = require('./luna-maintainer').create(); } catch (__e) { console.error('[maintainer] disabled:', __e && __e.message); }
+ /* LUNA_MAINTAINER_V1:END:require */
++// STAGING PROPOSAL ONLY. Not applied. Single outbound choke for credential guard R7.
++const __credentialGuardR7 = require('../10_synthetic_lanes/credential-guard-r7/credentialGuardR7');
+ 
+ /**
+  * FRESH Luna engine - fresh-2026-09-16-botstop-owner-only-v1 (audit harden: promo SCOPE reset gate + note email + spread FP + bot-stop + FAQ fallthrough + identity strip)
+@@ -102,6 +104,12 @@
+   let opId = null;
+ 
+   if (isWrite) {
++    // Opstore: one shared guardOutboundWrite decision before writeOpStore.set and before axios.
++    const __writeDecision = __credentialGuardR7.guardOutboundWrite(url, data);
++    if (!__writeDecision.post) {
++      console.error('IC_REQ_BLOCKED', tag, __writeDecision.reason);
++      return { ok: false, blocked: true, posted: false, status: 0, data: null, reason: __writeDecision.reason };
++    }
+     opId = writeOpStore.opKey(method, url, data);
+     const prev = writeOpStore.get(opId);
+     if (writeOpStore.shouldSkipReplay(prev)) {
+@@ -145,8 +153,8 @@
+       }
+     } catch (e) {
+       // No response at all: for a write the outcome is genuinely unknown.
+-      last = { status: 0, data: null, message: e && e.message };
+-      console.error('IC_REQ_ERR', tag, url, e && e.message);
++      last = { status: 0, data: null };
++      console.error('IC_REQ_ERR', tag, 'request_error');
+       if (isWrite) { ambiguous = true; break; }
+     }
+     if (attempt < IC_MAX_RETRY) {
+@@ -157,11 +165,11 @@
+   if (ambiguous) {
+     if (opId) writeOpStore.set(opId, { status: 'unknown' });
+     console.error('IC_REQ_UNKNOWN', tag, url, 'write outcome unknown , not retried');
+-    return { ok: false, unknown: true, status: last.status || 0, data: last.data };
++    return { ok: false, unknown: true, status: last.status || 0, data: null, reason: 'unknown' };
+   }
+   if (opId) writeOpStore.set(opId, { status: 'failed' });
+-  console.error('IC_REQ_FAIL', tag, url, last.status, JSON.stringify(last.data || '').slice(0, 300));
+-  return { ok: false, status: last.status, data: last.data };
++  console.error('IC_REQ_FAIL', tag, url, last.status, 'response_withheld');
++  return { ok: false, status: last.status, data: null, reason: 'request_failed' };
+ }
+ 
+ function stripHtml(s) {
+@@ -2739,7 +2747,31 @@
+   return r.data;
+ }
+ 
+-async function postReply(conversationId, messageType, body) {
++async function postReply(conversationId, messageType, body, guardCtx) {
++  // Single choke for model answers, owner REPLY (executeOwnerActionPlan and
++  // processAuthorizedNoteCommands), fixed templates, helper retry,
++  // presend regenerate (__presendRegenerate), REPEATED_QUESTION retry,
++  // and replay through postClientCommentOnce. Deferred writes are guarded again
++  // in icRequest before writeOpStore. Fail closed: do not post when the guard blocks.
++  let __guarded;
++  try {
++    __guarded = __credentialGuardR7.guardSend({
++      conversationId: conversationId,
++      messageType: messageType,
++      body: body,
++      history: guardCtx && guardCtx.history,
++      clientTexts: guardCtx && guardCtx.clientTexts,
++      clientText: guardCtx && guardCtx.clientText,
++    });
++  } catch (__guardErr) {
++    console.error('OUTBOUND_BLOCKED', conversationId, 'validation_error');
++    return { ok: false, blocked: true, posted: false, status: 0, data: null, reason: 'validation_error' };
++  }
++  if (!__guarded.post) {
++    console.error('OUTBOUND_BLOCKED', conversationId, __guarded.reason);
++    return { ok: false, blocked: true, posted: false, status: 0, data: null, reason: __guarded.reason };
++  }
++  body = __guarded.body;
+   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
+   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
+   const finalBody = messageType === 'note' ? String(body || '') : toHtml(body);
+@@ -2839,12 +2871,12 @@
+ // serialized, not dropped.
+ const clientSendLocks = new Map();
+ 
+-async function postClientCommentOnce(conversationId, body, userPart, clientName) {
++async function postClientCommentOnce(conversationId, body, userPart, clientName, guardCtx) {
+   const lockKey = String(conversationId);
+   const prev = clientSendLocks.get(lockKey) || Promise.resolve();
+   const run = prev
+     .catch(() => {})
+-    .then(() => postClientCommentOnceInner(conversationId, body, userPart, clientName));
++    .then(() => postClientCommentOnceInner(conversationId, body, userPart, clientName, guardCtx));
+   const settled = run.then(() => {}, () => {});
+   clientSendLocks.set(lockKey, settled);
+   settled.then(() => {
+@@ -2853,13 +2885,14 @@
+   return run;
+ }
+ 
+-async function postClientCommentOnceInner(conversationId, body, userPart, clientName) {
++async function postClientCommentOnceInner(conversationId, body, userPart, clientName, guardCtx) {
+   let gate = await checkSendBoundary(conversationId, userPart, clientName);
+   if (!gate.ok) {
+     console.log('SKIP pre-send', gate.why, conversationId);
+     return null;
+   }
+   let parts = gate.parts;
++  __credentialGuardR7.rememberClientParts(conversationId, parts);
+   // Soft dedupe: never post the same public bot body twice in a row (identity asks etc.)
+   try {
+     const norm = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+@@ -2988,7 +3021,7 @@
+     return null;
+   }
+ 
+-  return postReply(conversationId, 'comment', finalBody);
++  return postReply(conversationId, 'comment', finalBody, guardCtx);
+ }
+ 
+ const AUTHORIZED_NOTE_ADMIN_IDS = new Set([ARSAL_ID, JERRY_ID]);
+@@ -3172,10 +3205,13 @@
+ }
+ 
+ async function openConversation(conversationId) {
+-  return axios.post(
++  // Payload is message_type open only. It carries no customer text.
++  // Route it through icRequest so guardOutboundWrite still runs.
++  return icRequest(
++    'post',
+     'https://api.intercom.io/conversations/' + conversationId + '/reply',
+     { message_type: 'open', type: 'admin', admin_id: ARSAL_ID },
+-    { headers: icHeaders(), timeout: IC_TIMEOUT_MS, validateStatus: () => true }
++    'OPEN'
+   );
+ }
+ 
+@@ -3222,11 +3258,12 @@
+     ],
+   });
+   const rawOut = ((ai.choices[0] && ai.choices[0].message && ai.choices[0].message.content) || '').trim();
+-  console.log('OWNER_CMD_LLM_RAW', conversationId, rawOut.slice(0, 240));
++  console.log('OWNER_CMD_LLM_RAW', conversationId, __credentialGuardR7.redactForConversation(conversationId, rawOut).slice(0, 240));
+   return parseOwnerCommandAction(rawOut);
+ }
+ 
+ async function executeOwnerActionPlan(conversationId, full, plan, plain) {
++  __credentialGuardR7.rememberClientParts(conversationId, partsOf(full));
+   const action = String((plan && plan.action) || 'NOOP').toUpperCase();
+   let body = String((plan && plan.body) || '').trim();
+   if (action === 'STOP') {
+@@ -3337,6 +3374,7 @@
+ const authNoteInflight = new Map();
+ 
+ async function processAuthorizedNoteCommands(conversationId, full) {
++  __credentialGuardR7.rememberClientParts(conversationId, partsOf(full));
+   const idKey = String(conversationId || '');
+   if (!idKey) return null;
+   if (authNoteInflight.has(idKey)) {
+@@ -3779,8 +3817,9 @@
+     /* MICHAN_TEAMMATE_HANDOFF_V1:END:finHandoffGuard */
+ 
+     // Behavior locks v2: spread test account (direct reply, no escalate)
+-    if (isSpreadCheckAsk(text)) {
+-      await postClientCommentOnce(conversationId, postProcessModelReply(SPREAD_TEST_REPLY, conversationId), latestUser, clientName);
++    if (__credentialGuardR7.isExplicitSpreadTestRequest(text)) {
++      __credentialGuardR7.rememberClientText(conversationId, text);
++      await postClientCommentOnce(conversationId, SPREAD_TEST_REPLY, latestUser, clientName);
+       console.log('SPREAD_TEST_REPLY', conversationId);
+       return res.sendStatus(200);
+     }
+@@ -4021,7 +4060,8 @@
+         parsed.body = '[[SCOPE_DECLINE]]';
+         console.log('SKIP->REPLY scope_decline', conversationId);
+       } else {
+-        console.log('SKIP model', conversationId, parsed.body);
++        __credentialGuardR7.rememberClientText(conversationId, text);
++        console.log('SKIP model', conversationId, __credentialGuardR7.redactForConversation(conversationId, parsed.body));
+         return res.sendStatus(200);
+       }
+     }
+@@ -4727,6 +4767,12 @@
+       pagination: { per_page: 50 },
+     };
+     if (startingAfter) body.pagination.starting_after = startingAfter;
++    // Search filters carry no customer text. guardOutboundWrite still runs before the post.
++    const __searchGuard = __credentialGuardR7.guardOutboundWrite('https://api.intercom.io/conversations/search', body);
++    if (!__searchGuard.post) {
++      console.error('IC_REQ_BLOCKED', 'SEARCH', __searchGuard.reason);
++      break;
++    }
+     const r = await axios.post('https://api.intercom.io/conversations/search', body, {
+       headers: icHeaders(),
+       timeout: IC_TIMEOUT_MS,
+@@ -4855,6 +4901,12 @@
+       pagination: { per_page: 50 },
+     };
+     if (startingAfter) body.pagination.starting_after = startingAfter;
++    // Search filters carry no customer text. guardOutboundWrite still runs before the post.
++    const __searchGuard = __credentialGuardR7.guardOutboundWrite('https://api.intercom.io/conversations/search', body);
++    if (!__searchGuard.post) {
++      console.error('IC_REQ_BLOCKED', 'SEARCH', __searchGuard.reason);
++      break;
++    }
+     const r = await axios.post('https://api.intercom.io/conversations/search', body, {
+       headers: icHeaders(),
+       timeout: IC_TIMEOUT_MS,
+@@ -4889,6 +4941,12 @@
+       pagination: { per_page: 50 },
+     };
+     if (startingAfter) body.pagination.starting_after = startingAfter;
++    // Search filters carry no customer text. guardOutboundWrite still runs before the post.
++    const __searchGuard = __credentialGuardR7.guardOutboundWrite('https://api.intercom.io/conversations/search', body);
++    if (!__searchGuard.post) {
++      console.error('IC_REQ_BLOCKED', 'SEARCH', __searchGuard.reason);
++      break;
++    }
+     const r = await axios.post('https://api.intercom.io/conversations/search', body, {
+       headers: icHeaders(),
+       timeout: IC_TIMEOUT_MS,
+diff --git a/luna-current/02_statePresend/statePresend.js b/luna-current/02_statePresend/statePresend.js
+--- a/luna-current/02_statePresend/statePresend.js	2026-10-21 18:01:48.311864840 +0000
++++ b/luna-current/02_statePresend/statePresend.js	2026-10-21 18:01:48.315864792 +0000
+@@ -24,6 +24,7 @@
+ const imageX = require('./structuredImageExtractor');
+ const analytics = require('./analytics');
+ const { sanitizeCredentials } = require('./credentialSanitizer');
++const __credentialGuardR7 = require('../10_synthetic_lanes/credential-guard-r7/credentialGuardR7');
+ const { createTools } = require('./tools');
+ 
+ const STATE_PRESEND_VERSION = 'fresh-2026-09-16-state-presend-v1';
+@@ -103,7 +104,8 @@
+ function noteInbound(conversationId, text, latestUser, attachments) {
+   try {
+     const e = mem(conversationId);
+-    const t = sanitizeCredentials(T.stripHtml(text));
++    __credentialGuardR7.rememberClientText(conversationId, T.stripHtml(text));
++    const t = __credentialGuardR7.redactForConversation(conversationId, T.stripHtml(text));
+     const atts = Array.isArray(attachments) ? attachments : (latestUser && Array.isArray(latestUser.attachments) ? latestUser.attachments : []);
+     const ts = latestUser && (latestUser.created_at || latestUser.ts) ? Number(latestUser.created_at || latestUser.ts) : Date.now();
+     const last = e.messages[e.messages.length - 1];
+@@ -115,11 +117,11 @@
+ 
+ /** Records a public teammate reply if the engine sees one (optional hook). */
+ function noteHuman(conversationId, text, ts) {
+-  try { push(mem(conversationId), { role: 'human', text: sanitizeCredentials(T.stripHtml(text)), ts: ts || Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
++  try { push(mem(conversationId), { role: 'human', text: __credentialGuardR7.redactForConversation(conversationId, T.stripHtml(text)), ts: ts || Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
+ }
+ 
+ function noteOutbound(conversationId, body) {
+-  try { push(mem(conversationId), { role: 'bot', text: sanitizeCredentials(T.stripHtml(body)), ts: Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
++  try { push(mem(conversationId), { role: 'bot', text: __credentialGuardR7.redactForConversation(conversationId, T.stripHtml(body)), ts: Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
+ }
+ 
+ function imagesFor(conversationId) {
+@@ -131,6 +133,7 @@
+ 
+ /** Messages for state: engine-provided history when available, else observed memory. */
+ function messagesFor(conversationId, history, latestUser) {
++  if (Array.isArray(history)) __credentialGuardR7.rememberClientParts(conversationId, history);
+   let msgs = [];
+   if (history) {
+     msgs = conversationState.normalizeMessages(history, botIdentityOpts());
+@@ -143,9 +146,14 @@
+     if (lastObs && lastObs.role === 'client' && !msgs.some((m) => m.role === 'client' && m.text === lastObs.text)) msgs.push(lastObs);
+   }
+   if (latestUser && latestUser.body) {
+-    const t = sanitizeCredentials(T.stripHtml(latestUser.body));
++    __credentialGuardR7.rememberClientText(conversationId, T.stripHtml(latestUser.body));
++    const t = __credentialGuardR7.redactForConversation(conversationId, T.stripHtml(latestUser.body));
+     if (t && !msgs.some((m) => m.role === 'client' && m.text === t)) msgs.push({ role: 'client', text: t, ts: Date.now(), attachments: latestUser.attachments || [] });
+   }
++  msgs = msgs.map((m) => {
++    if (!m || typeof m.text !== 'string') return m;
++    return Object.assign({}, m, { text: __credentialGuardR7.redactForConversation(conversationId, m.text) });
++  });
+   return msgs;
+ }
+ 
+diff --git a/luna-current/03_luna-maintainer/collector.js b/luna-current/03_luna-maintainer/collector.js
+--- a/luna-current/03_luna-maintainer/collector.js	2026-10-21 18:01:48.311864840 +0000
++++ b/luna-current/03_luna-maintainer/collector.js	2026-10-21 18:01:48.315864792 +0000
+@@ -15,6 +15,7 @@
+ const path = require('path');
+ const det = require('./detectors');
+ const { log } = require('./observability');
++const __credentialGuardR7 = require('../10_synthetic_lanes/credential-guard-r7/credentialGuardR7');
+ 
+ let sanitizeCredentials = (s) => String(s == null ? '' : s);
+ (function loadSanitizer() {
+@@ -47,14 +48,12 @@
+   function observe(gateResult, turnMeta) {
+     if (!cfg.enabled) return [];
+     try {
+-      const meta = Object.assign({ lunaRoot: cfg.lunaRoot }, turnMeta || {});
+-      if (meta.clientText) meta.clientText = sanitizeCredentials(meta.clientText);
+-      if (meta.body) meta.body = sanitizeCredentials(meta.body);
++      const meta = __credentialGuardR7.redactTurnMeta(Object.assign({ lunaRoot: cfg.lunaRoot }, turnMeta || {}));
+       const events = det.fromPresend(gateResult, meta).concat(det.fromTurn(meta, cfg));
+       if (events.length) log('observed', { conversationId: meta.conversationId, codes: events.map((e) => e.code) });
+       return record(events);
+     } catch (e) {
+-      log('observe_error', { error: String(e && e.message) });
++      log('observe_error', { error: 'observe_failed' });
+       return [];
+     }
+   }
