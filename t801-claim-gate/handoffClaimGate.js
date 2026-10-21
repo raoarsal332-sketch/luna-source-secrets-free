@@ -74,9 +74,10 @@ const FETCH_V2_NEGATED_RE = /\b(?:not|never|can['\u2019]?t|cannot|won['\u2019]?t
 //   (H) human/team noun, (V) handoff verb, (C) commitment
 //       (future, progressive, perfect, "let me"/"allow me", "going to", "right away"/"now").
 // English uses those classes in a closed grammatical frame (not a phrase list).
-// Roman Urdu, Urdu, Arabic, Hindi and French use the same three classes with each language's
-// commitment paradigm. Negation, offers, questions, you-conditionals, quotes and
-// third-party document futures are not claims.
+// Roman Urdu, Urdu, Arabic, Hindi, French, Spanish, Portuguese, Italian and German
+// use the same three classes with each language's commitment paradigm.
+// Negation, offers, questions, you-conditionals, attributed quotes and
+// third-party document futures are not claims. A reply wrapped only in quotes is.
 const S3_H_EN = '(?:teammates?|team\\s*members?|colleagues?|humans?|agents?|specialists?|support(?:\\s+(?:team|staff|agent|desk))?|(?:the|our|a|my)\\s+team|staff|person|people|someone|somebody|representative|rep|operator|advisor|manager|supervisor)';
 const S3_V_EN = '(?:get|getting|got|grab|grabbing|bring|bringing|pull|pulling|fetch|fetching|find|finding|call|calling|summon|involve|involving|connect|connecting|connected|transfer|transferring|transferred|put\\s+you\\s+through|putting\\s+you\\s+through|hand|handing|handed|pass|passing|passed|loop|looping|looped|escalat\\w*|forward\\w*|assign\\w*|route|routing|routed|refer|referring|ping|pinging|notify|notifying|ask|asking|page|paging)';
 const S3_V3_EN = '(?:join\\w*|be\\s+with\\s+you|jump\\w*\\s+in|step\\w*\\s+in|take\\s+over|taking\\s+over|contact\\w*\\s+you|reach\\w*\\s+out|be\\s+in\\s+touch|follow\\w*\\s+up|get\\s+back\\s+to\\s+you|getting\\s+back\\s+to\\s+you|look\\w*\\s+into|assist\\w*\\s+you|help\\w*\\s+you|chat\\w*\\s+with\\s+you|message\\s+you|call\\s+you|email\\s+you|on\\s+(?:the|their|his|her)\\s+way|coming)';
@@ -140,9 +141,16 @@ const T801_H_EN = [
   'somebody',
   'personnel',
   'experts?',
+  'persons?',
   'humans?',
   'agents?',
+  'crews?',
+  'handlers?',
+  'liaisons?',
+  'attendants?',
+  'staffers?',
   'reps?',
+  '(?:the|our)\\s+desk',
   '(?:the|our|my)\\s+(?:support\\s+)?team',
   'support',
   'team',
@@ -250,6 +258,10 @@ const T801_VING = '(?:' + [
   'dialing',
   'buzzing',
   'flagging',
+  'reaching\\s+out',
+  'getting\\s+back',
+  'replying',
+  'responding',
 ].join('|') + ')';
 
 const T801_COMMIT = '(?:' + [
@@ -263,7 +275,7 @@ const T801_COMMIT = '(?:' + [
   '(?:i|we)(?:\'m|\'re|\\s+am|\\s+are)\\s+(?:going\\s+to|gonna|about\\s+to)',
   '(?:i|we)(?:\'ll|\\s+will|\\s+shall)',
   '(?:i|we)(?:\'m|\'re|\\s+am|\\s+are)',
-  '(?:i|we)(?:\'ve|\\s+have)(?=\\s+(?:already\\s+|just\\s+)?(?:loop|ping|page|assign|forward|contact|ask|notif|escalat|transfer|connect|call|invit|request|bridg|rop|pull|bring|fetch|hand|pass|add|conferenc))',
+  '(?:i|we)(?:\'ve|\\s+have)(?=\\s+(?:already\\s+|just\\s+)?(?:loop|ping|page|assign|forward|contact|ask|notif|escalat|transfer|connect|call|invit|request|bridg|rop|pull|bring|fetch|hand|pass|add|conferenc|reach|repl|respond))',
 ].join('|') + ')';
 
 const T801_TVERB = '(?:' + [
@@ -280,6 +292,8 @@ const T801_TVERB = '(?:' + [
   'follow(?:ing)?\\s+up(?:\\s+with\\s+you)?',
   'get(?:ting)?\\s+back\\s+to\\s+you',
   'get(?:ting)?\\s+in\\s+touch',
+  'repl(?:y|ies|ying|ied)\\s+(?:to\\s+you|here|shortly|soon|back|now)',
+  'respond(?:s|ing|ed)?\\s+(?:to\\s+you|here|shortly|soon|now)',
   'assist(?:ing)?\\s+you',
   'help(?:ing)?\\s+you',
   'come\\s+on',
@@ -308,15 +322,40 @@ const T801_CASE_PASS_RE = new RegExp(
   '\\b(?:your|this|the)\\s+(?:chat|case|request|ticket|conversation|call)\\s+(?:will\\s+be|is\\s+being|is\\s+going\\s+to\\s+be|has\\s+been|\'ll\\s+be)\\s+(?:handed(?:\\s+over)?|transferred|escalated|passed|routed|forwarded|connected|assigned)\\s+(?:to|over\\s+to)\\s+(?:' + T801_GAP + '\\s+){0,4}(?:' + T801_H_EN + ')\\b',
   'i'
 );
+// Contact/reply verbs are a handoff only when aimed at a person or at you.
+// "get back to the steps" and "reply with the FAQ" have neither.
+const T801_CONTACT_V = '(?:reach(?:ing|ed)?\\s+out|get(?:ting)?\\s+back|repl(?:y|ying|ied|ies)|respond(?:ing|ed|s)?)';
+const T801_CONTACT_RE = new RegExp(
+  '\\b(?:' + T801_COMMIT + ')\\s+(?:' + T801_ADV + '\\s+)*(?:' + T801_CONTACT_V + ')\\b(?:\\s+' + T801_GAP + '){0,8}\\s+(?:' + T801_H_EN + ')\\b' +
+  '|\\b(?:' + T801_COMMIT + ')\\s+(?:' + T801_ADV + '\\s+)*(?:' + T801_CONTACT_V + ')\\s+to\\s+you\\b',
+  'i'
+);
+// Subjectless completed handoff: "Escalated to the desk." Imperatives ("Bring your account number") are not in this list.
+const T801_BARE_RE = new RegExp(
+  '^(?:[\\s"“«\'(]*)(?:(?:ok(?:ay)?|sure|done|alright|thanks|thank\\s+you|already|just|now)[,!.\\s-]*)*' +
+  '(?:escalated|forwarded|transferred|connected|assigned|passed|routed|referred|handed(?:\\s+off)?|looped(?:\\s+in)?|pinged|paged|notified|reached\\s+out)' +
+  '(?:\\s+(?:this|it|you|them))?' +
+  '(?:\\s+(?:your|the|this)\\s+(?:chat|case|request|ticket|issue|conversation|call|matter))?' +
+  '\\s+(?:over\\s+)?(?:to|with)\\s+(?:' + T801_GAP + '\\s+){0,4}(?:' + T801_H_EN + ')\\b',
+  'i'
+);
 
 const T801_THING_AFTER = /^(?:schedule|page|pages|faq|article|articles|roster|meeting|policy|policies|rules|hours|handbook|update|updates|documentation|docs|doc|site|website|portal|inbox|address|number|queue|channel|email|blog|post|posts|guide|center|centre|name|system|wording|copy|catalog|blog)$/i;
 
 function t801Norm(s) {
-  return String(s || '')
-    .replace(/[\u2019\u2018]/g, "'")
-    .replace(/[\u2014\u2013]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return normalizeClaimText(s);
+}
+
+// NFKC folds fullwidth letters and fullwidth apostrophes. Cf strips zero-width
+// and other format characters. Remaining apostrophe look-alikes, including
+// U+02BC, are mapped to ASCII before any regex runs.
+function normalizeClaimText(s) {
+  let t = String(s || '').replace(/\p{Cf}/gu, '').replace(/\u3000/g, ' ');
+  try { t = t.normalize('NFKC'); } catch (e) { /* keep t */ }
+  t = t.replace(/[\u064B-\u065F\u0670]/g, '');
+  t = t.replace(/[\u02B9\u02BB\u02BC\u02CA\u02CB\u02EE\u2018\u2019\u201A\u201B\u2032\u2035\u00B4\u0060\uFF07\u0374\u05F3\uA78B\uA78C]/g, "'");
+  t = t.replace(/[\u2014\u2013\u2212]/g, ' ');
+  return t.replace(/\s+/g, ' ').trim();
 }
 
 function t801HumanOk(text, match) {
@@ -325,7 +364,12 @@ function t801HumanOk(text, match) {
   const h = match[0].match(/([A-Za-z][A-Za-z-]*)\s*$/);
   const hword = h ? h[1] : '';
   const after = text.slice(end).match(/^\s+([A-Za-z]+)/);
-  if (/^(?:team|support|staff)$/i.test(hword) && after && T801_THING_AFTER.test(after[1])) return false;
+  if (/^(?:team|support|staff|desk|crew)$/i.test(hword) && after && T801_THING_AFTER.test(after[1])) return false;
+  if (/desk$/i.test(hword)) {
+    const nounAt = text.lastIndexOf(hword, end);
+    const beforeNoun = text.slice(Math.max(0, nounAt - 20), nounAt);
+    if (/\b(?:on|at|onto|upon)\s+(?:your\s+|the\s+|my\s+|our\s+)?$/i.test(beforeNoun)) return false;
+  }
   if (/person$/i.test(hword) && after && /^(?:reply|response|name|account|details)$/i.test(after[1])) return false;
   return true;
 }
@@ -389,13 +433,15 @@ function t801EnglishClause(clause) {
   if (t801Search(T801_THIRD_RE, c)) return true;
   if (t801Search(T801_THIRD_PASS_RE, c)) return true;
   if (t801Search(T801_CASE_PASS_RE, c)) return true;
+  if (t801Search(T801_CONTACT_RE, c)) return true;
+  if (t801Search(T801_BARE_RE, c)) return true;
   if (t801InherentYou(c)) return true;
   if (t801_you_passive(c)) return true;
   return false;
 }
 
 function t801English(text) {
-  const t = t801Norm(textOutsideQuotes(text));
+  const t = t801Norm(text);
   if (!t) return false;
   const parts = t.split(/,|;|\s+but\s+|\s+however\s+/i).map((x) => x.trim()).filter(Boolean);
   return (parts.length ? parts : [t]).some((p) => t801EnglishClause(p));
@@ -405,8 +451,8 @@ function t801Roman(s) {
   if (!/\b(aap|aapko|aapse|apko|apne|hoon|hun|raha|rahi|rahe|rha|rhi|rhe|karunga|karungi|karega|karegi|karenge|dunga|dungi|denge|abhi|insaan|insan|banda|bande|chahiye|mujhe|mera)\b/i.test(s)) return false;
   if (/\b(nahi|nahin|nai|nhi|mat|sakta|sakti|sakte|skta|agar|chahein|chahen|chahte|chahti|kya|kia)\b/i.test(s)) return false;
   if (/\?\s*$/.test(s)) return false;
-  const H = /\b(team(?:mate)?s?|members?|agents?|insaan|insan|banda|bande|support|staff|kisi|koi|numainda|representatives?|colleagues?|humans?|operators?|supervisors?)\b/i;
-  const V = /\b(connect|transfer|forward|escalate|bula\w*|jor\w*|jod\w*|mila\w*|milwa\w*|milau\w*|rabta|raabta|refer\w*|assign\w*|join\w*|contact\w*|handoff)\w*/i;
+  const H = /\b(team(?:mate)?s?|members?|agents?|insaan|insan|banda|bande|support|staff|kisi|koi|numainda|representatives?|colleagues?|humans?|operators?|supervisors?|specialists?|crews?|desks?)\b/i;
+  const V = /\b(connect|transfer|forward|escalate|bula\w*|jor\w*|jod\w*|mila\w*|milwa\w*|milau\w*|rabta|raabta|refer\w*|assign\w*|join\w*|contact\w*|handoff|repl(?:y|ies|ied|ying))\w*/i;
   const C = /\b(raha|rahi|rahe|rha|rhi|rhe|hoon|hun|karunga|karungi|karenge|karega|karegi|dunga|dungi|denge|diya|dia|abhi)\b|\b\w+(?:unga|ungi|enge|ega|egi)\b/i;
   return H.test(s) && V.test(s) && C.test(s);
 }
@@ -417,28 +463,37 @@ function t801Hindi(s) {
   if (/\?\s*$/.test(s)) return false;
   const H = /टीम|एजेंट|एजेन्ट|सदस्य|मेंबर|सपोर्ट|इंसान|व्यक्ति|प्रतिनिधि|स्टाफ|सहयोगी|ऑपरेटर|मानव|हेल्पडेस्क|आदमी/;
   const V = /जोड़|जोड़|कनेक्ट|ट्रांसफर|ट्रान्सफर|बुला|संपर्क|फॉरवर्ड|फारवर्ड|मिला|मिलवा|बात|शामिल|रेफर/;
-  const C = /रहा|रही|रहे|दूंगा|दूँगा|दूंगी|देंगे|करूंगा|करूँगा|करेगा|करेगी|करेंगे|होगा|होगी|होंगे|दिया|अभी|दूँ/;
+  const C = /रहा|रही|रहे|दूंगा|दूँगा|दूंगी|देंगे|करूंगा|करूँगा|करेगा|करेगी|करेंगे|होगा|होगी|होंगे|दिया|अभी|दूँ|गया|गई|गए|चुका|चुकी|चुके/;
+  // मिलेगा is "will meet you", not "a support page will be available".
+  if (/मिलेगा|मिलेगी|मिलेंगे|मिलूँगा|मिलूंगा/.test(s) &&
+      /आपसे|तुमसे|उनसे|सदस्य|मेंबर|एजेंट|एजेन्ट|इंसान|व्यक्ति|आदमी|हेल्पडेस्क|स्टाफ|सहयोगी|ऑपरेटर|मानव|प्रतिनिधि/.test(s) &&
+      !(/स्टाफ\s*(?:पेज|पृष्ठ|लेख|सूची)|सपोर्ट\s*(?:पेज|लेख|साइट)|टीम\s*(?:पेज|मीटिंग|सूची)/.test(s) && !/आपसे|तुमसे|उनसे|सदस्य|मेंबर|एजेंट|इंसान|व्यक्ति|आदमी|हेल्पडेस्क/.test(s))) return true;
   return H.test(s) && V.test(s) && C.test(s);
 }
 
 function t801Urdu(s) {
-  if (/نہیں|نہيں|سکتا|سکتی|اگر|کیا/.test(s)) return false;
+  if (/نہیں|نہيں|سکتا|سکتی|اگر/.test(s)) return false;
+  // کیا is the question word, except inside the passive کیا گیا.
+  if (/کیا/.test(s) && !/کیا\s*گ/.test(s)) return false;
   if (/\?\s*$/.test(s)) return false;
   const tok = (stem) => new RegExp('(?<![\\u0600-\\u06FF])' + stem);
   const H = ['ٹیم', 'ایجنٹ', 'نمائند', 'انسان', 'سپورٹ', 'عملہ', 'ممبر', 'رکن', 'شخص', 'ساتھی', 'اسٹاف', 'بند'];
   const V = ['جوڑ', 'کنیکٹ', 'ٹرانسفر', 'بلا', 'رابط', 'فارورڈ', 'ملا', 'منتقل'];
   const hasH = H.some((x) => tok(x).test(s));
   const hasV = V.some((x) => tok(x).test(s));
-  const hasC = /رہا|رہی|رہے|دیا|ابھی|ہوں|دونگا|کروں/.test(s) || /(?:گا|گی|گے)(?![\u0600-\u06FF])/.test(s);
+  const hasC = /رہا|رہی|رہے|دیا|ابھی|ہوں|دونگا|کروں|گیا|گئی|گئے|چکا|چکی/.test(s) || /(?:گا|گی|گے)(?![\u0600-\u06FF])/.test(s);
+  if (/ملے\s*گا|ملے\s*گی|ملیں\s*گے/.test(s) && /آپ\s*سے|رکن|ممبر|ایجنٹ|انسان|شخص|اسٹاف|عملہ|ساتھی|نمائند/.test(s)) return true;
   return hasH && hasV && hasC;
 }
 
 function t801Arabic(s) {
   if (/لا\s*يمكن|لا\s*أستطيع|لا\s*استطيع|لن|لم\s|ليس|هل|إذا|اذا/.test(s)) return false;
   if (/\?\s*$/.test(s)) return false;
-  const H = /فريق|وكيل|موظف|زميل|الدعم|شخص|أحد|ممثل|بشري|مسؤول|العملاء/;
-  const V = /تحويل|إيصال|ايصال|أوصلك|اوصلك|توصيل|تواصل|يتواصل|سيتواصل|ينضم|سينضم|انضم|إحالة|احالة|أحيلك|احيلك|نحيلك|سأحول|سنحول|أحولك|احولك|ربط/;
+  const H = /فريق|وكيل|موظف|زميل|الدعم|شخص|أحد|ممثل|بشري|مسؤول|العملاء|مختص/;
+  const V = /تحويل|إيصال|ايصال|أوصلك|اوصلك|توصيل|تواصل|يتواصل|سيتواصل|ينضم|سينضم|انضم|إحالة|احالة|أحيلك|احيلك|نحيلك|سأحول|سنحول|أحولك|احولك|ربط|تصعيد/;
   const C = /سوف|جاري|يجري|الآن|سيتم|قمت|(?<![\u0600-\u06FF])تم(?![\u0600-\u06FF])|(?<![\u0600-\u06FF])س[أنيت]/;
+  // "قمت بتصعيد" is a completed escalation even when the human noun is only implied.
+  if (/تصعيد/.test(s) && /قمت|أقوم|اقوم|سأقوم|سنقوم|سوف|سيتم|(?<![\u0600-\u06FF])تم(?![\u0600-\u06FF])/.test(s)) return true;
   return H.test(s) && V.test(s) && C.test(s);
 }
 
@@ -454,14 +509,73 @@ function t801French(s) {
   const B = "(?<![A-Za-z0-9_\\u00C0-\\u017F])";
   const E = "(?![A-Za-z0-9_\\u00C0-\\u017F])";
   const H = new RegExp(B + "(?:conseill(?:er|ère|ere)s?|agents?|[eé]quipes?|equipes?|coll[eè]gues?|quelqu['’]un|humains?|membres?|op[eé]rateurs?|sp[eé]cialistes?|service\\s+client|assistances?|responsables?|interlocuteurs?|interlocutrices?|charg[eé]s?|support)" + E, "i");
-  const V = new RegExp(B + "(?:transf[eèé]r\\w*|transfer\\w*|mets?\\s+en\\s+relation|mettre\\s+en\\s+relation|mettons\\s+en\\s+relation|connect\\w*|contact\\w*|recontact\\w*|rejoindre|rejoint\\w*|passe(?:r|z)?\\s+la\\s+main|passe(?:r|z)?\\s+[aà]|redirig\\w*|escalad\\w*|transmet\\w*|prend(?:re|s|ra)?\\s+le\\s+relais|bascul\\w*)" + E, "i");
-  const C = /\b(je\s+vais|nous\s+allons|on\s+va|vais|allons|je\s+vous|nous\s+vous|vous\s+serez|vous\s+allez|en\s+train|laissez-moi|laisse-moi|permettez-moi)\b|\b(je|nous|on)\s+(?:vous\s+)?(?:transf|met|passe|contact|bascul|redirig|escalad)/i;
+  const splitRel = "(?:mets?|mettre|mettons|mettrai|mettra|mettras|mettrons|mettrez|mettront)[^.]{0,70}?en\\s+relation";
+  const V = new RegExp(B + "(?:transf[eèé]r\\w*|transfer\\w*|" + splitRel + "|connect\\w*|contact\\w*|recontact\\w*|rejoindre|rejoint\\w*|passe(?:r|z)?\\s+la\\s+main|passe(?:r|z)?\\s+[aà]|redirig\\w*|escalad\\w*|transmet\\w*|prend(?:re|s|ra)?\\s+le\\s+relais|bascul\\w*|r[eé]pond\\w*)" + E, "i");
+  const C = /\b(je\s+vais|nous\s+allons|on\s+va|vais|allons|je\s+vous|nous\s+vous|vous\s+serez|vous\s+allez|en\s+train|laissez-moi|laisse-moi|permettez-moi)\b|\b(je|nous|on)\s+(?:vous\s+)?(?:transf|met|passe|contact|bascul|redirig|escalad|r[eé]pond)/i;
   const C3 = /\bva(?:is|ont)?\s+(?:vous\s+)?(?:transf|prendre|rejoindre|contact|mettre|passer|bascul|redirig)/i;
-  return H.test(s) && V.test(s) && (C.test(s) || C3.test(s));
+  const Cfut = new RegExp(B + "(?:transf[eèé]r|transfer|contact|recontact|r[eé]pond|repond|escalad|rejoind|mettr|bascul|transmet|redirig)\\w*(?:rai|ras|ra|rons|rez|ront)" + E, "i");
+  return H.test(s) && V.test(s) && (C.test(s) || C3.test(s) || Cfut.test(s));
+}
+
+function t801Fold(s) {
+  return String(s || '').normalize('NFD').replace(/\p{M}/gu, '');
+}
+
+function t801Es(raw) {
+  const s = t801Fold(raw);
+  if (!/\b(?:voy a|vamos a|va a|estoy|estamos|usted|equipo|agente|companer\w*|colega|deriv\w*|soporte|asesor\w*|especialista)\b/i.test(s)) return false;
+  if (/\b(?:no\s+(?:puedo|podemos|voy|vamos|he|hemos)|sin que|si\s+(?:quieres|quiere|desea|usted|necesitas))\b/i.test(s)) return false;
+  if (/[?]/.test(s)) return false;
+  if (/\b(?:puedo|podemos|podria|podriamos|quieres|quiere|gustaria)\b/i.test(s) && !/\b(?:voy a|vamos a|he |hemos |estoy|estamos)\b/i.test(s)) return false;
+  if (/\b(?:actualiz\w*|public\w*|revis\w*)\b/i.test(s)) return false;
+  const H = /\b(?:equipos?|agentes?|companeros?|colegas?|especialistas?|humanos?|personas?|soporte|asesores?|representantes?|miembros?|operadores?)\b/i;
+  const V = /\b(?:transfer\w*|conect\w*|escal\w*|deriv\w*|contact\w*|respond\w*|pasar(?:e|a|emos|an)|paso|pondr\w+\s+en contacto|poner\w*\s+en contacto|pongo en contacto)\b/i;
+  const C = /\b(?:voy a|vamos a|va a|estoy|estamos|ahora|ya)\b|\b(?:he|hemos)\s+\w+|\b(?:contact|transfer|escal|deriv|respond|conect|pas)\w*(?:re|ra|remos|ran)\b/i;
+  return H.test(s) && V.test(s) && C.test(s);
+}
+
+function t801Pt(raw) {
+  const s = t801Fold(raw);
+  if (!/\b(?:vou|vamos|vai|voce|equipe|encaminh\w*|nao)\b/i.test(s)) return false;
+  if (/\b(?:nao\s+(?:posso|podemos|vou|vamos)|se\s+(?:voce|quiser|precisar))\b/i.test(s)) return false;
+  if (/\?\s*$/.test(s)) return false;
+  if (/\b(?:posso|podemos|poderia|quer|gostaria)\b/i.test(s) && !/\b(?:vou|vamos|vai|estou|estamos|ja)\b/i.test(s)) return false;
+  if (/\b(?:atualiz\w*|public\w*|revis\w*)\b/i.test(s)) return false;
+  const H = /\b(?:equipes?|agentes?|colegas?|especialistas?|humanos?|pessoas?|suporte|atendentes?|representantes?|membros?|operadores?)\b/i;
+  const V = /\b(?:transfer\w*|encaminh\w*|conect\w*|escal\w*|contact\w*|contat\w*|respond\w*|passar|passo)\b/i;
+  const C = /\b(?:vou|vamos|vai|estou|estamos|agora|ja)\b|\b(?:encaminh|transfer|conect|escal|contact|contat|respond|pass)\w*(?:rei|ra|remos|rao|ei)\b/i;
+  return H.test(s) && V.test(s) && C.test(s);
+}
+
+function t801It(raw) {
+  const s = t801Fold(raw);
+  if (!/\b(?:collega|colleghi|inoltr\w*|trasfer\w*|adesso|sto per|ti contatt\w*|ti trasfer\w*|operatore|specialista)\b/i.test(s)) return false;
+  if (/\b(?:non\s+(?:posso|possiamo|ho|ti|trasfer|inoltr|collego)|se\s+(?:vuoi|vuole|desidera|preferisci))\b/i.test(s)) return false;
+  if (/\?\s*$/.test(s)) return false;
+  if (/\b(?:posso|possiamo|potrei|vuoi|vorrei)\b/i.test(s) && !/\b(?:sto|vado|ho\s+\w+|adesso)\b/i.test(s)) return false;
+  if (/\b(?:aggiorn\w*|pubblich\w*)\b/i.test(s)) return false;
+  const H = /\b(?:team|agentes?|colleg(?:a|hi|he)|specialist[ai]|uman[oi]|person[ae]|supporto|operator[ei]|membri|membro|consulent[ei])\b/i;
+  const V = /\b(?:trasfer\w*|inoltr\w*|colleg(?:are|ato|ati|ando|o|hiamo)|pass(?:o|are|ato|iamo)|escal\w*|contatt\w*|metter\w*\s+in contatto|in contatto)\b/i;
+  const C = /\b(?:sto\s+|vado a|ti\s+|adesso|ora|ho\s+\w+)\b|\b(?:trasfer|inoltr|colleg|contatt|pass|escal)\w*(?:ro|ra|remo|rete)\b/i;
+  return H.test(s) && V.test(s) && C.test(s);
+}
+
+function t801De(raw) {
+  const s = t801Fold(raw);
+  if (!/\b(?:werde|werden|weiterleit\w*|mitarbeiter\w*|kolleg\w*|verbinden|durchstell\w*|eskaliere\w*)\b/i.test(s)) return false;
+  if (/\bnicht\s+(?:weiter|eskal|verbind|kontakt|an\s+)|\bkein(?:e|en|em)?\s+(?:kolleg|mitarbeiter|menschen|agent)/i.test(s)) return false;
+  if (/\b(?:wenn|falls)\b/i.test(s)) return false;
+  if (/\?\s*$/.test(s)) return false;
+  if (/\b(?:kann|konnte|mochte)\b/i.test(s) && !/\bwerde\b/i.test(s)) return false;
+  if (/\b(?:aktualis\w*|veroffentlich\w*|uberarbeit\w*)\b/i.test(s)) return false;
+  const H = /\b(?:teams?|kolleg(?:e|in|en|innen)?|mitarbeiter(?:in|n)?|menschen|agenten?|spezialist(?:en|in)?|support|berater(?:in|n)?|sachbearbeiter(?:in|n)?)\b/i;
+  const V = /\b(?:weiterleit\w*|eskaliere\w*|verbind\w*|durchstell\w*|ubergeb\w*|kontaktiere\w*|melde\w*)\b/i;
+  const C = /\b(?:werde|werden|wird|gerade|jetzt|habe|haben|sofort)\b/i;
+  return H.test(s) && V.test(s) && C.test(s);
 }
 
 function t801Multilingual(text) {
-  const s = t801Norm(textOutsideQuotes(text));
+  const s = t801Norm(text);
   if (!s) return false;
   if (/[\u0900-\u097F]/.test(s)) return t801Hindi(s);
   if (/[\u0600-\u06FF]/.test(s)) {
@@ -470,11 +584,12 @@ function t801Multilingual(text) {
   }
   if (t801French(s)) return true;
   if (t801Roman(s)) return true;
+  if (t801Es(s) || t801Pt(s) || t801It(s) || t801De(s)) return true;
   return false;
 }
 
 function isPureDocumentFuture(s) {
-  const re = /\b(?:our|the|their|my|support|specialists?|agents?|staff|they|we|team)\b[^.!?]{0,48}?\b(?:will|shall|going\s+to|'ll)\s+(?:now\s+|soon\s+|just\s+)?(?:be\s+)?(?:updat\w*|revis\w*|refresh\w*|rewrit\w*|publish\w*|redesign\w*|chang\w*|edit\w*|improv\w*|launch\w*|releas\w*|review\w*|check\w*|verif\w*|confirm\w*|look\s+at)\b([^.!?]{0,80})/i;
+  const re = /\b(?:our|the|their|my|support|specialists?|agents?|staff|they|we|team)\b[^.!?]{0,48}?\b(?:will|shall|going\s+to|'ll)\s+(?:now\s+|soon\s+|just\s+)?(?:be\s+)?(?:updat\w*|revis\w*|refresh\w*|rewrit\w*|publish\w*|redesign\w*|chang\w*|edit\w*|improv\w*|launch\w*|releas\w*|review\w*|check\w*|verif\w*|confirm\w*|look\s+at|repl\w*|respond\w*)\b([^.!?]{0,80})/i;
   const m = String(s || '').match(re);
   if (!m) return false;
   const obj = m[1] || '';
@@ -503,7 +618,8 @@ function isNonHandoffShape(s) {
 
 // "support article", "team schedule", "support number" — the noun is a thing, not a person being fetched.
 function institutionalThingOnly(s) {
-  if (!/\b(?:support|team|staff)\s+(?:number|article|articles|page|pages|schedule|hours|portal|site|website|email|address|center|centre|docs|documentation|faq|guide|policy|policies|directory|handbook|inbox|queue|channel|roster|meeting|name|id)\b/i.test(String(s || ''))) return false;
+  if (!/\b(?:support|team|staff)\s+(?:number|article|articles|page|pages|schedule|hours|portal|site|website|email|address|center|centre|docs|documentation|faq|guide|policy|policies|directory|handbook|inbox|queue|channel|roster|meeting|name|id)\b/i.test(String(s || '')) &&
+      !/\b(?:help|service|support)\s+desk\s+(?:page|pages|hours|schedule|number|article|articles|site|portal|email|guide)\b/i.test(String(s || ''))) return false;
   if (commitmentHandoff(s)) return false;
   return true;
 }
@@ -525,7 +641,7 @@ function commitmentHandoff(sentence) {
 }
 
 function structuralClaimV3(sentence) {
-  const s = String(sentence || '');
+  const s = claimView(normalizeClaimText(sentence));
   if (!s.trim()) return false;
   if (isNonHandoffShape(s) || isYouConditional(s) || institutionalThingOnly(s)) return false;
   if (structuralClaimV3Legacy(s)) return true;
@@ -703,8 +819,41 @@ function isReportedSpeech(sentence) {
   return (
     /\b(?:said|told|mentioned|wrote|stated|claimed|says|writes|states|notes|claims|asks|asked)\s+(?:that\s+)?(?:the\s+)?(?:a\s+|an\s+)?(?:support\s+)?(?:agent|teammate|team\s+member|specialist|team|human|colleague|person)\b/i.test(s) ||
     /\b(?:customer|client)\s+said\b/i.test(s) ||
-    /\b(?:faq|article|guide|docs|documentation|policy|help\s*center)\s+(?:says|states|notes|claims|mentions)\b/i.test(s)
+    /\b(?:faq|article|guide|docs|documentation|policy|help\s*center)\s+(?:says|states|notes|claims|mentions)\b/i.test(s) ||
+    /\b(?:guide|faq|article|art[ií]culo|articolo|artikel|client|customer|cliente|kunde|docs|documentation|guia|guida)\b[^.!?]{0,48}\b(?:dit|disent|a\s+dit|dijo|ha\s+dicho|dice|disse|ha\s+detto|sagte|schrieb|sagt|diz|कहा|کہا|قال)\b/i.test(sentence) ||
+    /\b(?:dit|dijo|disse|sagte|कहा|کہا|قال)\s+(?:que|che|dass|that|कि)\b/i.test(textOutsideQuotes(sentence))
   );
+}
+
+function isEntirelyQuoted(s) {
+  const t = String(s || '').trim();
+  return /^"[^"]+"[.!?]*$/.test(t) || /^“[^”]+”[.!?]*$/.test(t) || /^«[^»]+»[.!?]*$/.test(t);
+}
+
+function unwrapQuoted(s) {
+  const t = String(s || '').trim().replace(/[.!?]+$/, '');
+  const m = t.match(/^"([\s\S]*)"$/) || t.match(/^“([\s\S]*)”$/) || t.match(/^«([\s\S]*)»$/);
+  return m ? m[1].trim() : String(s || '');
+}
+
+// A quote is someone else's words only when the text outside it reports or attributes it.
+// A reply that is itself the quote is still Luna's claim.
+function quoteIsAttributed(s) {
+  if (isEntirelyQuoted(s) || !/["“«]/.test(s)) return false;
+  const outside = textOutsideQuotes(s);
+  if (/\b(?:said|wrote|written|told|mentioned|stated|claimed|says|writes|asked|asking|noted|notes|claims|according\s+to|dit|dijo|disse|sagte|schrieb)\b/i.test(outside)) return true;
+  if (/\b(?:is|was|were)\s+(?:only\b|an?\s+(?:example|sample|illustration|quote|quotation)|not\s+a\s+promise)\b/i.test(outside)) return true;
+  if (/\b(?:customer|client|user|guide|faq|article|he|she|they)\b/i.test(outside) &&
+      /\b(?:said|wrote|says|writes|asked|dit|dijo|disse|sagte)\b/i.test(s)) return true;
+  return false;
+}
+
+function claimView(s) {
+  const t = String(s || '').trim();
+  if (!t) return t;
+  if (isEntirelyQuoted(t)) return unwrapQuoted(t);
+  if (quoteIsAttributed(t)) return textOutsideQuotes(t);
+  return t;
 }
 
 // Completed first-person / past handoffs. Not subject to question or conditional exemptions.
@@ -760,7 +909,7 @@ function matchesNewFuture(sentence) {
 }
 
 function sentenceIsHandoffClaim(sentence) {
-  const s = String(sentence || '').trim();
+  const s = claimView(normalizeClaimText(sentence));
   if (!s) return false;
   // Third-party document work and process descriptions are not handoff promises.
   if (isNonHandoffShape(s) || institutionalThingOnly(s)) return false;
@@ -769,7 +918,7 @@ function sentenceIsHandoffClaim(sentence) {
   if (alwaysClaim(s)) return true;
   // Exemptions apply only to the new future-tense third-person and passive patterns.
   if (newFutureExempt(s)) return false;
-  if (matchesNewFuture(textOutsideQuotes(s))) return true;
+  if (matchesNewFuture(s)) return true;
   return false;
 }
 
@@ -783,8 +932,8 @@ function withoutFalseHandoffDenial(text, teammateOwns) {
 }
 
 function hasHandoffClaim(text) {
-  const raw = String(text || '');
-  if (!raw.trim()) return false;
+  const raw = normalizeClaimText(text);
+  if (!raw) return false;
   if (sentenceIsHandoffClaim(raw)) return true;
   return raw.split(/\n|(?<=[.!?])\s+/).some((part) => sentenceIsHandoffClaim(part));
 }
