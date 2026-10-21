@@ -32,23 +32,45 @@ const ASK_ITEM_RE = {
 // Sent instead of the generic checking-line when the client's own last message gives no
 // question or topic to work with at all (garbled/ambiguous input). Short, neutral, one ask.
 const CLARIFY_REPLY = 'Sorry, I want to make sure I get this right - could you tell me a bit more about what you mean?';
+const HEDGE_REPLY = "I can't confirm that figure from the approved details, so I won't guess a number.";
 
-/**
- * MISSED_QUESTION / WRONG_TOPIC reaching here means regeneration (if any ran) still
- * could not produce a compliant draft. Rather than always shipping the generic
- * "checking this now" line, tell clarify from escalate:
- *  - the client's last message has no extractable question/topic at all -> we do not
- *    understand it -> ask one short clarification (once; a repeat means escalate).
- *  - otherwise we understood the ask but cannot answer/comply -> hand off to a human via
- *    the engine's existing escalate path (same as MISSED_ESCALATION, reused, not duplicated).
- * Returns null for codes this distinction does not apply to (e.g. REPEATED_IMAGE_ASK,
- * which already has its own dedicated fix/hold handling above and below).
- */
+function lastClientText(opts) {
+  const state = opts && opts.ctx && opts.ctx.state;
+  return (state && state.last_client_message) || '';
+}
+
+function botOwnsConversation(opts) {
+  const ctx = (opts && opts.ctx) || {};
+  const id = ctx.assigneeId != null ? String(ctx.assigneeId) : '';
+  if (!id || id === '0') return true;
+  const bots = Array.isArray(ctx.botIds) ? ctx.botIds.map(String) : [];
+  return bots.indexOf(id) !== -1;
+}
+
+function isStatusPingOrFaq(text) {
+  let ero = null;
+  try {
+    ero = require('../01_runtime/escalateRelatedOnly');
+  } catch (_) {
+    ero = null;
+  }
+  if (!ero) return false;
+  if (typeof ero.isStatusPing === 'function' && ero.isStatusPing(text)) return true;
+  if (typeof ero.isClearKbFaqAsk === 'function' && ero.isClearKbFaqAsk(text)) return true;
+  return false;
+}
+
 function decideFallbackIntent(codes, opts) {
   // A policy value contradicting the approved evidence is understood but unanswerable by the
   // bot: it must go to a teammate, never to the generic checking line and never as the wrong
-  // figure. Handled before the clarify/escalate split because the ask itself was understood.
-  if (codes.has(presend.HARD.UNSUPPORTED_NUMBER) || codes.has(presend.HARD.FORBIDDEN_DIAGNOSTIC_ACTION) || codes.has(presend.HARD.UNSUPPORTED_PROMISE)) return 'escalate';
+  // figure. A bot-owned status ping or FAQ is the exception: regenerate already ran, and the
+  // fallback hedges instead of opening a handoff.
+  if (codes.has(presend.HARD.UNSUPPORTED_NUMBER) || codes.has(presend.HARD.FORBIDDEN_DIAGNOSTIC_ACTION) || codes.has(presend.HARD.UNSUPPORTED_PROMISE)) {
+    if (codes.has(presend.HARD.UNSUPPORTED_NUMBER) && botOwnsConversation(opts) && isStatusPingOrFaq(lastClientText(opts))) {
+      return 'hedge';
+    }
+    return 'escalate';
+  }
   if (!codes.has(presend.HARD.MISSED_QUESTION) && !codes.has(presend.HARD.WRONG_TOPIC)) return null;
   const state = opts.ctx && opts.ctx.state;
   const lastClient = (state && state.last_client_message) || '';
@@ -134,6 +156,7 @@ function safeFallback(draft, result, opts) {
   // clarify or an escalate is possible instead (Arsal requirement - see CLAUDE.md task notes).
   const intent = decideFallbackIntent(codes, opts);
   if (intent === 'clarify') return { body: CLARIFY_REPLY, send: true, reason: 'clarify-reply' };
+  if (intent === 'hedge') return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
   if (intent === 'escalate') return holdOrAccountAnswer('needs-escalate', body, opts);
 
   // Unfixable: use the engine's safe fallback message if given (and not itself a
@@ -212,4 +235,4 @@ async function runWithRegeneration(p) {
   }
 }
 
-module.exports = { runWithRegeneration, safeFallback, stripSentences, decideFallbackIntent, CLARIFY_REPLY, inflight, recentKeys };
+module.exports = { runWithRegeneration, safeFallback, stripSentences, decideFallbackIntent, CLARIFY_REPLY, HEDGE_REPLY, inflight, recentKeys };

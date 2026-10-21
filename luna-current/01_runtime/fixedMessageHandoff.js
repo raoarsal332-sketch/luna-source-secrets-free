@@ -21,6 +21,13 @@
 const softEdges = require('./softEdges');
 const teammateHandoffGates = require('./teammateHandoffGates');
 
+let assistantIdentityGuard = null;
+try {
+  assistantIdentityGuard = require('./assistantIdentityGuard');
+} catch (_) {
+  assistantIdentityGuard = null;
+}
+
 let credentialSanitizer = null;
 try {
   credentialSanitizer = require('../02_statePresend/credentialSanitizer');
@@ -48,7 +55,7 @@ const ARABIC_ONLY = /[\u0629\u0649\u0643]/g;
 const LATIN_MARKERS = Object.freeze({
   hi: ['kripya', 'kripaya', 'namaste', 'dhanyavaad', 'dhanyavad', 'aapko'],
   ur: ['assalam', 'assalamu', 'adaab', 'shukriya', 'meherbani', 'janab'],
-  it: ['ciao', 'buongiorno', 'salve', 'grazie', 'vorrei', 'perche'],
+  it: ['ciao', 'buongiorno', 'salve', 'grazie', 'vorrei', 'perche', 'voglio', 'parlare', 'operatore', 'assistenza', 'umano', 'umana', 'conto', 'numero', 'qual', 'mio', 'sono', 'della'],
   en: ['the', 'please', 'what', 'how', 'my', 'your', 'hello', 'help'],
 });
 
@@ -80,10 +87,21 @@ function stripHtml(s) {
 function redactCredentials(text) {
   // The only label list is the shared sanitizer. It runs on the original text.
   const original = String(text == null ? '' : text);
+  if (credentialSanitizer && typeof credentialSanitizer.isExactAllowedTemplate === 'function') {
+    if (credentialSanitizer.isExactAllowedTemplate(original)) return original;
+  }
   if (credentialSanitizer && typeof credentialSanitizer.sanitizeCredentials === 'function') {
     return credentialSanitizer.sanitizeCredentials(original);
   }
   return original;
+}
+
+function isExactAllowedTemplate(text) {
+  return !!(
+    credentialSanitizer &&
+    typeof credentialSanitizer.isExactAllowedTemplate === 'function' &&
+    credentialSanitizer.isExactAllowedTemplate(text)
+  );
 }
 
 function prepareNoteForEnglishPrompt(text) {
@@ -178,6 +196,14 @@ function grammarHit(text, lang) {
   return { hit: (roles > 0 && acts > 0) || shortRole, roles, acts };
 }
 
+function isAssistantIdentityQuestion(text) {
+  return !!(
+    assistantIdentityGuard &&
+    typeof assistantIdentityGuard.isDirectIdentityQuestion === 'function' &&
+    assistantIdentityGuard.isDirectIdentityQuestion(text)
+  );
+}
+
 function isStructuralHandoffAsk(text, lang) {
   const detected = lang || detectLanguage(text);
   if (detected === 'ar' || detected === 'ur' || detected === 'hi' || detected === 'hinglish') {
@@ -207,7 +233,18 @@ function stripHandoffTokens(text, lang) {
     .trim();
 }
 
+function isPureLiveAgentAsk(text) {
+  if (isAccountNumberQuestion(text) || isAssistantIdentityQuestion(text)) return false;
+  const lang = detectLanguage(text);
+  if (!isStructuralHandoffAsk(text, lang) && !softEdges.clientRequestedLiveAgent(text)) return false;
+  return String(text || '').trim().length > 0 && String(text || '').trim().length <= 160;
+}
+
 function isPureHandoff(text, lang) {
+  const detected = lang || detectLanguage(text);
+  // Italian live-agent requests are a handoff even when the English grammar
+  // roles are absent. The customer line is the Italian fixed line.
+  if (detected === 'it' && isPureLiveAgentAsk(text)) return true;
   if (!isStructuralHandoffAsk(text, lang)) return false;
   return stripHandoffTokens(text, lang).length < 28;
 }
@@ -232,6 +269,17 @@ function hasAccountNumberReference(text) {
   if (/اکاؤنٹ\s*نمبر|اکاونٹ\s*نمبر/.test(s)) return true;
   if (/(?:खाता|अकाउंट|अकाउण्ट|एकाउंट|अकाउन्ट)\s*(?:संख्या|नंबर|नम्बर)/.test(s)) return true;
   if (/\b(account|acct)\b/i.test(s) && /(?<!\d)\d{5,12}(?!\d)/.test(s)) return true;
+  // Number-word plus account-word, with up to three words between them
+  // ("numero di conto", "número de cuenta", "numéro de compte").
+  if (
+    /\b(?:numer[oa]|num[eé]ro|n[uú]mero|nummer|kontonummer|rekeningnummer)\b(?:\s+\S+){0,3}\s+\b(?:conto|cuenta|compte|conta|konto|account)\b/i.test(
+      s
+    )
+  ) {
+    return true;
+  }
+  if (/\b(?:conto|cuenta|compte|conta)\s+(?:numer[oa]|num[eé]ro|n[uú]mero)\b/i.test(s)) return true;
+  if (/\b(?:kontonummer|rekeningnummer)\b/i.test(s)) return true;
   return false;
 }
 
@@ -249,6 +297,7 @@ function hasInterrogative(text) {
   const ar = normalizeArabic(s);
   if (/(?:^|\s)(?:ما|هل|كيف|اين|متى|لماذا|اخبر|قول)(?:\s|$)/.test(ar)) return true;
   if (/\b(?:what|how|when|where|why|which|who|whose|whom)\b/i.test(s)) return true;
+  if (/\b(?:qual[ei]?|quale|come|dove|quando|perch[eé]|cosa)\b/i.test(s)) return true;
   if (/^(?:can|could|would|will|is|are|do|does|did|should|may)\b/i.test(s.trim())) return true;
   return false;
 }
@@ -358,6 +407,18 @@ function decide(input) {
       silent: true,
       route: null,
       reason: ownership.reason,
+      message: null,
+      language: lang,
+    };
+  }
+  // "Are you a bot or a real person?" asks who is replying. It is not a request
+  // to be handed to a live agent.
+  if (isAssistantIdentityQuestion(text)) {
+    return {
+      action: 'route_normal',
+      route: 'normal',
+      silent: false,
+      reason: 'assistant_identity_question',
       message: null,
       language: lang,
     };
@@ -516,6 +577,40 @@ function reconcileFromParts(progress, parts, conversation, message, botId) {
     out.messageAmbiguous = false;
   }
   return out;
+}
+
+function storesLookLost(saved) {
+  if (!saved || typeof saved !== 'object') return true;
+  return (
+    !saved.noteConfirmed &&
+    !saved.assignConfirmed &&
+    !saved.messageSent &&
+    !saved.noteAmbiguous &&
+    !saved.assignAmbiguous &&
+    !saved.messageAmbiguous
+  );
+}
+
+function humanPublicComment(parts, opts) {
+  for (const part of parts || []) {
+    if (!part || String(part.part_type || '') !== 'comment') continue;
+    if (teammateHandoffGates.isHumanTeammatePublicReply(part, opts)) return true;
+  }
+  return false;
+}
+
+function foreignHumanOwns(conversation, handoffAssigneeId, botId, opts) {
+  const id = conversation && conversation.admin_assignee_id != null ? String(conversation.admin_assignee_id) : '';
+  if (!id || id === '0') return false;
+  if (botId && id === String(botId)) return false;
+  if (opts && (id === String(opts.arsalId || '') || id === String(opts.eliteAiId || ''))) return false;
+  if (handoffAssigneeId && id === String(handoffAssigneeId)) return false;
+  return true;
+}
+
+function fixedLineAlreadyPublic(progress, parts) {
+  if (progress && progress.messageSent) return true;
+  return fixedLineInParts(parts, '');
 }
 
 function messageAlreadyPresent(parts, message, botId) {
@@ -693,9 +788,17 @@ module.exports = {
   detectLanguage,
   isStructuralHandoffAsk,
   isAccountNumberQuestion,
+  isAssistantIdentityQuestion,
+  isPureLiveAgentAsk,
+  isExactAllowedTemplate,
+  fixedMessageFor,
   accountQuestionCustomerLine,
   ACCOUNT_QUESTION_LINES,
   reconcileFromParts,
+  storesLookLost,
+  humanPublicComment,
+  foreignHumanOwns,
+  fixedLineAlreadyPublic,
   decide,
   classifyAssignment,
   progressForTurn,

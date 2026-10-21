@@ -1750,6 +1750,8 @@ function postProcessModelReply(rawText, conversationId) {
 /* soft-edges v1: strip orphan Cyrillic/CJK junk before Intercom send */
 postProcessModelReply = (function (origPostProcessModelReply) {
   return function postProcessModelReply() {
+    const raw = arguments[0];
+    if (fixedMessageHandoff.isExactAllowedTemplate(raw)) return String(raw);
     const out = origPostProcessModelReply.apply(this, arguments);
     const cleaned = softEdges.postProcessStripJunk(out);
     if (cleaned === null) {
@@ -2322,6 +2324,12 @@ async function postEscalateHoldingStatus(conversationId, text, latestUser, clien
   }
   const fresh = await fetchConversation(conversationId);
   const parts = fresh ? partsOf(fresh) : [];
+  const stHold = getConvState(conversationId);
+  const progHold = stHold && stHold.state && stHold.state.fixedHandoff;
+  if (fixedMessageHandoff.fixedLineAlreadyPublic(progHold, parts)) {
+    console.log(logTag + ' SKIP fixed line already sent', conversationId);
+    return { skipped: true, reason: 'fixed_line_already_sent' };
+  }
   const excludes = [];
   if (escState && escState.lastEscalateStatusBody) excludes.push(escState.lastEscalateStatusBody);
   const lastPublic = getLastArsalPublicCommentBody(parts);
@@ -3579,6 +3587,8 @@ async function commitFixedMessageHandoff(opts) {
     turnId,
     o.path
   );
+  const reconciledAssignee = fixedMessageHandoff.reconcileFromParts(progress, parts, full, '', ARSAL_ID).assigneeId;
+  const handoffAssigneeId = String(o.handoffAssigneeId || progress.assigneeId || reconciledAssignee || '');
   const decision =
     o.decision ||
     fixedMessageHandoff.decide({
@@ -3590,8 +3600,8 @@ async function commitFixedMessageHandoff(opts) {
       finHandoff: !!o.finHandoff,
       liveAgent: !!o.liveAgent,
       force: o.path !== 'welcome',
-      handoffAssigneeId: progress.assigneeId || '',
-      ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: progress.assigneeId || '' }),
+      handoffAssigneeId,
+      ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId }),
     });
   if (decision.route === 'normal' || decision.action === 'silence' || decision.silent) {
     return Object.assign({ sent: false, setAwaiting: false }, decision);
@@ -3739,22 +3749,68 @@ const handleWebhook = async (req, res) => {
       const ownText = stripHtml(
         (latestUser && (latestUser.body || latestUser.text || latestUser.message)) || ''
       );
+      const stPackOwn = getConvState(conversationId);
+      const progOwn = stPackOwn && stPackOwn.state && stPackOwn.state.fixedHandoff;
+      const recoveredOwn = fixedMessageHandoff.reconcileFromParts({}, parts, full, '', ARSAL_ID);
+      const oweFixedLine =
+        fixedMessageHandoff.storesLookLost(progOwn) &&
+        recoveredOwn.noteConfirmed &&
+        recoveredOwn.assignConfirmed &&
+        !recoveredOwn.messageSent;
       if (!fixedMessageHandoff.isAccountNumberQuestion(ownText)) {
-        const stPackOwn = getConvState(conversationId);
-        const progOwn = stPackOwn && stPackOwn.state && stPackOwn.state.fixedHandoff;
         const owned = teammateHandoffGates.classifyOwnership(full, parts, handoffOwnershipOpts());
-        if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent) {
+        if (escalateRelatedOnly.isStatusPing(ownText) && owned.silent && !oweFixedLine) {
           console.log('SKIP status-ping owned', owned.reason, conversationId);
           return res.sendStatus(200);
         }
-        const handoffAssigneeId =
-          progOwn && !progOwn.messageSent ? String(progOwn.assigneeId || '') : '';
+        const handoffAssigneeId = String(
+          (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
+            (oweFixedLine ? recoveredOwn.assigneeId : '') ||
+            ''
+        );
         const deferEarly = teammateHandoffGates.shouldDeferToHumanTeammate(
           full,
           parts,
           ownText,
           handoffOwnershipOpts({ handoffAssigneeId })
         );
+        const humanCommented = fixedMessageHandoff.humanPublicComment(parts, handoffOwnershipOpts());
+        const foreignOwner = fixedMessageHandoff.foreignHumanOwns(
+          full,
+          recoveredOwn.assigneeId,
+          ARSAL_ID,
+          handoffOwnershipOpts()
+        );
+        if (oweFixedLine && !humanCommented && !foreignOwner) {
+          const completion = fixedMessageHandoff.decide({
+            path: 'recovery',
+            latestText: ownText,
+            parts: (parts || []).filter((p) => {
+              const pt = String((p && p.part_type) || '');
+              return pt !== 'assignment' && pt !== 'assign';
+            }),
+            full,
+            botId: ARSAL_ID,
+            force: true,
+            handoffAssigneeId: recoveredOwn.assigneeId,
+            ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId: recoveredOwn.assigneeId }),
+          });
+          await commitFixedMessageHandoff({
+            path: 'recovery',
+            decision: completion,
+            conversationId,
+            full,
+            parts,
+            latestUser,
+            text: ownText,
+            problem: ownText,
+            clientName,
+            handoffAssigneeId: recoveredOwn.assigneeId,
+            preferAssigneeId: recoveredOwn.assigneeId,
+          });
+          console.log('FIXED_HANDOFF lost-state completion', conversationId);
+          return res.sendStatus(200);
+        }
         if (deferEarly.skip) {
           console.log('SKIP teammate-handoff', deferEarly.reason, conversationId);
           return res.sendStatus(200);
@@ -3792,6 +3848,13 @@ const handleWebhook = async (req, res) => {
           console.log(eroDec.log, conversationId);
           return res.sendStatus(200);
         } else if (eroDec.action === 'STATUS_ONLY') {
+          const freshHold = await fetchConversation(conversationId);
+          const holdParts = freshHold ? partsOf(freshHold) : parts;
+          const stHold = getConvState(conversationId);
+          if (fixedMessageHandoff.fixedLineAlreadyPublic(stHold && stHold.state && stHold.state.fixedHandoff, holdParts)) {
+            console.log('SKIP status-only fixed line already sent', conversationId);
+            return res.sendStatus(200);
+          }
           const hold =
             typeof pickEscalateStatusReply === 'function'
               ? pickEscalateStatusReply(conversationId)
@@ -3894,16 +3957,29 @@ const handleWebhook = async (req, res) => {
       text = '(Client sent an image/screenshot with no accompanying text.)';
     }
 
+    if (assistantIdentityGuard.isDirectIdentityQuestion(text)) {
+      await postClientCommentOnce(conversationId, assistantIdentityGuard.disclosureFor(text), latestUser, clientName);
+      console.log('ASSISTANT_IDENTITY answer', conversationId);
+      return res.sendStatus(200);
+    }
+    if (
+      fixedMessageHandoff.isAccountNumberQuestion(text) &&
+      (topic === 'conversation.user.created' ||
+        (topic === 'conversation.user.replied' &&
+          conversationAgeSec(full) >= 0 &&
+          conversationAgeSec(full) < FIN_FRESH_CONV_SEC))
+    ) {
+      await deliverAccountQuestionAnswer(conversationId, text, '', latestUser, clientName);
+      console.log('FIXED_HANDOFF fresh account-question', conversationId, topic);
+      return res.sendStatus(200);
+    }
+
     let accountQuestionAnswered = false;
     {
       const stPackH = getConvState(conversationId);
       const prog = stPackH.state && stPackH.state.fixedHandoff;
       if (prog && prog.noteConfirmed && !prog.messageSent) {
         /* FIXED_MESSAGE_HANDOFF_R3:recovery */
-        // Account-number questions are exempt before this return. The same
-        // branch is a 422 retry (assignConfirmed false) and a 500 / ambiguous
-        // hold (assignAmbiguous). Neither may send the fixed line or stop
-        // the webhook from answering the question.
         if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
           console.log('FIXED_HANDOFF recovery account-question exemption', conversationId, {
             failure422: prog.assignConfirmed !== true,
@@ -4353,6 +4429,21 @@ const handleWebhook = async (req, res) => {
         await deliverAccountQuestionAnswer(conversationId, text, parsed.body || '', latestUser, clientName);
         return res.sendStatus(200);
       }
+      if (fixedMessageHandoff.isPureLiveAgentAsk(text)) {
+        await commitFixedMessageHandoff({
+          path: 'main_escalate',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: text,
+          liveAgent: true,
+          actionNeeded: parsed.actionNeeded || 'Please take this conversation.',
+        });
+        console.log('FIXED_HANDOFF live-agent without account ask', conversationId);
+        return res.sendStatus(200);
+      }
       const mustGateIdentity =
         kind === 'ACCOUNT' ||
         kind === 'EMAIL_REQUIRED' ||
@@ -4489,7 +4580,28 @@ const handleWebhook = async (req, res) => {
           console.log('STRIP known-account re-ask from model reply', conversationId, __knownIds.account);
         }
         if (!body) {
-          console.log('SKIP empty after strip known-account ask', conversationId);
+          console.log('EMPTY known-account re-ask', conversationId);
+          if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+            await deliverAccountQuestionAnswer(conversationId, text, '', latestUser, clientName);
+            return res.sendStatus(200);
+          }
+          if (assistantIdentityGuard.isDirectIdentityQuestion(text)) {
+            await postClientCommentOnce(conversationId, assistantIdentityGuard.disclosureFor(text), latestUser, clientName);
+            return res.sendStatus(200);
+          }
+          await commitFixedMessageHandoff({
+            path: 'presend_escalate',
+            conversationId,
+            full,
+            parts,
+            latestUser,
+            text,
+            problem: text,
+            account: __knownIds.account || '',
+            email: __knownIds.email || '',
+            liveAgent: fixedMessageHandoff.isPureLiveAgentAsk(text),
+            actionNeeded: 'Please take this conversation.',
+          });
           return res.sendStatus(200);
         }
       }
@@ -4581,7 +4693,7 @@ const handleWebhook = async (req, res) => {
       } catch (e) { console.error('PRESEND_REGENERATE_FAILED', conversationId, e && e.message); }
       return null;
     };
-    try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: parts, knowledge: __presendKnowledge, regenerate: __presendRegenerate, scopeDecline: __isScopeDecline }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] gate threw — fail-closed (holding send)', __e && __e.message); __presend = { body: body, send: false, reason: 'gate-error-fail-closed' }; }
+    try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: parts, knowledge: __presendKnowledge, regenerate: __presendRegenerate, scopeDecline: __isScopeDecline, assigneeId: full && full.admin_assignee_id, botIds: [ARSAL_ID, ELITE_AI_ID] }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] gate threw — fail-closed (holding send)', __e && __e.message); __presend = { body: body, send: false, reason: 'gate-error-fail-closed' }; }
     if (repeatedClientQuestion && !__presend.send && __presend.result &&
         __presend.result.hardFails.length > 0 &&
         __presend.result.hardFails.every((f) => f.code === 'DUPLICATE_REPLY')) {

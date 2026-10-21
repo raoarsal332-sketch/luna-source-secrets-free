@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('crypto');
+
 /**
  * Shared credential-aware sanitizer for notes, prompts, comments, memory,
  * and logs. Account identifiers are kept. Only values introduced by a
@@ -7,7 +9,32 @@
  * a label are replaced.
  *
  * One label list lives here. Callers must not keep a second copy.
+ *
+ * The locked spread-test reply is allowed through only when its bytes hash to
+ * the template. Any other text, including a copy with one character changed,
+ * is redacted.
  */
+
+function sha256Text(text) {
+  return crypto.createHash('sha256').update(String(text), 'utf8').digest('hex');
+}
+
+// Byte-for-byte copy of index.js SPREAD_TEST_REPLY. The allow check compares
+// hashes, so a drift of one character does not keep the exemption.
+const LOCKED_SPREAD_TEST_REPLY =
+  'TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\n' +
+  'Platform: MetaTrader 5\n' +
+  'Server: Fundedelite-Server\n' +
+  'Account Number: 55188\n' +
+  'Password: QBG5FetfozKz7^a?J!\n\n' +
+  'Use this account to check spreads.';
+
+const EXACT_ALLOW_HASHES = new Set([sha256Text(LOCKED_SPREAD_TEST_REPLY)]);
+
+function isExactAllowedTemplate(text) {
+  if (typeof text !== 'string' || !text) return false;
+  return EXACT_ALLOW_HASHES.has(sha256Text(text));
+}
 
 const LABEL =
   'password|passcode|passphrase|passwd|pwd|pass|otp|o\\.t\\.p|one[\\s-]?time(?:\\s+(?:code|password|pin))?|pin|2fa|mfa|verification\\s+code|security\\s+code|auth(?:entication)?\\s+code|api[\\s-]?key|token|secret';
@@ -43,7 +70,9 @@ const CREDENTIAL_SEP =
   "|[:=\"'\u2018\u2019\u201C\u201D-])*";
 
 const STOP_WORD = 'and|but|please|account|email|thanks|thank';
-const SECRET_TOKEN = '(?!(?:' + STOP_WORD + ')\\b)[^\\s<.!?,]{1,80}';
+// Symbols stay inside the token. A password such as "a?b!" must not leave the
+// suffix after "?" in the note, the prompt, or the comment.
+const SECRET_TOKEN = '(?!(?:' + STOP_WORD + ')\\b)[^\\s<]{1,120}';
 // Brace-wrapped, tag-wrapped, or up to six tokens. A following "and account …" stops the value.
 // The placeholder is a valid value so a second pass keeps it instead of eating the
 // letter before it ("password's [secret]" must stay unchanged).
@@ -115,7 +144,11 @@ function redactRememberedValues(text) {
 
 function sanitizeCredentials(text) {
   const original = String(text == null ? '' : text);
-  const labeled = original
+  if (isExactAllowedTemplate(original)) return original;
+  // Count repeated base64 on the original so a copy inside a multi-token
+  // label value is removed, not only the copies that survive the label pass.
+  const repeated = redactRepeatedBase64(original);
+  const labeled = repeated
     .replace(/\b(sk-[A-Za-z0-9_-]{16,})/g, (_m, tok) => {
       rememberSecret(tok);
       return '[secret]';
@@ -125,8 +158,7 @@ function sanitizeCredentials(text) {
       return 'Bearer [secret]';
     })
     .replace(CREDENTIAL_VALUE_RE, replaceLabeledSecret);
-  const repeated = redactRepeatedBase64(labeled);
-  return redactRememberedValues(repeated);
+  return redactRememberedValues(labeled);
 }
 
 function sanitizeDeep(value, seen) {
@@ -151,6 +183,9 @@ module.exports = {
   sanitizeDeep,
   redactRememberedValues,
   rememberedSecretCount,
+  isExactAllowedTemplate,
+  sha256Text,
+  LOCKED_SPREAD_TEST_REPLY,
   CREDENTIAL_VALUE_RE,
   UNICODE_CREDENTIAL_RE,
   CREDENTIAL_SEP,
