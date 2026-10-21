@@ -1,0 +1,471 @@
+{
+  "summary": {
+    "frozen": "5c39fd7001c06482470ff470d9ad0ea07b4ec37a",
+    "shaOk": true,
+    "cases": 201,
+    "caseSeal": "3cfad600f312a5acddb2a3843708ec2a1a5a9e61d8e24860a4300024edcde630",
+    "tripwire": 0,
+    "externalHosts": {
+      "faq.fundedelite.com": 190
+    },
+    "byClass": {
+      "ownership": {
+        "n": 54,
+        "pass": 53,
+        "critical": 0,
+        "major": 1,
+        "harness": 0
+      },
+      "operator": {
+        "n": 2,
+        "pass": 0,
+        "critical": 2,
+        "major": 0,
+        "harness": 0
+      },
+      "atomicity": {
+        "n": 28,
+        "pass": 22,
+        "critical": 1,
+        "major": 5,
+        "harness": 0
+      },
+      "account-lang": {
+        "n": 23,
+        "pass": 21,
+        "critical": 2,
+        "major": 0,
+        "harness": 0
+      },
+      "live-lang": {
+        "n": 18,
+        "pass": 18,
+        "critical": 0,
+        "major": 0,
+        "harness": 0
+      },
+      "secrets": {
+        "n": 19,
+        "pass": 18,
+        "critical": 1,
+        "major": 0,
+        "harness": 0
+      },
+      "spread": {
+        "n": 7,
+        "pass": 5,
+        "critical": 0,
+        "major": 2,
+        "harness": 0
+      },
+      "promise": {
+        "n": 12,
+        "pass": 9,
+        "critical": 0,
+        "major": 3,
+        "harness": 0
+      },
+      "fin": {
+        "n": 11,
+        "pass": 8,
+        "critical": 0,
+        "major": 3,
+        "harness": 0
+      },
+      "identity": {
+        "n": 11,
+        "pass": 11,
+        "critical": 0,
+        "major": 0,
+        "harness": 0
+      },
+      "empty": {
+        "n": 11,
+        "pass": 10,
+        "critical": 0,
+        "major": 1,
+        "harness": 0,
+        "observe": 1,
+        "observeFails": [
+          {
+            "id": "EMP-skip",
+            "failures": [
+              {
+                "code": "silent-escalation",
+                "detail": "public 0 < 1",
+                "severity": "critical"
+              }
+            ],
+            "publics": []
+          }
+        ]
+      },
+      "control": {
+        "n": 5,
+        "pass": 3,
+        "critical": 0,
+        "major": 2,
+        "harness": 0
+      }
+    }
+  },
+  "criticals": [
+    {
+      "id": "OWN-operator-reply",
+      "cls": "operator",
+      "title": "Arsal REPLY command on a human-owned thread",
+      "failures": [
+        {
+          "code": "public",
+          "detail": "public comment on a human-owned thread",
+          "severity": "critical"
+        },
+        {
+          "code": "public",
+          "detail": "write on a human-owned thread (note )",
+          "severity": "critical"
+        },
+        {
+          "code": "public-count",
+          "detail": "public 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "Thanks, a human already has this."
+      ]
+    },
+    {
+      "id": "OWN-operator-note",
+      "cls": "operator",
+      "title": "Arsal NOTE command stays internal on a human thread",
+      "failures": [
+        {
+          "code": "public",
+          "detail": "write on a human-owned thread (note )",
+          "severity": "critical"
+        }
+      ],
+      "publics": []
+    },
+    {
+      "id": "ATOM-note500-then-observed",
+      "cls": "atomicity",
+      "title": "observed note after 500 continues once",
+      "failures": [
+        {
+          "code": "fixed-without-commit",
+          "detail": "fixed line without a successful note and assignment before it",
+          "severity": "critical"
+        },
+        {
+          "code": "note-count",
+          "detail": "notes 0 wanted 1",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "ACCT-ar",
+      "cls": "account-lang",
+      "title": "account question ar",
+      "failures": [
+        {
+          "code": "wrong-language",
+          "detail": "missing approved line for ar",
+          "severity": "critical"
+        }
+      ],
+      "publics": [
+        "السلام علیکم Nadira، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+      ]
+    },
+    {
+      "id": "ACCT-CREATED-ar",
+      "cls": "account-lang",
+      "title": "user.created account ar",
+      "failures": [
+        {
+          "code": "wrong-language",
+          "detail": "missing approved line for ar",
+          "severity": "critical"
+        }
+      ],
+      "publics": [
+        "السلام علیکم Nadira، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+      ]
+    },
+    {
+      "id": "SEC-echo-punct",
+      "cls": "secrets",
+      "title": "punctuation-wrapped echo",
+      "failures": [
+        {
+          "code": "secret",
+          "detail": "[{\"where\":\"public\",\"secret\":\"R8CANARY73c2a60e96\"},{\"where\":\"prompt\",\"secret\":\"R8CANARY73c2a60e96\"}]",
+          "severity": "critical"
+        }
+      ],
+      "publics": [
+        "Hello Nadira, value {R8CANARY73c2a60e963b9584}"
+      ]
+    }
+  ],
+  "majors": [
+    {
+      "id": "OWN-note-only-faq",
+      "cls": "ownership",
+      "title": "human internal note is not a public reply",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "ATOM-note-422",
+      "cls": "atomicity",
+      "title": "note 422 retries then completes once",
+      "failures": [
+        {
+          "code": "note-count",
+          "detail": "notes 1 wanted 2",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "ATOM-note-500",
+      "cls": "atomicity",
+      "title": "note 500 holds and does not assign or speak",
+      "failures": [
+        {
+          "code": "note-count",
+          "detail": "notes 0 wanted 1",
+          "severity": "major"
+        }
+      ],
+      "publics": []
+    },
+    {
+      "id": "ATOM-note-timeout",
+      "cls": "atomicity",
+      "title": "note timeout holds",
+      "failures": [
+        {
+          "code": "note-count",
+          "detail": "notes 0 wanted 1",
+          "severity": "major"
+        }
+      ],
+      "publics": []
+    },
+    {
+      "id": "ATOM-note-not-answered",
+      "cls": "atomicity",
+      "title": "an internal note is not an answer",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "ATOM-stranger-note-labels",
+      "cls": "atomicity",
+      "title": "a human note with Account and Problem is not the handoff note",
+      "failures": [
+        {
+          "code": "note-count",
+          "detail": "notes 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "SPR-sheet",
+      "cls": "spread",
+      "title": "spreadsheet is not a spread ask",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "SPR-verb",
+      "cls": "spread",
+      "title": "spread as a distribution verb",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "FIN-phrase-note-only",
+      "cls": "fin",
+      "title": "Fin phrase in a note is not a handoff",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "FIN-arsal-assigned",
+      "cls": "fin",
+      "title": "assignment to Arsal alone is not a handoff",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "FIN-substantive",
+      "cls": "fin",
+      "title": "substantive payout after Fin phrase is not the vague line",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "EMP-customer-empty",
+      "cls": "empty",
+      "title": "empty customer body is not an escalation",
+      "failures": [
+        {
+          "code": "public-count",
+          "detail": "public 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "Hello Nadira, Can you send the account number linked to this issue?"
+      ]
+    },
+    {
+      "id": "PR-model-fixed",
+      "cls": "promise",
+      "title": "model-written fixed line on a FAQ is not a commit",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "PR-promise-sentence",
+      "cls": "promise",
+      "title": "I will pass this to a teammate is not sent as the answer",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "PR-urdu-promise",
+      "cls": "promise",
+      "title": "Urdu fixed line is not a normal FAQ answer",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "CTRL-faq",
+      "cls": "control",
+      "title": "ordinary FAQ is answered",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    },
+    {
+      "id": "CTRL-tool-then-reply",
+      "cls": "control",
+      "title": "a tool call then a normal reply is not a handoff",
+      "failures": [
+        {
+          "code": "fixed",
+          "detail": "fixed parts 1 http 1 wanted 0",
+          "severity": "major"
+        }
+      ],
+      "publics": [
+        "A teammate now has this conversation."
+      ]
+    }
+  ],
+  "harness": []
+}
