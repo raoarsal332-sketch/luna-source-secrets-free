@@ -28,26 +28,6 @@ try {
   credentialSanitizer = null;
 }
 
-// Same separators as the shared sanitizer, applied here to the original text.
-// ' and ’ (U+2019), including a possessive 's, are separators. Arabic, Urdu,
-// and Devanagari password labels have no ASCII word boundary.
-const CREDENTIAL_SEP = "(?:['\u2019]s)?[\\s:='\"\u2018\u2019\u201C\u201D-]*(?:is|was|:|=)?[\\s:='\"\u2018\u2019\u201C\u201D-]*";
-const CREDENTIAL_LABEL =
-  'password|passcode|passphrase|passwd|pwd|pass|otp|pin|2fa|mfa|token|secret';
-// One expression, applied to the original text. Unicode labels are not behind
-// \\b. The placeholder is not fed through a second label pass.
-const CREDENTIAL_VALUE_RE = new RegExp(
-  '(كلمة المرور|پاس ورڈ|पासवर्ड|\\b(?:' + CREDENTIAL_LABEL + ')\\b)(' + CREDENTIAL_SEP + ')(\\S+)',
-  'giu'
-);
-
-function applyCredentialPattern(text) {
-  return String(text == null ? '' : text)
-    .replace(/\bsk-[A-Za-z0-9_-]{16,}/g, '[secret]')
-    .replace(/\bBearer\s+[A-Za-z0-9._-]{16,}/gi, 'Bearer [secret]')
-    .replace(CREDENTIAL_VALUE_RE, (_m, label, sep) => label + sep + '[secret]');
-}
-
 const STATUS = Object.freeze({
   candidate: 'fixed-message-handoff-r3',
   approved: false,
@@ -98,14 +78,12 @@ function stripHtml(s) {
 }
 
 function redactCredentials(text) {
-  // Complete pattern on the original text, once. A narrower first pass that
-  // treats only "'s" as the value would leave the real secret beside a
-  // placeholder, and a later pass would no longer see the label next to it.
+  // The only label list is the shared sanitizer. It runs on the original text.
   const original = String(text == null ? '' : text);
   if (credentialSanitizer && typeof credentialSanitizer.sanitizeCredentials === 'function') {
     return credentialSanitizer.sanitizeCredentials(original);
   }
-  return applyCredentialPattern(original);
+  return original;
 }
 
 function prepareNoteForEnglishPrompt(text) {
@@ -150,7 +128,9 @@ function detectLatinLanguage(text) {
   if (hi > ur && hi >= it) return 'hi';
   if (ur > hi && ur >= it) return 'ur';
   if (it > en && it >= hi && it >= ur) return 'it';
-  if (south > 0 && hi === 0 && ur === 0) return 'ur';
+  // Latin South Asian without Devanagari or Urdu-only letters is Hinglish.
+  // The handoff line stays the approved Urdu line unless a Roman one is approved.
+  if (south > 0 && hi === 0 && ur === 0) return 'hinglish';
   return 'en';
 }
 
@@ -200,8 +180,8 @@ function grammarHit(text, lang) {
 
 function isStructuralHandoffAsk(text, lang) {
   const detected = lang || detectLanguage(text);
-  if (detected === 'ar' || detected === 'ur' || detected === 'hi') {
-    return grammarHit(text, detected).hit;
+  if (detected === 'ar' || detected === 'ur' || detected === 'hi' || detected === 'hinglish') {
+    return grammarHit(text, detected === 'hinglish' ? 'ur' : detected).hit;
   }
   if (grammarHit(text, 'en').hit) return true;
   return softEdges.clientRequestedLiveAgent(text) || softEdges.finHandoffPhrase(text);
@@ -257,24 +237,71 @@ function hasAccountNumberReference(text) {
 
 // Interrogatives that mark an account reference as a question. "is" alone is
 // not one: "my account number is 189143" supplies an identity, it does not ask.
-const DEVANAGARI_INTERROGATIVE = /(?:^|[^\u0900-\u097F])(?:क्या|कैसे|कहाँ|कहां|कब|क्यों|कौन|किस)(?:[^\u0900-\u097F]|$)/;
-const HINGLISH_INTERROGATIVE = /(?:^|[^a-z0-9])(?:kya|kaise|kahan|kab|kyun|kyon|kaun|kis)(?:[^a-z0-9]|$)/i;
+const DEVANAGARI_INTERROGATIVE = /(?:^|[^\u0900-\u097F])(?:क्या|कैसे|कहाँ|कहां|कब|क्यों|कौन|किस|बताओ|बताइए|बताएं|बताना)(?:[^\u0900-\u097F]|$)/;
+const HINGLISH_INTERROGATIVE = /(?:^|[^a-z0-9])(?:kya|kaise|kahan|kab|kyun|kyon|kaun|kis|batao|bataiye|bataye|batana)(?:[^a-z0-9]|$)/i;
 
 function hasInterrogative(text) {
   const s = String(text || '');
   if (/[?؟？]/.test(s)) return true;
   if (DEVANAGARI_INTERROGATIVE.test(s)) return true;
   if (HINGLISH_INTERROGATIVE.test(s)) return true;
-  if (/(?:کیا|کیسے|کہاں|کب|کیوں|کون)/.test(s)) return true;
+  if (/(?:کیا|کیسے|کہاں|کب|کیوں|کون|بتاؤ|بتائیں|بتانا)/.test(s)) return true;
   const ar = normalizeArabic(s);
-  if (/(?:^|\s)(?:ما|هل|كيف|اين|متى|لماذا)(?:\s|$)/.test(ar)) return true;
+  if (/(?:^|\s)(?:ما|هل|كيف|اين|متى|لماذا|اخبر|قول)(?:\s|$)/.test(ar)) return true;
   if (/\b(?:what|how|when|where|why|which|who|whose|whom)\b/i.test(s)) return true;
   if (/^(?:can|could|would|will|is|are|do|does|did|should|may)\b/i.test(s.trim())) return true;
   return false;
 }
 
+function isIdentitySupply(text) {
+  const s = String(text || '');
+  if (!/(?<!\d)\d{5,12}(?!\d)/.test(s)) return false;
+  if (/[?؟？]/.test(s) || hasInterrogative(s)) return false;
+  return hasAccountNumberReference(s);
+}
+
+function isBareAccountAsk(text) {
+  const s = String(text || '').trim();
+  if (!s || s.length > 60) return false;
+  if (/(?<!\d)\d{5,12}(?!\d)/.test(s)) return false;
+  return hasAccountNumberReference(s);
+}
+
 function isAccountNumberQuestion(text) {
-  return hasAccountNumberReference(text) && hasInterrogative(text);
+  if (!hasAccountNumberReference(text)) return false;
+  if (isIdentitySupply(text)) return false;
+  if (hasInterrogative(text)) return true;
+  return isBareAccountAsk(text);
+}
+
+// Same fact as the MT5 FAQ: the account number arrives in the login email and
+// is not changed in chat. No extra ask, no handoff promise.
+const ACCOUNT_QUESTION_LINES = Object.freeze({
+  en: 'For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.',
+  ur: 'MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔',
+  ar: 'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.',
+  hi: 'MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।',
+  it: "Su MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano.",
+  hinglish: 'MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti.',
+});
+
+function looksLikePromiseOrAsk(plain) {
+  const s = String(plain || '');
+  if (!s.trim()) return true;
+  if (Object.values(FIXED_MESSAGES).includes(s.replace(/\s+/g, ' ').trim())) return true;
+  if (/\b(i['’]?ll|i will|we['’]?ll|we will)\s+(pass|forward|send|escalate)\b/i.test(s)) return true;
+  if (/\b(pass|forward)\b[^.?!]{0,40}\b(teammate|team)\b/i.test(s)) return true;
+  if (/\b(please\s+share|can you send|before i pass)\b/i.test(s)) return true;
+  if (/\b(share|send)\b[^.?!]{0,40}\b(account\s*number|registered\s+email)\b/i.test(s)) return true;
+  return false;
+}
+
+function accountQuestionCustomerLine(text, draft) {
+  const lang = detectLanguage(text);
+  const plain = stripHtml(draft || '').replace(/\s+/g, ' ').trim();
+  if (plain.length >= 12 && !looksLikePromiseOrAsk(plain)) return plain;
+  if (Object.prototype.hasOwnProperty.call(ACCOUNT_QUESTION_LINES, lang)) return ACCOUNT_QUESTION_LINES[lang];
+  return ACCOUNT_QUESTION_LINES.en;
 }
 
 function arsalSpoke(parts, botId) {
@@ -290,6 +317,10 @@ function arsalSpoke(parts, botId) {
 }
 
 function fixedMessageFor(lang) {
+  if (lang === 'hinglish') {
+    if (Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, 'hinglish')) return FIXED_MESSAGES.hinglish;
+    return FIXED_MESSAGES.ur;
+  }
   if (Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lang)) return FIXED_MESSAGES[lang];
   return FIXED_MESSAGES.en;
 }
@@ -370,14 +401,20 @@ function decide(input) {
       };
     }
   }
-  const messageLang = fixedMessageFor(lang) === FIXED_MESSAGES[lang] ? lang : 'en';
+  const message = fixedMessageFor(lang);
+  const language =
+    lang === 'hinglish' && message === FIXED_MESSAGES.ur
+      ? 'ur'
+      : Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lang)
+        ? lang
+        : 'en';
   return {
     action: 'fixed_message',
     silent: false,
     route: null,
     reason: 'fixed_handoff',
-    language: Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lang) ? lang : messageLang,
-    message: fixedMessageFor(lang),
+    language,
+    message,
   };
 }
 
@@ -405,6 +442,80 @@ function noteAlreadyPresent(parts, botId) {
     if (/\bAccount\s*:/i.test(body) && /\bProblem\s*:/i.test(body)) return true;
   }
   return false;
+}
+
+function noteInParts(parts) {
+  for (const p of parts || []) {
+    if (!p) continue;
+    const pt = String(p.part_type || '');
+    const authorType = String((p.author || {}).type || '');
+    const noteLike = pt === 'note' || pt === '' || authorType === 'admin' || authorType === 'bot';
+    if (!noteLike) continue;
+    if (pt && pt !== 'note' && pt !== 'comment') continue;
+    const body = stripHtml(p.body || '');
+    if (/\bAccount\s*:/i.test(body) && /\bProblem\s*:/i.test(body)) return true;
+  }
+  return false;
+}
+
+function assigneeFromParts(parts, conversation, botId) {
+  const bot = String(botId || '');
+  let bestAt = -1;
+  let bestId = '';
+  for (const part of parts || []) {
+    if (!part) continue;
+    const pt = String(part.part_type || '');
+    if (pt !== 'assignment' && pt !== 'assign') continue;
+    const assigned = part.assigned_to || part.assignee || {};
+    const id = String((assigned && assigned.id) || part.assignee_id || '');
+    if (!id || id === '0' || id === bot) continue;
+    const at = Number(part.created_at || 0);
+    if (at >= bestAt) {
+      bestAt = at;
+      bestId = id;
+    }
+  }
+  if (bestId) return bestId;
+  const current =
+    conversation && conversation.admin_assignee_id != null ? String(conversation.admin_assignee_id) : '';
+  if (current && current !== '0' && current !== bot) return current;
+  return '';
+}
+
+function fixedLineInParts(parts, message) {
+  const wanted = new Set(Object.values(FIXED_MESSAGES));
+  const one = String(message || '').replace(/\s+/g, ' ').trim();
+  if (one) wanted.add(one);
+  for (const p of parts || []) {
+    if (!p || String(p.part_type || '') === 'note') continue;
+    const body = stripHtml(p.body || '').replace(/\s+/g, ' ').trim();
+    if (wanted.has(body)) return true;
+  }
+  return false;
+}
+
+/**
+ * Ticket state and the write op store can both be empty on a retry. The
+ * conversation parts are the record of the note, the assignment, and the one
+ * customer line. A completed sequence is not run again.
+ */
+function reconcileFromParts(progress, parts, conversation, message, botId) {
+  const out = Object.assign(blankProgress(), progress || {});
+  if (noteInParts(parts) || noteAlreadyPresent(parts, '')) {
+    out.noteConfirmed = true;
+    out.noteAmbiguous = false;
+  }
+  const assignee = assigneeFromParts(parts, conversation, botId);
+  if (assignee) {
+    out.assignConfirmed = true;
+    out.assignAmbiguous = false;
+    if (!out.assigneeId) out.assigneeId = assignee;
+  }
+  if (fixedLineInParts(parts, message) || messageAlreadyPresent(parts, message, '')) {
+    out.messageSent = true;
+    out.messageAmbiguous = false;
+  }
+  return out;
 }
 
 function messageAlreadyPresent(parts, message, botId) {
@@ -493,6 +604,10 @@ async function commit(ctx) {
   if (!message || !Object.values(FIXED_MESSAGES).includes(message)) {
     return finish({ reason: 'no_fixed_message', withhold: true, progress });
   }
+  Object.assign(
+    progress,
+    reconcileFromParts(progress, src.parts, src.conversation, message, src.botId)
+  );
   const transport = src.transport;
   if (!transport || typeof transport.postNote !== 'function' || typeof transport.assign !== 'function' || typeof transport.postMessage !== 'function') {
     return finish({ reason: 'no_transport', withhold: true, progress });
@@ -578,6 +693,9 @@ module.exports = {
   detectLanguage,
   isStructuralHandoffAsk,
   isAccountNumberQuestion,
+  accountQuestionCustomerLine,
+  ACCOUNT_QUESTION_LINES,
+  reconcileFromParts,
   decide,
   classifyAssignment,
   progressForTurn,

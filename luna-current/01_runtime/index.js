@@ -1136,27 +1136,28 @@ function resolveIdentityAskDecision(conversation, ids, kind) {
 function pickAccountEmailAsk(needAccount, needEmail) {
   const wantAcct = needAccount !== false;
   const wantEmail = needEmail !== false;
-  // Only ask for what is still missing , never re-ask a field the client already gave.
+  // Ask only for the missing field. Do not promise a teammate handoff here.
+  // That sentence is allowed only after the handoff has actually succeeded.
   if (wantAcct && !wantEmail) {
     const variants = [
-      'Please share your account number so I can forward this with the right details.',
-      'Can you send the account number linked to this issue? I’ll pass it to a teammate once I have it.',
-      'Before I pass this to the team, please share your account number.',
+      'Please share your account number.',
+      'Can you send the account number linked to this issue?',
+      'Which account number is this about?',
     ];
     return variants[Math.floor(Math.random() * variants.length)];
   }
   if (!wantAcct && wantEmail) {
     const variants = [
-      'Please share the registered FundedElite email for this account so I can forward it to a teammate.',
-      'Can you send the registered email linked to that account? I’ll pass this on once I have it.',
-      'Before I pass this to the team, please share the registered email on your FundedElite account.',
+      'Please share the registered FundedElite email for this account.',
+      'Can you send the registered email linked to that account?',
+      'Which registered email is on your FundedElite account?',
     ];
     return variants[Math.floor(Math.random() * variants.length)];
   }
   const variants = [
-    'Before I pass this to the team, please share your account number and the email registered on your FundedElite account.',
-    'Can you send your account number and registered email so I can forward this with the right details?',
-    'Please share your account number and registered FundedElite email , I’ll send this to a teammate once I have both.',
+    'Please share your account number and the email registered on your FundedElite account.',
+    'Can you send your account number and registered email?',
+    'Please share your account number and registered FundedElite email.',
   ];
   return variants[Math.floor(Math.random() * variants.length)];
 }
@@ -2755,7 +2756,9 @@ async function fetchConversation(id) {
 async function postReply(conversationId, messageType, body) {
   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
-  const finalBody = messageType === 'note' ? String(body || '') : toHtml(body);
+  // Redact before either shape is sent so a canary cannot leave in a note or a comment.
+  const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
+  const finalBody = messageType === 'note' ? redacted : toHtml(redacted);
   const r = await icRequest(
     'post',
     'https://api.intercom.io/conversations/' + conversationId + '/reply',
@@ -3001,6 +3004,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     return null;
   }
 
+  finalBody = fixedMessageHandoff.redactCredentials(finalBody);
   return postReply(conversationId, 'comment', finalBody);
 }
 
@@ -3211,13 +3215,13 @@ const OWNER_CMD_SYSTEM_OVERLAY = [
 
 async function interpretOwnerCommandViaLlm(conversationId, full, plain, authorId) {
   const bits = contactBits(full);
-  const history = buildHistory(full, 50);
+  const history = fixedMessageHandoff.redactCredentials(buildHistory(full, 50));
   const who = authorId === ARSAL_ID ? 'Arsal (owner)' : authorId === JERRY_ID ? 'Jerry' : 'authorized admin';
   const userMsg =
     'DIRECT COMMAND from ' +
     who +
     ':\n' +
-    String(plain || '').trim() +
+    fixedMessageHandoff.redactCredentials(String(plain || '').trim()) +
     '\n\nClient name: ' +
     (bits.name || '') +
     '\nClient email: ' +
@@ -3546,6 +3550,13 @@ function preferredEscalateAssigneeId(full) {
     return existing;
   }
   return '';
+}
+
+async function deliverAccountQuestionAnswer(conversationId, text, draft, latestUser, clientName) {
+  const line = fixedMessageHandoff.accountQuestionCustomerLine(text, draft);
+  if (!line || !String(line).trim()) return false;
+  await postClientCommentOnce(conversationId, line, latestUser, clientName);
+  return true;
 }
 
 /**
@@ -3883,6 +3894,7 @@ const handleWebhook = async (req, res) => {
       text = '(Client sent an image/screenshot with no accompanying text.)';
     }
 
+    let accountQuestionAnswered = false;
     {
       const stPackH = getConvState(conversationId);
       const prog = stPackH.state && stPackH.state.fixedHandoff;
@@ -3897,6 +3909,8 @@ const handleWebhook = async (req, res) => {
             failure422: prog.assignConfirmed !== true,
             failure500: prog.assignAmbiguous === true,
           });
+          await deliverAccountQuestionAnswer(conversationId, text, '', latestUser, clientName);
+          accountQuestionAnswered = true;
         } else {
           await commitFixedMessageHandoff({
             path: 'recovery',
@@ -3915,6 +3929,7 @@ const handleWebhook = async (req, res) => {
         }
       }
     }
+    if (accountQuestionAnswered) return res.sendStatus(200);
 
     // Fin / Elite AI wait , hard gate before FAQ/AI/deterministic public replies
     if (shouldWaitForFin(full, text, topic)) {
@@ -3971,6 +3986,8 @@ const handleWebhook = async (req, res) => {
       }
       if (welcomeDecision.reason === 'account_number_question') {
         console.log('FIN_HANDOFF_WELCOME route account-number', conversationId);
+        await deliverAccountQuestionAnswer(conversationId, text, '', latestUser, clientName);
+        return res.sendStatus(200);
       }
     }
 
@@ -4106,7 +4123,8 @@ const handleWebhook = async (req, res) => {
       }
     }
 
-    const history = buildHistory(full, 50);
+    const history = fixedMessageHandoff.redactCredentials(buildHistory(full, 50));
+    const latestForPrompt = fixedMessageHandoff.redactCredentials(text);
     let userMsg =
       'Client name: ' +
       (bits.name || '') +
@@ -4117,7 +4135,7 @@ const handleWebhook = async (req, res) => {
       '\n\nFULL TICKET HISTORY:\n' +
       history +
       '\n\nLatest client message:\n' +
-      text +
+      latestForPrompt +
       officialFaqBlock;
     if (septemberPromos && !isClearlyAccountSpecificIssue(text)) {
       try {
@@ -4330,6 +4348,11 @@ const handleWebhook = async (req, res) => {
       }
 
       if (parsed.action === 'ESCALATE') {
+      if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
+        console.log('FIXED_HANDOFF main_escalate account-question exemption', conversationId);
+        await deliverAccountQuestionAnswer(conversationId, text, parsed.body || '', latestUser, clientName);
+        return res.sendStatus(200);
+      }
       const mustGateIdentity =
         kind === 'ACCOUNT' ||
         kind === 'EMAIL_REQUIRED' ||
@@ -4428,27 +4451,18 @@ const handleWebhook = async (req, res) => {
         .filter(Boolean)
         .join('\n');
       /* FIXED_MESSAGE_HANDOFF_R3:main_escalate */
-      if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
-        console.log('FIXED_HANDOFF main_escalate account-question exemption', conversationId);
-        const draft = String(parsed.body || '').trim();
-        const plain = stripHtml(draft);
-        if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
-          await postClientCommentOnce(conversationId, draft, latestUser, clientName);
-        }
-      } else {
-        await commitFixedMessageHandoff({
-          path: 'main_escalate',
-          conversationId,
-          full,
-          parts,
-          latestUser,
-          text,
-          problem: problemWithExtras,
-          account: ids.account,
-          email: ids.email,
-          actionNeeded: parsed.actionNeeded || 'Please take this conversation.',
-        });
-      }
+      await commitFixedMessageHandoff({
+        path: 'main_escalate',
+        conversationId,
+        full,
+        parts,
+        latestUser,
+        text,
+        problem: problemWithExtras,
+        account: ids.account,
+        email: ids.email,
+        actionNeeded: parsed.actionNeeded || 'Please take this conversation.',
+      });
       return res.sendStatus(200);
       } // end remaining ESCALATE after possible ESCALATE->REPLY conversion
     }
@@ -4513,10 +4527,7 @@ const handleWebhook = async (req, res) => {
           /* FIXED_MESSAGE_HANDOFF_R3:presend_escalate */
           if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
             console.log('FIXED_HANDOFF presend account-question exemption', conversationId);
-            const plain = stripHtml(body || '');
-            if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
-              await postClientCommentOnce(conversationId, body, latestUser, clientName);
-            }
+            await deliverAccountQuestionAnswer(conversationId, text, body || '', latestUser, clientName);
           } else {
             await commitFixedMessageHandoff({
               path: 'presend_escalate',
@@ -4690,44 +4701,28 @@ const handleWebhook = async (req, res) => {
           }
         }
         let idsHeld = collectEscalateIds(full, bits, text) || {};
-        if (isClearlyAccountSpecificIssue(text)) {
-          const identityGate = await ensureIdentityBeforeAccountEscalate({
-            conversationId,
-            full,
-            bits,
-            text,
-            kind: 'ACCOUNT',
-            latestUser,
-            clientName,
-            modelBody: text,
-            modelClient: '',
-          });
-          full = identityGate.full || full;
-          idsHeld = identityGate.ids || idsHeld;
-          if (!identityGate.ready) return res.sendStatus(200);
-        }
         /* FIXED_MESSAGE_HANDOFF_R3:missed_escalation */
         if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
-          console.log('FIXED_HANDOFF missed account-question', conversationId);
-          const draft = String(body || '').trim();
-          const plain = stripHtml(draft);
-          if (plain && !Object.values(fixedMessageHandoff.FIXED_MESSAGES).includes(plain)) {
-            await postClientCommentOnce(conversationId, draft, latestUser, clientName);
-          }
-        } else {
-          await commitFixedMessageHandoff({
-            path: 'missed_escalation',
-            conversationId,
-            full,
-            parts,
-            latestUser,
-            text,
-            problem: text,
-            account: idsHeld.account || '',
-            email: idsHeld.email || '',
-            actionNeeded: 'Please take this conversation.',
-          });
+          await postClientCommentOnce(conversationId, fixedMessageHandoff.accountQuestionCustomerLine(text, body||''), latestUser, clientName);
+          return res.sendStatus(200);
         }
+        if (isClearlyAccountSpecificIssue(text)) {
+          const identityGate = await ensureIdentityBeforeAccountEscalate({conversationId,full,bits,text,kind:'ACCOUNT',latestUser,clientName,modelBody:text});
+          full=identityGate.full||full; idsHeld=identityGate.ids||idsHeld;
+          if (!identityGate.ready) return res.sendStatus(200);
+        }
+        await commitFixedMessageHandoff({
+          path: 'missed_escalation',
+          conversationId,
+          full,
+          parts,
+          latestUser,
+          text,
+          problem: text,
+          account: idsHeld.account || '',
+          email: idsHeld.email || '',
+          actionNeeded: 'Please take this conversation.',
+        });
       } catch (e) {
         console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
       }

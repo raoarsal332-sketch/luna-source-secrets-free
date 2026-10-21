@@ -298,10 +298,12 @@ tests.push(test('runtime source closes recovery, missed escalation, ownership, a
   const handoffSrc = fs.readFileSync(path.join(__dirname, '../../01_runtime/fixedMessageHandoff.js'), 'utf8');
   const decideSrc = handoffSrc.slice(handoffSrc.indexOf('function decide'), handoffSrc.indexOf('function classifyAssignment'));
   assert.ok(decideSrc.indexOf('isAccountNumberQuestion') < decideSrc.indexOf('classifyOwnership'));
-  assert.ok(handoffSrc.includes('كلمة المرور'));
-  assert.ok(handoffSrc.includes('پاس ورڈ'));
-  assert.ok(handoffSrc.includes('पासवर्ड'));
-  assert.ok(handoffSrc.includes('\\u2019'));
+  const sanitizerSrc = fs.readFileSync(path.join(__dirname, '../../02_statePresend/credentialSanitizer.js'), 'utf8');
+  assert.ok(sanitizerSrc.includes('كلمة المرور'));
+  assert.ok(sanitizerSrc.includes('پاس ورڈ'));
+  assert.ok(sanitizerSrc.includes('पासवर्ड'));
+  assert.ok(sanitizerSrc.includes('\\u2019'));
+  assert.ok(handoffSrc.includes('sanitizeCredentials'));
 
   const gatesStill = gates.shouldDeferToHumanTeammate(
     { admin_assignee_id: 'human-1' },
