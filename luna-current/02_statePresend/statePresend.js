@@ -186,7 +186,7 @@ async function gate(p) {
       if (sx.extract) imageX.mergeIntoState(state, imageX.extract(p.visionText));
     }
 
-    const ctx = { state, messages, knowledge, route, guards, conversationId, forbiddenPatterns: p.forbiddenPatterns || [] };
+    const ctx = { state, messages, knowledge, route, guards, conversationId, forbiddenPatterns: p.forbiddenPatterns || [], assigneeId: p.assigneeId, botIds: p.botIds || [] };
     const fb = p.fallbackReply !== undefined ? p.fallbackReply : fallbackReply();
     const out = await regen.runWithRegeneration({ draft: original, ctx, regenerate: p.regenerate || null, maxRetries: p.maxRetries, fallbackReply: fb || undefined, key: p.messageId ? `${conversationId}:${p.messageId}` : undefined });
     const first = out.results[0];
