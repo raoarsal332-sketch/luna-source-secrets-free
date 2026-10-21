@@ -1,0 +1,5241 @@
+{
+  "summary": {
+    "commit": "08775b56d3752a0ac03e865e33c91f52ef176043",
+    "seal": "97c54669757605eeeb9d88194067606b2e16f2366fb7a9b91a5067b0a0dfdde5",
+    "cases": 155,
+    "pass": 110,
+    "fail": 45,
+    "tripwire": 0,
+    "byProp": {
+      "a": {
+        "n": 33,
+        "pass": 28,
+        "fail": 5
+      },
+      "d": {
+        "n": 26,
+        "pass": 17,
+        "fail": 9
+      },
+      "b": {
+        "n": 23,
+        "pass": 21,
+        "fail": 2
+      },
+      "c": {
+        "n": 25,
+        "pass": 14,
+        "fail": 11
+      },
+      "e": {
+        "n": 6,
+        "pass": 4,
+        "fail": 2
+      },
+      "f": {
+        "n": 39,
+        "pass": 24,
+        "fail": 15
+      },
+      "reg": {
+        "n": 3,
+        "pass": 2,
+        "fail": 1
+      }
+    },
+    "critical": {
+      "duplicate": 12,
+      "premature_promise": 1,
+      "ownership_bypass": 2,
+      "false_promise": 10,
+      "credential_leak": 5
+    },
+    "identity": {
+      "fixedMessageHandoff.js": {
+        "path": "/tmp/r6-frozen/luna-current/01_runtime/fixedMessageHandoff.js",
+        "sha256": "e7cc1a81387a69859ad5636b9b0c5520a47c4125c0b7510001dee4f09e5fa678",
+        "match": true
+      },
+      "index.js": {
+        "path": "/tmp/r6-frozen/luna-current/01_runtime/index.js",
+        "sha256": "f48ebb3aee624679223dbb19087263b2134bdc89bd1e0a3701d2ec5d44b92347",
+        "match": true
+      },
+      "credentialSanitizer.js": {
+        "path": "/tmp/r6-frozen/luna-current/02_statePresend/credentialSanitizer.js",
+        "sha256": "2c6353936fdec3e990f6fa1eb7ca70134110c9ad6ef8061825839f358f4fe781",
+        "match": true
+      },
+      "targetedRegeneration.js": {
+        "path": "/tmp/r6-frozen/luna-current/02_statePresend/targetedRegeneration.js",
+        "sha256": "38fa4e2a56c23b96d3559e22f7135f5e69ecfc1e9cbafb157a92c46d672461b9",
+        "match": true
+      },
+      "statePresend.js": {
+        "path": "/tmp/r6-frozen/luna-current/02_statePresend/statePresend.js",
+        "sha256": "0e3b8675e00856eca158748711683471e3820d43a9e5c0ff626a14dc84a90764",
+        "match": true
+      },
+      "softEdges.js": {
+        "path": "/tmp/r6-frozen/luna-current/01_runtime/softEdges.js",
+        "sha256": "22f8b555a71bb81f6936997a57c85481b5c351b9446c0f30f7f178c93d5071e0",
+        "match": true
+      }
+    },
+    "loaded": {
+      "index": "f48ebb3aee624679223dbb19087263b2134bdc89bd1e0a3701d2ec5d44b92347",
+      "fixedMessageHandoff": "e7cc1a81387a69859ad5636b9b0c5520a47c4125c0b7510001dee4f09e5fa678",
+      "credentialSanitizer": "2c6353936fdec3e990f6fa1eb7ca70134110c9ad6ef8061825839f358f4fe781",
+      "statePresend": "0e3b8675e00856eca158748711683471e3820d43a9e5c0ff626a14dc84a90764",
+      "targetedRegeneration": "38fa4e2a56c23b96d3559e22f7135f5e69ecfc1e9cbafb157a92c46d672461b9",
+      "softEdges": "22f8b555a71bb81f6936997a57c85481b5c351b9446c0f30f7f178c93d5071e0"
+    }
+  },
+  "failed": [
+    {
+      "id": "H-lost-ticket-parts-have-line",
+      "prop": "a",
+      "title": "Lost ticket store with the fixed line still in parts does not duplicate",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostticketpartshaveline 200 ok",
+          "log ASSIGN synHlostticketpartshaveline 424242 200 ok",
+          "log OUT synHlostticketpartshaveline 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostticketpartshaveline 424242",
+          "log SKIP teammate-handoff human_assignee synHlostticketpartshaveline"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-lost-both-parts-remember",
+      "prop": "a",
+      "title": "Both stores lost but parts show the completed line does not duplicate",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostbothpartsremember 200 ok",
+          "log ASSIGN synHlostbothpartsremember 424242 200 ok",
+          "log OUT synHlostbothpartsremember 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostbothpartsremember 424242",
+          "log SKIP teammate-handoff human_assignee synHlostbothpartsremember"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-lost-and-stale",
+      "prop": "a",
+      "title": "Lost stores plus a stale snapshot must not post a second fixed line",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostandstale 200 ok",
+          "log ASSIGN synHlostandstale 424242 200 ok",
+          "log OUT synHlostandstale 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostandstale 424242",
+          "log SKIP teammate-handoff human_assignee synHlostandstale"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-partial-note-lost-ticket",
+      "prop": "a",
+      "title": "Partial note recorded as success must not unlock the fixed line after the ticket store is lost",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "promised_on_failure",
+        "awaiting_on_failure",
+        "public_on_failure"
+      ],
+      "critical": [
+        "duplicate",
+        "premature_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHpartialnotelostticket 200 ok",
+          "log FIXED_HANDOFF withheld note_partial synHpartialnotelostticket",
+          "err IC_REQ_REPLAY_SUPPRESSED NOTE https://api.intercom.io/conversations/synHpartialnotelostticket/reply confirmed",
+          "log NOTE synHpartialnotelostticket 200 ok",
+          "log ASSIGN synHpartialnotelostticket 424242 200 ok",
+          "log OUT synHpartialnotelostticket 200 ok",
+          "log FIXED_HANDOFF sent welcome synHpartialnotelostticket 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-order-urdu-replay",
+      "prop": "a",
+      "title": "Urdu success then replay keeps a single Urdu fixed line",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHorderurdureplay 200 ok",
+          "log ASSIGN synHorderurdureplay 424242 200 ok",
+          "log OUT synHorderurdureplay 200 ok",
+          "log FIXED_HANDOFF sent welcome synHorderurdureplay 424242",
+          "log SKIP teammate-handoff human_assignee synHorderurdureplay",
+          "log SKIP teammate-handoff human_assignee synHorderurdureplay"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "H-fresh-created-en",
+      "prop": "d",
+      "title": "Fresh conversation.user.created live-agent request gets the English fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP fin-wait user.created synHfreshcreateden"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-live-fr",
+      "prop": "d",
+      "title": "Live-agent request [fr] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivefr REPLY ACCOUNT",
+          "log OUT synDlivefr 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-de",
+      "prop": "d",
+      "title": "Live-agent request [de] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivede REPLY ACCOUNT",
+          "log OUT synDlivede 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-nl",
+      "prop": "d",
+      "title": "Live-agent request [nl] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivenl REPLY ACCOUNT",
+          "log OUT synDlivenl 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-tr",
+      "prop": "d",
+      "title": "Live-agent request [tr] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivetr REPLY ACCOUNT",
+          "log OUT synDlivetr 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-pl",
+      "prop": "d",
+      "title": "Live-agent request [pl] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivepl REPLY ACCOUNT",
+          "log OUT synDlivepl 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-ru",
+      "prop": "d",
+      "title": "Live-agent request [ru] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDliveru REPLY ACCOUNT",
+          "log OUT synDliveru 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-zh",
+      "prop": "d",
+      "title": "Live-agent request [zh] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivezh REPLY ACCOUNT",
+          "log OUT synDlivezh 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-ja",
+      "prop": "d",
+      "title": "Live-agent request [ja] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDliveja REPLY ACCOUNT",
+          "log OUT synDliveja 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "B-assignee-account",
+      "prop": "b",
+      "title": "Human assignee stays silent for [account]",
+      "pass": false,
+      "issues": [
+        "ownership_public"
+      ],
+      "critical": [
+        "ownership_bypass"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synBassigneeaccount 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-account",
+      "prop": "b",
+      "title": "Human public reply stays silent for [account]",
+      "pass": false,
+      "issues": [
+        "ownership_public"
+      ],
+      "critical": [
+        "ownership_bypass"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synBrepliedaccount 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-es",
+      "prop": "c",
+      "title": "Account-number question [es] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctes 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctes conversation.user.created"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-fr",
+      "prop": "c",
+      "title": "Account-number question [fr] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctfr 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-de",
+      "prop": "c",
+      "title": "Account-number question [de] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctde 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-pt",
+      "prop": "c",
+      "title": "Account-number question [pt] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nSu MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctpt 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-nl",
+      "prop": "c",
+      "title": "Account-number question [nl] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctnl 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-pl",
+      "prop": "c",
+      "title": "Account-number question [pl] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCacctpl REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCacctpl route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCacctpl 200 ok",
+          "log ASSIGN synCacctpl 424242 200 ok",
+          "log OUT synCacctpl 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCacctpl 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-acct-tr",
+      "prop": "c",
+      "title": "Account-number question [tr] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCaccttr REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCaccttr route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCaccttr 200 ok",
+          "log ASSIGN synCaccttr 424242 200 ok",
+          "log OUT synCaccttr 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCaccttr 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-acct-ru",
+      "prop": "c",
+      "title": "Account-number question [ru] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCacctru REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCacctru route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCacctru 200 ok",
+          "log ASSIGN synCacctru 424242 200 ok",
+          "log OUT synCacctru 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCacctru 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-acct-id",
+      "prop": "c",
+      "title": "Account-number question [id] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCacctid REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCacctid route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCacctid 200 ok",
+          "log ASSIGN synCacctid 424242 200 ok",
+          "log OUT synCacctid 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCacctid 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-emptied-draft",
+      "prop": "c",
+      "title": "An emptied re-ask draft escalates instead of going silent",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed"
+      ],
+      "critical": [
+        "duplicate"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCemptieddraft REPLY ACCOUNT",
+          "log NOTE synCemptieddraft 200 ok",
+          "log ASSIGN synCemptieddraft 424242 200 ok",
+          "log OUT synCemptieddraft 200 ok",
+          "log FIXED_HANDOFF sent presend_escalate synCemptieddraft 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "C-recovery-account",
+      "prop": "c",
+      "title": "Account question during a half-finished handoff is answered, not replaced by the fixed line",
+      "pass": false,
+      "issues": [
+        "missing_fact_en"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synCrecoveryaccount 200 ok",
+          "err IC_REQ_FAIL ASSIGN https://api.intercom.io/conversations/synCrecoveryaccount/reply 422 {\"errors\":[{\"code\":\"unprocessable\"}]}",
+          "log ASSIGN synCrecoveryaccount 424242 422 FAIL",
+          "log FIXED_HANDOFF withheld assign_422 synCrecoveryaccount",
+          "log FIXED_HANDOFF recovery account-question exemption synCrecoveryaccount {\"failure422\":true,\"failure500\":false}",
+          "log SKIP pre-send already-replied synCrecoveryaccount"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "E-hold-regen-still-bad",
+      "prop": "e",
+      "title": "Unsupported number that regenerates to another wrong figure hedges and does not hand off",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "spurious_handoff",
+        "neither_regenerated_nor_hedged"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synEholdregenstillbad REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synEholdregenstillbad route=FAST codes=UNSUPPORTED_NUMBER final=needs-escalate",
+          "log NOTE synEholdregenstillbad 200 ok",
+          "log ASSIGN synEholdregenstillbad 424242 200 ok",
+          "log OUT synEholdregenstillbad 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synEholdregenstillbad 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "E-drawdown",
+      "prop": "e",
+      "title": "Unsupported drawdown percent does not hand off",
+      "pass": false,
+      "issues": [
+        "bad_number_shipped",
+        "neither_regenerated_nor_hedged"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe maximum daily drawdown is 14%."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synEdrawdown REPLY ACCOUNT",
+          "log OUT synEdrawdown 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-spread-what",
+      "prop": "f",
+      "title": "Appropriate spread ask [what] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadwhat 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadwhat"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-check",
+      "prop": "f",
+      "title": "Appropriate spread ask [check] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadcheck 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadcheck"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-test",
+      "prop": "f",
+      "title": "Appropriate spread ask [test] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadtest 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadtest"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-mt5",
+      "prop": "f",
+      "title": "Appropriate spread ask [mt5] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadmt5 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadmt5"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-echo-exact",
+      "prop": "f",
+      "title": "Model echo of the exact locked template on a payout question is not delivered",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFechoexact REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFechoexact route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFechoexact 200 ok",
+          "log ASSIGN synFechoexact 424242 200 ok",
+          "log OUT synFechoexact 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFechoexact 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-password",
+      "prop": "f",
+      "title": "Near-miss template with a tampered password is redacted",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperpassword REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperpassword route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperpassword 200 ok",
+          "log ASSIGN synFtamperpassword 424242 200 ok",
+          "log OUT synFtamperpassword 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperpassword 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-account",
+      "prop": "f",
+      "title": "Template with account 55189 is not treated as the locked reply",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperaccount REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperaccount route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperaccount 200 ok",
+          "log ASSIGN synFtamperaccount 424242 200 ok",
+          "log OUT synFtamperaccount 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperaccount 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-space",
+      "prop": "f",
+      "title": "Template with one extra space is not allow-listed",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperspace REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperspace route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperspace 200 ok",
+          "log ASSIGN synFtamperspace 424242 200 ok",
+          "log OUT synFtamperspace 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperspace 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-zw",
+      "prop": "f",
+      "title": "Template with a zero-width character in the password is redacted",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperzw REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperzw route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperzw 200 ok",
+          "log ASSIGN synFtamperzw 424242 200 ok",
+          "log OUT synFtamperzw 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperzw 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-cred-symbol",
+      "prop": "f",
+      "title": "Password containing ? and ! is fully redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwSymbo"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredsymbol REPLY ACCOUNT",
+          "log OUT synFcredsymbol 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-zw-label",
+      "prop": "f",
+      "title": "Zero-width character inside the password label is still redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwZw91"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredzwlabel REPLY ACCOUNT",
+          "log OUT synFcredzwlabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-spaced-label",
+      "prop": "f",
+      "title": "Spaced password label is still redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwSpace",
+        "leak:prompt:SynthPwSpace"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredspacedlabel REPLY ACCOUNT",
+          "log OUT synFcredspacedlabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-spaced-value",
+      "prop": "f",
+      "title": "Spaced password value is fully redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthSpace91"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret] [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredspacedvalue REPLY ACCOUNT",
+          "log OUT synFcredspacedvalue 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-zw-value",
+      "prop": "f",
+      "title": "Zero-width character inside the secret value is redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwInsid"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret] [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredzwvalue REPLY ACCOUNT",
+          "log OUT synFcredzwvalue 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-urdu-note",
+      "prop": "f",
+      "title": "Urdu handoff translation prompt and note redact the password",
+      "pass": false,
+      "issues": [
+        "fixed_line_ur",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredurdunote REPLY ACCOUNT",
+          "log OUT synFcredurdunote 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "R-empty-model",
+      "prop": "reg",
+      "title": "Empty model draft on a real FAQ does not go silent without a safe answer",
+      "pass": false,
+      "issues": [
+        "silent_without_escalation"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synRemptymodel REPLY ACCOUNT",
+          "log SKIP empty reply body synRemptymodel"
+        ],
+        "prompts": 1
+      }
+    }
+  ],
+  "results": [
+    {
+      "id": "H-ok-en",
+      "prop": "a",
+      "title": "Successful handoff in en posts note, assignment, then one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHoken 200 ok",
+          "log ASSIGN synHoken 424242 200 ok",
+          "log OUT synHoken 200 ok",
+          "log FIXED_HANDOFF sent welcome synHoken 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-ok-ur",
+      "prop": "a",
+      "title": "Successful handoff in ur posts note, assignment, then one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHokur 200 ok",
+          "log ASSIGN synHokur 424242 200 ok",
+          "log OUT synHokur 200 ok",
+          "log FIXED_HANDOFF sent welcome synHokur 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "H-ok-ar",
+      "prop": "a",
+      "title": "Successful handoff in ar posts note, assignment, then one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "هذه المحادثة الآن لدى أحد الزملاء."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHokar 200 ok",
+          "log ASSIGN synHokar 424242 200 ok",
+          "log OUT synHokar 200 ok",
+          "log FIXED_HANDOFF sent welcome synHokar 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "H-ok-hi",
+      "prop": "a",
+      "title": "Successful handoff in hi posts note, assignment, then one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "यह बातचीत अब एक साथी के पास है।"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHokhi 200 ok",
+          "log ASSIGN synHokhi 424242 200 ok",
+          "log OUT synHokhi 200 ok",
+          "log FIXED_HANDOFF sent welcome synHokhi 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "H-ok-it",
+      "prop": "a",
+      "title": "Successful handoff in it posts note, assignment, then one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Un collega ha ora questa conversazione."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHokit 200 ok",
+          "log ASSIGN synHokit 424242 200 ok",
+          "log OUT synHokit 200 ok",
+          "log FIXED_HANDOFF sent welcome synHokit 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-ok-hinglish",
+      "prop": "a",
+      "title": "Successful handoff in hinglish posts note, assignment, then one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHokhinglish 200 ok",
+          "log ASSIGN synHokhinglish 424242 200 ok",
+          "log OUT synHokhinglish 200 ok",
+          "log FIXED_HANDOFF sent welcome synHokhinglish 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "H-note-500",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when note returns 500",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "err IC_REQ_UNKNOWN NOTE https://api.intercom.io/conversations/synHnote500/reply write outcome unknown , not retried",
+          "log NOTE synHnote500 500 FAIL",
+          "log FIXED_HANDOFF withheld note_500 synHnote500"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-note-timeout",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when note returns timeout",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "err IC_REQ_ERR NOTE https://api.intercom.io/conversations/synHnotetimeout/reply timeout of 20000ms exceeded",
+          "err IC_REQ_UNKNOWN NOTE https://api.intercom.io/conversations/synHnotetimeout/reply write outcome unknown , not retried",
+          "log NOTE synHnotetimeout 0 FAIL",
+          "log FIXED_HANDOFF withheld note_timeout synHnotetimeout"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-note-422",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when note returns 422",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "err IC_REQ_FAIL NOTE https://api.intercom.io/conversations/synHnote422/reply 422 {\"errors\":[{\"code\":\"unprocessable\"}]}",
+          "log NOTE synHnote422 422 FAIL",
+          "log FIXED_HANDOFF withheld note_422 synHnote422"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-note-partial",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when note returns partial",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHnotepartial 200 ok",
+          "log FIXED_HANDOFF withheld note_partial synHnotepartial"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-note-malformed",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when note returns malformed",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHnotemalformed 200 FAIL",
+          "log FIXED_HANDOFF withheld note_partial synHnotemalformed"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-assign-500",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when assign returns 500",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHassign500 200 ok",
+          "err IC_REQ_UNKNOWN ASSIGN https://api.intercom.io/conversations/synHassign500/reply write outcome unknown , not retried",
+          "log ASSIGN synHassign500 424242 500 FAIL",
+          "log FIXED_HANDOFF withheld assign_500 synHassign500"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-assign-timeout",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when assign returns timeout",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHassigntimeout 200 ok",
+          "err IC_REQ_ERR ASSIGN https://api.intercom.io/conversations/synHassigntimeout/reply timeout of 20000ms exceeded",
+          "err IC_REQ_UNKNOWN ASSIGN https://api.intercom.io/conversations/synHassigntimeout/reply write outcome unknown , not retried",
+          "log ASSIGN synHassigntimeout 424242 0 FAIL",
+          "log FIXED_HANDOFF withheld assign_timeout synHassigntimeout"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-assign-422",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when assign returns 422",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHassign422 200 ok",
+          "err IC_REQ_FAIL ASSIGN https://api.intercom.io/conversations/synHassign422/reply 422 {\"errors\":[{\"code\":\"unprocessable\"}]}",
+          "log ASSIGN synHassign422 424242 422 FAIL",
+          "log FIXED_HANDOFF withheld assign_422 synHassign422"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-assign-partial",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when assign returns partial",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHassignpartial 200 ok",
+          "log ASSIGN synHassignpartial 424242 200 ok",
+          "log FIXED_HANDOFF withheld assign_partial synHassignpartial"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-assign-malformed",
+      "prop": "a",
+      "title": "English handoff withholds the fixed line when assign returns malformed",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHassignmalformed 200 ok",
+          "log ASSIGN synHassignmalformed 424242 200 FAIL",
+          "log FIXED_HANDOFF withheld assign_partial synHassignmalformed"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-message-500",
+      "prop": "a",
+      "title": "Message 500 after note and assignment does not claim success and does not duplicate",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": false,
+            "fault": "500",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHmessage500 200 ok",
+          "log ASSIGN synHmessage500 424242 200 ok",
+          "err IC_REQ_UNKNOWN OUT https://api.intercom.io/conversations/synHmessage500/reply write outcome unknown , not retried",
+          "log OUT synHmessage500 500 FAIL",
+          "log FIXED_HANDOFF withheld message_500 synHmessage500"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-message-timeout",
+      "prop": "a",
+      "title": "Message timeout after note and assignment does not claim success and does not duplicate",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": false,
+            "fault": "timeout",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHmessagetimeout 200 ok",
+          "log ASSIGN synHmessagetimeout 424242 200 ok",
+          "err IC_REQ_ERR OUT https://api.intercom.io/conversations/synHmessagetimeout/reply timeout of 20000ms exceeded",
+          "err IC_REQ_UNKNOWN OUT https://api.intercom.io/conversations/synHmessagetimeout/reply write outcome unknown , not retried",
+          "log OUT synHmessagetimeout 0 FAIL",
+          "log FIXED_HANDOFF withheld message_timeout synHmessagetimeout"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-retry-after-note-500",
+      "prop": "a",
+      "title": "Ambiguous note 500 stays withheld on replay instead of posting the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "err IC_REQ_UNKNOWN NOTE https://api.intercom.io/conversations/synHretryafternote500/reply write outcome unknown , not retried",
+          "log NOTE synHretryafternote500 500 FAIL",
+          "log FIXED_HANDOFF withheld note_500 synHretryafternote500",
+          "log FIXED_HANDOFF withheld note_ambiguous_held synHretryafternote500"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-retry-after-note-422",
+      "prop": "a",
+      "title": "A rejected note 422 can be retried and then completes once",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 2,
+        "assigns": 1,
+        "logs": [
+          "err IC_REQ_FAIL NOTE https://api.intercom.io/conversations/synHretryafternote422/reply 422 {\"errors\":[{\"code\":\"unprocessable\"}]}",
+          "log NOTE synHretryafternote422 422 FAIL",
+          "log FIXED_HANDOFF withheld note_422 synHretryafternote422",
+          "log NOTE synHretryafternote422 200 ok",
+          "log ASSIGN synHretryafternote422 424242 200 ok",
+          "log OUT synHretryafternote422 200 ok",
+          "log FIXED_HANDOFF sent welcome synHretryafternote422 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-replay-same-event",
+      "prop": "a",
+      "title": "Webhook replay after success does not post a second fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHreplaysameevent 200 ok",
+          "log ASSIGN synHreplaysameevent 424242 200 ok",
+          "log OUT synHreplaysameevent 200 ok",
+          "log FIXED_HANDOFF sent welcome synHreplaysameevent 424242",
+          "log SKIP teammate-handoff human_assignee synHreplaysameevent"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-parallel-inflight",
+      "prop": "a",
+      "title": "Two in-flight deliveries of the same event produce one fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log SKIP inflight synHparallelinflight",
+          "log NOTE synHparallelinflight 200 ok",
+          "log ASSIGN synHparallelinflight 424242 200 ok",
+          "log OUT synHparallelinflight 200 ok",
+          "log FIXED_HANDOFF sent welcome synHparallelinflight 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-lost-ticket-parts-have-line",
+      "prop": "a",
+      "title": "Lost ticket store with the fixed line still in parts does not duplicate",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostticketpartshaveline 200 ok",
+          "log ASSIGN synHlostticketpartshaveline 424242 200 ok",
+          "log OUT synHlostticketpartshaveline 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostticketpartshaveline 424242",
+          "log SKIP teammate-handoff human_assignee synHlostticketpartshaveline"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-lost-ops-state-remembers",
+      "prop": "a",
+      "title": "Lost write-op store with ticket state remembering the send does not duplicate",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostopsstateremembers 200 ok",
+          "log ASSIGN synHlostopsstateremembers 424242 200 ok",
+          "log OUT synHlostopsstateremembers 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostopsstateremembers 424242",
+          "log SKIP teammate-handoff human_assignee synHlostopsstateremembers"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-lost-both-parts-remember",
+      "prop": "a",
+      "title": "Both stores lost but parts show the completed line does not duplicate",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostbothpartsremember 200 ok",
+          "log ASSIGN synHlostbothpartsremember 424242 200 ok",
+          "log OUT synHlostbothpartsremember 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostbothpartsremember 424242",
+          "log SKIP teammate-handoff human_assignee synHlostbothpartsremember"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-stale-snapshot-state-remembers",
+      "prop": "a",
+      "title": "Stale fetch that hides the sent line still does not duplicate when ticket state remembers it",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHstalesnapshotstateremembers 200 ok",
+          "log ASSIGN synHstalesnapshotstateremembers 424242 200 ok",
+          "log OUT synHstalesnapshotstateremembers 200 ok",
+          "log FIXED_HANDOFF sent welcome synHstalesnapshotstateremembers 424242",
+          "log SKIP teammate-handoff human_assignee synHstalesnapshotstateremembers"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-lost-and-stale",
+      "prop": "a",
+      "title": "Lost stores plus a stale snapshot must not post a second fixed line",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHlostandstale 200 ok",
+          "log ASSIGN synHlostandstale 424242 200 ok",
+          "log OUT synHlostandstale 200 ok",
+          "log FIXED_HANDOFF sent welcome synHlostandstale 424242",
+          "log SKIP teammate-handoff human_assignee synHlostandstale"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-message-timeout-then-parts",
+      "prop": "a",
+      "title": "Ambiguous message timeout that actually landed is not posted again",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "timeout-after-accept",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHmessagetimeoutthenparts 200 ok",
+          "log ASSIGN synHmessagetimeoutthenparts 424242 200 ok",
+          "err IC_REQ_ERR OUT https://api.intercom.io/conversations/synHmessagetimeoutthenparts/reply timeout of 20000ms exceeded",
+          "err IC_REQ_UNKNOWN OUT https://api.intercom.io/conversations/synHmessagetimeoutthenparts/reply write outcome unknown , not retried",
+          "log OUT synHmessagetimeoutthenparts 0 FAIL",
+          "log FIXED_HANDOFF withheld message_timeout synHmessagetimeoutthenparts",
+          "log SKIP already replied after user part synHmessagetimeoutthenparts"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-assign-timeout-held",
+      "prop": "a",
+      "title": "Ambiguous assignment timeout does not later promise on a stale snapshot",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synHassigntimeoutheld 200 ok",
+          "err IC_REQ_ERR ASSIGN https://api.intercom.io/conversations/synHassigntimeoutheld/reply timeout of 20000ms exceeded",
+          "err IC_REQ_UNKNOWN ASSIGN https://api.intercom.io/conversations/synHassigntimeoutheld/reply write outcome unknown , not retried",
+          "log ASSIGN synHassigntimeoutheld 424242 0 FAIL",
+          "log FIXED_HANDOFF withheld assign_timeout synHassigntimeoutheld",
+          "log SKIP already replied after user part synHassigntimeoutheld"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-partial-note-lost-ticket",
+      "prop": "a",
+      "title": "Partial note recorded as success must not unlock the fixed line after the ticket store is lost",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "promised_on_failure",
+        "awaiting_on_failure",
+        "public_on_failure"
+      ],
+      "critical": [
+        "duplicate",
+        "premature_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHpartialnotelostticket 200 ok",
+          "log FIXED_HANDOFF withheld note_partial synHpartialnotelostticket",
+          "err IC_REQ_REPLAY_SUPPRESSED NOTE https://api.intercom.io/conversations/synHpartialnotelostticket/reply confirmed",
+          "log NOTE synHpartialnotelostticket 200 ok",
+          "log ASSIGN synHpartialnotelostticket 424242 200 ok",
+          "log OUT synHpartialnotelostticket 200 ok",
+          "log FIXED_HANDOFF sent welcome synHpartialnotelostticket 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-second-customer-turn",
+      "prop": "a",
+      "title": "A later live-agent turn after a completed handoff does not post a second promise",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHsecondcustomerturn 200 ok",
+          "log ASSIGN synHsecondcustomerturn 424242 200 ok",
+          "log OUT synHsecondcustomerturn 200 ok",
+          "log FIXED_HANDOFF sent welcome synHsecondcustomerturn 424242",
+          "log SKIP teammate-handoff human_assignee synHsecondcustomerturn"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-order-urdu-replay",
+      "prop": "a",
+      "title": "Urdu success then replay keeps a single Urdu fixed line",
+      "pass": false,
+      "issues": [
+        "awaiting_not_set"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHorderurdureplay 200 ok",
+          "log ASSIGN synHorderurdureplay 424242 200 ok",
+          "log OUT synHorderurdureplay 200 ok",
+          "log FIXED_HANDOFF sent welcome synHorderurdureplay 424242",
+          "log SKIP teammate-handoff human_assignee synHorderurdureplay",
+          "log SKIP teammate-handoff human_assignee synHorderurdureplay"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "H-italian-after-elite",
+      "prop": "a",
+      "title": "Italian live-agent request after Elite has spoken still gets the Italian line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Un collega ha ora questa conversazione."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synHitalianafterelite 200 ok",
+          "log ASSIGN synHitalianafterelite 424242 200 ok",
+          "log OUT synHitalianafterelite 200 ok",
+          "log FIXED_HANDOFF sent welcome synHitalianafterelite 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "H-fresh-created-en",
+      "prop": "d",
+      "title": "Fresh conversation.user.created live-agent request gets the English fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP fin-wait user.created synHfreshcreateden"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-live-en-manager",
+      "prop": "d",
+      "title": "Live-agent request [en-manager] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synDliveenmanager 200 ok",
+          "log ASSIGN synDliveenmanager 424242 200 ok",
+          "log OUT synDliveenmanager 200 ok",
+          "log FIXED_HANDOFF sent welcome synDliveenmanager 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-live-en-supervisor",
+      "prop": "d",
+      "title": "Live-agent request [en-supervisor] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synDliveensupervisor 200 ok",
+          "log ASSIGN synDliveensupervisor 424242 200 ok",
+          "log OUT synDliveensupervisor 200 ok",
+          "log FIXED_HANDOFF sent welcome synDliveensupervisor 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-live-en-real",
+      "prop": "d",
+      "title": "Live-agent request [en-real] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synDliveenreal 200 ok",
+          "log ASSIGN synDliveenreal 424242 200 ok",
+          "log OUT synDliveenreal 200 ok",
+          "log FIXED_HANDOFF sent welcome synDliveenreal 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-live-hinglish-baat",
+      "prop": "d",
+      "title": "Live-agent request [hinglish-baat] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synDlivehinglishbaat 200 ok",
+          "log ASSIGN synDlivehinglishbaat 424242 200 ok",
+          "log OUT synDlivehinglishbaat 200 ok",
+          "log FIXED_HANDOFF sent welcome synDlivehinglishbaat 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-roman",
+      "prop": "d",
+      "title": "Live-agent request [roman] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synDliveroman 200 ok",
+          "log ASSIGN synDliveroman 424242 200 ok",
+          "log OUT synDliveroman 200 ok",
+          "log FIXED_HANDOFF sent welcome synDliveroman 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-fr",
+      "prop": "d",
+      "title": "Live-agent request [fr] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivefr REPLY ACCOUNT",
+          "log OUT synDlivefr 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-es",
+      "prop": "d",
+      "title": "Live-agent request [es] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synDlivees REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synDlivees route=FAST codes=UNSUPPORTED_NUMBER final=needs-escalate",
+          "log NOTE synDlivees 200 ok",
+          "log ASSIGN synDlivees 424242 200 ok",
+          "log OUT synDlivees 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synDlivees 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "D-live-de",
+      "prop": "d",
+      "title": "Live-agent request [de] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivede REPLY ACCOUNT",
+          "log OUT synDlivede 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-pt",
+      "prop": "d",
+      "title": "Live-agent request [pt] gets the fixed line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synDlivept REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synDlivept route=FAST codes=UNSUPPORTED_NUMBER final=needs-escalate",
+          "log NOTE synDlivept 200 ok",
+          "log ASSIGN synDlivept 424242 200 ok",
+          "log OUT synDlivept 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synDlivept 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "D-live-nl",
+      "prop": "d",
+      "title": "Live-agent request [nl] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivenl REPLY ACCOUNT",
+          "log OUT synDlivenl 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-tr",
+      "prop": "d",
+      "title": "Live-agent request [tr] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivetr REPLY ACCOUNT",
+          "log OUT synDlivetr 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-pl",
+      "prop": "d",
+      "title": "Live-agent request [pl] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivepl REPLY ACCOUNT",
+          "log OUT synDlivepl 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-ru",
+      "prop": "d",
+      "title": "Live-agent request [ru] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDliveru REPLY ACCOUNT",
+          "log OUT synDliveru 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-zh",
+      "prop": "d",
+      "title": "Live-agent request [zh] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDlivezh REPLY ACCOUNT",
+          "log OUT synDlivezh 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-live-ja",
+      "prop": "d",
+      "title": "Live-agent request [ja] gets the fixed line",
+      "pass": false,
+      "issues": [
+        "fixed_line_en",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synDliveja REPLY ACCOUNT",
+          "log OUT synDliveja 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "D-id-en",
+      "prop": "d",
+      "title": "Identity question [en] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDiden 200 ok",
+          "log ASSISTANT_IDENTITY answer synDiden"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-en-ai",
+      "prop": "d",
+      "title": "Identity question [en-ai] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidenai 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidenai"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-en-human",
+      "prop": "d",
+      "title": "Identity question [en-human] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidenhuman 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidenhuman"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-or",
+      "prop": "d",
+      "title": "Identity question [or] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidor 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidor"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-hinglish",
+      "prop": "d",
+      "title": "Identity question [hinglish] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Salam Synthetic,\n\nMain FundedElite ka AI assistant hoon. Main aap ke sawalat mein madad kar sakta hoon aur zarurat par support team ko involve kar sakta hoon."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidhinglish 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidhinglish"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-hinglish-insaan",
+      "prop": "d",
+      "title": "Identity question [hinglish-insaan] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Salam Synthetic,\n\nMain FundedElite ka AI assistant hoon. Main aap ke sawalat mein madad kar sakta hoon aur zarurat par support team ko involve kar sakta hoon."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidhinglishinsaan 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidhinglishinsaan"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-it",
+      "prop": "d",
+      "title": "Identity question [it] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Ciao Synthetic,\n\nSono un assistente AI di FundedElite. Posso aiutarti con le tue domande e coinvolgere il team di supporto quando serve."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidit 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidit"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-ur",
+      "prop": "d",
+      "title": "Identity question [ur] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nمیں FundedElite کا AI اسسٹنٹ ہوں۔ میں آپ کے سوالات میں مدد کر سکتا ہوں اور ضرورت پڑنے پر سپورٹ ٹیم کو شامل کر سکتا ہوں۔"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidur 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidur"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "D-id-mixed",
+      "prop": "d",
+      "title": "Identity question [mixed] is answered and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synDidmixed 200 ok",
+          "log ASSISTANT_IDENTITY answer synDidmixed"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-hello",
+      "prop": "b",
+      "title": "Human assignee stays silent for [hello]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_assignee synBassigneehello"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-hello",
+      "prop": "b",
+      "title": "Human public reply stays silent for [hello]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBrepliedhello"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-live",
+      "prop": "b",
+      "title": "Human assignee stays silent for [live]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_assignee synBassigneelive"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-live",
+      "prop": "b",
+      "title": "Human public reply stays silent for [live]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBrepliedlive"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-status",
+      "prop": "b",
+      "title": "Human assignee stays silent for [status]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP status-ping owned human_assignee synBassigneestatus"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-status",
+      "prop": "b",
+      "title": "Human public reply stays silent for [status]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP status-ping owned human_reply synBrepliedstatus"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-account",
+      "prop": "b",
+      "title": "Human assignee stays silent for [account]",
+      "pass": false,
+      "issues": [
+        "ownership_public"
+      ],
+      "critical": [
+        "ownership_bypass"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synBassigneeaccount 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-account",
+      "prop": "b",
+      "title": "Human public reply stays silent for [account]",
+      "pass": false,
+      "issues": [
+        "ownership_public"
+      ],
+      "critical": [
+        "ownership_bypass"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synBrepliedaccount 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-identity",
+      "prop": "b",
+      "title": "Human assignee stays silent for [identity]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_assignee synBassigneeidentity"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-identity",
+      "prop": "b",
+      "title": "Human public reply stays silent for [identity]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBrepliedidentity"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-spread",
+      "prop": "b",
+      "title": "Human assignee stays silent for [spread]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_assignee synBassigneespread"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-spread",
+      "prop": "b",
+      "title": "Human public reply stays silent for [spread]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBrepliedspread"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-urdu-live",
+      "prop": "b",
+      "title": "Human assignee stays silent for [urdu-live]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_assignee synBassigneeurdulive"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-urdu-live",
+      "prop": "b",
+      "title": "Human public reply stays silent for [urdu-live]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBrepliedurdulive"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-assignee-it-live",
+      "prop": "b",
+      "title": "Human assignee stays silent for [it-live]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_assignee synBassigneeitlive"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-replied-it-live",
+      "prop": "b",
+      "title": "Human public reply stays silent for [it-live]",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBreplieditlive"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-admin-body-no-type",
+      "prop": "b",
+      "title": "Admin body with no part_type stays silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBadminbodynotype"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-author-teammate",
+      "prop": "b",
+      "title": "author.type teammate stays silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff author_type_teammate synBauthorteammate"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-risk",
+      "prop": "b",
+      "title": "Risk team stays publicly silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-escalations",
+      "prop": "b",
+      "title": "Escalations team stays publicly silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-ambiguous",
+      "prop": "b",
+      "title": "Ambiguous assignee stays silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff ambiguous_ownership synBambiguous"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-stale-assignment",
+      "prop": "b",
+      "title": "Stale assignment target versus current bot assignee stays silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff stale_ownership synBstaleassignment"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "B-human-urdu-reply",
+      "prop": "b",
+      "title": "Urdu human public reply keeps a later live-agent ask silent",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log SKIP teammate-handoff human_reply synBhumanurdureply"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-en",
+      "prop": "c",
+      "title": "Account-number question [en] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCaccten 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCaccten conversation.user.created"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-en-where",
+      "prop": "c",
+      "title": "Account-number question [en-where] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctenwhere 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctenwhere conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-en-can",
+      "prop": "c",
+      "title": "Account-number question [en-can] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctencan 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctencan conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-en-bare",
+      "prop": "c",
+      "title": "Account-number question [en-bare] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctenbare 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-roman",
+      "prop": "c",
+      "title": "Account-number question [roman] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Salam Synthetic,\n\nMT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctroman 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctroman conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-hinglish",
+      "prop": "c",
+      "title": "Account-number question [hinglish] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Salam Synthetic,\n\nMT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCaccthinglish 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-ur",
+      "prop": "c",
+      "title": "Account-number question [ur] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nMT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctur 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctur conversation.user.created"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-hi",
+      "prop": "c",
+      "title": "Account-number question [hi] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nMT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCaccthi 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCaccthi conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-ar",
+      "prop": "c",
+      "title": "Account-number question [ar] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nفي MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctar 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctar conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-it",
+      "prop": "c",
+      "title": "Account-number question [it] gets the KB fact line",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nSu MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctit 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctit conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-es",
+      "prop": "c",
+      "title": "Account-number question [es] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctes 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCacctes conversation.user.created"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-fr",
+      "prop": "c",
+      "title": "Account-number question [fr] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctfr 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-de",
+      "prop": "c",
+      "title": "Account-number question [de] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctde 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-pt",
+      "prop": "c",
+      "title": "Account-number question [pt] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nSu MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctpt 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-nl",
+      "prop": "c",
+      "title": "Account-number question [nl] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "fact_wrong_language"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCacctnl 200 ok"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-acct-pl",
+      "prop": "c",
+      "title": "Account-number question [pl] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCacctpl REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCacctpl route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCacctpl 200 ok",
+          "log ASSIGN synCacctpl 424242 200 ok",
+          "log OUT synCacctpl 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCacctpl 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-acct-tr",
+      "prop": "c",
+      "title": "Account-number question [tr] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCaccttr REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCaccttr route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCaccttr 200 ok",
+          "log ASSIGN synCaccttr 424242 200 ok",
+          "log OUT synCaccttr 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCaccttr 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-acct-ru",
+      "prop": "c",
+      "title": "Account-number question [ru] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCacctru REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCacctru route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCacctru 200 ok",
+          "log ASSIGN synCacctru 424242 200 ok",
+          "log OUT synCacctru 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCacctru 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-acct-id",
+      "prop": "c",
+      "title": "Account-number question [id] gets the KB fact line",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "missing_fact_other",
+        "fact_became_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCacctid REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synCacctid route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "log NOTE synCacctid 200 ok",
+          "log ASSIGN synCacctid 424242 200 ok",
+          "log OUT synCacctid 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synCacctid 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "C-not-supply",
+      "prop": "c",
+      "title": "Supplying an account number is not answered as an account-number question and is not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThanks, I have the account number you sent."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synCnotsupply REPLY ACCOUNT",
+          "log OUT synCnotsupply 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "C-reask-loop",
+      "prop": "c",
+      "title": "A second account-number ask is answered again and does not ask the customer for the number",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCreaskloop 200 ok",
+          "log SKIP pre-send already-replied synCreaskloop"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-elite-fresh",
+      "prop": "c",
+      "title": "Account-number question is answered before the Fin wait even after Elite spoke",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nFor MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synCelitefresh 200 ok",
+          "log FIXED_HANDOFF fresh account-question synCelitefresh conversation.user.replied"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "C-emptied-draft",
+      "prop": "c",
+      "title": "An emptied re-ask draft escalates instead of going silent",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed"
+      ],
+      "critical": [
+        "duplicate"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synCemptieddraft REPLY ACCOUNT",
+          "log NOTE synCemptieddraft 200 ok",
+          "log ASSIGN synCemptieddraft 424242 200 ok",
+          "log OUT synCemptieddraft 200 ok",
+          "log FIXED_HANDOFF sent presend_escalate synCemptieddraft 424242"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "C-emptied-assign-fail",
+      "prop": "c",
+      "title": "Emptied draft whose assignment fails still records an escalation attempt and does not promise",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synCemptiedassignfail REPLY ACCOUNT",
+          "log NOTE synCemptiedassignfail 200 ok",
+          "err IC_REQ_UNKNOWN ASSIGN https://api.intercom.io/conversations/synCemptiedassignfail/reply write outcome unknown , not retried",
+          "log ASSIGN synCemptiedassignfail 424242 500 FAIL",
+          "log FIXED_HANDOFF withheld assign_500 synCemptiedassignfail"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "C-recovery-account",
+      "prop": "c",
+      "title": "Account question during a half-finished handoff is answered, not replaced by the fixed line",
+      "pass": false,
+      "issues": [
+        "missing_fact_en"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 1,
+        "assigns": 0,
+        "logs": [
+          "log NOTE synCrecoveryaccount 200 ok",
+          "err IC_REQ_FAIL ASSIGN https://api.intercom.io/conversations/synCrecoveryaccount/reply 422 {\"errors\":[{\"code\":\"unprocessable\"}]}",
+          "log ASSIGN synCrecoveryaccount 424242 422 FAIL",
+          "log FIXED_HANDOFF withheld assign_422 synCrecoveryaccount",
+          "log FIXED_HANDOFF recovery account-question exemption synCrecoveryaccount {\"failure422\":true,\"failure500\":false}",
+          "log SKIP pre-send already-replied synCrecoveryaccount"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "E-hold-regen-ok",
+      "prop": "e",
+      "title": "Unsupported 99-minute holding time regenerates to the FAQ figure and does not hand off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synEholdregenok REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synEholdregenok route=FAST codes=UNSUPPORTED_NUMBER final=regenerated-ok",
+          "log OUT synEholdregenok 200 ok"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "E-hold-regen-still-bad",
+      "prop": "e",
+      "title": "Unsupported number that regenerates to another wrong figure hedges and does not hand off",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "spurious_handoff",
+        "neither_regenerated_nor_hedged"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synEholdregenstillbad REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synEholdregenstillbad route=FAST codes=UNSUPPORTED_NUMBER final=needs-escalate",
+          "log NOTE synEholdregenstillbad 200 ok",
+          "log ASSIGN synEholdregenstillbad 424242 200 ok",
+          "log OUT synEholdregenstillbad 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synEholdregenstillbad 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "E-status-ping",
+      "prop": "e",
+      "title": "Status ping with an unsupported number hedges instead of handing off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can't confirm that figure from the approved details, so I won't guess a number."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synEstatusping REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synEstatusping route=FAST codes=UNSUPPORTED_NUMBER final=unsupported-number-hedge",
+          "log OUT synEstatusping 200 ok"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "E-correct-control",
+      "prop": "e",
+      "title": "A draft that already states the FAQ holding time is sent and not handed off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synEcorrectcontrol REPLY ACCOUNT",
+          "log OUT synEcorrectcontrol 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "E-drawdown",
+      "prop": "e",
+      "title": "Unsupported drawdown percent does not hand off",
+      "pass": false,
+      "issues": [
+        "bad_number_shipped",
+        "neither_regenerated_nor_hedged"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe maximum daily drawdown is 14%."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synEdrawdown REPLY ACCOUNT",
+          "log OUT synEdrawdown 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "E-split",
+      "prop": "e",
+      "title": "Unsupported profit-split percent does not hand off",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe profit split depends on the option selected at checkout."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synEsplit REPLY ACCOUNT",
+          "log [statePresend] presend enforce conversation=synEsplit route=FAST codes=UNSUPPORTED_NUMBER final=regenerated-ok",
+          "log OUT synEsplit 200 ok"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-spread-what",
+      "prop": "f",
+      "title": "Appropriate spread ask [what] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadwhat 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadwhat"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-check",
+      "prop": "f",
+      "title": "Appropriate spread ask [check] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadcheck 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadcheck"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-test",
+      "prop": "f",
+      "title": "Appropriate spread ask [test] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadtest 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadtest"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-mt5",
+      "prop": "f",
+      "title": "Appropriate spread ask [mt5] delivers the locked template byte-exact",
+      "pass": false,
+      "issues": [
+        "template_not_exact"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nTEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [secret] account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadmt5 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadmt5"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-spread-after-bot",
+      "prop": "f",
+      "title": "Spread ask after an earlier bot reply is still byte-exact",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\nPlatform: MetaTrader 5\nServer: Fundedelite-Server\nAccount Number: 55188\nPassword: [locked-secret]\n\nUse this account to check spreads."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log OUT synFspreadafterbot 200 ok",
+          "log SPREAD_TEST_REPLY synFspreadafterbot"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-notspread-login",
+      "prop": "f",
+      "title": "Non-spread [login] must not receive the locked template",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can help with the login issue. I will not send test credentials."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFnotspreadlogin REPLY ACCOUNT",
+          "log OUT synFnotspreadlogin 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-notspread-password",
+      "prop": "f",
+      "title": "Non-spread [password] must not receive the locked template",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can help with the login issue. I will not send test credentials."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFnotspreadpassword REPLY ACCOUNT",
+          "log OUT synFnotspreadpassword 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-notspread-negated",
+      "prop": "f",
+      "title": "Non-spread [negated] must not receive the locked template",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can help with the login issue. I will not send test credentials."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFnotspreadnegated REPLY ACCOUNT",
+          "log OUT synFnotspreadnegated 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-notspread-sheet",
+      "prop": "f",
+      "title": "Non-spread [sheet] must not receive the locked template",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can help with the login issue. I will not send test credentials."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFnotspreadsheet REPLY ACCOUNT",
+          "log OUT synFnotspreadsheet 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-notspread-acct",
+      "prop": "f",
+      "title": "Non-spread [acct] must not receive the locked template",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can help with the login issue. I will not send test credentials."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFnotspreadacct REPLY ACCOUNT",
+          "log OUT synFnotspreadacct 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-notspread-history",
+      "prop": "f",
+      "title": "Non-spread [history] must not receive the locked template",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nI can help with the login issue. I will not send test credentials."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFnotspreadhistory REPLY ACCOUNT",
+          "log OUT synFnotspreadhistory 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-echo-exact",
+      "prop": "f",
+      "title": "Model echo of the exact locked template on a payout question is not delivered",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFechoexact REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFechoexact route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFechoexact 200 ok",
+          "log ASSIGN synFechoexact 424242 200 ok",
+          "log OUT synFechoexact 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFechoexact 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-password",
+      "prop": "f",
+      "title": "Near-miss template with a tampered password is redacted",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperpassword REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperpassword route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperpassword 200 ok",
+          "log ASSIGN synFtamperpassword 424242 200 ok",
+          "log OUT synFtamperpassword 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperpassword 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-account",
+      "prop": "f",
+      "title": "Template with account 55189 is not treated as the locked reply",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperaccount REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperaccount route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperaccount 200 ok",
+          "log ASSIGN synFtamperaccount 424242 200 ok",
+          "log OUT synFtamperaccount 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperaccount 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-space",
+      "prop": "f",
+      "title": "Template with one extra space is not allow-listed",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperspace REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperspace route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperspace 200 ok",
+          "log ASSIGN synFtamperspace 424242 200 ok",
+          "log OUT synFtamperspace 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperspace 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-tamper-zw",
+      "prop": "f",
+      "title": "Template with a zero-width character in the password is redacted",
+      "pass": false,
+      "issues": [
+        "duplicate_fixed",
+        "false_handoff"
+      ],
+      "critical": [
+        "duplicate",
+        "false_promise"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synFtamperzw REPLY PLATFORM",
+          "log [statePresend] presend enforce conversation=synFtamperzw route=FAST codes=WRONG_TOPIC,MISSED_QUESTION final=needs-escalate",
+          "log NOTE synFtamperzw 200 ok",
+          "log ASSIGN synFtamperzw 424242 200 ok",
+          "log OUT synFtamperzw 200 ok",
+          "log FIXED_HANDOFF sent missed_escalation synFtamperzw 424242"
+        ],
+        "prompts": 2
+      }
+    },
+    {
+      "id": "F-cred-label",
+      "prop": "f",
+      "title": "Labeled password is redacted from prompt, reply, notes and logs",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredlabel REPLY ACCOUNT",
+          "log OUT synFcredlabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-apos",
+      "prop": "f",
+      "title": "Apostrophe separator is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredapos REPLY ACCOUNT",
+          "log OUT synFcredapos 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-curly",
+      "prop": "f",
+      "title": "Curly apostrophe separator is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredcurly REPLY ACCOUNT",
+          "log OUT synFcredcurly 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-braces",
+      "prop": "f",
+      "title": "Brace-wrapped password is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredbraces REPLY ACCOUNT",
+          "log OUT synFcredbraces 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-bold",
+      "prop": "f",
+      "title": "Tag-wrapped password is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredbold REPLY ACCOUNT",
+          "log OUT synFcredbold 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-entity",
+      "prop": "f",
+      "title": "HTML-entity colon separator is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredentity REPLY ACCOUNT",
+          "log OUT synFcredentity 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-symbol",
+      "prop": "f",
+      "title": "Password containing ? and ! is fully redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwSymbo"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredsymbol REPLY ACCOUNT",
+          "log OUT synFcredsymbol 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-urdu-label",
+      "prop": "f",
+      "title": "Urdu password label is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredurdulabel REPLY ACCOUNT",
+          "log OUT synFcredurdulabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-hindi-label",
+      "prop": "f",
+      "title": "Hindi password label is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredhindilabel REPLY ACCOUNT",
+          "log OUT synFcredhindilabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-arabic-label",
+      "prop": "f",
+      "title": "Arabic password label is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredarabiclabel REPLY ACCOUNT",
+          "log OUT synFcredarabiclabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-zw-label",
+      "prop": "f",
+      "title": "Zero-width character inside the password label is still redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwZw91"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredzwlabel REPLY ACCOUNT",
+          "log OUT synFcredzwlabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-spaced-label",
+      "prop": "f",
+      "title": "Spaced password label is still redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwSpace",
+        "leak:prompt:SynthPwSpace"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredspacedlabel REPLY ACCOUNT",
+          "log OUT synFcredspacedlabel 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-spaced-value",
+      "prop": "f",
+      "title": "Spaced password value is fully redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthSpace91"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret] [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredspacedvalue REPLY ACCOUNT",
+          "log OUT synFcredspacedvalue 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-sk",
+      "prop": "f",
+      "title": "sk- key is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredsk REPLY ACCOUNT",
+          "log OUT synFcredsk 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-bearer",
+      "prop": "f",
+      "title": "Bearer token is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredbearer REPLY ACCOUNT",
+          "log OUT synFcredbearer 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-otp",
+      "prop": "f",
+      "title": "OTP value is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredotp REPLY ACCOUNT",
+          "log OUT synFcredotp 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-apikey",
+      "prop": "f",
+      "title": "API key label is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredapikey REPLY ACCOUNT",
+          "log OUT synFcredapikey 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-zw-value",
+      "prop": "f",
+      "title": "Zero-width character inside the secret value is redacted",
+      "pass": false,
+      "issues": [
+        "leak:comment:SynthPwInsid"
+      ],
+      "critical": [
+        "credential_leak"
+      ],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret] [canary]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredzwvalue REPLY ACCOUNT",
+          "log OUT synFcredzwvalue 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-b64-repeat",
+      "prop": "f",
+      "title": "Repeated base64 token is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredb64repeat REPLY ACCOUNT",
+          "log OUT synFcredb64repeat 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-b64-once",
+      "prop": "f",
+      "title": "A single base64 secret is redacted",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes. [secret]"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredb64once REPLY ACCOUNT",
+          "log OUT synFcredb64once 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-remembered",
+      "prop": "f",
+      "title": "A secret seen behind a label is redacted from a later unlabeled echo",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello Synthetic,\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredremembered REPLY ACCOUNT",
+          "log OUT synFcredremembered 200 ok",
+          "log SKIP already replied after user part synFcredremembered"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "F-cred-in-note",
+      "prop": "f",
+      "title": "Live-agent handoff note redacts a password included in the customer text",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log NOTE synFcredinnote 200 ok",
+          "log ASSIGN synFcredinnote 424242 200 ok",
+          "log OUT synFcredinnote 200 ok",
+          "log FIXED_HANDOFF sent welcome synFcredinnote 424242"
+        ],
+        "prompts": 0
+      }
+    },
+    {
+      "id": "F-cred-urdu-note",
+      "prop": "f",
+      "title": "Urdu handoff translation prompt and note redact the password",
+      "pass": false,
+      "issues": [
+        "fixed_line_ur",
+        "order_or_premature",
+        "awaiting_not_set",
+        "no_assignment",
+        "no_note"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "السلام علیکم Synthetic،\n\nThe standard minimum holding time is 3 minutes."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synFcredurdunote REPLY ACCOUNT",
+          "log OUT synFcredurdunote 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "R-greeting",
+      "prop": "reg",
+      "title": "A greeting is not a handoff",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "Hello, how can I help with your FundedElite account today?"
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synRgreeting REPLY ACCOUNT",
+          "log OUT synRgreeting 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "R-thanks",
+      "prop": "reg",
+      "title": "A short thanks is not a handoff",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "You're welcome."
+          }
+        ],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synRthanks REPLY ACCOUNT",
+          "log OUT synRthanks 200 ok"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "R-substantive-live",
+      "prop": "d",
+      "title": "Short live-agent request that also mentions a payout still hands off exactly once",
+      "pass": true,
+      "issues": [],
+      "critical": [],
+      "evidence": {
+        "comments": [
+          {
+            "accepted": true,
+            "fault": "ok",
+            "plain": "A teammate now has this conversation."
+          }
+        ],
+        "notes": 1,
+        "assigns": 1,
+        "logs": [
+          "log AI_ACTION synRsubstantivelive REPLY ACCOUNT",
+          "log NOTE synRsubstantivelive 200 ok",
+          "log ASSIGN synRsubstantivelive 424242 200 ok",
+          "log OUT synRsubstantivelive 200 ok",
+          "log FIXED_HANDOFF sent main_escalate synRsubstantivelive 424242",
+          "log FIXED_HANDOFF live-agent without account ask synRsubstantivelive"
+        ],
+        "prompts": 1
+      }
+    },
+    {
+      "id": "R-empty-model",
+      "prop": "reg",
+      "title": "Empty model draft on a real FAQ does not go silent without a safe answer",
+      "pass": false,
+      "issues": [
+        "silent_without_escalation"
+      ],
+      "critical": [],
+      "evidence": {
+        "comments": [],
+        "notes": 0,
+        "assigns": 0,
+        "logs": [
+          "log AI_ACTION synRemptymodel REPLY ACCOUNT",
+          "log SKIP empty reply body synRemptymodel"
+        ],
+        "prompts": 1
+      }
+    }
+  ]
+}
