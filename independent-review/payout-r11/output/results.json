@@ -1,0 +1,2452 @@
+{
+  "frozen": "d8882c45d19e31162721689f62a64afed49dce7f",
+  "hashes": {
+    "payoutClaimGuard.js": "b8cfc7e3af1aeaa8ddc2487f356f814b50052c38709d31becee6f4d9e9981bf4",
+    "index.js.public-sends.diff": "ddf47791b7c57f12e354e2b14050a49f4ac63fc6b2556c545dd13c20e61496ca",
+    "T800_R11_REPORT.md": "4d07f737fefba399cb2339f640f543158140bcb59d9640b2e06eb0efb03eb403",
+    "SHA256SUMS.txt": "d6e2802dbe220cd4bcaa902c5db6531aafe94f987b741839290e1f5186f8cf35"
+  },
+  "hashOk": true,
+  "tally": {
+    "cases": 319,
+    "critical": 68,
+    "falseHold": 11,
+    "silentDrop": 0,
+    "regression": 4,
+    "nonEnglish": 39,
+    "presendHeld": 37,
+    "setupMiss": 1,
+    "harness": 0,
+    "networkBlockedCalls": 0
+  },
+  "byLang": {
+    "en": {
+      "critical": 31,
+      "falseHold": 9,
+      "silentDrop": 0
+    },
+    "ur-script": {
+      "critical": 11,
+      "falseHold": 0,
+      "silentDrop": 0
+    },
+    "ur-roman": {
+      "critical": 5,
+      "falseHold": 2,
+      "silentDrop": 0
+    },
+    "hi": {
+      "critical": 5,
+      "falseHold": 0,
+      "silentDrop": 0
+    },
+    "ar": {
+      "critical": 8,
+      "falseHold": 0,
+      "silentDrop": 0
+    },
+    "hinglish": {
+      "critical": 8,
+      "falseHold": 0,
+      "silentDrop": 0
+    }
+  },
+  "boundary": [
+    {
+      "id": "b-pre-already-leak",
+      "fetchMode": "already-replied",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      }
+    },
+    {
+      "id": "b-pre-already-keep",
+      "fetchMode": "already-replied",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "silence on a boundary path"
+      }
+    },
+    {
+      "id": "b-pre-already-fact",
+      "fetchMode": "already-replied",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "b-pre-human-leak",
+      "fetchMode": "human-takeover",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      }
+    },
+    {
+      "id": "b-pre-human-keep",
+      "fetchMode": "human-takeover",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "silence on a boundary path"
+      }
+    },
+    {
+      "id": "b-pre-human-fact",
+      "fetchMode": "human-takeover",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "b-pre-stale-leak",
+      "fetchMode": "stale-draft",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": ""
+      }
+    },
+    {
+      "id": "b-pre-stale-keep",
+      "fetchMode": "stale-draft",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary dropped the draft; guard did not replace it"
+      }
+    },
+    {
+      "id": "b-pre-stale-fact",
+      "fetchMode": "stale-draft",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "b-pre-refetch-leak",
+      "fetchMode": "refetch-fail",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": ""
+      }
+    },
+    {
+      "id": "b-pre-refetch-keep",
+      "fetchMode": "refetch-fail",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary dropped the draft; guard did not replace it"
+      }
+    },
+    {
+      "id": "b-pre-refetch-fact",
+      "fetchMode": "refetch-fail",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "b-final-boundary-leak",
+      "fetchMode": "final-boundary",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": ""
+      }
+    },
+    {
+      "id": "b-final-boundary-keep",
+      "fetchMode": "final-boundary",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary dropped the draft; guard did not replace it"
+      }
+    },
+    {
+      "id": "b-final-boundary-fact",
+      "fetchMode": "final-boundary",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "b-pause-mid-leak",
+      "fetchMode": "pause-on-model",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      }
+    },
+    {
+      "id": "b-pause-mid-keep",
+      "fetchMode": "pause-on-model",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "silence on a boundary path"
+      }
+    },
+    {
+      "id": "b-pause-mid-fact",
+      "fetchMode": "pause-on-model",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "b-aioff-mid-leak",
+      "fetchMode": "aioff-on-model",
+      "expect": "hedge",
+      "public": [
+        "hedge"
+      ],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      }
+    },
+    {
+      "id": "b-aioff-mid-keep",
+      "fetchMode": "aioff-on-model",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "silence on a boundary path"
+      }
+    },
+    {
+      "id": "b-aioff-mid-fact",
+      "fetchMode": "aioff-on-model",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    },
+    {
+      "id": "identical-leak",
+      "fetchMode": "",
+      "expect": "hedge",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary dropped the draft; guard did not replace it"
+      }
+    },
+    {
+      "id": "identical-fact",
+      "fetchMode": "",
+      "expect": "facts",
+      "public": [],
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": true,
+        "harness": false,
+        "setupMiss": false,
+        "note": "boundary or presend held the true draft before a normal post"
+      }
+    }
+  ],
+  "outcomes": {
+    "facts:posted": 88,
+    "hedge:hedge": 86,
+    "hedge:posted": 68,
+    "facts:escalated": 17,
+    "facts:hedge": 11,
+    "hedge:escalated": 8,
+    "nonclaim:posted": 16,
+    "nonclaim:hedge": 1,
+    "nonclaim:escalated": 3,
+    "silence:silent": 3,
+    "hedge:silent": 8,
+    "facts:no-public": 9,
+    "silence:escalated": 1
+  },
+  "factMisses": [
+    "reset-40-10__customer:escalated",
+    "reset-later-double__customer:escalated",
+    "reset-cap-3__customer:escalated",
+    "reset-3-times__owner_reply:hedge",
+    "reset-3-times__customer:escalated",
+    "reset-split-true__owner_reply:hedge",
+    "reset-split-true__customer:hedge",
+    "reset-word-40__customer:escalated",
+    "soft-one-sentence__customer:escalated",
+    "soft-multi__owner_reply:hedge",
+    "soft-multi__customer:escalated",
+    "soft-word-30__customer:escalated",
+    "daily-loss-hard__owner_reply:hedge",
+    "daily-loss-hard__customer:hedge",
+    "instr-table__customer:escalated",
+    "instr-half__customer:escalated",
+    "instr-one-half__owner_reply:hedge",
+    "instr-one-half__customer:hedge",
+    "instr-comma__owner_reply:hedge",
+    "instr-comma__customer:escalated",
+    "timing-5__customer:escalated",
+    "bank-1-3__customer:escalated",
+    "review-30__customer:escalated",
+    "cat-daily__customer:escalated",
+    "cat-share__customer:escalated",
+    "ro-crypto__owner_reply:hedge",
+    "ro-crypto__customer:hedge",
+    "b-pre-already-fact:no-public",
+    "b-pre-human-fact:no-public",
+    "b-pre-stale-fact:no-public",
+    "b-pre-refetch-fact:no-public",
+    "b-final-boundary-fact:no-public",
+    "b-pause-mid-fact:no-public",
+    "b-aioff-mid-fact:no-public",
+    "identical-fact:no-public",
+    "retry-fact:no-public",
+    "number-1-5:escalated"
+  ],
+  "verdict": "BLOCKED",
+  "caseSeal": "d91daac9f5927372e848c8ed70ff8cd57aaab4a7475b1ee9ba1752d198f18760",
+  "failures": [
+    {
+      "id": "sr-closes-funded__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Breaking the per instrument rule closes the funded account."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-15 10118526 note-r11-15"
+      ]
+    },
+    {
+      "id": "sr-closes-funded__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, Breaking the per instrument rule closes the funded account."
+      ],
+      "guard": []
+    },
+    {
+      "id": "risk-rule-ends__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "A risk rule breach ends the funded account permanently."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-17 10118526 note-r11-17"
+      ]
+    },
+    {
+      "id": "risk-rule-ends__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, A risk rule breach ends the funded account permanently."
+      ],
+      "guard": []
+    },
+    {
+      "id": "reset-3-times__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-33 10118526 note-r11-33"
+      ]
+    },
+    {
+      "id": "reset-split-true__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-35 10118526 note-r11-35"
+      ]
+    },
+    {
+      "id": "reset-split-true__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "reset-word-25__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "The reset fee is twenty five percent of the original challenge price."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-43 10118526 note-r11-43"
+      ]
+    },
+    {
+      "id": "reset-no-min__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "The reset fee is 40% with no minimum."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-53 10118526 note-r11-53"
+      ]
+    },
+    {
+      "id": "reset-no-min__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, The reset fee is 40% with no minimum."
+      ],
+      "guard": []
+    },
+    {
+      "id": "soft-multi__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-57 10118526 note-r11-57"
+      ]
+    },
+    {
+      "id": "soft-word-50__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "A soft breach payout is fifty percent."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-63 10118526 note-r11-63"
+      ]
+    },
+    {
+      "id": "hard-not-end__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "A hard breach does not end the account."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-73 10118526 note-r11-73"
+      ]
+    },
+    {
+      "id": "hard-not-end__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, A hard breach does not end the account."
+      ],
+      "guard": []
+    },
+    {
+      "id": "daily-loss-hard__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-75 10118526 note-r11-75"
+      ]
+    },
+    {
+      "id": "daily-loss-hard__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "daily-loss-not-close__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Touching the daily loss limit does not close the account."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-77 10118526 note-r11-77"
+      ]
+    },
+    {
+      "id": "daily-loss-not-close__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, Touching the daily loss limit does not close the account."
+      ],
+      "guard": []
+    },
+    {
+      "id": "instr-one-half__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-83 10118526 note-r11-83"
+      ]
+    },
+    {
+      "id": "instr-one-half__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "instr-comma__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-85 10118526 note-r11-85"
+      ]
+    },
+    {
+      "id": "instr-4-5__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "The instrument cap is four and a half percent."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-89 10118526 note-r11-89"
+      ]
+    },
+    {
+      "id": "instr-4-5__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, The instrument cap is four and a half percent."
+      ],
+      "guard": []
+    },
+    {
+      "id": "crypto-five-word__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "The crypto fee is five percent."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-109 10118526 note-r11-109"
+      ]
+    },
+    {
+      "id": "crypto-five-word__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, The crypto fee is five percent."
+      ],
+      "guard": []
+    },
+    {
+      "id": "rise-word-20__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "The Rise fee is twenty dollars."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-119 10118526 note-r11-119"
+      ]
+    },
+    {
+      "id": "rise-word-20__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, The Rise fee is twenty dollars."
+      ],
+      "guard": []
+    },
+    {
+      "id": "timing-hours__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Approved rewards are paid within 2 hours."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-125 10118526 note-r11-125"
+      ]
+    },
+    {
+      "id": "timing-same-day__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Payouts always arrive the same day."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-127 10118526 note-r11-127"
+      ]
+    },
+    {
+      "id": "timing-same-day__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, Payouts always arrive the same day."
+      ],
+      "guard": []
+    },
+    {
+      "id": "wk-trade-ok__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Weekend trading without the add-on is allowed."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-141 10118526 note-r11-141"
+      ]
+    },
+    {
+      "id": "wk-trade-ok__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, Weekend trading without the add-on is allowed."
+      ],
+      "guard": []
+    },
+    {
+      "id": "cat-keep__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "A Catalyst stage reset keeps earlier profit."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-171 10118526 note-r11-171"
+      ]
+    },
+    {
+      "id": "cat-keep__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, A Catalyst stage reset keeps earlier profit."
+      ],
+      "guard": []
+    },
+    {
+      "id": "mix-cat__owner_reply",
+      "lang": "en",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Catalyst daily loss is 3%. A Catalyst stage reset keeps earlier profit."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-187 10118526 note-r11-187"
+      ]
+    },
+    {
+      "id": "mix-cat__customer",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, Catalyst daily loss is 3%. A Catalyst stage reset keeps earlier profit."
+      ],
+      "guard": []
+    },
+    {
+      "id": "ur-profit-yes__owner_reply",
+      "lang": "ur-script",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "پچھلا منافع ری سیٹ کے بعد ملے گا۔"
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-199 10118526 note-r11-199"
+      ]
+    },
+    {
+      "id": "ur-profit-yes__customer",
+      "lang": "ur-script",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، پچھلا منافع ری سیٹ کے بعد ملے گا۔"
+      ],
+      "guard": []
+    },
+    {
+      "id": "ur-soft-50__owner_reply",
+      "lang": "ur-script",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "سافٹ بریچ پر پے آؤٹ پچاس فیصد ہے۔"
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-201 10118526 note-r11-201"
+      ]
+    },
+    {
+      "id": "ur-soft-50__customer",
+      "lang": "ur-script",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، سافٹ بریچ پر پے آؤٹ پچاس فیصد ہے۔"
+      ],
+      "guard": []
+    },
+    {
+      "id": "ur-crypto-5__owner_reply",
+      "lang": "ur-script",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "کرپٹو فیس پانچ فیصد ہے۔"
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-203 10118526 note-r11-203"
+      ]
+    },
+    {
+      "id": "ur-crypto-5__customer",
+      "lang": "ur-script",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، کرپٹو فیس پانچ فیصد ہے۔"
+      ],
+      "guard": []
+    },
+    {
+      "id": "ur-keep__owner_reply",
+      "lang": "ur-script",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "کیٹالسٹ اسٹیج ری سیٹ پر پچھلا منافع محفوظ رہتا ہے۔"
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-205 10118526 note-r11-205"
+      ]
+    },
+    {
+      "id": "ur-keep__customer",
+      "lang": "ur-script",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، کیٹالسٹ اسٹیج ری سیٹ پر پچھلا منافع محفوظ رہتا ہے۔"
+      ],
+      "guard": []
+    },
+    {
+      "id": "ro-fee__owner_reply",
+      "lang": "ur-roman",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "crypto fee paanch percent hai."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-211 10118526 note-r11-211"
+      ]
+    },
+    {
+      "id": "ro-fee__customer",
+      "lang": "ur-roman",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, crypto fee paanch percent hai."
+      ],
+      "guard": []
+    },
+    {
+      "id": "ro-keep__owner_reply",
+      "lang": "ur-roman",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "catalyst stage reset pe purana profit keep hota hai."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-213 10118526 note-r11-213"
+      ]
+    },
+    {
+      "id": "ro-keep__customer",
+      "lang": "ur-roman",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, catalyst stage reset pe purana profit keep hota hai."
+      ],
+      "guard": []
+    },
+    {
+      "id": "hi-soft-50__owner_reply",
+      "lang": "hi",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "सॉफ्ट ब्रीच पर पेआउट पचास प्रतिशत है।"
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-217 10118526 note-r11-217"
+      ]
+    },
+    {
+      "id": "hi-soft-50__customer",
+      "lang": "hi",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, सॉफ्ट ब्रीच पर पेआउट पचास प्रतिशत है।"
+      ],
+      "guard": []
+    },
+    {
+      "id": "hi-keep__owner_reply",
+      "lang": "hi",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "कैटलिस्ट स्टेज रीसेट पर पुराना लाभ सुरक्षित रहता है।"
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-221 10118526 note-r11-221"
+      ]
+    },
+    {
+      "id": "hi-keep__customer",
+      "lang": "hi",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, कैटलिस्ट स्टेज रीसेट पर पुराना लाभ सुरक्षित रहता है।"
+      ],
+      "guard": []
+    },
+    {
+      "id": "ar-term__owner_reply",
+      "lang": "ar",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "مخالفة مخاطر الاستراتيجية تغلق الحساب الممول."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-223 10118526 note-r11-223"
+      ]
+    },
+    {
+      "id": "ar-term__customer",
+      "lang": "ar",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، مخالفة مخاطر الاستراتيجية تغلق الحساب الممول."
+      ],
+      "guard": []
+    },
+    {
+      "id": "ar-crypto-5__owner_reply",
+      "lang": "ar",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "رسوم الكريبتو خمسة بالمئة."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-227 10118526 note-r11-227"
+      ]
+    },
+    {
+      "id": "ar-crypto-5__customer",
+      "lang": "ar",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، رسوم الكريبتو خمسة بالمئة."
+      ],
+      "guard": []
+    },
+    {
+      "id": "ar-keep__owner_reply",
+      "lang": "ar",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "إعادة تعيين مرحلة كاتاليست تبقي ربح المرحلة السابقة."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-229 10118526 note-r11-229"
+      ]
+    },
+    {
+      "id": "ar-keep__customer",
+      "lang": "ar",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، إعادة تعيين مرحلة كاتاليست تبقي ربح المرحلة السابقة."
+      ],
+      "guard": []
+    },
+    {
+      "id": "hg-rise__owner_reply",
+      "lang": "hinglish",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Rise ka fee twenty dollars hai, 200 dollar se upar."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-233 10118526 note-r11-233"
+      ]
+    },
+    {
+      "id": "hg-rise__customer",
+      "lang": "hinglish",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, Rise ka fee twenty dollars hai, 200 dollar se upar."
+      ],
+      "guard": []
+    },
+    {
+      "id": "hg-keep__owner_reply",
+      "lang": "hinglish",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Catalyst reset mein pehle wala profit keep rehta hai, pakka."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-235 10118526 note-r11-235"
+      ]
+    },
+    {
+      "id": "hg-keep__customer",
+      "lang": "hinglish",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Salam Reviewer, Catalyst reset mein pehle wala profit keep rehta hai, pakka."
+      ],
+      "guard": []
+    },
+    {
+      "id": "hg-loss-reset__owner_reply",
+      "lang": "hinglish",
+      "path": "owner_reply",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "loss mein bhi reset mil jayega, koi tension nahi."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-237 10118526 note-r11-237"
+      ]
+    },
+    {
+      "id": "hg-loss-reset__customer",
+      "lang": "hinglish",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Salam Reviewer, loss mein bhi reset mil jayega, koi tension nahi."
+      ],
+      "guard": []
+    },
+    {
+      "id": "ro-crypto__owner_reply",
+      "lang": "ur-roman",
+      "path": "owner_reply",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch",
+        "AUTH_NOTE REPLY r11-245 10118526 note-r11-245"
+      ]
+    },
+    {
+      "id": "ro-crypto__customer",
+      "lang": "ur-roman",
+      "path": "customer",
+      "expect": "facts",
+      "note": "approved fact replaced by the hedge",
+      "flags": {
+        "critical": false,
+        "falseHold": true,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "approved fact replaced by the hedge"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "send-keep",
+      "lang": "en",
+      "path": "owner_send",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "A Catalyst stage reset keeps earlier profit."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-269 10118526 note-r11-269"
+      ]
+    },
+    {
+      "id": "send-urdu",
+      "lang": "ur-script",
+      "path": "owner_send",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "پچھلا منافع ری سیٹ کے بعد ملے گا۔."
+      ],
+      "guard": [
+        "AUTH_NOTE REPLY r11-270 10118526 note-r11-270"
+      ]
+    },
+    {
+      "id": "follow-keep",
+      "lang": "en",
+      "path": "owner_follow",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "A Catalyst stage reset keeps earlier profit."
+      ],
+      "guard": [
+        "AUTH_NOTE FOLLOW-> REPLY r11-272 10118526 note-r11-272"
+      ]
+    },
+    {
+      "id": "follow-hinglish",
+      "lang": "hinglish",
+      "path": "owner_follow",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "crypto fee paanch percent hai bhai."
+      ],
+      "guard": [
+        "AUTH_NOTE FOLLOW-> REPLY r11-274 10118526 note-r11-274"
+      ]
+    },
+    {
+      "id": "b-pre-already-leak",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "public comment on a silence path",
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "SKIP pre-send already-replied r11-278",
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "b-pre-human-leak",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "public comment on a silence path",
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "SKIP pre-send human-takeover r11-281",
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "b-pause-mid-leak",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "public comment on a silence path",
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "SKIP pre-send paused r11-293",
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "b-aioff-mid-leak",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "public comment on a silence path",
+      "flags": {
+        "critical": false,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": true,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "public comment on a silence path"
+      },
+      "publicPosts": [
+        "I can't confirm that. Our team will confirm."
+      ],
+      "guard": [
+        "SKIP pre-send ticket-ai-off r11-296",
+        "PAYOUT_GUARD_VISIBLE_HEDGE fact_mismatch"
+      ]
+    },
+    {
+      "id": "retry-leak",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Sure. The crypto fee is five percent."
+      ],
+      "guard": []
+    },
+    {
+      "id": "personal-with-leak",
+      "lang": "en",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": false,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, My wife is fine. The crypto fee is five percent."
+      ],
+      "guard": []
+    },
+    {
+      "id": "urdu-greet-leak",
+      "lang": "ur-script",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، وعلیکم السلام۔ کرپٹو فیس پانچ فیصد ہے۔"
+      ],
+      "guard": []
+    },
+    {
+      "id": "hindi-greet-leak",
+      "lang": "hi",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Hello Reviewer, नमस्ते। रीसेट फीस पच्चीस प्रतिशत है।"
+      ],
+      "guard": []
+    },
+    {
+      "id": "arabic-greet-leak",
+      "lang": "ar",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، وعليكم السلام. رسوم الكريبتو خمسة بالمئة."
+      ],
+      "guard": []
+    },
+    {
+      "id": "hinglish-greet-leak",
+      "lang": "hinglish",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Salam bhai. Reset fee twenty five percent hai."
+      ],
+      "guard": []
+    },
+    {
+      "id": "roman-greet-leak",
+      "lang": "ur-roman",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "Salam. Catalyst reset pe profit keep hota hai."
+      ],
+      "guard": []
+    },
+    {
+      "id": "fake-timeline-ur",
+      "lang": "ur-script",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، پے آؤٹ دو گھنٹے میں آ جاتا ہے۔"
+      ],
+      "guard": []
+    },
+    {
+      "id": "fake-timeline-ar",
+      "lang": "ar",
+      "path": "customer",
+      "expect": "hedge",
+      "note": "unsupported claim in a public comment",
+      "flags": {
+        "critical": true,
+        "falseHold": false,
+        "silentDrop": false,
+        "regression": false,
+        "nonEnglish": true,
+        "presendHeld": false,
+        "harness": false,
+        "setupMiss": false,
+        "note": "unsupported claim in a public comment"
+      },
+      "publicPosts": [
+        "السلام علیکم Reviewer، يتم دفع المكافأة خلال ساعتين."
+      ],
+      "guard": []
+    }
+  ]
+}
