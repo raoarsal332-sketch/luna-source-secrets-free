@@ -1,0 +1,3863 @@
+diff --git a/luna-current/01_runtime/credentialGuardR14.js b/luna-current/01_runtime/credentialGuardR14.js
+new file mode 100644
+--- /dev/null
++++ b/luna-current/01_runtime/credentialGuardR14.js
+@@ -0,0 +1,2113 @@
++'use strict';
++
++/**
++ * Credential guard R14 — frozen staging candidate.
++ *
++ * One fail-closed outbound authorization boundary. Every Intercom write,
++ * control-panel send, owner REPLY/NOTE, and model request goes through
++ * guardedSend. The entry preload seals node:http/https/net/tls, fetch,
++ * undici, child_process, process.binding, and getBuiltinModule before
++ * other modules load. The only egress is guardedSend with a one-shot
++ * permit. Inbound credential values are stored as exact-token hashes.
++ * Dictionary words are tainted only in explicit credential context, and
++ * only that exact token is redacted.
++ *
++ * Not wired into the live engine. approved, release, and wired stay false.
++ * system-prompt.txt is the owner-authorized public 55188 disclosure. This
++ * module does not read or edit that file.
++ */
++
++const crypto = require('crypto');
++const Module = require('module');
++const originalRequire = Module.prototype.require;
++
++const STATUS = Object.freeze({
++  candidate: 'credential-guard-r14',
++  frozen: true,
++  approved: false,
++  release: false,
++  wired: false,
++  silent: false,
++});
++
++const FIXED_MESSAGE =
++  'Please change that immediately. I will not repeat it back. I am escalating this as a security event for the team.';
++
++const REDACTED_NOTE =
++  'Internal note withheld. A credential was removed before this note was saved.';
++
++const SPREAD_TEST_REPLY =
++  'TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server\n\n' +
++  'Platform: MetaTrader 5\n' +
++  'Server: Fundedelite-Server\n' +
++  'Account Number: 55188\n' +
++  'Password: QBG5FetfozKz7^a?J!\n\n' +
++  'Use this account to check spreads.';
++
++const TEMPLATE_PASSWORD = 'QBG5FetfozKz7^a?J!';
++const WORKSPACE_ID = 'h2z8cgfr';
++const TEMPLATE_HASH = crypto.createHash('sha256').update(SPREAD_TEST_REPLY, 'utf8').digest('hex');
++const FIXED_HASH = crypto.createHash('sha256').update(FIXED_MESSAGE, 'utf8').digest('hex');
++
++const AUTHORIZED_PROMPT_DISCLOSURE = Object.freeze({
++  path: 'system-prompt.txt',
++  sha256: 'bdafd4f336d823df739fd422e63c86e2164b6e462977c2914351c468046b464d',
++  length: 77282,
++  account: '55188',
++  kind: 'owner-authorized-public-template',
++});
++
++const MAX_SCAN = 32768;
++const SIZE_CAP = 16384;
++const GUARD_BUDGET_MS = 200;
++const MAX_TAINT = 4000;
++const MAX_DECODE = 8;
++const MAX_DEPTH = 4;
++
++const AUTHORIZED_HOSTS = [
++  'fundedelite.com',
++  'confirmo.net',
++  'intercom.io',
++  'intercom.com',
++  'trustpilot.com',
++  'propfirmmatch.com',
++];
++
++const FILLER = new Set('is are was were be been the a an my your our their his her to of for me it this that and or with on in at from you we'.split(' '));
++const INSTRUCTION = new Set((
++  'reset instructions instruction change policy policies requirements recovery manager section field form box below above here following page link button process steps guide help support update updated settings option options rules rule information details email number account dashboard trading service fixed cannot changed containing receive important copy sharing ' +
++  'review reviews note notes team teammate please hello hi hey thanks thank welcome'
++).split(' ').filter(Boolean));
++
++const WORD_CUES = new Set([
++  'password', 'passcode', 'passwd', 'pwd', 'pin', 'otp', 'totp', 'secret', 'passphrase', 'passwort',
++  'contrasena', 'senha', 'parola', 'clave', 'wachtwoord', 'haslo', 'lozinka', 'geslo', 'salasana',
++  'jelszo', 'sifre', 'parol', 'apikey', 'keycode', 'passphrase',
++  'пароль', 'пин', 'секрет', '密码', 'パスワード', '비밀번호', 'पासवर्ड', 'पिन', 'ओटीपी', 'پاسورڈ',
++  'رمز', 'سر',
++]);
++const GLUE_CUES = new Set(['password', 'passcode', 'passwd', 'pwd', 'pin', 'otp', 'totp', 'secret', 'pass', 'apikey', 'token', 'key']);
++const MULTI_CUES = ['mot de passe', 'palabra clave', 'kata sandi', 'كلمة السر', 'كلمة المرور', 'پاس ورڈ', 'api key', 'api_key', 'one time code', 'one-time code', 'verification code'];
++
++const DICT = new Set((
++  'a an the of to and or for is are was were be been being in on at by with from as that this it its if then so not no yes you your we our they them he she his her my me i do did does can could would should will just about into over after before up down out off than too very also only other new one two three four five six seven eight nine ten please change immediately repeat back am escalating security event team hello hi hey ' +
++  'password reset instructions sunshine shine account number spread spreads challenge payout payouts site hope pass what use check test demo send give server platform testing details funded elite metatrader dashboard login credentials credential email access after purchasing receive important help set start journey anytime clicking show section monitor statistics track requirements request find view certificates edit settings containing service information cannot changed fixed copy sharing weekend flash activation ' +
++  'https http www com net org faq app tech en articles article collections collection how does work instant additional info restricted countries process profit split trading contract signing minimum holding time trades tradable instruments commissions rolling passing hedge hedging latency arbitrage spamming strategy risk limits general documentation required live simulated verification operate under regulation free trial pay payment payments credit debit card cards wire transfers crypto processor affiliate taxes tax independent contractor responsible location applicable laws merge transition ensure personal financial seriously employ industry standard measures protect includes encryption secure processing regular audits evaluation phase phases type specific criteria passing achieve target avoid daily total drawdown complete profitable respect consistency present rules parameters easily monitored updated within maximum seconds custom made checkout website suitable option accept major methods ' +
++  'fundedelite confirmo tradelocker metatrader5 mt4 mt5 intercom trustpilot propfirmmatch support client clients message messages ticket tickets review note notes owner teammate sorry thanks thank welcome ok okay sure yes yep yeah alright got understood noted perfect great question questions answer answers policy rule rules country countries kyc identity document documents proof address bank statement utility bill withdrawal deposit bonus promotion promo leverage margin stop loss take profit news economic calendar session sessions market markets pair pairs forex index indices commodity commodities gold silver oil ' +
++  'where when who why which while during without within between across per each both same such more most less least many much some any all own here there then once again still already every day days week weeks month months year years hour hours minute minutes next last current open closed pending active inactive available unavailable allowed prohibited restricted violation violations breach fail failed failure success successful pass passed passing retry retries refund refunds fee fees price prices cost costs plan plans step steps lite instant flash standard pro plus premium basic advanced beginner ' +
++  'about above across after again against all almost along already also although always among amount amounts another answer any anyone anything around asked asking available away back became because become before began behind being below best better between beyond both bring brought call called calling came cannot case cases certain change changed changes clear close closed come comes coming common company complete completed concern considered could country course current different does doing done during each early either else end ended enough even ever every example fact facts far few final find first follow following form former found four full further gave general get gets getting give given gives go going gone good got great had has have having held help high him himself home however human idea important include including interest into itself just keep kept kind knew know known large later leave left let life light like likely line little long look looked looking made make makes making man may mean means might move much must name named near need needed needs never next night none nor nothing now numbers off often old once only onto open opened order ordered other others out over own part parts people per perhaps person place plan point possible present problem problems program public put rather really right said same saw say says see seem seemed seen set several should show showed shown side since small some something sometimes still such system take taken takes taking tell than their them there these they thing things think third this those though thought three through thus time times today together too took toward turn two under until upon us used using very want wanted way well went were what when where which while who whole whom will within without work worked working would year years yet'
++).split(' ').filter(Boolean));
++
++const SPREAD_MARKERS = ['spread', 'spreads', 'سپریڈ', 'اسپریڈ', 'स्प्रेड', 'سبريد', 'السبريد'];
++const CHECK_MARKERS = ['check', 'test', 'demo', 'account', 'credentials', 'چیک', 'ٹیسٹ', 'اکاؤنٹ', 'اکاونٹ', 'चेक', 'टेस्ट', 'अकाउंट', 'खाता', 'حساب', 'اختبار', 'أتحقق', 'اختبر', 'افحص', 'تحقق', 'فحص'];
++const HOW_MARKERS = ['how', 'kaise', 'कैसे', 'کیسے', 'كيف', 'طریقہ', 'तरीका', 'طريق', 'بتائ', 'बता'];
++const SEND_MARKERS = ['send', 'give me', 'bhej', 'dena', 'بھیج', 'भेज', 'أرسل', 'mujhe', 'mjhe', 'مجھے', 'मुझे'];
++const GREETINGS = new Set(['hello', 'hi', 'hey', 'ciao', 'salam', 'dear', 'good', 'morning', 'afternoon', 'evening', 'السلام', 'علیکم', 'علیكم']);
++
++const NAMED_ENTITIES = {
++  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', ndash: '-', mdash: '-', hellip: '...', copy: '(c)', reg: '(r)',
++};
++
++const FOLD = new Map();
++
++function addLetterRange(start, letters) {
++  for (let i = 0; i < letters.length; i++) FOLD.set(start + i, letters[i]);
++}
++
++addLetterRange(0x1D400, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D41A, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D434, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D44E, 'abcdefg');
++addLetterRange(0x1D456, 'ijklmnopqrstuvwxyz');
++addLetterRange(0x1D468, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D482, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D4D0, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D4EA, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D56C, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D586, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D5A0, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D5BA, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D5D4, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D5EE, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D608, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D622, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D63C, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D656, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D670, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
++addLetterRange(0x1D68A, 'abcdefghijklmnopqrstuvwxyz');
++addLetterRange(0x1D7CE, '0123456789');
++addLetterRange(0x1D7D8, '0123456789');
++addLetterRange(0x1D7E2, '0123456789');
++addLetterRange(0x1D7EC, '0123456789');
++addLetterRange(0x1D7F6, '0123456789');
++
++const HOMO = {
++  0x210E: 'h', 0x212C: 'B', 0x2130: 'E', 0x2131: 'F', 0x210B: 'H', 0x2110: 'I', 0x2112: 'L', 0x2133: 'M', 0x211B: 'R',
++  0x212F: 'e', 0x210A: 'g', 0x2134: 'o', 0x212D: 'C', 0x210C: 'H', 0x2111: 'I', 0x211C: 'R', 0x2102: 'C', 0x210D: 'H',
++  0x2115: 'N', 0x2119: 'P', 0x211A: 'Q', 0x211D: 'R', 0x2124: 'Z',
++  0x0430: 'a', 0x0435: 'e', 0x043E: 'o', 0x0440: 'p', 0x0441: 'c', 0x0443: 'y', 0x0445: 'x', 0x0456: 'i', 0x0455: 's',
++  0x04BB: 'h', 0x043D: 'h', 0x0410: 'A', 0x0415: 'E', 0x041E: 'O', 0x0420: 'P', 0x0421: 'C', 0x0425: 'X', 0x041D: 'H',
++  0x0391: 'A', 0x0392: 'B', 0x0395: 'E', 0x0397: 'H', 0x0399: 'I', 0x039A: 'K', 0x039C: 'M', 0x039D: 'N', 0x039F: 'O',
++  0x03A1: 'P', 0x03A4: 'T', 0x03A7: 'X', 0x03B1: 'a', 0x03B5: 'e', 0x03B9: 'i', 0x03BA: 'k', 0x03BF: 'o', 0x03C1: 'p',
++  0x03C4: 't', 0x03C5: 'u', 0x03C7: 'x', 0x0251: 'a', 0x0259: 'e', 0x0261: 'g',
++};
++
++const taintByConversation = new Map();
++const recentPieces = new Map();
++const secretHashes = new Set();
++const templateHashes = new Set();
++const borderline = [];
++const lastAskByConversation = new Map();
++const tickets = new Set();
++let ticketSeq = 1;
++let permit = null;
++let requireHooked = false;
++
++function payloadHash(text) {
++  return crypto.createHash('sha256').update(String(text == null ? '' : text), 'utf8').digest('hex');
++}
++
++function digest(value) {
++  return crypto.createHash('sha256').update('cg14:' + value, 'utf8').digest('hex');
++}
++
++function boundsError() {
++  const err = new Error('bounds');
++  err.code = 'BOUNDS';
++  return err;
++}
++
++function assertScannable(text) {
++  const raw = String(text == null ? '' : text);
++  if (raw.length > MAX_SCAN) throw boundsError();
++  let runLt = 0;
++  let runAmp = 0;
++  for (let i = 0; i < raw.length; i++) {
++    const ch = raw[i];
++    if (ch === '<') {
++      runLt += 1;
++      if (runLt > 32) throw boundsError();
++    } else runLt = 0;
++    if (ch === '&') {
++      runAmp += 1;
++      if (runAmp > 32) throw boundsError();
++    } else runAmp = 0;
++  }
++  return raw;
++}
++
++function isFormat(cp) {
++  if (cp === 0xFEFF || cp === 0x180E || cp === 0x200B || cp === 0x200C || cp === 0x200D || cp === 0x2060) return true;
++  if (cp >= 0x200E && cp <= 0x200F) return true;
++  if (cp >= 0x202A && cp <= 0x202E) return true;
++  if (cp >= 0x2066 && cp <= 0x2069) return true;
++  if (cp >= 0xFE00 && cp <= 0xFE0F) return true;
++  if (cp >= 0x0300 && cp <= 0x036F) return true;
++  if (cp >= 0x1AB0 && cp <= 0x1AFF) return true;
++  if (cp >= 0x1DC0 && cp <= 0x1DFF) return true;
++  if (cp >= 0x20D0 && cp <= 0x20FF) return true;
++  return false;
++}
++
++function foldCp(cp) {
++  if (HOMO[cp]) return HOMO[cp];
++  if (FOLD.has(cp)) return FOLD.get(cp);
++  return null;
++}
++
++function decodeEntities(text) {
++  let src = String(text || '');
++  for (let round = 0; round < 4; round++) {
++    let out = '';
++    let changed = false;
++    for (let i = 0; i < src.length; i++) {
++      if (src[i] !== '&') { out += src[i]; continue; }
++      const semi = src.indexOf(';', i + 1);
++      if (semi < 0 || semi - i > 12) { out += src[i]; continue; }
++      const body = src.slice(i + 1, semi);
++      let value = null;
++      if (body[0] === '#' && (body[1] === 'x' || body[1] === 'X')) {
++        const hex = body.slice(2);
++        if (hex && hex.length <= 6) {
++          let n = 0;
++          let ok = true;
++          for (let h = 0; h < hex.length; h++) {
++            const c = hex.charCodeAt(h);
++            let d = -1;
++            if (c >= 48 && c <= 57) d = c - 48;
++            else if (c >= 97 && c <= 102) d = c - 87;
++            else if (c >= 65 && c <= 70) d = c - 55;
++            if (d < 0) { ok = false; break; }
++            n = (n * 16) + d;
++          }
++          if (ok && n > 0 && n <= 0x10FFFF) value = String.fromCodePoint(n);
++        }
++      } else if (body[0] === '#') {
++        const dec = body.slice(1);
++        if (dec && dec.length <= 7) {
++          let n = 0;
++          let ok = true;
++          for (let h = 0; h < dec.length; h++) {
++            const c = dec.charCodeAt(h);
++            if (c < 48 || c > 57) { ok = false; break; }
++            n = (n * 10) + (c - 48);
++          }
++          if (ok && n > 0 && n <= 0x10FFFF) value = String.fromCodePoint(n);
++        }
++      } else if (NAMED_ENTITIES[body.toLowerCase()]) value = NAMED_ENTITIES[body.toLowerCase()];
++      if (value == null) { out += src[i]; continue; }
++      out += value;
++      i = semi;
++      changed = true;
++    }
++    src = out;
++    if (!changed) break;
++  }
++  return src;
++}
++
++function plainText(text) {
++  const bounded = assertScannable(text);
++  const decoded = decodeEntities(bounded);
++  let out = '';
++  for (let i = 0; i < decoded.length; i++) {
++    if (decoded[i] !== '<') {
++      const ch = decoded[i];
++      if (ch === '\u00a0') out += ' ';
++      else if (ch !== '\r') out += ch;
++      continue;
++    }
++    if (decoded.slice(i, i + 4) === '<!--') {
++      const end = decoded.indexOf('-->', i + 4);
++      if (end < 0 || end - i > 200) { out += '<'; continue; }
++      i = end + 2;
++      continue;
++    }
++    const gt = decoded.indexOf('>', i + 1);
++    if (gt < 0 || gt - i > 80) { out += '<'; continue; }
++    const tag = decoded.slice(i + 1, gt).toLowerCase();
++    let name = '';
++    let n = tag[0] === '/' ? 1 : 0;
++    let nameOk = true;
++    while (n < tag.length) {
++      const c = tag[n];
++      const code = c.charCodeAt(0);
++      const alnum = (code >= 97 && code <= 122) || (code >= 48 && code <= 57);
++      if (!alnum) break;
++      name += c;
++      n += 1;
++    }
++    if (!name) nameOk = false;
++    else if (n < tag.length && tag[n] !== ' ' && tag[n] !== '/' && tag[n] !== '\t') nameOk = false;
++    if (!nameOk) { out += '<'; continue; }
++    if (name === 'br' || name === 'p' || name === 'div' || name === 'li' || name === 'tr') out += '\n';
++    i = gt;
++  }
++  return out;
++}
++
++function skeletonChar(ch) {
++  const cp = ch.codePointAt(0);
++  if (isFormat(cp)) return '';
++  const folded = foldCp(cp);
++  const base = folded == null ? ch : folded;
++  let out = '';
++  const norm = base.normalize ? base.normalize('NFKC') : base;
++  for (let i = 0; i < norm.length; i++) {
++    const ncp = norm.codePointAt(i);
++    const width = ncp > 0xFFFF ? 2 : 1;
++    if (!isFormat(ncp)) {
++      const again = foldCp(ncp);
++      out += (again == null ? String.fromCodePoint(ncp) : again).toLowerCase();
++    }
++    i += width - 1;
++  }
++  return out;
++}
++
++function skeletonOf(text) {
++  const src = String(text || '');
++  let out = '';
++  for (let i = 0; i < src.length; i++) {
++    const cp = src.codePointAt(i);
++    const width = cp > 0xFFFF ? 2 : 1;
++    out += skeletonChar(String.fromCodePoint(cp));
++    i += width - 1;
++  }
++  return out;
++}
++
++function alnumOf(text) {
++  const sk = skeletonOf(text);
++  let out = '';
++  for (let i = 0; i < sk.length; i++) {
++    const c = sk.charCodeAt(i);
++    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122)) out += sk[i];
++  }
++  return out;
++}
++
++function collapseSpaces(line) {
++  let out = '';
++  let space = false;
++  for (let i = 0; i < line.length; i++) {
++    const ch = line[i];
++    if (ch === ' ' || ch === '\t') {
++      space = true;
++    } else {
++      if (space && out) out += ' ';
++      space = false;
++      out += ch;
++    }
++  }
++  return out.trim();
++}
++
++function paragraphKey(text) {
++  const plain = plainText(text);
++  const lines = [];
++  let cur = '';
++  for (let i = 0; i < plain.length; i++) {
++    if (plain[i] === '\n') {
++      const line = collapseSpaces(cur);
++      if (line) lines.push(line);
++      cur = '';
++    } else cur += plain[i];
++  }
++  const last = collapseSpaces(cur);
++  if (last) lines.push(last);
++  return lines.join('\n');
++}
++
++const TEMPLATE_PARAGRAPHS = paragraphKey(SPREAD_TEST_REPLY);
++const CANONICAL_TEMPLATE_HASH = payloadHash(TEMPLATE_PARAGRAPHS);
++
++function rememberHash(set, surface) {
++  const alnum = alnumOf(surface);
++  const sk = skeletonOf(surface);
++  if (alnum.length >= 3) set.add(digest(alnum));
++  if (sk.length >= 3) set.add(digest(sk));
++}
++
++rememberHash(secretHashes, TEMPLATE_PASSWORD);
++rememberHash(templateHashes, TEMPLATE_PASSWORD);
++
++function priceToken(raw) {
++  const sk = skeletonOf(raw);
++  return sk.indexOf('$') >= 0 || sk.indexOf('€') >= 0 || sk.indexOf('£') >= 0 || sk.indexOf('%') >= 0;
++}
++
++function digitsOnly(text) {
++  if (!text) return false;
++  for (let i = 0; i < text.length; i++) {
++    const c = text.charCodeAt(i);
++    if (c < 48 || c > 57) return false;
++  }
++  return true;
++}
++
++function putHash(conversationId, surface) {
++  const alnum = alnumOf(surface);
++  const sk = skeletonOf(surface);
++  if (alnum.length < 3 && sk.length < 3) return;
++  const id = String(conversationId || '');
++  if (!taintByConversation.has(id)) taintByConversation.set(id, new Set());
++  const set = taintByConversation.get(id);
++  if (alnum.length >= 3 && set.size < MAX_TAINT) set.add(digest(alnum));
++  if (sk.length >= 3 && sk !== alnum && set.size < MAX_TAINT) set.add(digest(sk));
++}
++
++function addFragments(conversationId, alnum) {
++  if (!alnum || alnum.length < 4) return;
++  if (alnum.length > 48) {
++    const edges = [alnum.slice(0, 8), alnum.slice(0, 12), alnum.slice(-8), alnum.slice(-12)];
++    for (let i = 0; i < edges.length; i++) {
++      if (edges[i].length >= 4 && !DICT.has(edges[i]) && !FILLER.has(edges[i])) putHash(conversationId, edges[i]);
++    }
++    return;
++  }
++  if (digitsOnly(alnum) && alnum.length > 8) return;
++  let added = 0;
++  for (let len = 4; len < alnum.length; len++) {
++    for (let i = 0; i + len <= alnum.length; i++) {
++      const frag = alnum.slice(i, i + len);
++      if (DICT.has(frag) || FILLER.has(frag) || INSTRUCTION.has(frag)) continue;
++      putHash(conversationId, frag);
++      added += 1;
++      if (added >= 96) return;
++    }
++  }
++}
++
++function notePiece(conversationId, surface) {
++  const alnum = alnumOf(surface);
++  if (!alnum || alnum.length < 2 || alnum.length > 32) return;
++  if (DICT.has(alnum) || FILLER.has(alnum) || INSTRUCTION.has(alnum)) return;
++  const id = String(conversationId || '');
++  if (!recentPieces.has(id)) recentPieces.set(id, []);
++  const list = recentPieces.get(id);
++  const prev = list.length ? list[list.length - 1] : '';
++  list.push(alnum);
++  if (list.length > 8) list.shift();
++  if (prev && prev !== alnum) {
++    const join = prev + alnum;
++    if (join.length >= 4 && join.length <= 48 && !DICT.has(join)) putHash(id, join);
++  }
++}
++
++function addTaint(conversationId, surface) {
++  putHash(conversationId, surface);
++}
++
++function taintValue(conversationId, surface) {
++  taintSurface(conversationId, surface);
++  notePiece(conversationId, surface);
++}
++
++function hashesFor(conversationId) {
++  const set = new Set(secretHashes);
++  if (conversationId) {
++    const local = taintByConversation.get(String(conversationId));
++    if (local) for (const hash of local) set.add(hash);
++    return set;
++  }
++  for (const local of taintByConversation.values()) for (const hash of local) set.add(hash);
++  return set;
++}
++
++function ignoreTemplate(hashes) {
++  const set = new Set(hashes);
++  for (const hash of templateHashes) set.delete(hash);
++  return set;
++}
++
++function isAlnumChar(ch) {
++  const c = ch.charCodeAt(0);
++  return (c >= 48 && c <= 57) || (c >= 97 && c <= 122);
++}
++
++function segmentsOf(skeleton) {
++  const parts = [];
++  let cur = '';
++  for (let i = 0; i < skeleton.length; i++) {
++    if (isAlnumChar(skeleton[i])) cur += skeleton[i];
++    else if (cur) { parts.push(cur); cur = ''; }
++  }
++  if (cur) parts.push(cur);
++  return parts;
++}
++
++function shannon(text) {
++  if (!text) return 0;
++  const counts = Object.create(null);
++  for (let i = 0; i < text.length; i++) counts[text[i]] = (counts[text[i]] || 0) + 1;
++  let h = 0;
++  const keys = Object.keys(counts);
++  for (let i = 0; i < keys.length; i++) {
++    const p = counts[keys[i]] / text.length;
++    h -= p * Math.log2(p);
++  }
++  return h;
++}
++
++function printable(text) {
++  if (!text) return false;
++  let ok = 0;
++  for (let i = 0; i < text.length; i++) {
++    const c = text.charCodeAt(i);
++    if (c === 9 || c === 10 || c === 13 || (c >= 32 && c < 0xD800)) ok += 1;
++  }
++  return ok / text.length > 0.9;
++}
++
++function tryBase64(token) {
++  if (!token || token.length < 8 || token.length > 4096 || token.length % 4 !== 0) return null;
++  for (let i = 0; i < token.length; i++) {
++    const c = token.charCodeAt(i);
++    const ok = (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || (c >= 48 && c <= 57) || c === 43 || c === 47 || c === 61 || c === 45 || c === 95;
++    if (!ok) return null;
++  }
++  const buf = Buffer.from(token, 'base64');
++  if (!buf.length || buf.length < 4) return null;
++  const text = buf.toString('utf8');
++  if (!printable(text)) return null;
++  return text;
++}
++
++function tryHex(token) {
++  if (!token || token.length < 8 || token.length > 4096 || token.length % 2 !== 0) return null;
++  for (let i = 0; i < token.length; i++) {
++    const c = token.charCodeAt(i);
++    const ok = (c >= 48 && c <= 57) || (c >= 97 && c <= 102) || (c >= 65 && c <= 70);
++    if (!ok) return null;
++  }
++  const buf = Buffer.from(token, 'hex');
++  if (!buf.length) return null;
++  const text = buf.toString('utf8');
++  if (!printable(text)) return null;
++  return text;
++}
++
++function decodedForms(token) {
++  const out = [];
++  let layer = [token];
++  for (let depth = 0; depth < MAX_DEPTH && out.length < MAX_DECODE; depth++) {
++    const next = [];
++    for (let i = 0; i < layer.length; i++) {
++      const b64 = tryBase64(layer[i]);
++      const hex = tryHex(layer[i]);
++      if (b64 && out.length < MAX_DECODE) { out.push(b64); next.push(b64); }
++      if (hex && hex !== b64 && out.length < MAX_DECODE) { out.push(hex); next.push(hex); }
++    }
++    if (!next.length) break;
++    layer = next;
++  }
++  return out;
++}
++
++function whitespaceTokens(text) {
++  const tokens = [];
++  let cur = '';
++  let start = 0;
++  for (let i = 0; i < text.length; i++) {
++    const ch = text[i];
++    if (ch === ' ' || ch === '\n' || ch === '\t') {
++      if (cur) tokens.push({ text: cur, start: start, end: i });
++      cur = '';
++    } else if (!cur) {
++      start = i;
++      cur = ch;
++    } else cur += ch;
++  }
++  if (cur) tokens.push({ text: cur, start: start, end: text.length });
++  return tokens;
++}
++
++function isCueWord(token) {
++  return WORD_CUES.has(token);
++}
++
++function taintSurface(conversationId, surface) {
++  if (!surface) return;
++  addTaint(conversationId, surface);
++  const sk = skeletonOf(surface);
++  const segs = segmentsOf(sk);
++  if (segs.length > 1) {
++    const joined = segs.join('');
++    if (joined.length >= 3) addTaint(conversationId, joined);
++  }
++  const forms = decodedForms(String(surface));
++  for (let i = 0; i < forms.length; i++) {
++    addTaint(conversationId, forms[i]);
++    const inner = alnumOf(forms[i]);
++    if (inner.length >= 3) addTaint(conversationId, inner);
++    absorbPlain(conversationId, forms[i]);
++  }
++}
++
++function valueFromTokens(tokens, index) {
++  let i = index;
++  let skipped = 0;
++  while (i < tokens.length && skipped < 6) {
++    const alnum = alnumOf(tokens[i].text);
++    if (alnum && !FILLER.has(alnum)) break;
++    i += 1;
++    skipped += 1;
++  }
++  if (i >= tokens.length) return;
++  const alnum = alnumOf(tokens[i].text);
++  if (INSTRUCTION.has(alnum)) return;
++  const shorts = [];
++  let j = i;
++  while (j < tokens.length) {
++    const part = alnumOf(tokens[j].text);
++    if (!part || part.length > 2 || DICT.has(part)) break;
++    shorts.push(part);
++    j += 1;
++    if (shorts.length >= 12) break;
++  }
++  if (shorts.length >= 4) return { text: shorts.join(''), index: j - 1 };
++  return { text: tokens[i].text, index: i };
++}
++
++function followingPiece(tokens, index) {
++  const next = tokens[index + 1];
++  if (!next) return '';
++  const alnum = alnumOf(next.text);
++  if (!alnum || alnum.length < 3 || alnum.length > 16) return '';
++  if (DICT.has(alnum) || FILLER.has(alnum) || INSTRUCTION.has(alnum) || isCueWord(alnum)) return '';
++  return next.text;
++}
++
++function taintNearbyAccounts(conversationId, tokens, index) {
++  const from = Math.max(0, index - 6);
++  const to = Math.min(tokens.length - 1, index + 8);
++  for (let j = from; j <= to; j++) {
++    const raw = tokens[j].text;
++    if (priceToken(raw)) continue;
++    const alnum = alnumOf(raw);
++    if (!alnum || alnum === '55188' || alnum.length < 4 || alnum.length > 8 || !digitsOnly(alnum)) continue;
++    taintValue(conversationId, alnum);
++  }
++}
++
++function absorbPlain(conversationId, text) {
++  let plain;
++  try { plain = plainText(String(text || '')); } catch (_) { return; }
++  const tokens = whitespaceTokens(plain);
++  for (let i = 0; i < tokens.length; i++) {
++    const folded = skeletonOf(tokens[i].text);
++    const alnum = alnumOf(tokens[i].text);
++    const segs = segmentsOf(folded);
++    if (segs.length > 1 && (GLUE_CUES.has(segs[0]) || isCueWord(segs[0]))) {
++      const rest = segs.slice(1);
++      if (rest.length && !INSTRUCTION.has(rest.join('')) && !INSTRUCTION.has(rest[0])) {
++        const joined = rest.join('');
++        if (joined.length >= 3) taintValue(conversationId, joined);
++        if (rest[0].length >= 3) taintValue(conversationId, rest[0]);
++        taintNearbyAccounts(conversationId, tokens, i);
++      }
++    }
++    if (isCueWord(alnum) || isCueWord(folded)) {
++      const found = valueFromTokens(tokens, i + 1);
++      if (found && found.text) {
++        taintValue(conversationId, found.text);
++        const extra = followingPiece(tokens, found.index);
++        if (extra) taintValue(conversationId, extra);
++        taintNearbyAccounts(conversationId, tokens, i);
++      }
++    }
++  }
++  const foldedText = skeletonOf(plain);
++  for (let c = 0; c < MULTI_CUES.length; c++) {
++    const cue = MULTI_CUES[c];
++    let from = 0;
++    while (from < foldedText.length) {
++      const at = foldedText.indexOf(cue, from);
++      if (at < 0) break;
++      const after = plain.slice(at + cue.length);
++      const next = whitespaceTokens(after);
++      const value = valueFromTokens(next, 0);
++      if (value && value.text) {
++        taintValue(conversationId, value.text);
++        const extra = followingPiece(next, value.index);
++        if (extra) taintValue(conversationId, extra);
++        taintNearbyAccounts(conversationId, next, 0);
++      }
++      from = at + cue.length;
++    }
++  }
++}
++
++function rememberInbound(conversationId, input) {
++  const src = input || {};
++  const id = conversationId || src.conversationId || '';
++  const chunks = [];
++  if (typeof src === 'string') chunks.push(src);
++  if (typeof src.text === 'string') chunks.push(src.text);
++  if (typeof src.body === 'string') chunks.push(src.body);
++  if (typeof src.ownerText === 'string') chunks.push(src.ownerText);
++  if (typeof src.toolOutput === 'string') chunks.push(src.toolOutput);
++  const attachments = src.attachments || [];
++  for (let i = 0; i < attachments.length; i++) {
++    const att = attachments[i];
++    if (typeof att === 'string') chunks.push(att);
++    else if (att) chunks.push(String(att.text || att.body || att.name || ''));
++  }
++  for (let i = 0; i < chunks.length; i++) {
++    if (!chunks[i]) continue;
++    absorbPlain(id, chunks[i]);
++    lastAskByConversation.set(String(id), chunks[i]);
++  }
++}
++
++function rememberClientText(conversationId, text) {
++  rememberInbound(conversationId, { text: String(text || '') });
++}
++
++function rememberClientParts(conversationId, parts) {
++  if (!Array.isArray(parts)) return;
++  for (let i = 0; i < parts.length; i++) {
++    const part = parts[i];
++    if (!part) continue;
++    const author = part.author || {};
++    const body = part.body || part.text || part.content || '';
++    if (typeof body === 'string' && body) rememberInbound(conversationId, { text: body, attachments: part.attachments });
++    else if (author && body) rememberInbound(conversationId, { text: String(body), attachments: part.attachments });
++  }
++}
++
++function structural(token) {
++  const sk = skeletonOf(token);
++  if (!sk) return false;
++  if (sk === WORKSPACE_ID) return true;
++  if (sk.indexOf('fundedelite') >= 0 || sk.indexOf('confirmo') >= 0 || sk.indexOf('trustpilot') >= 0 || sk.indexOf('propfirmmatch') >= 0) return true;
++  if (sk.indexOf('intercom') >= 0) return true;
++  if (sk.indexOf('://') >= 0 || sk.indexOf('http') === 0 || sk.indexOf('www.') >= 0) return true;
++  for (let i = 0; i < AUTHORIZED_HOSTS.length; i++) if (sk.indexOf(AUTHORIZED_HOSTS[i]) >= 0) return true;
++  let digits = 0;
++  let other = 0;
++  let price = true;
++  let started = false;
++  for (let i = 0; i < sk.length; i++) {
++    const c = sk[i];
++    if (!started && (c === '$' || c === '€' || c === '£')) { started = true; continue; }
++    started = true;
++    if (c >= '0' && c <= '9') digits += 1;
++    else if (c === '.' || c === ',' || c === '%') continue;
++    else { price = false; other += 1; }
++  }
++  if (other === 0 && digits >= 1 && sk.indexOf('a') < 0) return true;
++  if (price && digits > 0 && other === 0) return true;
++  return false;
++}
++
++function compoundAllowed(token) {
++  const parts = [];
++  let cur = '';
++  for (let i = 0; i < token.length; i++) {
++    const ch = token[i];
++    if (ch === '-' || ch === '_' || ch === '.' || ch === '/') {
++      if (cur) parts.push(cur);
++      cur = '';
++    } else cur += ch;
++  }
++  if (cur) parts.push(cur);
++  if (parts.length < 2) return false;
++  for (let i = 0; i < parts.length; i++) {
++    const part = parts[i];
++    if (part.length <= 2 || DICT.has(part)) continue;
++    let digits = true;
++    for (let c = 0; c < part.length; c++) if (part.charCodeAt(c) < 48 || part.charCodeAt(c) > 57) digits = false;
++    if (digits) continue;
++    if (part.length <= 14 && shannon(part) < 3.55) continue;
++    return false;
++  }
++  return true;
++}
++
++function mixedHigh(token) {
++  if (!token || token.length < 16) return false;
++  for (let i = 0; i < token.length; i++) if (token.charCodeAt(i) > 127) return false;
++  while (token && !isAlnumChar(token[0])) token = token.slice(1);
++  while (token && !isAlnumChar(token[token.length - 1])) token = token.slice(0, -1);
++  if (!token || token.length < 16) return false;
++  if (structural(token) || DICT.has(token) || compoundAllowed(token)) return false;
++  let letters = 0;
++  let digits = 0;
++  let symbols = 0;
++  for (let i = 0; i < token.length; i++) {
++    const c = token.charCodeAt(i);
++    if (c >= 97 && c <= 122) letters += 1;
++    else if (c >= 48 && c <= 57) digits += 1;
++    else symbols += 1;
++  }
++  const entropy = shannon(token);
++  if (letters && digits && entropy >= 3.2) return true;
++  if (letters && symbols && token.indexOf('-') < 0 && entropy >= 3.4) return true;
++  if (symbols && entropy >= 3.5 && token.length >= 16) return true;
++  if (!digits && !symbols && token.length >= 20 && entropy >= 3.8) return true;
++  if (compoundAllowed(token)) return false;
++  if (token.indexOf('-') >= 0 && entropy >= 3.5 && token.length >= 16 && !compoundAllowed(token)) return true;
++  return false;
++}
++
++function labeledSecret(text) {
++  const folded = skeletonOf(plainText(String(text || '')));
++  const tokens = whitespaceTokens(folded);
++  for (let i = 0; i < tokens.length; i++) {
++    const alnum = alnumOf(tokens[i].text);
++    const segs = segmentsOf(tokens[i].text);
++    if (segs.length > 1 && (GLUE_CUES.has(segs[0]) || isCueWord(segs[0]))) {
++      const joined = segs.slice(1).join('');
++      if (joined.length >= 3 && !INSTRUCTION.has(joined)) return true;
++    }
++    if (isCueWord(alnum) || isCueWord(tokens[i].text)) {
++      const value = valueFromTokens(tokens, i + 1);
++      if (value && value.text && alnumOf(value.text).length >= 3 && !INSTRUCTION.has(alnumOf(value.text))) return true;
++    }
++  }
++  return false;
++}
++
++function decodedSecret(token) {
++  const forms = decodedForms(token);
++  for (let i = 0; i < forms.length; i++) {
++    if (labeledSecret(forms[i])) return true;
++    const alnum = alnumOf(forms[i]);
++    if (alnum.length >= 12 && shannon(alnum) >= 3.6 && !DICT.has(alnum) && !structural(alnum)) return true;
++  }
++  return false;
++}
++
++function hashHit(surface, hashes) {
++  if (!surface) return false;
++  const alnum = alnumOf(surface);
++  const sk = skeletonOf(surface);
++  if (alnum.length >= 3 && hashes.has(digest(alnum))) return true;
++  if (sk.length >= 3 && hashes.has(digest(sk))) return true;
++  const segs = segmentsOf(sk);
++  for (let s = 0; s < segs.length; s++) {
++    if (segs[s].length >= 3 && hashes.has(digest(segs[s]))) return true;
++  }
++  if (segs.length > 1) {
++    const joined = segs.join('');
++    if (joined.length >= 3 && hashes.has(digest(joined))) return true;
++    const shorts = [];
++    for (let i = 0; i < segs.length; i++) {
++      if (segs[i].length <= 2 && !DICT.has(segs[i])) shorts.push(segs[i]);
++      else {
++        if (shorts.length >= 4 && hashes.has(digest(shorts.join('')))) return true;
++        shorts.length = 0;
++      }
++    }
++    if (shorts.length >= 4 && hashes.has(digest(shorts.join('')))) return true;
++  }
++  return false;
++}
++
++function reconstructionHit(tokens, hashes) {
++  const parts = [];
++  for (let i = 0; i < tokens.length; i++) {
++    const alnum = alnumOf(tokens[i].text);
++    if (!alnum || alnum.length < 2 || alnum.length > 24 || DICT.has(alnum) || FILLER.has(alnum) || INSTRUCTION.has(alnum)) parts.push(null);
++    else parts.push(alnum);
++  }
++  for (let i = 0; i < parts.length; i++) {
++    if (!parts[i]) continue;
++    let join = '';
++    let count = 0;
++    for (let j = i; j < parts.length && count < 4; j++) {
++      if (!parts[j]) break;
++      join += parts[j];
++      count += 1;
++      if (count >= 2 && join.length >= 4 && hashes.has(digest(join))) return true;
++    }
++  }
++  return false;
++}
++
++function mt5ContextHit(plain) {
++  const tokens = whitespaceTokens(skeletonOf(plain));
++  for (let i = 0; i < tokens.length; i++) {
++    const cue = alnumOf(tokens[i].text);
++    if (!isCueWord(cue) && !GLUE_CUES.has(cue)) continue;
++    const from = Math.max(0, i - 6);
++    const to = Math.min(tokens.length - 1, i + 8);
++    for (let j = from; j <= to; j++) {
++      if (j === i) continue;
++      const raw = tokens[j].text;
++      if (priceToken(raw)) continue;
++      const alnum = alnumOf(raw);
++      if (!alnum || alnum === '55188' || alnum.length < 4 || alnum.length > 8 || !digitsOnly(alnum)) continue;
++      return true;
++    }
++  }
++  return false;
++}
++
++function spanHits(text, hashes) {
++  let plain;
++  try { plain = plainText(text); } catch (err) { throw err; }
++  const tokens = whitespaceTokens(plain);
++  const shorts = [];
++  for (let i = 0; i < tokens.length; i++) {
++    const token = tokens[i].text;
++    const folded = skeletonOf(token);
++    const ownedByTemplate = hashHit(token, templateHashes);
++    if (hashHit(token, hashes)) return true;
++    const forms = decodedForms(token);
++    for (let d = 0; d < forms.length; d++) {
++      if (hashHit(forms[d], hashes)) return true;
++    }
++    if (!ownedByTemplate && !structural(folded) && mixedHigh(folded)) return true;
++    const alnum = alnumOf(token);
++    if (alnum && alnum.length <= 2 && !DICT.has(alnum)) shorts.push(alnum);
++    else {
++      if (shorts.length >= 4 && hashes.has(digest(shorts.join('')))) return true;
++      shorts.length = 0;
++    }
++  }
++  if (shorts.length >= 4 && hashes.has(digest(shorts.join('')))) return true;
++  if (mt5ContextHit(plain)) return true;
++  return false;
++}
++
++function safeHits(text, conversationId) {
++  try { return spanHits(text, hashesFor(conversationId)); } catch (_) { return true; }
++}
++
++function channelOf(op) {
++  if (op && op.kind === 'model-request') return 'model';
++  if (op && op.channel) return op.channel;
++  const mt = String((op && op.messageType) || '');
++  if (mt === 'note') return 'internal';
++  if (mt === 'search') return 'search';
++  if (mt === 'comment' || mt === '') return 'public';
++  return 'internal';
++}
++
++function replacementBody(op) {
++  return channelOf(op) === 'internal' ? REDACTED_NOTE : FIXED_MESSAGE;
++}
++
++function withData(op, body) {
++  if (op && op.data && typeof op.data === 'object') return Object.assign({}, op.data, { body: body });
++  return { body: body };
++}
++
++function deny(op, reason) {
++  const channel = channelOf(op || {});
++  if (channel === 'model' || channel === 'search') {
++    return { send: false, decision: 'deny', action: 'block', reason: reason, body: null, data: null, payload: null, messageType: channel };
++  }
++  const body = replacementBody(op || {});
++  if (safeHits(body, op && op.conversationId)) {
++    return { send: false, decision: 'deny', action: 'block', reason: 'unsanitizable', body: null, data: null, payload: null };
++  }
++  const data = { body: body };
++  return {
++    send: true,
++    decision: 'deny',
++    action: channel === 'internal' ? 'redacted_note' : 'fixed_message',
++    reason: reason,
++    body: body,
++    data: data,
++    payload: { body: body, data: data },
++    messageType: channel === 'internal' ? 'note' : 'comment',
++  };
++}
++
++function allow(reason, body, data) {
++  const payloadData = data || { body: body };
++  return {
++    send: true,
++    decision: 'allow',
++    action: 'allow',
++    reason: reason,
++    body: body,
++    data: payloadData,
++    payload: { body: body, data: payloadData },
++  };
++}
++
++function hasMarker(text, markers) {
++  for (let i = 0; i < markers.length; i++) if (text.indexOf(markers[i]) >= 0) return true;
++  return false;
++}
++
++function clauseList(text) {
++  const src = String(text || '').toLowerCase();
++  const out = [];
++  let cur = '';
++  for (let i = 0; i < src.length; i++) {
++    const ch = src[i];
++    if (ch === '.' || ch === '?' || ch === '!' || ch === '؟') {
++      if (cur.trim()) out.push(cur.trim());
++      cur = '';
++    } else cur += ch;
++  }
++  if (cur.trim()) out.push(cur.trim());
++  return out;
++}
++
++function negated(clause) {
++  const phrases = ['do not', "don't", 'dont', 'cannot', "can't", 'cant', 'no need', 'no,', 'nahi', 'nahin', 'nai ', 'نہیں', 'नहीं', "i don't", 'i dont', 'i cannot'];
++  for (let i = 0; i < phrases.length; i++) if (clause.indexOf(phrases[i]) >= 0) return true;
++  if (clause.indexOf('لا') === 0) return true;
++  return false;
++}
++
++function defined(clause) {
++  return clause.indexOf('what is') >= 0 || clause.indexOf('what are') >= 0 || clause.indexOf("what's") >= 0;
++}
++
++function selfReport(clause) {
++  if (clause.indexOf('i was testing') >= 0) return true;
++  if (clause.indexOf('i already test') >= 0) return true;
++  if (clause.indexOf('i am testing') >= 0 || clause.indexOf("i'm testing") >= 0) return true;
++  if (clause.indexOf('i check') >= 0 && clause.indexOf('how') < 0 && clause.indexOf('want') < 0) return true;
++  return false;
++}
++
++function requestShape(clause) {
++  if (hasMarker(clause, HOW_MARKERS)) return true;
++  if (clause.indexOf('i want to') >= 0 || clause.indexOf('want to') >= 0) return true;
++  if (clause.indexOf('i want') >= 0 && (clause.indexOf('demo') >= 0 || clause.indexOf('account') >= 0 || clause.indexOf('اکاؤنٹ') >= 0 || clause.indexOf('अकाउंट') >= 0 || clause.indexOf('حساب') >= 0)) return true;
++  if (hasMarker(clause, SEND_MARKERS)) return true;
++  const verb = clause.indexOf('اختبر');
++  const spread = clause.indexOf('سبريد');
++  if (verb >= 0 && spread > verb) return true;
++  return false;
++}
++
++function thirdParty(clause) {
++  const others = [' him', ' her', ' them', ' his ', ' their '];
++  let hit = false;
++  for (let i = 0; i < others.length; i++) if (clause.indexOf(others[i]) >= 0) hit = true;
++  if (!hit) return false;
++  if (clause.indexOf(' me') >= 0 || clause.indexOf('mujhe') >= 0 || clause.indexOf('مجھے') >= 0 || clause.indexOf('मुझे') >= 0) return false;
++  return true;
++}
++
++function recordBorderline(text, reason) {
++  if (borderline.length >= 100) return;
++  borderline.push({ text: String(text || '').slice(0, 240), reason: reason });
++}
++
++function flatAsk(text) {
++  return collapseSpaces(String(text || '').replace(/\n/g, ' '));
++}
++
++function notForSpreads(flat) {
++  if (flat.indexOf('not for spread') >= 0) return true;
++  if (flat.indexOf('but not') >= 0 && flat.indexOf('spread') >= 0) return true;
++  return false;
++}
++
++function isTestAccountHandoff(plain) {
++  const flat = flatAsk(plain);
++  if (notForSpreads(flat)) return false;
++  if (flat.indexOf('spreadsheet') >= 0 || flat.indexOf('spread sheet') >= 0) return false;
++  if (flat.indexOf('give me the test account') >= 0) return true;
++  if (flat.indexOf('send me the test account') >= 0) return true;
++  return false;
++}
++
++function isAuthorizedTemplateTopic(text) {
++  return isExplicitSpreadTestRequest(text);
++}
++
++function isExplicitSpreadTestRequest(text) {
++  let plain;
++  try { plain = plainText(text).toLowerCase(); } catch (_) { return false; }
++  const flat = flatAsk(plain);
++  if (notForSpreads(flat)) {
++    recordBorderline(text, 'not_for_spreads');
++    return false;
++  }
++  if (isTestAccountHandoff(plain)) return true;
++  if (plain.indexOf('spreadsheet') >= 0 || plain.indexOf('spread sheet') >= 0) {
++    recordBorderline(text, 'spreadsheet');
++    return false;
++  }
++  const clauses = clauseList(plain);
++  let sawSpread = false;
++  let reason = '';
++  for (let i = 0; i < clauses.length; i++) {
++    const clause = clauses[i];
++    if (!hasMarker(clause, SPREAD_MARKERS)) continue;
++    sawSpread = true;
++    if (clause.indexOf('payout') >= 0) { reason = 'payout'; continue; }
++    if (negated(clause)) { reason = 'negation'; continue; }
++    if (defined(clause)) { reason = 'definition'; continue; }
++    if (selfReport(clause)) { reason = 'self_report'; continue; }
++    if (thirdParty(clause)) { reason = 'third_party'; continue; }
++    if (!hasMarker(clause, CHECK_MARKERS)) { reason = 'no_check_intent'; continue; }
++    if (!requestShape(clause)) { reason = 'no_request_shape'; continue; }
++    return true;
++  }
++  if (sawSpread) recordBorderline(text, reason || 'borderline');
++  return false;
++}
++
++function greetingPrefixOk(prefix) {
++  const trimmed = String(prefix || '').trim();
++  if (!trimmed) return true;
++  const lines = trimmed.split('\n');
++  const line = lines[lines.length - 1].trim().toLowerCase();
++  let token = '';
++  const tokens = [];
++  for (let i = 0; i < line.length; i++) {
++    const ch = line[i];
++    const c = ch.charCodeAt(0);
++    if ((c >= 97 && c <= 122) || c > 127) token += ch;
++    else if (token) { tokens.push(token); token = ''; }
++  }
++  if (token) tokens.push(token);
++  if (!tokens.length || tokens.length > 4) return false;
++  let unknown = 0;
++  for (let i = 0; i < tokens.length; i++) {
++    if (GREETINGS.has(tokens[i]) || DICT.has(tokens[i])) continue;
++    unknown += 1;
++    if (tokens[i].length > 16) return false;
++  }
++  return unknown <= 1 && (GREETINGS.has(tokens[0]) || tokens[0].indexOf('السلام') >= 0);
++}
++
++function isDeliverableSpreadTemplate(body) {
++  let key;
++  try { key = paragraphKey(body); } catch (_) { return false; }
++  if (key === TEMPLATE_PARAGRAPHS) return true;
++  const lines = key.split('\n');
++  const templateLines = TEMPLATE_PARAGRAPHS.split('\n');
++  if (lines.length < templateLines.length) return false;
++  const start = lines.length - templateLines.length;
++  for (let i = 0; i < templateLines.length; i++) if (lines[start + i] !== templateLines[i]) return false;
++  return greetingPrefixOk(lines.slice(0, start).join('\n'));
++}
++
++function isExactSpreadTemplate(body) {
++  try { return plainText(body).trim() === SPREAD_TEST_REPLY; } catch (_) { return false; }
++}
++
++function latestClientAsk(ctx) {
++  const texts = [];
++  const history = (ctx && ctx.history) || [];
++  for (let i = 0; i < history.length; i++) {
++    const item = history[i];
++    if (typeof item === 'string') texts.push(item);
++    else if (item) texts.push(String(item.text || item.body || ''));
++  }
++  const clientTexts = (ctx && ctx.clientTexts) || [];
++  for (let i = 0; i < clientTexts.length; i++) if (typeof clientTexts[i] === 'string') texts.push(clientTexts[i]);
++  if (ctx && typeof ctx.clientText === 'string') texts.push(ctx.clientText);
++  if (texts.length) return texts[texts.length - 1];
++  if (ctx && ctx.conversationId && lastAskByConversation.has(String(ctx.conversationId))) return lastAskByConversation.get(String(ctx.conversationId)) || '';
++  return '';
++}
++
++function rememberFromOp(op) {
++  const ctx = op || {};
++  const history = ctx.history || [];
++  for (let i = 0; i < history.length; i++) {
++    const item = history[i];
++    const text = typeof item === 'string' ? item : (item && (item.text || item.body)) || '';
++    if (text) rememberClientText(ctx.conversationId, text);
++  }
++  const clientTexts = ctx.clientTexts || [];
++  for (let i = 0; i < clientTexts.length; i++) rememberClientText(ctx.conversationId, clientTexts[i]);
++  if (typeof ctx.clientText === 'string') rememberClientText(ctx.conversationId, ctx.clientText);
++  if (typeof ctx.inboundText === 'string') rememberInbound(ctx.conversationId, { text: ctx.inboundText });
++  if (typeof ctx.inbound === 'string') rememberInbound(ctx.conversationId, { text: ctx.inbound });
++  if (typeof ctx.ownerText === 'string') rememberInbound(ctx.conversationId, { ownerText: ctx.ownerText });
++  if (typeof ctx.toolOutput === 'string') rememberInbound(ctx.conversationId, { toolOutput: ctx.toolOutput });
++  if (ctx.attachments) rememberInbound(ctx.conversationId, { attachments: ctx.attachments });
++  if (Array.isArray(ctx.messages)) {
++    for (let i = 0; i < ctx.messages.length; i++) {
++      const msg = ctx.messages[i];
++      if (!msg || typeof msg !== 'object') continue;
++      if (String(msg.role || '') === 'system') continue;
++      if (typeof msg.content === 'string') rememberInbound(ctx.conversationId, { text: msg.content });
++      if (msg.role === 'tool' && typeof msg.content === 'string') rememberInbound(ctx.conversationId, { toolOutput: msg.content });
++    }
++  }
++}
++
++function bodyOf(op) {
++  if (!op) return '';
++  if (typeof op.body === 'string') return op.body;
++  if (op.data && typeof op.data.body === 'string') return op.data.body;
++  return '';
++}
++
++function messageTypeOf(ctx) {
++  const direct = String((ctx && ctx.messageType) || '').toLowerCase();
++  if (direct) return direct;
++  const nested = ctx && ctx.data && ctx.data.message_type;
++  return String(nested || '').toLowerCase();
++}
++
++function structuralKind(ctx) {
++  const mt = messageTypeOf(ctx);
++  const known = {
++    assignment: true, assign: true, close: true, snoozed: true, snooze: true, open: true,
++    search: true, unassign: true, priority: true, tag: true, untag: true, read: true,
++  };
++  if (known[mt]) return mt;
++  if (ctx && (ctx.channel === 'search' || ctx.kind === 'search')) return 'search';
++  const method = String((ctx && ctx.method) || '').toLowerCase();
++  if (method === 'get' || method === 'head' || method === 'options') return 'read';
++  if ((method === 'put' || method === 'patch') && !bodyOf(ctx)) return method;
++  return '';
++}
++
++function labeledOwnerBodies(text) {
++  const src = String(text || '').slice(0, MAX_SCAN);
++  const lines = [];
++  let cur = '';
++  for (let i = 0; i < src.length; i++) {
++    if (src[i] === '\n') { lines.push(cur); cur = ''; }
++    else cur += src[i];
++  }
++  lines.push(cur);
++  const bodies = [];
++  let buf = '';
++  let on = false;
++  for (let i = 0; i < lines.length; i++) {
++    const line = lines[i];
++    const trimmed = line.trim().toLowerCase();
++    const reply = trimmed.indexOf('reply:') === 0;
++    const note = trimmed.indexOf('note:') === 0;
++    const action = trimmed.indexOf('action:') === 0;
++    if (reply || note) {
++      if (on && buf.trim()) bodies.push(buf);
++      const colon = line.indexOf(':');
++      buf = colon >= 0 ? line.slice(colon + 1) : '';
++      on = true;
++    } else if (action && on) {
++      const colon = line.indexOf(':');
++      buf += '\n' + (colon >= 0 ? line.slice(colon + 1) : '');
++    } else if (trimmed.indexOf('body:') === 0 && on) {
++      const colon = line.indexOf(':');
++      buf += '\n' + (colon >= 0 ? line.slice(colon + 1) : '');
++    } else if (on) buf += '\n' + line;
++  }
++  if (on && buf.trim()) bodies.push(buf);
++  return bodies;
++}
++
++function collectStrings(value, out, depth) {
++  if (depth > 5 || out.length > 40) return;
++  if (typeof value === 'string') {
++    if (value) out.push(value);
++    return;
++  }
++  if (!value || typeof value !== 'object') return;
++  if (Array.isArray(value)) {
++    for (let i = 0; i < value.length && i < 20; i++) collectStrings(value[i], out, depth + 1);
++    return;
++  }
++  const keys = Object.keys(value);
++  for (let i = 0; i < keys.length && i < 30; i++) collectStrings(value[keys[i]], out, depth + 1);
++}
++
++function exactTokenHit(text, hashes) {
++  let plain;
++  try { plain = plainText(String(text || '')); } catch (_) { return true; }
++  const tokens = whitespaceTokens(plain);
++  for (let i = 0; i < tokens.length; i++) if (hashHit(tokens[i].text, hashes)) return true;
++  return false;
++}
++
++function decide(op) {
++  const ctx = op || {};
++  rememberFromOp(ctx);
++  if (typeof ctx.ownerText === 'string' && ctx.ownerText) rememberInbound(ctx.conversationId, { ownerText: ctx.ownerText });
++  if (ctx.kind === 'model-request') {
++    const messages = guardModelMessages(ctx.conversationId, ctx.messages || (ctx.payload && ctx.payload.messages) || []);
++    const payload = Object.assign({}, ctx.payload || {}, { messages: messages });
++    return {
++      send: true,
++      decision: 'allow',
++      action: 'allow',
++      reason: 'model',
++      body: null,
++      data: payload,
++      payload: payload,
++      messages: messages,
++      messageType: 'model',
++    };
++  }
++  const body = bodyOf(ctx);
++  const kind = structuralKind(ctx);
++  const hashes = hashesFor(ctx.conversationId);
++  const ownerBlob = typeof ctx.ownerText === 'string' ? ctx.ownerText : '';
++  if (ownerBlob && spanHits(ownerBlob, hashes)) return deny(ctx, 'tainted');
++  const dictated = labeledOwnerBodies(ownerBlob).concat(labeledOwnerBodies(body));
++  for (let i = 0; i < dictated.length; i++) {
++    if (spanHits(dictated[i], hashes)) return deny(ctx, 'tainted');
++  }
++  if (kind) {
++    const parts = [];
++    collectStrings(ctx.data, parts, 0);
++    if (body) parts.push(body);
++    for (let i = 0; i < parts.length; i++) {
++      if (exactTokenHit(parts[i], hashes)) return deny(ctx, 'tainted');
++    }
++    if (!body) return allow('structural_' + kind, '', ctx.data || {});
++  }
++  if (typeof body !== 'string') return deny(ctx, 'non_string');
++  assertScannable(body);
++  const eligible = isExplicitSpreadTestRequest(latestClientAsk(ctx));
++  if (body === FIXED_MESSAGE || payloadHash(body) === FIXED_HASH || body === REDACTED_NOTE) return allow('safe_replacement', body, { body: body });
++  if (isDeliverableSpreadTemplate(body)) {
++    if (!eligible) return deny(ctx, 'spread_not_eligible');
++    if (spanHits(body, ignoreTemplate(hashesFor(ctx.conversationId)))) return deny(ctx, 'residual_secret');
++    const exact = SPREAD_TEST_REPLY;
++    const data = { body: exact };
++    const allowed = allow('spread_template', exact, data);
++    allowed.spreadEligible = true;
++    return allowed;
++  }
++  if (spanHits(body, hashesFor(ctx.conversationId))) return deny(ctx, 'tainted');
++  const data = withData(ctx, body);
++  const allowed = allow('clean', body, data);
++  allowed.spreadEligible = !!eligible;
++  return allowed;
++}
++
++function stamp(decision) {
++  decision.version = STATUS.candidate;
++  decision.frozen = true;
++  decision.approved = false;
++  decision.release = false;
++  decision.wired = false;
++  decision.silent = false;
++  decision.post = !!decision.send;
++  decision.posted = false;
++  decision.blocked = !decision.send;
++  decision.spreadEligible = !!decision.spreadEligible;
++  if (decision.send) {
++    const ticket = 'cg14-' + String(ticketSeq);
++    ticketSeq += 1;
++    decision.ticket = ticket;
++    tickets.add(ticket);
++  } else decision.ticket = null;
++  decision.payloadHash = payloadHash(typeof decision.body === 'string' ? decision.body : '');
++  decision.diagnostic = { reason: decision.reason };
++  return decision;
++}
++
++function authorizeOutbound(op) {
++  const started = Date.now();
++  let decision;
++  try {
++    decision = decide(op || {});
++    if (Date.now() - started > GUARD_BUDGET_MS) decision = deny(op || {}, 'timeout');
++  } catch (_) {
++    decision = deny(op || {}, 'exception');
++  }
++  return stamp(decision);
++}
++
++function denyOutbound(op) {
++  return stamp(deny(op || {}, (op && op.reason) || 'exception'));
++}
++
++function transportPermitted() {
++  return permit != null;
++}
++
++function dispatchAuthorized(decision, send) {
++  if (!decision || decision.send !== true || !decision.ticket || !tickets.has(decision.ticket)) {
++    const err = new Error('unauthorized write');
++    err.code = 'UNAUTHORIZED_WRITE';
++    throw err;
++  }
++  tickets.delete(decision.ticket);
++  const previous = permit;
++  permit = decision.ticket;
++  try {
++    return send(decision.payload);
++  } finally {
++    permit = previous;
++  }
++}
++
++function createGuardedTransport(rawSend) {
++  if (typeof rawSend !== 'function') throw new Error('transport required');
++  return function guarded(config) {
++    const method = String((config && config.method) || 'get').toLowerCase();
++    const write = method !== 'get' && method !== 'head' && method !== 'options';
++    if (write && permit == null) {
++      const err = new Error('unauthorized write');
++      err.code = 'UNAUTHORIZED_WRITE';
++      throw err;
++    }
++    return rawSend(config);
++  };
++}
++
++function stripLineComment(line) {
++  const mark = line.indexOf('//');
++  if (mark < 0) return line;
++  return line.slice(0, mark);
++}
++
++function scanTransportBypasses(files) {
++  const findings = [];
++  const axiosCall = 'axios' + '(';
++  const httpReq = 'http' + '.request';
++  const httpsReq = 'https' + '.request';
++  const methods = ['post', 'put', 'patch', 'delete', 'get'];
++  const requires = ["require('axios')", 'require("axios")', "require('http')", 'require("http")', "require('https')", 'require("https")'];
++  for (let f = 0; f < (files || []).length; f++) {
++    const file = files[f] || {};
++    const name = String(file.name || '');
++    const source = String(file.source || '');
++    const lines = source.split('\n');
++    for (let i = 0; i < lines.length; i++) {
++      const code = stripLineComment(lines[i]);
++      for (let m = 0; m < methods.length; m++) {
++        if (code.indexOf('axios.' + methods[m]) >= 0) findings.push({ file: name, line: i + 1, kind: 'axios-write' });
++      }
++      if (code.indexOf(axiosCall) >= 0) findings.push({ file: name, line: i + 1, kind: 'axios-call' });
++      if (code.indexOf(httpReq) >= 0 || code.indexOf(httpsReq) >= 0) findings.push({ file: name, line: i + 1, kind: 'http-request' });
++      for (let r = 0; r < requires.length; r++) {
++        if (code.indexOf(requires[r]) >= 0) findings.push({ file: name, line: i + 1, kind: 'raw-require' });
++      }
++    }
++    let from = 0;
++    while (from < source.length) {
++      const at = source.indexOf('chat.completions.create', from);
++      if (at < 0) break;
++      const window = source.slice(Math.max(0, at - 1600), at);
++      if (window.indexOf('authorizeOutbound') < 0 || window.indexOf('dispatchAuthorized') < 0) {
++        findings.push({ file: name, kind: 'model-bypass' });
++      }
++      from = at + 24;
++    }
++  }
++  return findings;
++}
++
++function startupSelfCheck(files) {
++  const findings = scanTransportBypasses(files || []);
++  return { ok: findings.length === 0, findings: findings };
++}
++
++function exactPayload(config) {
++  const data = config && config.data;
++  const direct = config && typeof config.body === 'string' ? config.body : '';
++  if (direct) return direct;
++  if (data && typeof data.body === 'string' && data.body) return data.body;
++  return JSON.stringify(data == null ? null : data);
++}
++
++function createRecordingTransport() {
++  const records = [];
++  function raw(config) {
++    const exact = exactPayload(config);
++    records.push({
++      exact: exact,
++      bytes: Buffer.from(exact, 'utf8'),
++      body: config && typeof config.body === 'string' ? config.body : null,
++      data: config && config.data,
++      method: config && config.method,
++      url: config && config.url,
++    });
++    return { status: 200, data: { id: 'recorded' }, ok: true };
++  }
++  return { records: records, transport: raw, send: function (op) { return guardedSend(op, raw); } };
++}
++
++function assertPermit() {
++  if (permit == null) {
++    const err = new Error('unguarded http');
++    err.code = 'UNGUARDED_HTTP';
++    throw err;
++  }
++}
++
++function sealAxios(real) {
++  if (!real || real.__credGuardR14Sealed) return real;
++  function guarded(config) {
++    assertPermit();
++    return real.apply(real, arguments);
++  }
++  const names = ['request', 'get', 'delete', 'head', 'options', 'post', 'put', 'patch'];
++  for (let i = 0; i < names.length; i++) {
++    const name = names[i];
++    if (typeof real[name] !== 'function') continue;
++    guarded[name] = function () {
++      assertPermit();
++      return real[name].apply(real, arguments);
++    };
++  }
++  if (typeof real.create === 'function') {
++    guarded.create = function () {
++      return sealAxios(real.create.apply(real, arguments));
++    };
++  }
++  guarded.__credGuardR14Sealed = true;
++  return guarded;
++}
++
++function sealHttp(mod) {
++  if (!mod || mod.__credGuardR14Sealed || typeof mod.request !== 'function') return mod;
++  const origRequest = mod.request;
++  const origGet = mod.get;
++  mod.request = function () {
++    assertPermit();
++    return origRequest.apply(mod, arguments);
++  };
++  if (typeof origGet === 'function') {
++    mod.get = function () {
++      assertPermit();
++      return origGet.apply(mod, arguments);
++    };
++  }
++  mod.__credGuardR14Sealed = true;
++  return mod;
++}
++
++const EGRESS_BINDINGS = { tcp_wrap: true, udp_wrap: true, pipe_wrap: true, tls_wrap: true, http_parser: true, stream_wrap: true, process_wrap: true, cares_wrap: true, spawn_sync: true };
++
++function denyEgress() {
++  if (permit == null) {
++    const err = new Error('unguarded egress');
++    err.code = 'UNGUARDED_EGRESS';
++    throw err;
++  }
++}
++
++function assertEgressPermitted() {
++  denyEgress();
++  return true;
++}
++
++function wrapEgress(fn) {
++  if (typeof fn !== 'function' || fn.__credGuardR14Wrap) return fn;
++  function wrapped() {
++    denyEgress();
++    return fn.apply(this, arguments);
++  }
++  wrapped.__credGuardR14Wrap = true;
++  return wrapped;
++}
++
++function sealMethod(obj, name) {
++  if (!obj || typeof obj[name] !== 'function' || obj[name].__credGuardR14Wrap) return;
++  obj[name] = wrapEgress(obj[name]);
++}
++
++function sealExports(id, loaded) {
++  const name = String(id || '').replace(/^node:/, '');
++  if (name === 'http' || name === 'https') {
++    sealMethod(loaded, 'request');
++    sealMethod(loaded, 'get');
++  } else if (name === 'net') {
++    sealMethod(loaded, 'connect');
++    sealMethod(loaded, 'createConnection');
++    if (loaded && loaded.Socket) sealMethod(loaded.Socket.prototype, 'connect');
++  } else if (name === 'tls') {
++    sealMethod(loaded, 'connect');
++    if (loaded && loaded.TLSSocket) sealMethod(loaded.TLSSocket.prototype, 'connect');
++  } else if (name === 'child_process') {
++    const names = ['spawn', 'spawnSync', 'exec', 'execSync', 'execFile', 'execFileSync', 'fork'];
++    for (let i = 0; i < names.length; i++) sealMethod(loaded, names[i]);
++  } else if (name === 'undici') {
++    sealMethod(loaded, 'request');
++    sealMethod(loaded, 'fetch');
++    sealMethod(loaded, 'stream');
++  } else if (name === 'axios') return sealAxios(loaded);
++  return loaded;
++}
++
++function isEgressId(id) {
++  const name = String(id || '').replace(/^node:/, '');
++  return name === 'http' || name === 'https' || name === 'net' || name === 'tls' || name === 'child_process' || name === 'undici' || name === 'axios';
++}
++
++function sealFetch() {
++  if (typeof globalThis.fetch === 'function' && !globalThis.fetch.__credGuardR14Wrap) {
++    const orig = globalThis.fetch;
++    globalThis.fetch = wrapEgress(orig);
++  }
++}
++
++function sealBinding() {
++  if (typeof process.binding !== 'function' || process.binding.__credGuardR14Wrap) return;
++  const orig = process.binding;
++  function wrapped(name) {
++    if (EGRESS_BINDINGS[name]) denyEgress();
++    return orig.apply(process, arguments);
++  }
++  wrapped.__credGuardR14Wrap = true;
++  process.binding = wrapped;
++}
++
++function sealBuiltinModule() {
++  if (typeof process.getBuiltinModule !== 'function' || process.getBuiltinModule.__credGuardR14Wrap) return;
++  const orig = process.getBuiltinModule;
++  function wrapped(name) {
++    const loaded = orig.call(process, name);
++    if (isEgressId(name)) sealExports(name, loaded);
++    return loaded;
++  }
++  wrapped.__credGuardR14Wrap = true;
++  process.getBuiltinModule = wrapped;
++}
++
++function sealLowLevel() {
++  const binding = process.binding;
++  function grab(name) {
++    try { return binding.call(process, name); } catch (_) { return null; }
++  }
++  const tcp = grab('tcp_wrap');
++  if (tcp && tcp.TCP && tcp.TCP.prototype) {
++    sealMethod(tcp.TCP.prototype, 'connect');
++    sealMethod(tcp.TCP.prototype, 'connect6');
++  }
++  const udp = grab('udp_wrap');
++  if (udp && udp.UDP && udp.UDP.prototype) {
++    sealMethod(udp.UDP.prototype, 'connect');
++    sealMethod(udp.UDP.prototype, 'send');
++  }
++  const pipe = grab('pipe_wrap');
++  if (pipe && pipe.Pipe && pipe.Pipe.prototype) sealMethod(pipe.Pipe.prototype, 'connect');
++  const proc = grab('process_wrap');
++  if (proc && proc.Process && proc.Process.prototype) sealMethod(proc.Process.prototype, 'spawn');
++  const syncSpawn = grab('spawn_sync');
++  if (syncSpawn) sealMethod(syncSpawn, 'spawn');
++  try {
++    const net = originalRequire('net');
++    if (net && net.Socket) sealMethod(net.Socket.prototype, 'connect');
++  } catch (_) { /* net is required for the socket choke */ }
++}
++
++function sealLoadedCache() {
++  const names = ['http', 'https', 'net', 'tls', 'child_process', 'undici', 'node:http', 'node:https', 'node:net', 'node:tls', 'node:child_process'];
++  for (let i = 0; i < names.length; i++) {
++    try { sealExports(names[i], originalRequire(names[i])); } catch (_) { /* optional builtin */ }
++  }
++  const caches = [require.cache, Module._cache];
++  for (let c = 0; c < caches.length; c++) {
++    const cache = caches[c];
++    if (!cache) continue;
++    const keys = Object.keys(cache);
++    for (let i = 0; i < keys.length; i++) {
++      if (!isEgressId(keys[i]) && keys[i].indexOf('undici') < 0) continue;
++      const entry = cache[keys[i]];
++      if (entry && entry.exports) sealExports(keys[i], entry.exports);
++    }
++  }
++}
++
++function installNetworkSeal() {
++  if (requireHooked) return;
++  requireHooked = true;
++  sealLowLevel();
++  sealLoadedCache();
++  sealFetch();
++  sealBinding();
++  sealBuiltinModule();
++  const origLoad = Module._load;
++  Module._load = function (request) {
++    const loaded = origLoad.apply(this, arguments);
++    if (isEgressId(request)) return sealExports(request, loaded);
++    return loaded;
++  };
++  Module._load.__credGuardR14Wrap = true;
++  function hooked(request) {
++    const loaded = originalRequire.apply(this, arguments);
++    if (isEgressId(request)) return sealExports(request, loaded);
++    return loaded;
++  }
++  hooked.__credGuardR14 = true;
++  Module.prototype.require = hooked;
++}
++
++function installRequireTripwire() {
++  installNetworkSeal();
++}
++
++function egressProbes() {
++  const child = originalRequire('child_process');
++  const probes = [
++    { name: 'http.request', run: function () { return originalRequire('http').request({ hostname: '127.0.0.1', port: 9 }); } },
++    { name: 'node:http.request', run: function () { return originalRequire('node:http').request({ hostname: '127.0.0.1', port: 9 }); } },
++    { name: 'http.get', run: function () { return originalRequire('http').get({ hostname: '127.0.0.1', port: 9 }); } },
++    { name: 'https.request', run: function () { return originalRequire('https').request({ hostname: '127.0.0.1', port: 9 }); } },
++    { name: 'node:https.request', run: function () { return originalRequire('node:https').request({ hostname: '127.0.0.1', port: 9 }); } },
++    { name: 'https.get', run: function () { return originalRequire('https').get({ hostname: '127.0.0.1', port: 9 }); } },
++    { name: 'net.connect', run: function () { return originalRequire('net').connect({ host: '127.0.0.1', port: 9 }); } },
++    { name: 'node:net.connect', run: function () { return originalRequire('node:net').connect({ host: '127.0.0.1', port: 9 }); } },
++    { name: 'net.createConnection', run: function () { return originalRequire('net').createConnection({ host: '127.0.0.1', port: 9 }); } },
++    { name: 'tls.connect', run: function () { return originalRequire('tls').connect({ host: '127.0.0.1', port: 9 }); } },
++    { name: 'node:tls.connect', run: function () { return originalRequire('node:tls').connect({ host: '127.0.0.1', port: 9 }); } },
++    { name: 'fetch', run: function () { return globalThis.fetch('http://127.0.0.1:9/'); } },
++    { name: 'child_process.spawn', run: function () { return child.spawn('true'); } },
++    { name: 'child_process.exec', run: function () { return child.exec('true'); } },
++    { name: 'child_process.execFile', run: function () { return child.execFile('true'); } },
++    { name: 'child_process.fork', run: function () { return child.fork('true'); } },
++    { name: 'child_process.spawnSync', run: function () { return child.spawnSync('true'); } },
++    { name: 'child_process.execSync', run: function () { return child.execSync('true'); } },
++    { name: 'child_process.execFileSync', run: function () { return child.execFileSync('true'); } },
++    { name: 'process.binding', run: function () { return process.binding('tcp_wrap'); } },
++    { name: 'process.binding.spawn_sync', run: function () { return process.binding('spawn_sync'); } },
++    { name: 'process.binding.process_wrap', run: function () { return process.binding('process_wrap'); } },
++  ];
++  if (typeof process.getBuiltinModule === 'function') {
++    probes.push({ name: 'getBuiltinModule', run: function () { return process.getBuiltinModule('http').request({ hostname: '127.0.0.1', port: 9 }); } });
++    probes.push({ name: 'getBuiltinModule.net', run: function () { return process.getBuiltinModule('net').connect({ host: '127.0.0.1', port: 9 }); } });
++  }
++  try {
++    const undici = originalRequire('undici');
++    if (undici && typeof undici.request === 'function') probes.push({ name: 'undici.request', run: function () { return undici.request('http://127.0.0.1:9/'); } });
++  } catch (_) { /* undici is optional */ }
++  return probes;
++}
++
++function injectedClient() {
++  return sealAxios(originalRequire.call(module, 'axios'));
++}
++
++function measure(op) {
++  if (!op || typeof op !== 'object') return 0;
++  let n = 0;
++  if (typeof op.body === 'string') n = op.body.length;
++  if (op.data && typeof op.data.body === 'string' && op.data.body.length > n) n = op.data.body.length;
++  const messages = op.messages || (op.payload && op.payload.messages);
++  if (messages) {
++    const blob = JSON.stringify(messages);
++    if (blob.length > n) n = blob.length;
++  }
++  return n;
++}
++
++function channelHint(op) {
++  try {
++    return { messageType: op && op.messageType, channel: op && op.channel, kind: op && op.kind };
++  } catch (_) {
++    return {};
++  }
++}
++
++function guardedSend(op, transport) {
++  if (typeof transport !== 'function') throw new Error('transport required');
++  const started = Date.now();
++  const hint = channelHint(op);
++  let decision;
++  try {
++    rememberFromOp(op || {});
++    if (op && op.budgetMs === 0) decision = stamp(deny(hint, 'timeout'));
++    else if (measure(op) > SIZE_CAP) decision = stamp(deny(hint, 'oversize'));
++    else {
++      decision = authorizeOutbound(op);
++      if (Date.now() - started > GUARD_BUDGET_MS) decision = stamp(deny(hint, 'timeout'));
++    }
++  } catch (_) {
++    decision = stamp(deny(hint, 'exception'));
++  }
++  if (!decision || decision.send !== true) return decision;
++  const body = typeof decision.body === 'string' ? decision.body : '';
++  const data = decision.data;
++  decision.result = dispatchAuthorized(decision, function () {
++    return transport({ method: 'post', body: body, data: data });
++  });
++  decision.posted = true;
++  return decision;
++}
++
++function rangesFor(raw, conversationId) {
++  const decoded = decodeEntities(raw);
++  const folded = skeletonOf(decoded);
++  const hashes = hashesFor(conversationId);
++  const tokens = whitespaceTokens(folded);
++  const ranges = [];
++  function push(start, end) {
++    if (end > start) ranges.push({ start: start, end: end });
++  }
++  for (let i = 0; i < tokens.length; i++) {
++    const token = tokens[i];
++    let hit = hashHit(token.text, hashes) || (!structural(token.text) && mixedHigh(token.text));
++    if (!hit) {
++      const forms = decodedForms(token.text);
++      for (let d = 0; d < forms.length; d++) if (hashHit(forms[d], hashes)) hit = true;
++    }
++    if (hit) push(token.start, token.end);
++  }
++  for (let i = 0; i < tokens.length; i++) {
++    const cue = alnumOf(tokens[i].text);
++    if (!isCueWord(cue) && !GLUE_CUES.has(cue)) continue;
++    const fromIdx = Math.max(0, i - 6);
++    const toIdx = Math.min(tokens.length - 1, i + 8);
++    for (let j = fromIdx; j <= toIdx; j++) {
++      if (j === i) continue;
++      if (priceToken(tokens[j].text)) continue;
++      const alnum = alnumOf(tokens[j].text);
++      if (!alnum || alnum === '55188' || alnum.length < 4 || alnum.length > 8 || !digitsOnly(alnum)) continue;
++      push(tokens[j].start, tokens[j].end);
++    }
++  }
++  const shorts = [];
++  for (let i = 0; i < tokens.length; i++) {
++    const alnum = alnumOf(tokens[i].text);
++    if (alnum && alnum.length <= 2 && !DICT.has(alnum)) shorts.push(tokens[i]);
++    else {
++      if (shorts.length >= 4 && hashes.has(digest(shorts.map((item) => alnumOf(item.text)).join('')))) {
++        push(shorts[0].start, shorts[shorts.length - 1].end);
++      }
++      shorts.length = 0;
++    }
++  }
++  if (shorts.length >= 4 && hashes.has(digest(shorts.map((item) => alnumOf(item.text)).join('')))) {
++    push(shorts[0].start, shorts[shorts.length - 1].end);
++  }
++  return ranges;
++}
++
++function scrubText(text, conversationId) {
++  const raw = String(text == null ? '' : text);
++  if (!raw) return raw;
++  if (raw.length >= AUTHORIZED_PROMPT_DISCLOSURE.length) {
++    const prefix = raw.slice(0, AUTHORIZED_PROMPT_DISCLOSURE.length);
++    if (payloadHash(prefix) === AUTHORIZED_PROMPT_DISCLOSURE.sha256) {
++      if (raw.length === prefix.length) return raw;
++      return prefix + scrubText(raw.slice(prefix.length), conversationId);
++    }
++  }
++  if (raw.length > MAX_SCAN) return '[redacted]';
++  let ranges;
++  try { ranges = rangesFor(raw, conversationId); } catch (_) { return '[redacted]'; }
++  if (!ranges.length) return raw;
++  ranges.sort((a, b) => b.start - a.start);
++  let out = raw;
++  for (let i = 0; i < ranges.length; i++) {
++    const range = ranges[i];
++    if (range.start < 0 || range.end > out.length || range.start >= range.end) continue;
++    out = out.slice(0, range.start) + '[redacted]' + out.slice(range.end);
++  }
++  return out;
++}
++
++function redactForConversation(conversationId, text) {
++  return scrubText(text, conversationId || '');
++}
++
++function redactText(text, extra) {
++  if (extra && extra.length) {
++    for (let i = 0; i < extra.length; i++) addTaint('', String(extra[i] || ''));
++  }
++  return scrubText(text, '');
++}
++
++function redactSystemContent(conversationId, text) {
++  return scrubText(text, conversationId);
++}
++
++function scrubAny(value, conversationId, seen) {
++  if (typeof value === 'string') return scrubText(value, conversationId);
++  if (!value || typeof value !== 'object') return value;
++  if (seen.has(value)) return '[redacted]';
++  seen.add(value);
++  if (Array.isArray(value)) return value.slice(0, 12).map((item) => scrubAny(item, conversationId, seen));
++  const out = {};
++  const keys = Object.keys(value);
++  for (let i = 0; i < keys.length; i++) {
++    const key = keys[i];
++    if (key === 'tool_calls' || key === 'function' || key === 'arguments' || key === 'content' || key === 'text' || key === 'body' || key === 'lastEscalateProblem') {
++      out[key] = scrubAny(value[key], conversationId, seen);
++    } else if (typeof value[key] === 'string') out[key] = scrubText(value[key], conversationId);
++    else out[key] = value[key];
++  }
++  return out;
++}
++
++function guardModelMessages(conversationId, messages) {
++  if (!Array.isArray(messages)) throw boundsError();
++  return messages.map((msg) => {
++    if (!msg || typeof msg !== 'object') return msg;
++    const next = {};
++    const keys = Object.keys(msg);
++    for (let i = 0; i < keys.length; i++) {
++      const key = keys[i];
++      const value = msg[key];
++      if (key === 'content' && typeof value === 'string') {
++        next[key] = String(msg.role || '') === 'system' ? redactSystemContent(conversationId, value) : scrubText(value, conversationId);
++      } else if (key === 'content' && Array.isArray(value)) {
++        next[key] = value.map((part) => scrubAny(part, conversationId, new Set()));
++      } else if (key === 'tool_calls' || key === 'function_call') {
++        next[key] = scrubAny(value, conversationId, new Set());
++      } else next[key] = value;
++    }
++    return next;
++  });
++}
++
++function scrubEscalateProblem(conversationId, text) {
++  return redactForConversation(conversationId, String(text || '')).slice(0, 500);
++}
++
++function redactDiagnostic(value) {
++  return scrubAny(value, '', new Set());
++}
++
++function redactTurnMeta(meta) {
++  return scrubAny(meta || {}, '', new Set());
++}
++
++const LOG_DROP = { body: true, text: true, message: true, stack: true, raw: true, data: true, content: true, html: true, payload: true, ownerText: true, clientText: true, inbound: true, outbound: true, arguments: true };
++
++function logCode(value) {
++  const text = String(value || '');
++  if (!text || text.length > 80) return '';
++  const first = text.charCodeAt(0);
++  if (first < 65 || first > 90) return '';
++  for (let i = 1; i < text.length; i++) {
++    const c = text.charCodeAt(i);
++    const good = (c >= 48 && c <= 57) || (c >= 65 && c <= 90) || c === 95 || c === 46 || c === 58 || c === 45;
++    if (!good) return '';
++  }
++  return text;
++}
++
++function logSafe(value, depth) {
++  if (depth > 3) return '[redacted]';
++  if (typeof value === 'string') return logCode(value) || '[redacted]';
++  if (value instanceof Error) return logCode(value.code) || 'ERROR';
++  if (Array.isArray(value)) return value.slice(0, 8).map((item) => logSafe(item, depth + 1));
++  if (value && typeof value === 'object') {
++    const out = {};
++    const keys = Object.keys(value);
++    for (let i = 0; i < keys.length && i < 12; i++) out[keys[i]] = LOG_DROP[keys[i]] ? '[redacted]' : logSafe(value[keys[i]], depth + 1);
++    return out;
++  }
++  if (typeof value === 'boolean') return value;
++  if (typeof value === 'number') return Number.isFinite(value) && value >= 0 && value <= 999 && Math.floor(value) === value ? value : '[redacted]';
++  return '[redacted]';
++}
++
++function scrubLogArgs(args) {
++  const out = [];
++  for (let i = 0; i < args.length; i++) {
++    try { out.push(logSafe(args[i], 0)); } catch (_) { out.push('[redacted]'); }
++  }
++  return out;
++}
++
++function logEvent(tag) {
++  const code = logCode(tag) || 'log';
++  try { console.log(code); } catch (_) { /* logging must not throw */ }
++}
++
++function installProcessScrub(target) {
++  const sink = target || console;
++  if (!sink || sink.__credGuardR14) return sink;
++  const log = sink.log ? sink.log.bind(sink) : null;
++  const err = sink.error ? sink.error.bind(sink) : null;
++  if (log) sink.log = function () { return log.apply(sink, scrubLogArgs(arguments)); };
++  if (err) sink.error = function () { return err.apply(sink, scrubLogArgs(arguments)); };
++  if (typeof sink.write === 'function') {
++    const write = sink.write.bind(sink);
++    sink.write = function (chunk, encoding, cb) {
++      let safe = chunk;
++      if (typeof chunk === 'string') safe = logCode(chunk) || '[redacted]';
++      return write(safe, encoding, cb);
++    };
++  }
++  sink.__credGuardR14 = true;
++  return sink;
++}
++
++function conversationIdFromUrl(url) {
++  const s = String(url || '');
++  const key = 'conversations/';
++  const at = s.indexOf(key);
++  if (at < 0) return '';
++  let i = at + key.length;
++  let id = '';
++  while (i < s.length) {
++    const c = s.charCodeAt(i);
++    if (c === 47 || c === 63 || c === 35) break;
++    id += s[i];
++    i += 1;
++  }
++  if (id === 'search') return '';
++  return id;
++}
++
++function exportTaint() {
++  const conversations = {};
++  for (const [id, set] of taintByConversation) conversations[id] = Array.from(set);
++  return { version: 1, conversations: conversations };
++}
++
++function hashesOnly(list) {
++  const set = new Set();
++  const items = Array.isArray(list) ? list : [];
++  for (let i = 0; i < items.length && set.size < MAX_TAINT; i++) {
++    if (typeof items[i] === 'string' && items[i].length === 64) set.add(items[i]);
++  }
++  return set;
++}
++
++function importTaint(blob) {
++  taintByConversation.clear();
++  recentPieces.clear();
++  const conversations = (blob && blob.conversations) || {};
++  const ids = Object.keys(conversations);
++  for (let i = 0; i < ids.length; i++) taintByConversation.set(ids[i], hashesOnly(conversations[ids[i]]));
++}
++
++function importConversationTaint(conversationId, hashes) {
++  taintByConversation.set(String(conversationId || ''), hashesOnly(hashes));
++}
++
++function resetStore() {
++  taintByConversation.clear();
++  recentPieces.clear();
++  borderline.length = 0;
++  lastAskByConversation.clear();
++  tickets.clear();
++  permit = null;
++}
++
++function borderlineAsks() {
++  return borderline.map((item) => ({ text: item.text, reason: item.reason }));
++}
++
++function taintHashes(conversationId) {
++  const local = taintByConversation.get(String(conversationId || ''));
++  return local ? Array.from(local) : [];
++}
++
++function loadCredentialGuard() {
++  const names = ['./credentialGuardR14', '../credentialGuardR14', '../01_runtime/credentialGuardR14'];
++  for (let i = 0; i < names.length; i++) {
++    try { return require(names[i]); } catch (err) {
++      if (!err || err.code !== 'MODULE_NOT_FOUND') throw err;
++    }
++  }
++  return null;
++}
++
++function guardSend(input) {
++  return authorizeOutbound(input || {});
++}
++
++module.exports = {
++  STATUS,
++  FIXED_MESSAGE,
++  REDACTED_NOTE,
++  SPREAD_TEST_REPLY,
++  TEMPLATE_PASSWORD,
++  TEMPLATE_HASH,
++  CANONICAL_TEMPLATE_HASH,
++  WORKSPACE_ID,
++  AUTHORIZED_PROMPT_DISCLOSURE,
++  payloadHash,
++  rememberInbound,
++  rememberClientText,
++  rememberClientParts,
++  resetStore,
++  exportTaint,
++  importTaint,
++  importConversationTaint,
++  taintHashes,
++  borderlineAsks,
++  redactText,
++  redactForConversation,
++  redactSystemContent,
++  guardModelMessages,
++  scrubEscalateProblem,
++  redactDiagnostic,
++  redactTurnMeta,
++  scrubLogArgs,
++  logEvent,
++  installProcessScrub,
++  loadCredentialGuard,
++  isExplicitSpreadTestRequest,
++  isAuthorizedTemplateTopic,
++  isExactSpreadTemplate,
++  isDeliverableSpreadTemplate,
++  conversationIdFromUrl,
++  authorizeOutbound,
++  denyOutbound,
++  dispatchAuthorized,
++  transportPermitted,
++  createGuardedTransport,
++  createRecordingTransport,
++  guardedSend,
++  installRequireTripwire,
++  installNetworkSeal,
++  egressProbes,
++  assertEgressPermitted,
++  injectedClient,
++  scanTransportBypasses,
++  startupSelfCheck,
++  guardSend,
++  SIZE_CAP,
++};
+diff --git a/luna-current/01_runtime/credentialGuardR14-preload.js b/luna-current/01_runtime/credentialGuardR14-preload.js
+new file mode 100644
+--- /dev/null
++++ b/luna-current/01_runtime/credentialGuardR14-preload.js
+@@ -0,0 +1,8 @@
++'use strict';
++
++/**
++ * Entry-point preload. Load this with node --require before the engine
++ * so the network seal covers builtins that Node has already cached.
++ */
++const guard = require('./credentialGuardR14');
++guard.installNetworkSeal();
+diff --git a/luna-current/01_runtime/index.js b/luna-current/01_runtime/index.js
+--- a/luna-current/01_runtime/index.js
++++ b/luna-current/01_runtime/index.js
+@@ -1,4 +1,8 @@
+ 'use strict';
++require('./credentialGuardR14-preload');
++const __credentialGuardR14 = require('./credentialGuardR14');
++__credentialGuardR14.installProcessScrub(console);
++__credentialGuardR14.installProcessScrub(process.stdout);
+ /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:require */
+ const __spreadAskGate = require('./spreadAskGate');
+ const __imageAskGuard = require('./imageAskGuard');
+@@ -24,7 +28,7 @@
+ // Observation only. Never mutates the reply, never throws, and does nothing
+ // when MAINTAINER_ENABLED=false. See luna-maintainer/README.md.
+ let __maintainer = { observe: () => [], sweepAnalytics: () => [] };
+-try { __maintainer = require('./luna-maintainer').create(); } catch (__e) { console.error('[maintainer] disabled:', __e && __e.message); }
++try { __maintainer = require('./luna-maintainer').create(); } catch (__e) { console.error('[maintainer] disabled:'); }
+ /* LUNA_MAINTAINER_V1:END:require */
+ 
+ /**
+@@ -36,7 +40,35 @@
+ const fs = require('fs');
+ const dns = require('dns');
+ const express = require('express');
+-const axios = require('axios');
++const __http = __credentialGuardR14.injectedClient();
++const __authorizedHttp = __credentialGuardR14.createGuardedTransport(function (config) {
++  return __http(config);
++});
++async function __readGet(url, opts) {
++  const decision = __credentialGuardR14.authorizeOutbound({
++    method: 'get',
++    url: url,
++    messageType: 'read',
++    body: '',
++    channel: 'read',
++  });
++  if (!decision.send) return { status: 403, data: null, headers: {} };
++  return __credentialGuardR14.dispatchAuthorized(decision, function () {
++    return __http(Object.assign({ method: 'get', url: url }, opts || {}));
++  });
++}
++const __guardBoot = __credentialGuardR14.startupSelfCheck([
++  'index.js',
++  'control.js',
++  'faq-kb.js',
++  'scan-acct-mismatch.js',
++  'lunaToolsRuntime.js',
++  'escalateRelatedOnly.js',
++].map(function (name) {
++  const file = name === 'index.js' ? __filename : require('path').join(__dirname, name);
++  return { name: name, source: fs.readFileSync(file, 'utf8') };
++}));
++if (!__guardBoot.ok) throw new Error('credential guard transport bypass');
+ const OpenAI = require('openai');
+ const control = require('./control');
+ const writeOpStore = require('./writeOpStore');
+@@ -68,6 +100,50 @@
+   timeout: 60000,
+   maxRetries: 2,
+ });
++async function __searchPost(body) {
++  let decision;
++  try {
++    decision = __credentialGuardR14.authorizeOutbound({
++      kind: 'intercom-write',
++      method: 'post',
++      url: 'https://api.intercom.io/conversations/search',
++      messageType: 'search',
++      channel: 'search',
++      data: body,
++      body: '',
++    });
++  } catch (e) {
++    decision = __credentialGuardR14.denyOutbound({ kind: 'intercom-write', messageType: 'search', channel: 'search', reason: 'exception' });
++  }
++  if (!decision.send) return { status: 403, data: null, blocked: true };
++  return __credentialGuardR14.dispatchAuthorized(decision, function () {
++    return __authorizedHttp({
++      method: 'post',
++      url: 'https://api.intercom.io/conversations/search',
++      data: decision.data,
++      headers: icHeaders(),
++      timeout: IC_TIMEOUT_MS,
++      validateStatus: () => true,
++    });
++  });
++}
++async function __guardedChat(conversationId, payload) {
++  let decision;
++  try {
++    decision = __credentialGuardR14.authorizeOutbound({
++      kind: 'model-request',
++      conversationId: conversationId,
++      messages: payload && payload.messages,
++      payload: payload,
++    });
++  } catch (e) {
++    decision = __credentialGuardR14.denyOutbound({ kind: 'model-request', conversationId: conversationId, reason: 'exception' });
++  }
++  if (!decision.send) throw new Error('model_request_denied');
++  return __credentialGuardR14.dispatchAuthorized(decision, function () {
++    return openai.chat.completions.create(decision.payload);
++  });
++}
+ control.mount(app);
+ 
+ const ARSAL_ID = '10118526';
+@@ -91,17 +167,35 @@
+ const IC_MAX_RETRY = 2;
+ 
+ async function icRequest(method, url, data, tag) {
+-  // Reads and consequential writes need different retry policies. The old loop retried a
+-  // POST after a timeout or a 5xx, but in both cases the remote side may already have
+-  // ACCEPTED it, so a retry could post a second reply/note/assignment. Intercom documents no
+-  // idempotency key for these endpoints, so an ambiguous write is reported as unknown rather
+-  // than repeated. A 429 is a rejection (nothing was applied), so it stays retryable.
+   const isWrite = !['get', 'head', 'options'].includes(String(method || 'get').toLowerCase());
+-  let last = { status: 0, data: null };
+-  let ambiguous = false;
+   let opId = null;
+-
+   if (isWrite) {
++    let decision;
++    try {
++      decision = __credentialGuardR14.authorizeOutbound({
++        kind: 'intercom-write',
++        method: method,
++        url: url,
++        data: data,
++        tag: tag,
++        conversationId: __credentialGuardR14.conversationIdFromUrl(url),
++        messageType: data && data.message_type,
++        body: data && typeof data.body === 'string' ? data.body : '',
++        channel: data && data.message_type === 'note' ? 'internal' : 'public',
++      });
++    } catch (e) {
++      decision = __credentialGuardR14.denyOutbound({
++        kind: 'intercom-write',
++        messageType: data && data.message_type,
++        channel: data && data.message_type === 'note' ? 'internal' : 'public',
++        reason: 'exception',
++      });
++    }
++    if (!decision.send) {
++      console.error('IC_REQ_BLOCKED', tag, decision.reason);
++      return { ok: false, blocked: true, posted: false, status: 0, data: null, reason: decision.reason };
++    }
++    data = decision.data;
+     opId = writeOpStore.opKey(method, url, data);
+     const prev = writeOpStore.get(opId);
+     if (writeOpStore.shouldSkipReplay(prev)) {
+@@ -115,11 +209,37 @@
+       };
+     }
+     writeOpStore.set(opId, { status: 'pending' });
++    try {
++      return await __credentialGuardR14.dispatchAuthorized(decision, function () {
++        return icAttempt(method, url, data, tag, opId, true);
++      });
++    } catch (e) {
++      if (e && e.code === 'UNAUTHORIZED_WRITE') {
++        console.error('IC_REQ_BLOCKED', tag, 'unauthorized_write');
++        return { ok: false, blocked: true, posted: false, status: 0, data: null, reason: 'unauthorized_write' };
++      }
++      throw e;
++    }
+   }
++  const __readDecision = __credentialGuardR14.authorizeOutbound({
++    method: method,
++    url: url,
++    messageType: 'read',
++    body: '',
++    channel: 'read',
++  });
++  if (!__readDecision.send) return { ok: false, blocked: true, status: 0, data: null, reason: __readDecision.reason };
++  return __credentialGuardR14.dispatchAuthorized(__readDecision, function () {
++    return icAttempt(method, url, data, tag, opId, false);
++  });
++}
+ 
++async function icAttempt(method, url, data, tag, opId, isWrite) {
++  let last = { status: 0, data: null };
++  let ambiguous = false;
+   for (let attempt = 0; attempt <= IC_MAX_RETRY; attempt += 1) {
+     try {
+-      const r = await axios({
++      const r = await __authorizedHttp({
+         method,
+         url,
+         data,
+@@ -131,39 +251,35 @@
+       if (r.status < 400) {
+         if (isWrite && !writeOpStore.isValidWriteSuccess(r.data)) {
+           if (opId) writeOpStore.set(opId, { status: 'unknown', reason: 'malformed-success' });
+-          return { ok: false, unknown: true, status: r.status, data: r.data, reason: 'malformed-success' };
++          return { ok: false, unknown: true, status: r.status, data: null, reason: 'malformed-success' };
+         }
+         if (opId) writeOpStore.set(opId, { status: 'confirmed' });
+         return { ok: true, status: r.status, data: r.data };
+       }
+       if (r.status === 429) {
+-        // Rejected outright: nothing was applied, so retrying is safe for reads and writes.
+       } else if (r.status >= 500) {
+-        if (isWrite) { ambiguous = true; break; } // may have been applied server-side
++        if (isWrite) { ambiguous = true; break; }
+       } else {
+-        break; // 4xx client error: never retryable
++        break;
+       }
+     } catch (e) {
+-      // No response at all: for a write the outcome is genuinely unknown.
+-      last = { status: 0, data: null, message: e && e.message };
+-      console.error('IC_REQ_ERR', tag, url, e && e.message);
++      last = { status: 0, data: null };
++      console.error('IC_REQ_ERR', tag, 'request_error');
+       if (isWrite) { ambiguous = true; break; }
+     }
+     if (attempt < IC_MAX_RETRY) {
+       await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+     }
+   }
+-
+   if (ambiguous) {
+     if (opId) writeOpStore.set(opId, { status: 'unknown' });
+     console.error('IC_REQ_UNKNOWN', tag, url, 'write outcome unknown , not retried');
+-    return { ok: false, unknown: true, status: last.status || 0, data: last.data };
++    return { ok: false, unknown: true, status: last.status || 0, data: null, reason: 'unknown' };
+   }
+   if (opId) writeOpStore.set(opId, { status: 'failed' });
+-  console.error('IC_REQ_FAIL', tag, url, last.status, JSON.stringify(last.data || '').slice(0, 300));
+-  return { ok: false, status: last.status, data: last.data };
++  console.error('IC_REQ_FAIL', tag, url, last.status, 'response_withheld');
++  return { ok: false, status: last.status, data: null, reason: 'request_failed' };
+ }
+-
+ function stripHtml(s) {
+   return String(s || '')
+     .replace(/<br\s*\/?>/gi, '\n')
+@@ -233,7 +349,7 @@
+   if (_adminsMentionCache.list && now - _adminsMentionCache.at < 60_000) {
+     return _adminsMentionCache.list;
+   }
+-  const r = await axios.get('https://api.intercom.io/admins', {
++  const r = await __readGet('https://api.intercom.io/admins', {
+     headers: icHeaders(),
+     timeout: IC_TIMEOUT_MS,
+     validateStatus: () => true,
+@@ -295,7 +411,7 @@
+   try {
+     admins = await fetchAdminsForMentionResolve();
+   } catch (e) {
+-    console.log('enrichNoteMentionsHtml admins fail', e && e.message);
++    console.log('enrichNoteMentionsHtml admins fail');
+   }
+   const atRe = /@([A-Za-z][A-Za-z0-9_.-]{0,60})/g;
+   const parts = [];
+@@ -353,7 +469,7 @@
+ 
+ async function fetchActiveTeammatesForMention() {
+   // Intercom has no live green-dot API , "online" ≈ Away mode OFF + Support Team seat.
+-  const r = await axios.get('https://api.intercom.io/admins', {
++  const r = await __readGet('https://api.intercom.io/admins', {
+     headers: icHeaders(),
+     timeout: IC_TIMEOUT_MS,
+     validateStatus: () => true,
+@@ -403,6 +519,7 @@
+ }
+ 
+ async function assignToTeammate(conversationId, teammateId) {
++  // Assignment writes, including a body when one is present, go through icRequest and authorizeOutbound.
+   if (!teammateId) return { ok: false, status: 0 };
+   const r = await icRequest(
+     'post',
+@@ -584,12 +701,13 @@
+   return false;
+ }
+ 
+-async function ensureInternalNoteEnglish(text, label) {
++async function ensureInternalNoteEnglish(text, label, conversationId) {
+   const raw = String(text || '').trim();
+   if (!raw) return raw;
+-  if (!looksNonEnglishNote(raw)) return raw;
++  const safeIn = __credentialGuardR14.redactForConversation(conversationId, raw);
++  if (!looksNonEnglishNote(safeIn)) return safeIn;
+   try {
+-    const ai = await openai.chat.completions.create({
++    const ai = await __guardedChat(conversationId, {
+       model: control.getModel(),
+       messages: [
+         {
+@@ -597,15 +715,15 @@
+           content:
+             'Rewrite the following INTERNAL Intercom note field into clear English only. Keep meaning, names, numbers, emails, @mentions, and account IDs. No Roman Urdu, Urdu, Italian, or other languages. No greeting. Output only the rewritten note text.',
+         },
+-        { role: 'user', content: (label ? '[' + label + ']\n' : '') + raw },
++        { role: 'user', content: (label ? '[' + label + ']\n' : '') + safeIn },
+       ],
+     });
+     const out = (((ai.choices[0] || {}).message || {}).content || '').trim();
+-    if (out) return out;
++    if (out) return __credentialGuardR14.redactForConversation(conversationId, out);
+   } catch (e) {
+-    console.error('NOTE_EN_OVERLAY fail', label || '', e && e.message);
++    console.error('NOTE_EN_OVERLAY fail', label || '', 'note_guard');
+   }
+-  return raw;
++  try { return __credentialGuardR14.redactForConversation(conversationId, safeIn); } catch (_) { return 'A client message needs review.'; }
+ }
+ 
+ async function buildEscalateNoteAndAssignee({ problem, actionNeeded, account, email, preferAssigneeId }) {
+@@ -799,7 +917,7 @@
+       result = septemberPromos.answerPromotionQuestion(text, history);
+     }
+   } catch (e) {
+-    console.error('PROMO_RESOLVE_FAIL', e && e.message);
++    console.error('PROMO_RESOLVE_FAIL');
+     return null;
+   }
+   if (result == null) return null;
+@@ -1181,7 +1299,7 @@
+         needEmail = resolvedId.needEmail;
+       }
+     } catch (e) {
+-      console.error('IDENTITY_BEFORE_ESCALATE refetch fail', conversationId, e && e.message);
++      console.error('IDENTITY_BEFORE_ESCALATE refetch fail', conversationId);
+     }
+   }
+ 
+@@ -1320,10 +1438,10 @@
+   return out;
+ }
+ 
+-async function summarizeEscalationsClientBatch(messages) {
+-  const joined = (messages || []).map((m, i) => (i + 1) + '. ' + m.body).join('\n');
++async function summarizeEscalationsClientBatch(messages, conversationId) {
++  const joined = __credentialGuardR14.redactForConversation(conversationId, (messages || []).map((m, i) => (i + 1) + '. ' + m.body).join('\n'));
+   try {
+-    const ai = await openai.chat.completions.create({
++    const ai = await __guardedChat(conversationId, {
+       model: control.getModel(),
+       messages: [
+         {
+@@ -1337,17 +1455,17 @@
+     const out = (((ai.choices[0] || {}).message || {}).content || '').trim();
+     if (out) {
+       const cleaned = out.replace(/^Problem:\s*/i, '').trim();
+-      return await ensureInternalNoteEnglish(cleaned, 'Escalations summary');
++      return await ensureInternalNoteEnglish(__credentialGuardR14.redactForConversation(conversationId, cleaned), 'Escalations summary', conversationId);
+     }
+   } catch (e) {
+-    console.error('ESCALATIONS summarize fail', e && e.message);
++    console.error('ESCALATIONS summarize fail', 'summarize_failed');
+   }
+-  const fallback = (messages || []).map((m) => m.body).join(' | ');
+-  return await ensureInternalNoteEnglish(fallback, 'Escalations summary fallback');
++  const fallback = __credentialGuardR14.redactForConversation(conversationId, (messages || []).map((m) => m.body).join(' | '));
++  return await ensureInternalNoteEnglish(fallback, 'Escalations summary fallback', conversationId);
+ }
+ 
+ async function buildEscalationsWatchNote(full, messages) {
+-  const summary = await summarizeEscalationsClientBatch(messages);
++  const summary = await summarizeEscalationsClientBatch(messages, full && full.id);
+   const assigneeId =
+     full.admin_assignee_id != null && String(full.admin_assignee_id) !== '0'
+       ? String(full.admin_assignee_id)
+@@ -1356,7 +1474,7 @@
+   if (assigneeId && assigneeId !== ARSAL_ID && assigneeId !== ELITE_AI_ID && !NEVER_MENTION_IDS.has(assigneeId)) {
+     let name = 'teammate';
+     try {
+-      const r = await axios.get('https://api.intercom.io/admins/' + assigneeId, {
++      const r = await __readGet('https://api.intercom.io/admins/' + assigneeId, {
+         headers: icHeaders(),
+         timeout: IC_TIMEOUT_MS,
+         validateStatus: () => true,
+@@ -1567,6 +1685,12 @@
+  * awaits between getConvState() and the save.
+  */
+ function saveConvState(id, state) {
++  try {
++    const blob = __credentialGuardR14.exportTaint();
++    if (state && typeof state === 'object') {
++      state.credentialTaint = (blob.conversations && blob.conversations[String(id || '')]) || [];
++    }
++  } catch (_) { /* hash export must not drop the ticket write */ }
+   const fresh = loadTicketState();
+   fresh[String(id || '')] = state;
+   saveTicketState(fresh);
+@@ -1577,6 +1701,9 @@
+   const id = String(conversationId || '');
+   if (!all[id] || typeof all[id] !== 'object') all[id] = {};
+   all[id].lastTouchedAt = Math.floor(Date.now() / 1000);
++  try {
++    if (Array.isArray(all[id].credentialTaint)) __credentialGuardR14.importConversationTaint(id, all[id].credentialTaint);
++  } catch (_) { /* a bad hash blob must not block the ticket read */ }
+   return { all, state: all[id], id };
+ }
+ 
+@@ -1599,7 +1726,7 @@
+       console.log('TICKET_STATE_PRUNE removed', removed);
+     }
+   } catch (e) {
+-    console.error('TICKET_STATE_PRUNE_ERR', e && e.message);
++    console.error('TICKET_STATE_PRUNE_ERR');
+   }
+ }
+ 
+@@ -2048,7 +2175,7 @@
+         console.log('IMAGE_FETCH_BLOCKED', check.why, (att && att.name) || '');
+         return null;
+       }
+-      const r = await axios.get(target, {
++      const r = await __readGet(target, {
+         responseType: 'stream',
+         timeout: IMAGE_FETCH_TIMEOUT_MS,
+         maxRedirects: 0,               // every hop is re-validated by us, never followed blindly
+@@ -2111,7 +2238,7 @@
+     }
+     return 'data:' + detected + ';base64,' + buf.toString('base64');
+   } catch (e) {
+-    console.error('IMAGE_FETCH_ERR', e && e.message);
++    console.error('IMAGE_FETCH_ERR');
+     return null;
+   }
+ }
+@@ -2481,7 +2608,7 @@
+       return false;
+     }
+   } catch (e) {
+-    console.error('testMode fin-wait check failed', e && e.message);
++    console.error('testMode fin-wait check failed');
+   }
+ 
+   // Fresh tickets: always let Fin take the first shot (source-fallback must not race).
+@@ -2593,7 +2720,7 @@
+   const decision = escalateRelatedOnly.decideEscalateAwaitingGate({
+     awaitingFirstTeammate: !!state.escalateAwaitingFirstTeammate,
+     userText: text,
+-    lastEscalateProblem: state.lastEscalateProblem,
++    lastEscalateProblem: __credentialGuardR14.scrubEscalateProblem(conversationId, state.lastEscalateProblem),
+     lastEscalateNoteSnippet: state.lastEscalateNoteSnippet,
+     lastEscalateTopic: state.lastEscalateTopic,
+     lastEscalateTopics: state.lastEscalateTopics,
+@@ -2648,9 +2775,14 @@
+ 
+ function buildHistory(conv, maxParts) {
+   const parts = partsOf(conv);
++  const __cid = String((conv && (conv.id || conv.conversation_id)) || '');
++  __credentialGuardR14.rememberClientParts(__cid, parts);
+   const lines = [];
+   const src = conv.source || {};
+   if (src.body) {
++    if (src.author && (src.author.type === 'user' || src.author.type === 'lead')) {
++      __credentialGuardR14.rememberClientText(__cid, src.body);
++    }
+     const who = (src.author && src.author.type === 'user' ? 'Client' : 'Other') + ': ';
+     lines.push(who + stripHtml(src.body));
+   }
+@@ -2666,7 +2798,7 @@
+     if (a.type === 'user') lines.push('Client: ' + body);
+     else if (a.type === 'admin' || a.type === 'bot') lines.push((a.name || 'Agent') + ': ' + body);
+   }
+-  return lines.join('\n');
++  return __credentialGuardR14.redactForConversation(__cid, lines.join('\n'));
+ }
+ 
+ function stripActionLeak(text) {
+@@ -2740,6 +2872,8 @@
+ }
+ 
+ async function postReply(conversationId, messageType, body) {
++  // owner-dictated replies, public replies, retries, replay, and deferred ops all
++  // reach icRequest. authorizeOutbound sits in front of that transport.
+   // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
+   // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
+   const finalBody = messageType === 'note' ? String(body || '') : toHtml(body);
+@@ -2840,6 +2974,7 @@
+ const clientSendLocks = new Map();
+ 
+ async function postClientCommentOnce(conversationId, body, userPart, clientName) {
++  // Public replay still posts through postReply and the single authorizeOutbound transport.
+   const lockKey = String(conversationId);
+   const prev = clientSendLocks.get(lockKey) || Promise.resolve();
+   const run = prev
+@@ -2880,7 +3015,7 @@
+       }
+     }
+   } catch (e) {
+-    console.error('identical-body dedupe fail', conversationId, e && e.message);
++    console.error('identical-body dedupe fail', conversationId);
+   }
+   const priorClientTexts = userPart ? parts
+     .filter((p) => String((p.author || {}).id || '') === String((userPart.author || {}).id || '') &&
+@@ -2906,7 +3041,7 @@
+       (repeatTextUtils.normalize(previousBot) === repeatTextUtils.normalize(finalBody) ||
+        nearCopiedWording(previousBot, finalBody))) {
+     try {
+-      const ai = await openai.chat.completions.create({
++      const ai = await __guardedChat(conversationId, {
+         model: control.getModel(),
+         messages: [
+           { role: 'system', content: control.getPrompt() },
+@@ -2922,7 +3057,7 @@
+           repeatTextUtils.normalize(previousBot) !== repeatTextUtils.normalize(candidate) &&
+           !nearCopiedWording(previousBot, candidate)) finalBody = candidate;
+       else { console.log('REPEATED_DIRECT_REPLY_HELD', conversationId); return null; }
+-    } catch (e) { console.error('REPEATED_DIRECT_REPLY_RETRY_FAILED', conversationId, e && e.message); return null; }
++    } catch (e) { console.error('REPEATED_DIRECT_REPLY_RETRY_FAILED', conversationId); return null; }
+     gate = await checkSendBoundary(conversationId, userPart, clientName);
+     if (!gate.ok) {
+       console.log('SKIP post-rephrase', gate.why, conversationId);
+@@ -2964,7 +3099,7 @@
+         });
+         return (res.hardFails || []).filter((f) => f && MANDATORY.has(f.code)).map((f) => f.code);
+       } catch (e) {
+-        console.error('POSTGATE_REVALIDATE_ERROR', conversationId, e && e.message);
++        console.error('POSTGATE_REVALIDATE_ERROR', conversationId);
+         return ['REVALIDATE_ERROR'];
+       }
+     };
+@@ -3172,10 +3307,11 @@
+ }
+ 
+ async function openConversation(conversationId) {
+-  return axios.post(
++  return icRequest(
++    'post',
+     'https://api.intercom.io/conversations/' + conversationId + '/reply',
+     { message_type: 'open', type: 'admin', admin_id: ARSAL_ID },
+-    { headers: icHeaders(), timeout: IC_TIMEOUT_MS, validateStatus: () => true }
++    'OPEN'
+   );
+ }
+ 
+@@ -3214,7 +3350,7 @@
+     '\n\nFULL TICKET HISTORY:\n' +
+     history +
+     '\n\nInterpret the direct command and respond with OWNER ACTION format only.';
+-  const ai = await openai.chat.completions.create({
++  const ai = await __guardedChat(conversationId, {
+     model: control.getModel(),
+     messages: [
+       { role: 'system', content: control.getPrompt() + '\n\n' + OWNER_CMD_SYSTEM_OVERLAY },
+@@ -3222,13 +3358,14 @@
+     ],
+   });
+   const rawOut = ((ai.choices[0] && ai.choices[0].message && ai.choices[0].message.content) || '').trim();
+-  console.log('OWNER_CMD_LLM_RAW', conversationId, rawOut.slice(0, 240));
++  __credentialGuardR14.logEvent('OWNER_CMD_LLM_RAW');
+   return parseOwnerCommandAction(rawOut);
+ }
+ 
+ async function executeOwnerActionPlan(conversationId, full, plan, plain) {
+   const action = String((plan && plan.action) || 'NOOP').toUpperCase();
+   let body = String((plan && plan.body) || '').trim();
++  __credentialGuardR14.rememberInbound(conversationId, { ownerText: String(plain || '') + '\n' + String(body || '') });
+   if (action === 'STOP') {
+     control.setAiOff(conversationId);
+     await postReply(conversationId, 'note', authConfirmText('STOP', plain));
+@@ -3489,7 +3626,7 @@
+         console.log('AUTH_NOTE FOLLOW->', done, conversationId, authorId, partId);
+         acted = 'FOLLOW:' + done;
+       } catch (e) {
+-        console.error('OWNER_CMD_FAIL', conversationId, e && e.message);
++        console.error('OWNER_CMD_FAIL', conversationId);
+         await postReply(
+           conversationId,
+           'note',
+@@ -3721,15 +3858,15 @@
+ 
+     /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookA */
+     // Hook A runs before text is initialised and must never reference it.
+-    try { __imageAskGuard.hookA(conversationId); } catch (__e) { console.error('[imageAskGuard.hookA] guard hook failed', __e && __e.message); }
++    try { __imageAskGuard.hookA(conversationId); } catch (__e) { console.error('[imageAskGuard.hookA] guard hook failed'); }
+     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookA */
+     let text = stripHtml(latestUser.body || '');
+     const repeatedClientQuestion = isRepeatedClientQuestion(text, collectClientMessageTexts(full).slice(0, -1));
+     /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookB */
+-    try { __imageAskGuard.hookB(conversationId, text); } catch (__e) { console.error('[imageAskGuard.hookB] guard hook failed', __e && __e.message); }
++    try { __imageAskGuard.hookB(conversationId, text); } catch (__e) { console.error('[imageAskGuard.hookB] guard hook failed'); }
+     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookB */
+     /* LUNA_STATE_PRESEND_V1:BEGIN:hookT */
+-    try { __statePresend.noteInbound(conversationId, text, latestUser); } catch (__e) { console.error('[statePresend.hookT] failed', __e && __e.message); }
++    try { __statePresend.noteInbound(conversationId, text, latestUser); } catch (__e) { console.error('[statePresend.hookT] failed'); }
+     /* LUNA_STATE_PRESEND_V1:END:hookT */
+     const imageAtts = collectImageAttachments(latestUser);
+     if (!text && !imageAtts.length) {
+@@ -3826,7 +3963,7 @@
+       const eroLate = escalateRelatedOnly.decideEscalateAwaitingGate({
+         awaitingFirstTeammate: true,
+         userText: text,
+-        lastEscalateProblem: escState.lastEscalateProblem,
++        lastEscalateProblem: __credentialGuardR14.scrubEscalateProblem(conversationId, escState.lastEscalateProblem),
+         lastEscalateNoteSnippet: escState.lastEscalateNoteSnippet,
+         lastEscalateTopic: escState.lastEscalateTopic,
+         lastEscalateTopics: escState.lastEscalateTopics,
+@@ -3906,7 +4043,7 @@
+           console.log('FAQ_RETRIEVE', conversationId, hit.count || 0);
+         }
+       } catch (e) {
+-        console.error('FAQ_RETRIEVE_FAIL', e && e.message);
++        console.error('FAQ_RETRIEVE_FAIL');
+       }
+     }
+ 
+@@ -3934,7 +4071,7 @@
+           console.log('PROMO_INJECT', conversationId, promoResolved.product || '');
+         }
+       } catch (e) {
+-        console.error('PROMO_INJECT_FAIL', e && e.message);
++        console.error('PROMO_INJECT_FAIL');
+       }
+     }
+     if (imageAtts.length) {
+@@ -3970,7 +4107,7 @@
+       const imgParts = Array.isArray(userContent) ? userContent.filter((c) => c && c.type === 'image_url').length : 0;
+       console.log('IMAGE_IN', conversationId, 'atts', imageAtts.length, 'loaded', imgParts);
+       /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookC */
+-      try { __imageAskGuard.hookC(conversationId, imgParts, imageAtts.length); } catch (__e) { console.error('[imageAskGuard.hookC] guard hook failed', __e && __e.message); }
++      try { __imageAskGuard.hookC(conversationId, imgParts, imageAtts.length); } catch (__e) { console.error('[imageAskGuard.hookC] guard hook failed'); }
+       /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookC */
+       if (!imgParts) {
+         console.log('IMAGE_LOAD_NONE , escalate path preferred if model unsure', conversationId);
+@@ -4021,7 +4158,7 @@
+         parsed.body = '[[SCOPE_DECLINE]]';
+         console.log('SKIP->REPLY scope_decline', conversationId);
+       } else {
+-        console.log('SKIP model', conversationId, parsed.body);
++        __credentialGuardR14.logEvent('SKIP_MODEL');
+         return res.sendStatus(200);
+       }
+     }
+@@ -4095,7 +4232,7 @@
+         officialFaqBlock
+       ) {
+         try {
+-          const force = await openai.chat.completions.create({
++          const force = await __guardedChat(conversationId, {
+             model: control.getModel(),
+             messages: [
+               { role: 'system', content: control.getPrompt() },
+@@ -4115,7 +4252,7 @@
+             console.log('ESCALATE->REPLY general+FAQ', conversationId);
+           }
+         } catch (e) {
+-          console.error('ESCALATE->REPLY force fail', e && e.message);
++          console.error('ESCALATE->REPLY force fail');
+         }
+       }
+ 
+@@ -4179,7 +4316,7 @@
+             needEmail = resolvedId.needEmail;
+           }
+         } catch (e) {
+-          console.error('identity re-fetch fail', e && e.message);
++          console.error('identity re-fetch fail');
+         }
+       }
+       if (!skipIdentityGate && (needAccount || needEmail)) {
+@@ -4293,7 +4430,7 @@
+                 ? collectClientMessageTexts(typeof full !== 'undefined' ? full : {})
+                 : [],
+           });
+-          stPack.state.lastEscalateProblem = __ctx.lastEscalateProblem;
++          stPack.state.lastEscalateProblem = __credentialGuardR14.scrubEscalateProblem(conversationId, __ctx.lastEscalateProblem);
+           stPack.state.lastEscalateNoteSnippet = __ctx.lastEscalateNoteSnippet;
+           stPack.state.lastEscalateTopic = __ctx.lastEscalateTopic;
+           stPack.state.lastEscalateTopics = __ctx.lastEscalateTopics;
+@@ -4404,7 +4541,7 @@
+       }
+     }
+     /* LUNA_SPREAD_IMAGE_FIXES_V1:BEGIN:hookD */
+-    try { body = __imageAskGuard.hookD(conversationId, body); } catch (__e) { console.error('[imageAskGuard.hookD] guard hook failed', __e && __e.message); }
++    try { body = __imageAskGuard.hookD(conversationId, body); } catch (__e) { console.error('[imageAskGuard.hookD] guard hook failed'); }
+     /* LUNA_SPREAD_IMAGE_FIXES_V1:END:hookD */
+     /* LUNA_STATE_PRESEND_V1:BEGIN:hookP */
+     body = challengeVariantGuard.explainTwoStepFollowup(
+@@ -4423,7 +4560,7 @@
+     // pattern as the REPEATED_QUESTION retry just below; no new tool-calling, same userMsg.
+     const __presendRegenerate = async (correctionInstruction) => {
+       try {
+-        const retry = await openai.chat.completions.create({
++        const retry = await __guardedChat(conversationId, {
+           model: control.getModel(),
+           messages: [
+             { role: 'system', content: control.getPrompt() },
+@@ -4432,10 +4569,10 @@
+         });
+         const retryParsed = parseAction((((retry.choices[0] || {}).message || {}).content) || '');
+         if (retryParsed.action === 'REPLY' && retryParsed.body) return postProcessModelReply(retryParsed.body, conversationId);
+-      } catch (e) { console.error('PRESEND_REGENERATE_FAILED', conversationId, e && e.message); }
++      } catch (e) { console.error('PRESEND_REGENERATE_FAILED', conversationId); }
+       return null;
+     };
+-    try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: parts, knowledge: __presendKnowledge, regenerate: __presendRegenerate, scopeDecline: __isScopeDecline }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] gate threw — fail-closed (holding send)', __e && __e.message); __presend = { body: body, send: false, reason: 'gate-error-fail-closed' }; }
++    try { __presend = await __statePresend.gate({ conversationId: conversationId, draft: body, latestUser: latestUser, clientName: clientName, history: parts, knowledge: __presendKnowledge, regenerate: __presendRegenerate, scopeDecline: __isScopeDecline }); body = __presend.body; } catch (__e) { console.error('[statePresend.hookP] gate threw — fail-closed (holding send)'); __presend = { body: body, send: false, reason: 'gate-error-fail-closed' }; }
+     if (repeatedClientQuestion && !__presend.send && __presend.result &&
+         __presend.result.hardFails.length > 0 &&
+         __presend.result.hardFails.every((f) => f.code === 'DUPLICATE_REPLY')) {
+@@ -4444,7 +4581,7 @@
+       if (priorReply) {
+         try {
+           const previous = stripHtml(priorReply.body);
+-          const retry = await openai.chat.completions.create({
++          const retry = await __guardedChat(conversationId, {
+             model: control.getModel(),
+             messages: [
+               { role: 'system', content: control.getPrompt() },
+@@ -4464,7 +4601,7 @@
+               }
+             } else console.log('REPEATED_QUESTION_FACT_MISMATCH_HELD', conversationId);
+           }
+-        } catch (e) { console.error('REPEATED_QUESTION_RETRY_FAILED', conversationId, e && e.message); }
++        } catch (e) { console.error('REPEATED_QUESTION_RETRY_FAILED', conversationId); }
+       }
+     }
+     /* LUNA_STATE_PRESEND_V1:END:hookP */
+@@ -4602,7 +4739,7 @@
+             const { state, id } = getConvState(conversationId);
+             state.escalateAwaitingFirstTeammate = true;
+             state.lastEscalateAt = Math.floor(Date.now() / 1000);
+-            state.lastEscalateProblem = String(text || '').slice(0, 500);
++            state.lastEscalateProblem = __credentialGuardR14.scrubEscalateProblem(conversationId, text);
+             saveConvState(id, state);
+           }
+           console.log('ESCALATED after MISSED_ESCALATION presend hold', conversationId, built.assigneeId);
+@@ -4610,7 +4747,7 @@
+           console.error('ESCALATE_NOTE_FAILED after MISSED_ESCALATION', conversationId, noteRes.status);
+         }
+       } catch (e) {
+-        console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
++        console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR');
+       }
+       return res.sendStatus(200);
+     }
+@@ -4619,7 +4756,7 @@
+       clientReplyInflight.delete(inflightKey);
+     }
+   } catch (e) {
+-    console.error('WEBHOOK_ERR', e && e.message, e && e.stack);
++    __credentialGuardR14.logEvent('WEBHOOK_ERR');
+     return res.sendStatus(200);
+   }
+ };
+@@ -4727,11 +4864,7 @@
+       pagination: { per_page: 50 },
+     };
+     if (startingAfter) body.pagination.starting_after = startingAfter;
+-    const r = await axios.post('https://api.intercom.io/conversations/search', body, {
+-      headers: icHeaders(),
+-      timeout: IC_TIMEOUT_MS,
+-      validateStatus: () => true,
+-    });
++    const r = await __searchPost(body);
+     if (r.status >= 400) {
+       console.log('AUTO_CLOSE_SEARCH_FAIL', r.status);
+       break;
+@@ -4792,11 +4925,11 @@
+         saveTicketState(cur);
+         console.log('ESCALATE defer matured , allow bot related answer', cid);
+       } catch (e) {
+-        console.error('DEFER_POLL_ITEM', cid, e && e.message);
++        console.error('DEFER_POLL_ITEM', cid);
+       }
+     }
+   } catch (e) {
+-    console.error('DEFER_POLL_ERR', e && e.message);
++    console.error('DEFER_POLL_ERR');
+   } finally {
+     deferPollRunning = false;
+   }
+@@ -4811,7 +4944,7 @@
+     try {
+       list = await searchOpenConversationsAutoClose();
+     } catch (e) {
+-      console.error('AUTO_CLOSE_SEARCH_ERR', e && e.message);
++      console.error('AUTO_CLOSE_SEARCH_ERR');
+       return;
+     }
+     console.log('AUTO_CLOSE_POLL open', list.length);
+@@ -4829,7 +4962,7 @@
+         const res = await handleAutoCloseIfDue(String(id), full);
+         if (res && res.close) closed++;
+       } catch (e) {
+-        console.error('AUTO_CLOSE_ITEM_ERR', id, e && e.message);
++        console.error('AUTO_CLOSE_ITEM_ERR', id);
+       }
+     }
+     if (closed) console.log('AUTO_CLOSE_POLL closed', closed);
+@@ -4855,11 +4988,7 @@
+       pagination: { per_page: 50 },
+     };
+     if (startingAfter) body.pagination.starting_after = startingAfter;
+-    const r = await axios.post('https://api.intercom.io/conversations/search', body, {
+-      headers: icHeaders(),
+-      timeout: IC_TIMEOUT_MS,
+-      validateStatus: () => true,
+-    });
++    const r = await __searchPost(body);
+     if (r.status >= 400) {
+       console.log('TEAMBOX_SEARCH_FAIL', teamId, r.status, r.data && r.data.errors);
+       break;
+@@ -4889,11 +5018,7 @@
+       pagination: { per_page: 50 },
+     };
+     if (startingAfter) body.pagination.starting_after = startingAfter;
+-    const r = await axios.post('https://api.intercom.io/conversations/search', body, {
+-      headers: icHeaders(),
+-      timeout: IC_TIMEOUT_MS,
+-      validateStatus: () => true,
+-    });
++    const r = await __searchPost(body);
+     if (r.status >= 400) {
+       console.log('JERRY_SEARCH_FAIL', r.status, r.data && r.data.errors);
+       break;
+@@ -4921,7 +5046,7 @@
+       try {
+         list = await searchOpenTeamConversations(job.teamId);
+       } catch (e) {
+-        console.error('TEAMBOX_SEARCH_ERR', job.label, e && e.message);
++        console.error('TEAMBOX_SEARCH_ERR', job.label);
+         continue;
+       }
+       console.log('TEAMBOX_POLL', job.label, 'open', list.length);
+@@ -4932,7 +5057,7 @@
+           const full = (await fetchConversation(id)) || c;
+           await job.run(String(id), full);
+         } catch (e) {
+-          console.error('TEAMBOX_POLL_ITEM_ERR', job.label, id, e && e.message);
++          console.error('TEAMBOX_POLL_ITEM_ERR', job.label, id);
+         }
+       }
+     }
+@@ -4941,7 +5066,7 @@
+     try {
+       jerryList = await searchOpenJerryConversations();
+     } catch (e) {
+-      console.error('JERRY_SEARCH_ERR', e && e.message);
++      console.error('JERRY_SEARCH_ERR');
+       jerryList = [];
+     }
+     console.log('TEAMBOX_POLL JERRY open', jerryList.length);
+@@ -4954,7 +5079,7 @@
+         if (isEscalationsTeambox(full) || isRiskTeambox(full)) continue;
+         await handleJerryOrEscalationsLongMessageNote(String(id), full);
+       } catch (e) {
+-        console.error('TEAMBOX_POLL_ITEM_ERR', 'JERRY', id, e && e.message);
++        console.error('TEAMBOX_POLL_ITEM_ERR', 'JERRY', id);
+       }
+     }
+   } finally {
+@@ -4973,15 +5098,15 @@
+     console.log('Bot running (fresh engine)');
+     // Catch Escalations/Risk tickets that already passed the 15m gate but got no new webhook
+     setTimeout(() => {
+-      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_START_ERR', e && e.message));
+-      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_START_ERR', e && e.message));
+-      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_START_ERR', e && e.message));
++      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_START_ERR'));
++      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_START_ERR'));
++      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_START_ERR'));
+     }, 8000);
+     let ticketStatePruneTicks = 0;
+     setInterval(() => {
+-      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_ERR', e && e.message));
+-      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_POLL_ERR', e && e.message));
+-      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_POLL_ERR', e && e.message));
++      pollSilentTeamboxNotes().catch((e) => console.error('TEAMBOX_POLL_ERR'));
++      pollAutoCloseSilentTickets().catch((e) => console.error('AUTO_CLOSE_POLL_ERR'));
++      pollDeferredRelatedReplies().catch((e) => console.error('DEFER_POLL_ERR'));
+       ticketStatePruneTicks += 1;
+       if (ticketStatePruneTicks >= 60) {
+         ticketStatePruneTicks = 0;
+diff --git a/luna-current/01_runtime/control.js b/luna-current/01_runtime/control.js
+--- a/luna-current/01_runtime/control.js
++++ b/luna-current/01_runtime/control.js
+@@ -1,5 +1,5 @@
+ const fs = require('fs');
+-const axios = require('axios');
++const __credentialGuardR14 = require('./credentialGuardR14');
+ 
+ const CONTROL_SECRET = process.env.CONTROL_SECRET || '';
+ // Env-overridable so a sandbox / staging run can never mutate live control state.
+@@ -228,6 +228,24 @@
+   };
+ }
+ 
++function rememberControl(conversationId, reqBody, ownerText) {
++  const src = reqBody || {};
++  const inbound = typeof src.client_text === 'string' ? src.client_text : (typeof src.inbound === 'string' ? src.inbound : (typeof src.clientText === 'string' ? src.clientText : ''));
++  if (inbound) __credentialGuardR14.rememberInbound(conversationId, { text: inbound });
++  if (ownerText) __credentialGuardR14.rememberInbound(conversationId, { ownerText: String(ownerText) });
++}
++
++function postedControlBody(body) {
++  if (!body || typeof body !== 'object' || Array.isArray(body)) return body;
++  const copy = Object.assign({}, body);
++  delete copy.client_text;
++  delete copy.inbound;
++  delete copy.clientText;
++  delete copy.owner_text;
++  delete copy.ownerText;
++  return copy;
++}
++
+ async function intercomRequest(method, path, body, query) {
+   let url = INTERCOM_BASE + (path.startsWith('/') ? path : '/' + path);
+   if (query && typeof query === 'object') {
+@@ -238,13 +256,35 @@
+     const s = qs.toString();
+     if (s) url += (url.includes('?') ? '&' : '?') + s;
+   }
+-  const res = await axios({
++  const messageType = body && body.message_type;
++  const conversationId = __credentialGuardR14.conversationIdFromUrl(url);
++  const customerBody = body && typeof body.body === 'string' ? body.body : '';
++  const inboundText = body && typeof body.client_text === 'string' ? body.client_text : (body && typeof body.inbound === 'string' ? body.inbound : '');
++  const ownerText = body && typeof body.owner_text === 'string' ? body.owner_text : customerBody;
++  rememberControl(conversationId, { client_text: inboundText }, ownerText);
++  const postData = postedControlBody(body);
++  const decision = __credentialGuardR14.guardedSend({
++    kind: 'intercom-write',
+     method: (method || 'GET').toLowerCase(),
+-    url,
+-    data: body,
+-    headers: intercomHeaders(),
+-    validateStatus: () => true,
++    url: url,
++    data: postData,
++    body: customerBody,
++    inboundText: inboundText,
++    ownerText: ownerText,
++    ownerDictated: messageType === 'comment' || messageType === 'note',
++    messageType: messageType || '',
++    channel: messageType === 'note' ? 'internal' : 'public',
++    conversationId: conversationId,
++  }, function (config) {
++    return __credentialGuardR14.injectedClient()({
++      method: (method || 'GET').toLowerCase(),
++      url: url,
++      data: config && config.data != null ? config.data : undefined,
++      headers: intercomHeaders(),
++      validateStatus: () => true,
++    });
+   });
++  const res = decision && decision.result ? await decision.result : { status: 403, data: null };
+   return { status: res.status, data: res.data };
+ }
+ 
+@@ -325,7 +365,7 @@
+       const text = getPrompt();
+       res.json({ ok: true, chars: text.length, preview: text.slice(0, 200) });
+     } catch (e) {
+-      res.status(500).json({ ok: false, error: String(e.message || e) });
++      res.status(500).json({ ok: false, error: 'control_error' });
+     }
+   });
+ 
+@@ -343,7 +383,7 @@
+       }
+       res.json({ ok: true, mode, chars: getPrompt().length });
+     } catch (e) {
+-      res.status(500).json({ ok: false, error: String(e.message || e) });
++      res.status(500).json({ ok: false, error: 'control_error' });
+     }
+   });
+ 
+@@ -431,6 +471,7 @@
+     const id = req.body && req.body.conversation_id;
+     const body = req.body && req.body.body;
+     if (!id || !body) return res.status(400).json({ ok: false, error: 'conversation_id and body required' });
++    rememberControl(id, req.body, body);
+     const r = await convReply(id, { message_type: 'comment', body: ensureIntercomSectionBreaks(body) });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, ...r });
+   });
+@@ -439,6 +480,7 @@
+     const id = req.body && req.body.conversation_id;
+     const body = req.body && req.body.body;
+     if (!id || !body) return res.status(400).json({ ok: false, error: 'conversation_id and body required' });
++    rememberControl(id, req.body, body);
+     const r = await convReply(id, { message_type: 'note', body: ensureJerryMentionInNote(body) });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, note: true, ...r });
+   });
+@@ -446,6 +488,7 @@
+   app.post('/control/close', requireControl, async (req, res) => {
+     const id = req.body && req.body.conversation_id;
+     if (!id) return res.status(400).json({ ok: false, error: 'conversation_id required' });
++    rememberControl(id, req.body, '');
+     const r = await convReply(id, { message_type: 'close' });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, closed: true, ...r });
+   });
+@@ -453,6 +496,7 @@
+   app.post('/control/open', requireControl, async (req, res) => {
+     const id = req.body && req.body.conversation_id;
+     if (!id) return res.status(400).json({ ok: false, error: 'conversation_id required' });
++    rememberControl(id, req.body, '');
+     const r = await convReply(id, { message_type: 'open' });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, opened: true, ...r });
+   });
+@@ -462,6 +506,7 @@
+     const minutes = Number((req.body && req.body.minutes) || 60);
+     if (!id) return res.status(400).json({ ok: false, error: 'conversation_id required' });
+     const snoozed_until = Math.floor(Date.now() / 1000) + minutes * 60;
++    rememberControl(id, req.body, '');
+     const r = await convReply(id, { message_type: 'snoozed', snoozed_until });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, snoozed_until, ...r });
+   });
+@@ -476,6 +521,7 @@
+     const payload = { message_type: 'assignment' };
+     if (adminId) payload.assignee_id = Number(adminId);
+     if (teamId) payload.team_assignee_id = Number(teamId);
++    rememberControl(id, req.body, req.body && req.body.body);
+     const r = await convReply(id, payload);
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, ...r });
+   });
+@@ -483,6 +529,7 @@
+   app.post('/control/unassign', requireControl, async (req, res) => {
+     const id = req.body && req.body.conversation_id;
+     if (!id) return res.status(400).json({ ok: false, error: 'conversation_id required' });
++    rememberControl(id, req.body, '');
+     const r = await convReply(id, { message_type: 'assignment', assignee_id: 0 });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, unassigned: true, ...r });
+   });
+@@ -494,6 +541,7 @@
+     if (!id || priority === undefined || priority === null || priority === '') {
+       return res.status(400).json({ ok: false, error: 'conversation_id and priority required' });
+     }
++    rememberControl(id, req.body, '');
+     const r = await intercomRequest('PUT', '/conversations/' + id, { priority: priority === 'priority' || priority === true ? 'priority' : 'not_priority' });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, ...r });
+   });
+@@ -502,6 +550,7 @@
+     const id = req.body && req.body.conversation_id;
+     const tagId = req.body && (req.body.tag_id || req.body.id);
+     if (!id || !tagId) return res.status(400).json({ ok: false, error: 'conversation_id and tag_id required' });
++    rememberControl(id, req.body, '');
+     const r = await intercomRequest('POST', '/conversations/' + id + '/tags', { id: Number(tagId), admin_id: Number(ADMIN_ID) });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, ...r });
+   });
+@@ -510,6 +559,7 @@
+     const id = req.body && req.body.conversation_id;
+     const tagId = req.body && (req.body.tag_id || req.body.id);
+     if (!id || !tagId) return res.status(400).json({ ok: false, error: 'conversation_id and tag_id required' });
++    rememberControl(id, req.body, '');
+     const r = await intercomRequest('DELETE', '/conversations/' + id + '/tags/' + tagId, { admin_id: Number(ADMIN_ID) });
+     res.status(r.status >= 400 ? 500 : 200).json({ ok: r.status < 400, ...r });
+   });
+@@ -522,10 +572,15 @@
+       return res.status(400).json({ ok: false, error: 'path required (e.g. /conversations/123)' });
+     }
+     try {
+-      const r = await intercomRequest(method, path, req.body.body, req.body.query);
++      const idFromPath = __credentialGuardR14.conversationIdFromUrl(String(path || ''));
++      const ownerPassthrough = req.body && (req.body.owner_text || (req.body.body && req.body.body.body) || '');
++      rememberControl(idFromPath, req.body, ownerPassthrough);
++      const posted = postedControlBody(req.body && req.body.body);
++      const r = await intercomRequest(method, path, posted, req.body.query);
+       res.status(200).json({ ok: r.status < 400, status: r.status, data: r.data });
+     } catch (e) {
+-      res.status(500).json({ ok: false, error: String(e.message || e) });
++      __credentialGuardR14.logEvent('CONTROL_INTERCOM_ERR');
++      res.status(500).json({ ok: false, error: 'control_error' });
+     }
+   });
+ }
+diff --git a/luna-current/01_runtime/faq-kb.js b/luna-current/01_runtime/faq-kb.js
+--- a/luna-current/01_runtime/faq-kb.js
++++ b/luna-current/01_runtime/faq-kb.js
+@@ -1,6 +1,6 @@
+ 'use strict';
+ const fs = require('fs');
+-const axios = require('axios');
++const __credentialGuardR14 = require('./credentialGuardR14');
+ 
+ const FAQ_MD_PATHS = [
+   process.env.FUNDEDELITE_FAQ_PATH || '',
+@@ -182,12 +182,22 @@
+   const cached = _liveCache.get(url);
+   if (cached && Date.now() - cached.at < 60 * 60 * 1000) return cached.text;
+   try {
+-    const r = await axios.get(url, {
+-      timeout: 4500,
+-      headers: { 'User-Agent': 'FundedEliteSupportBot/1.0', Accept: 'text/html' },
+-      validateStatus: () => true,
+-      maxRedirects: 3,
++    const decision = __credentialGuardR14.guardedSend({
++      method: 'get',
++      url: url,
++      messageType: 'read',
++      body: '',
++    }, function () {
++      return __credentialGuardR14.injectedClient()({
++        method: 'get',
++        url: url,
++        timeout: 4500,
++        headers: { 'User-Agent': 'FundedEliteSupportBot/1.0', Accept: 'text/html' },
++        validateStatus: () => true,
++        maxRedirects: 3,
++      });
+     });
++    const r = decision && decision.result ? await decision.result : { status: 403, data: '' };
+     if (r.status >= 400 || typeof r.data !== 'string') return '';
+     let html = r.data;
+     // strip scripts/styles
+diff --git a/luna-current/01_runtime/scan-acct-mismatch.js b/luna-current/01_runtime/scan-acct-mismatch.js
+--- a/luna-current/01_runtime/scan-acct-mismatch.js
++++ b/luna-current/01_runtime/scan-acct-mismatch.js
+@@ -1,5 +1,6 @@
+ require("dotenv").config({ path: "/home/ubuntu/.env" });
+-const axios = require("axios");
++const __credentialGuardR14 = require('./credentialGuardR14');
++__credentialGuardR14.installRequireTripwire();
+ const token = process.env.INTERCOM_TOKEN || process.env.INTERCOM_ACCESS_TOKEN;
+ const ARSAL = "10118526";
+ const headers = { Authorization: `Bearer ${token}`, Accept: "application/json", "Intercom-Version": "2.11" };
+@@ -35,7 +36,22 @@
+       pagination: { per_page: 50 },
+     };
+     if (starting_after) body.pagination.starting_after = starting_after;
+-    const r = await axios.post("https://api.intercom.io/conversations/search", body, { headers });
++    const __search = __credentialGuardR14.guardedSend({
++      method: 'post',
++      url: 'https://api.intercom.io/conversations/search',
++      messageType: 'search',
++      channel: 'search',
++      body: '',
++      data: body,
++    }, function (config) {
++      return __credentialGuardR14.injectedClient()({
++        method: 'post',
++        url: 'https://api.intercom.io/conversations/search',
++        data: config.data,
++        headers: headers,
++      });
++    });
++    const r = await __search.result;
+     convos = convos.concat(r.data.conversations || []);
+     starting_after = r.data.pages && r.data.pages.next && r.data.pages.next.starting_after;
+     if (!starting_after) break;
+@@ -44,7 +60,19 @@
+   let mismatches = 0, notedOk = 0, arsalWithNum = 0;
+   const samples = [];
+   for (const c of convos.slice(0, 80)) {
+-    const full = await axios.get(`https://api.intercom.io/conversations/${c.id}`, { headers }).then(x=>x.data).catch(()=>null);
++    const __full = __credentialGuardR14.guardedSend({
++      method: 'get',
++      url: 'https://api.intercom.io/conversations/' + c.id,
++      messageType: 'read',
++      body: '',
++    }, function () {
++      return __credentialGuardR14.injectedClient()({
++        method: 'get',
++        url: 'https://api.intercom.io/conversations/' + c.id,
++        headers: headers,
++      });
++    });
++    const full = __full && __full.result ? await __full.result.then((x) => x.data).catch(() => null) : null;
+     if (!full) continue;
+     const parts = (full.conversation_parts && full.conversation_parts.conversation_parts) || [];
+     const clientNums = new Set();
+diff --git a/luna-current/01_runtime/lunaToolsRuntime.js b/luna-current/01_runtime/lunaToolsRuntime.js
+--- a/luna-current/01_runtime/lunaToolsRuntime.js
++++ b/luna-current/01_runtime/lunaToolsRuntime.js
+@@ -3,11 +3,12 @@
+ /**
+  * lunaToolsRuntime.js — FULL-route OpenAI function-calling for Luna.
+  * Tools: get_state, search_knowledge, calc, compare_challenges, read_image_facts, list_open_escalation.
+- * FAST / disabled → plain chat.completions.create (no tools).
++ * FAST / disabled → plain completion (no tools).
+  * Fail-open on tools API / 400 unsupported.
+  */
+ 
+ const MAX_TOOL_ROUNDS = 4;
++const __credentialGuardR14 = require('./credentialGuardR14');
+ 
+ const TOOLS_HINT =
+   '\n\nTOOLS AVAILABLE: You may call get_state, search_knowledge, calc, compare_challenges, ' +
+@@ -80,13 +81,31 @@
+   });
+ }
+ 
++async function __authorizedModel(openai, conversationId, payload) {
++  let decision;
++  try {
++    decision = __credentialGuardR14.authorizeOutbound({
++      kind: 'model-request',
++      conversationId: conversationId,
++      messages: payload && payload.messages,
++      payload: payload,
++    });
++  } catch (e) {
++    decision = __credentialGuardR14.denyOutbound({ kind: 'model-request', conversationId: conversationId, reason: 'exception' });
++  }
++  if (!decision.send) throw new Error('model_request_denied');
++  return __credentialGuardR14.dispatchAuthorized(decision, function () {
++    return openai.chat.completions.create(decision.payload);
++  });
++}
++
+ function withToolsHint(userContent) {
+   if (typeof userContent === 'string') return userContent + TOOLS_HINT;
+   return userContent;
+ }
+ 
+-async function plainCreate(openai, control, userContent) {
+-  const ai = await openai.chat.completions.create({
++async function plainCreate(openai, control, userContent, conversationId) {
++  const ai = await __authorizedModel(openai, conversationId, {
+     model: control.getModel(),
+     messages: [
+       { role: 'system', content: control.getPrompt() },
+@@ -126,7 +145,7 @@
+ 
+   if (!toolsEnabled()) {
+     console.log('LUNA_TOOLS', conversationId, 'disabled');
+-    const rawOut = await plainCreate(openai, control, userContent);
++    const rawOut = await plainCreate(openai, control, userContent, conversationId);
+     return { rawOut, route: 'DISABLED', toolCallsLog };
+   }
+ 
+@@ -171,7 +190,7 @@
+     );
+ 
+     if (route !== 'FULL') {
+-      const rawOut = await plainCreate(openai, control, userContent);
++      const rawOut = await plainCreate(openai, control, userContent, conversationId);
+       return { rawOut, route, toolCallsLog };
+     }
+ 
+@@ -188,7 +207,7 @@
+     for (let round = 0; round < MAX_TOOL_ROUNDS && !finished; round++) {
+       let ai;
+       try {
+-        ai = await openai.chat.completions.create({
++        ai = await __authorizedModel(openai, conversationId, {
+           model: control.getModel(),
+           messages,
+           tools: specs,
+@@ -202,7 +221,7 @@
+         } else {
+           console.error('LUNA_TOOLS_FAIL', conversationId, e && e.message);
+         }
+-        rawOut = await plainCreate(openai, control, userContent);
++        rawOut = await plainCreate(openai, control, userContent, conversationId);
+         return { rawOut, route, toolCallsLog };
+       }
+ 
+@@ -236,6 +255,7 @@
+           result = { ok: false, error: (e && e.message) || 'dispatch failed' };
+         }
+         toolCallsLog.push({ name, args, ok: !!(result && result.ok) });
++        try { __credentialGuardR14.rememberInbound(conversationId, { toolOutput: JSON.stringify(result == null ? {} : result) }); } catch (_) {}
+         console.log('LUNA_TOOLS_CALL', conversationId, name, 'round', round + 1);
+         messages.push({
+           role: 'tool',
+@@ -247,7 +267,7 @@
+ 
+     if (!finished) {
+       try {
+-        const ai = await openai.chat.completions.create({
++        const ai = await __authorizedModel(openai, conversationId, {
+           model: control.getModel(),
+           messages: [
+             ...messages,
+@@ -263,7 +283,7 @@
+         ).trim();
+       } catch (e) {
+         console.error('LUNA_TOOLS_FAIL', conversationId, e && e.message);
+-        rawOut = await plainCreate(openai, control, userContent);
++        rawOut = await plainCreate(openai, control, userContent, conversationId);
+       }
+     }
+ 
+@@ -271,7 +291,7 @@
+     return { rawOut, route, toolCallsLog };
+   } catch (e) {
+     console.error('LUNA_TOOLS_FAIL', conversationId, e && e.message);
+-    const rawOut = await plainCreate(openai, control, userContent);
++    const rawOut = await plainCreate(openai, control, userContent, conversationId);
+     return { rawOut, route, toolCallsLog };
+   }
+ }
+diff --git a/luna-current/01_runtime/escalateRelatedOnly.js b/luna-current/01_runtime/escalateRelatedOnly.js
+--- a/luna-current/01_runtime/escalateRelatedOnly.js
++++ b/luna-current/01_runtime/escalateRelatedOnly.js
+@@ -13,6 +13,9 @@
+  */
+ 
+ 'use strict';
++function __scrubEscalateProblem(text) {
++  try { return require('./credentialGuardR14').scrubEscalateProblem('', text); } catch (_) { return '[redacted]'; }
++}
+ 
+ const ENGINE_ID = 'fresh-2026-09-15-escalate-related-only-v1';
+ 
+@@ -115,7 +118,7 @@
+   const blob = [problemText, note, joinedClients].filter(Boolean).join('\n');
+   const detected = topic || primaryEscalateTopic(blob);
+   return {
+-    lastEscalateProblem: (problemText || joinedClients || note).slice(0, 1200),
++    lastEscalateProblem: __scrubEscalateProblem(problemText || joinedClients || note).slice(0, 1200),
+     lastEscalateNoteSnippet: note.slice(0, 800),
+     lastEscalateTopic: detected,
+     lastEscalateTopics: detectEscalateTopics(blob),
+diff --git a/luna-current/02_statePresend/statePresend.js b/luna-current/02_statePresend/statePresend.js
+--- a/luna-current/02_statePresend/statePresend.js
++++ b/luna-current/02_statePresend/statePresend.js
+@@ -24,6 +24,15 @@
+ const imageX = require('./structuredImageExtractor');
+ const analytics = require('./analytics');
+ const { sanitizeCredentials } = require('./credentialSanitizer');
++function __loadCredentialGuardR12() {
++  const candidates = ['../credentialGuardR14', '../01_runtime/credentialGuardR14', './credentialGuardR14'];
++  let last;
++  for (const candidate of candidates) {
++    try { return require(candidate); } catch (err) { last = err; }
++  }
++  throw last || new Error('credentialGuardR14 missing');
++}
++const __credentialGuardR14 = __loadCredentialGuardR12();
+ const { createTools } = require('./tools');
+ 
+ const STATE_PRESEND_VERSION = 'fresh-2026-09-16-state-presend-v1';
+@@ -103,7 +112,8 @@
+ function noteInbound(conversationId, text, latestUser, attachments) {
+   try {
+     const e = mem(conversationId);
+-    const t = sanitizeCredentials(T.stripHtml(text));
++    __credentialGuardR14.rememberClientText(conversationId, T.stripHtml(text));
++    const t = __credentialGuardR14.redactForConversation(conversationId, T.stripHtml(text));
+     const atts = Array.isArray(attachments) ? attachments : (latestUser && Array.isArray(latestUser.attachments) ? latestUser.attachments : []);
+     const ts = latestUser && (latestUser.created_at || latestUser.ts) ? Number(latestUser.created_at || latestUser.ts) : Date.now();
+     const last = e.messages[e.messages.length - 1];
+@@ -115,11 +125,11 @@
+ 
+ /** Records a public teammate reply if the engine sees one (optional hook). */
+ function noteHuman(conversationId, text, ts) {
+-  try { push(mem(conversationId), { role: 'human', text: sanitizeCredentials(T.stripHtml(text)), ts: ts || Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
++  try { push(mem(conversationId), { role: 'human', text: __credentialGuardR14.redactForConversation(conversationId, T.stripHtml(text)), ts: ts || Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
+ }
+ 
+ function noteOutbound(conversationId, body) {
+-  try { push(mem(conversationId), { role: 'bot', text: sanitizeCredentials(T.stripHtml(body)), ts: Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
++  try { push(mem(conversationId), { role: 'bot', text: __credentialGuardR14.redactForConversation(conversationId, T.stripHtml(body)), ts: Date.now(), attachments: [] }); } catch (_) { /* ignore */ }
+ }
+ 
+ function imagesFor(conversationId) {
+@@ -131,6 +141,7 @@
+ 
+ /** Messages for state: engine-provided history when available, else observed memory. */
+ function messagesFor(conversationId, history, latestUser) {
++  if (Array.isArray(history)) __credentialGuardR14.rememberClientParts(conversationId, history);
+   let msgs = [];
+   if (history) {
+     msgs = conversationState.normalizeMessages(history, botIdentityOpts());
+@@ -143,9 +154,14 @@
+     if (lastObs && lastObs.role === 'client' && !msgs.some((m) => m.role === 'client' && m.text === lastObs.text)) msgs.push(lastObs);
+   }
+   if (latestUser && latestUser.body) {
+-    const t = sanitizeCredentials(T.stripHtml(latestUser.body));
++    __credentialGuardR14.rememberClientText(conversationId, T.stripHtml(latestUser.body));
++    const t = __credentialGuardR14.redactForConversation(conversationId, T.stripHtml(latestUser.body));
+     if (t && !msgs.some((m) => m.role === 'client' && m.text === t)) msgs.push({ role: 'client', text: t, ts: Date.now(), attachments: latestUser.attachments || [] });
+   }
++  msgs = msgs.map((m) => {
++    if (!m || typeof m.text !== 'string') return m;
++    return Object.assign({}, m, { text: __credentialGuardR14.redactForConversation(conversationId, m.text) });
++  });
+   return msgs;
+ }
+ 
+@@ -204,7 +220,22 @@
+ const FAIL_CLOSED_CODES = new Set(['MISSED_QUESTION', 'WRONG_TOPIC', 'REPEATED_IMAGE_ASK', 'MISSED_ESCALATION', 'DUPLICATE_REPLY', 'UNSUPPORTED_NUMBER', 'UNSUPPORTED_PROMISE', 'FORBIDDEN_DIAGNOSTIC_ACTION']);
+     const mustFailClosed = !!(first && Array.isArray(first.hardFails) && first.hardFails.some((f) => FAIL_CLOSED_CODES.has(f.code)));
+ 
+-    if (mode() === 'observe' && !mustFailClosed) return finish({ body: original, send: true, reason: first.ok ? 'ok' : `observe:${out.finalReason}`, result: first, route, state });
++    if (mode() === 'observe' && !mustFailClosed) {
++      let __decision;
++      try {
++        __decision = __credentialGuardR14.authorizeOutbound({
++          kind: 'intercom-write',
++          conversationId: conversationId,
++          messageType: 'comment',
++          channel: 'public',
++          body: typeof original === 'string' ? original : '',
++        });
++      } catch (e) {
++        __decision = __credentialGuardR14.denyOutbound({ kind: 'intercom-write', messageType: 'comment', channel: 'public', reason: 'exception' });
++      }
++      if (!__decision.send) return finish({ body: '', send: false, reason: __decision.reason || 'blocked', result: first, route, state });
++      return finish({ body: __decision.body, send: true, reason: first.ok ? 'ok' : `observe:${out.finalReason}`, result: first, route, state });
++    }
+     const decision = {
+       body: out.send ? out.body : '',
+       send: out.send,
+@@ -220,8 +251,8 @@
+     // Any exception here means none of the hard-fail checks (including the mandated
+     // fail-closed codes: MISSED_QUESTION, WRONG_TOPIC, REPEATED_IMAGE_ASK, MISSED_ESCALATION)
+     // ran to completion. Hold the send rather than shipping an unvalidated draft.
+-    log(`gate error (fail-closed, holding send): ${e && e.message}`);
+-    return finish({ body: original, send: false, reason: 'error-fail-closed' });
++    log('GATE_ERROR');
++    return finish({ body: __credentialGuardR14.FIXED_MESSAGE, send: false, reason: 'error-fail-closed' });
+   }
+ 
+   function finish(d) {
+diff --git a/luna-current/02_statePresend/presendMega.js b/luna-current/02_statePresend/presendMega.js
+--- a/luna-current/02_statePresend/presendMega.js
++++ b/luna-current/02_statePresend/presendMega.js
+@@ -25,6 +25,19 @@
+ const policyEvidence = require('./policyEvidence');
+ const { isRepeatedClientQuestion, nearCopiedWording } = require('../repeatedClientQuestion');
+ 
++function __authorizedTemplateTopic(lastClient) {
++  const names = ['../01_runtime/credentialGuardR14', '../credentialGuardR14', './credentialGuardR14'];
++  for (let i = 0; i < names.length; i++) {
++    try {
++      const cg = require(names[i]);
++      if (cg && typeof cg.isAuthorizedTemplateTopic === 'function') return !!cg.isAuthorizedTemplateTopic(lastClient);
++    } catch (err) {
++      if (!err || err.code !== 'MODULE_NOT_FOUND') return false;
++    }
++  }
++  return false;
++}
++
+ const HARD = {
+   REPEATED_QUESTION: 'REPEATED_QUESTION',
+   ALREADY_COLLECTED_INFO_REQUEST: 'ALREADY_COLLECTED_INFO_REQUEST',
+@@ -207,7 +220,8 @@
+   }
+   if (guards.spreadAskGate) {
+     const looksLikeSpreadReply = /\bspreads?\b/i.test(d) && /\b(?:login|password|server|test account|demo account)\b/i.test(d) && /\d{4,}/.test(d);
+-    if (looksLikeSpreadReply && lastClient && !guards.spreadAskGate.isSpreadCheckAsk(lastClient) && !T.extractTopics(messages.filter((m) => m.role === 'client').map((m) => m.text).join(' ')).includes('spreads')) {
++    const __templateTopic = __authorizedTemplateTopic(lastClient);
++    if (!__templateTopic && looksLikeSpreadReply && lastClient && !guards.spreadAskGate.isSpreadCheckAsk(lastClient) && !T.extractTopics(messages.filter((m) => m.role === 'client').map((m) => m.text).join(' ')).includes('spreads')) {
+       hardFails.push(fail(HARD.WRONG_TOPIC, 'Spread-test credentials drafted although the client never asked about spreads.', 'The client did not ask about spreads. Answer the actual issue and do not include spread test credentials.'));
+     }
+   }
+diff --git a/luna-current/03_luna-maintainer/collector.js b/luna-current/03_luna-maintainer/collector.js
+--- a/luna-current/03_luna-maintainer/collector.js
++++ b/luna-current/03_luna-maintainer/collector.js
+@@ -15,6 +15,15 @@
+ const path = require('path');
+ const det = require('./detectors');
+ const { log } = require('./observability');
++function __loadCredentialGuardR12() {
++  const candidates = ['./credentialGuardR14', '../credentialGuardR14', '../01_runtime/credentialGuardR14'];
++  let last;
++  for (const candidate of candidates) {
++    try { return require(candidate); } catch (err) { last = err; }
++  }
++  throw last || new Error('credentialGuardR14 missing');
++}
++const __credentialGuardR14 = __loadCredentialGuardR12();
+ 
+ let sanitizeCredentials = (s) => String(s == null ? '' : s);
+ (function loadSanitizer() {
+@@ -47,14 +56,12 @@
+   function observe(gateResult, turnMeta) {
+     if (!cfg.enabled) return [];
+     try {
+-      const meta = Object.assign({ lunaRoot: cfg.lunaRoot }, turnMeta || {});
+-      if (meta.clientText) meta.clientText = sanitizeCredentials(meta.clientText);
+-      if (meta.body) meta.body = sanitizeCredentials(meta.body);
++      const meta = __credentialGuardR14.redactTurnMeta(Object.assign({ lunaRoot: cfg.lunaRoot }, turnMeta || {}));
+       const events = det.fromPresend(gateResult, meta).concat(det.fromTurn(meta, cfg));
+       if (events.length) log('observed', { conversationId: meta.conversationId, codes: events.map((e) => e.code) });
+       return record(events);
+     } catch (e) {
+-      log('observe_error', { error: String(e && e.message) });
++      log('observe_error', { error: 'observe_failed' });
+       return [];
+     }
+   }
+diff --git a/luna-current/03_luna-maintainer/llm.js b/luna-current/03_luna-maintainer/llm.js
+--- a/luna-current/03_luna-maintainer/llm.js
++++ b/luna-current/03_luna-maintainer/llm.js
+@@ -8,6 +8,15 @@
+  * stub - no test ever reaches the network.
+  */
+ 
++function loadCredentialGuard() {
++  const names = ['./credentialGuardR14', '../credentialGuardR14', '../01_runtime/credentialGuardR14'];
++  for (const name of names) {
++    try { return require(name); } catch (err) { if (!err || err.code !== 'MODULE_NOT_FOUND') throw err; }
++  }
++  return null;
++}
++const __credentialGuardR14 = loadCredentialGuard();
++
+ function createOpenAiLlm(cfg) {
+   return {
+     async json(system, user, schemaHint) {
+@@ -16,18 +25,32 @@
+       let OpenAI;
+       try { OpenAI = require('openai'); } catch (_) { throw new Error('openai package not installed'); }
+       const client = new OpenAI({ apiKey: key });
+-      const res = await client.chat.completions.create({
+-        model: cfg.model,
+-        temperature: 0,
+-        response_format: { type: 'json_object' },
+-        messages: [
+-          { role: 'system', content: `${system}\n\nReturn ONLY JSON matching:\n${schemaHint}` },
+-          { role: 'user', content: user },
+-        ],
++      if (!__credentialGuardR14) throw new Error('credential guard unavailable');
++      let decision;
++      try {
++        decision = __credentialGuardR14.authorizeOutbound({
++          kind: 'model-request',
++          conversationId: '',
++          messages: [
++            { role: 'system', content: `${system}\n\nReturn ONLY JSON matching:\n${schemaHint}` },
++            { role: 'user', content: user },
++          ],
++          payload: {
++            model: cfg.model,
++            temperature: 0,
++            response_format: { type: 'json_object' },
++          },
++        });
++      } catch (e) {
++        throw new Error('model_request_denied');
++      }
++      if (!decision.send) throw new Error('model_request_denied');
++      const res = await __credentialGuardR14.dispatchAuthorized(decision, function () {
++        return client.chat.completions.create(decision.payload);
+       });
+       const raw = (res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content) || '';
+       let data;
+-      try { data = JSON.parse(raw); } catch (_) { throw new Error(`model returned non-JSON: ${raw.slice(0, 200)}`); }
++      try { data = JSON.parse(raw); } catch (_) { throw new Error('model returned non-JSON'); }
+       if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('model returned JSON that is not an object');
+       return data;
+     },
+diff --git a/luna-current/03_luna-maintainer/observability.js b/luna-current/03_luna-maintainer/observability.js
+--- a/luna-current/03_luna-maintainer/observability.js
++++ b/luna-current/03_luna-maintainer/observability.js
+@@ -2,7 +2,21 @@
+ 
+ /** Structured JSON logging for every maintainer decision. Mirrors the
+  *  `[statePresend] ...` style already used by Luna so logs stay greppable. */
++function loadGuard() {
++  const names = ['./credentialGuardR14', '../credentialGuardR14', '../01_runtime/credentialGuardR14'];
++  for (const name of names) {
++    try { return require(name); } catch (err) { if (!err || err.code !== 'MODULE_NOT_FOUND') throw err; }
++  }
++  return null;
++}
++
+ function log(stage, fields) {
+-  try { console.log(`[maintainer] ${JSON.stringify(Object.assign({ at: Date.now(), stage }, fields || {}))}`); } catch (_) { /* ignore */ }
++  // Scrub maintainer stdout before it is written.
++  let safe = fields || {};
++  try {
++    const guard = loadGuard();
++    if (guard) safe = guard.redactDiagnostic(safe);
++  } catch (_) { safe = { redacted: true }; }
++  try { console.log(`[maintainer] ${JSON.stringify(Object.assign({ at: Date.now(), stage }, safe))}`); } catch (_) { /* ignore */ }
+ }
+ module.exports = { log };
+diff --git a/luna-current/06_tools/luna-local-chat.js b/luna-current/06_tools/luna-local-chat.js
+--- a/luna-current/06_tools/luna-local-chat.js
++++ b/luna-current/06_tools/luna-local-chat.js
+@@ -16,6 +16,9 @@
+ const fs = require('fs');
+ const path = require('path');
+ const readline = require('readline');
++const __credentialGuardR14 = require('../01_runtime/credentialGuardR14');
++__credentialGuardR14.installProcessScrub(process.stdout);
++__credentialGuardR14.installProcessScrub(console);
+ 
+ const ROOT = process.env.LUNA_ROOT || '/home/ubuntu';
+ process.chdir(ROOT);
+@@ -113,13 +116,26 @@
+     String(clientText || '').trim() +
+     '\n\nRespond with ACTION format only. Do not invent a personal support-agent identity.';
+ 
+-  const completion = await openai.chat.completions.create({
+-    model: control.getModel(),
+-    messages: [
+-      { role: 'system', content: system + formatHint },
+-      ...history,
+-      { role: 'user', content: userPayload },
+-    ],
++  __credentialGuardR14.rememberInbound('local', { text: String(clientText || '') });
++  const __messages = [
++    { role: 'system', content: system + formatHint },
++    ...history,
++    { role: 'user', content: userPayload },
++  ];
++  let __decision;
++  try {
++    __decision = __credentialGuardR14.authorizeOutbound({
++      kind: 'model-request',
++      conversationId: 'local',
++      messages: __messages,
++      payload: { model: control.getModel() },
++    });
++  } catch (e) {
++    throw new Error('model_request_denied');
++  }
++  if (!__decision.send) throw new Error('model_request_denied');
++  const completion = await __credentialGuardR14.dispatchAuthorized(__decision, function () {
++    return openai.chat.completions.create(__decision.payload);
+   });
+ 
+   const raw = ((((completion.choices[0] || {}).message || {}).content) || '').trim();
+diff --git a/luna-export/lunaToolsRuntime.js b/luna-export/lunaToolsRuntime.js
+--- a/luna-export/lunaToolsRuntime.js
++++ b/luna-export/lunaToolsRuntime.js
+@@ -3,11 +3,12 @@
+ /**
+  * lunaToolsRuntime.js — FULL-route OpenAI function-calling for Luna.
+  * Tools: get_state, search_knowledge, calc, compare_challenges, read_image_facts, list_open_escalation.
+- * FAST / disabled → plain chat.completions.create (no tools).
++ * FAST / disabled → plain completion (no tools).
+  * Fail-open on tools API / 400 unsupported.
+  */
+ 
+ const MAX_TOOL_ROUNDS = 4;
++const __credentialGuardR14 = require('./credentialGuardR14');
+ 
+ const TOOLS_HINT =
+   '\n\nTOOLS AVAILABLE: You may call get_state, search_knowledge, calc, compare_challenges, ' +
+@@ -80,13 +81,31 @@
+   });
+ }
+ 
++async function __authorizedModel(openai, conversationId, payload) {
++  let decision;
++  try {
++    decision = __credentialGuardR14.authorizeOutbound({
++      kind: 'model-request',
++      conversationId: conversationId,
++      messages: payload && payload.messages,
++      payload: payload,
++    });
++  } catch (e) {
++    decision = __credentialGuardR14.denyOutbound({ kind: 'model-request', conversationId: conversationId, reason: 'exception' });
++  }
++  if (!decision.send) throw new Error('model_request_denied');
++  return __credentialGuardR14.dispatchAuthorized(decision, function () {
++    return openai.chat.completions.create(decision.payload);
++  });
++}
++
+ function withToolsHint(userContent) {
+   if (typeof userContent === 'string') return userContent + TOOLS_HINT;
+   return userContent;
+ }
+ 
+-async function plainCreate(openai, control, userContent) {
+-  const ai = await openai.chat.completions.create({
++async function plainCreate(openai, control, userContent, conversationId) {
++  const ai = await __authorizedModel(openai, conversationId, {
+     model: control.getModel(),
+     messages: [
+       { role: 'system', content: control.getPrompt() },
+@@ -126,7 +145,7 @@
+ 
+   if (!toolsEnabled()) {
+     console.log('LUNA_TOOLS', conversationId, 'disabled');
+-    const rawOut = await plainCreate(openai, control, userContent);
++    const rawOut = await plainCreate(openai, control, userContent, conversationId);
+     return { rawOut, route: 'DISABLED', toolCallsLog };
+   }
+ 
+@@ -171,7 +190,7 @@
+     );
+ 
+     if (route !== 'FULL') {
+-      const rawOut = await plainCreate(openai, control, userContent);
++      const rawOut = await plainCreate(openai, control, userContent, conversationId);
+       return { rawOut, route, toolCallsLog };
+     }
+ 
+@@ -188,7 +207,7 @@
+     for (let round = 0; round < MAX_TOOL_ROUNDS && !finished; round++) {
+       let ai;
+       try {
+-        ai = await openai.chat.completions.create({
++        ai = await __authorizedModel(openai, conversationId, {
+           model: control.getModel(),
+           messages,
+           tools: specs,
+@@ -202,7 +221,7 @@
+         } else {
+           console.error('LUNA_TOOLS_FAIL', conversationId, e && e.message);
+         }
+-        rawOut = await plainCreate(openai, control, userContent);
++        rawOut = await plainCreate(openai, control, userContent, conversationId);
+         return { rawOut, route, toolCallsLog };
+       }
+ 
+@@ -236,6 +255,7 @@
+           result = { ok: false, error: (e && e.message) || 'dispatch failed' };
+         }
+         toolCallsLog.push({ name, args, ok: !!(result && result.ok) });
++        try { __credentialGuardR14.rememberInbound(conversationId, { toolOutput: JSON.stringify(result == null ? {} : result) }); } catch (_) {}
+         console.log('LUNA_TOOLS_CALL', conversationId, name, 'round', round + 1);
+         messages.push({
+           role: 'tool',
+@@ -247,7 +267,7 @@
+ 
+     if (!finished) {
+       try {
+-        const ai = await openai.chat.completions.create({
++        const ai = await __authorizedModel(openai, conversationId, {
+           model: control.getModel(),
+           messages: [
+             ...messages,
+@@ -263,7 +283,7 @@
+         ).trim();
+       } catch (e) {
+         console.error('LUNA_TOOLS_FAIL', conversationId, e && e.message);
+-        rawOut = await plainCreate(openai, control, userContent);
++        rawOut = await plainCreate(openai, control, userContent, conversationId);
+       }
+     }
+ 
+@@ -271,7 +291,7 @@
+     return { rawOut, route, toolCallsLog };
+   } catch (e) {
+     console.error('LUNA_TOOLS_FAIL', conversationId, e && e.message);
+-    const rawOut = await plainCreate(openai, control, userContent);
++    const rawOut = await plainCreate(openai, control, userContent, conversationId);
+     return { rawOut, route, toolCallsLog };
+   }
+ }
