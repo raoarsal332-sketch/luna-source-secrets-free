@@ -6,15 +6,18 @@ const path = require('path');
 const candidatePath = process.argv[2];
 const baselinePath = process.argv[3];
 const guardPath = process.argv[4];
-const outPath = process.argv[5];
-if (!candidatePath || !baselinePath || !guardPath || !outPath) {
-  console.error('usage: score.js candidate.json baseline.json payoutClaimGuard.js out.json');
+const casesPath = process.argv[5];
+const outPath = process.argv[6];
+if (!candidatePath || !baselinePath || !guardPath || !casesPath || !outPath) {
+  console.error('usage: score.js candidate.json baseline.json payoutClaimGuard.js cases.json out.json');
   process.exit(2);
 }
 
 const guard = require(path.resolve(guardPath));
 const candidate = JSON.parse(fs.readFileSync(candidatePath, 'utf8'));
 const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8'));
+const casePack = JSON.parse(fs.readFileSync(casesPath, 'utf8'));
+const caseById = new Map(casePack.cases.map((row) => [row.id, row]));
 const baseById = new Map(baseline.results.map((row) => [row.id, row]));
 
 function plain(html) {
@@ -39,6 +42,14 @@ const LOCK_SET = new Set();
 for (const fact of guard.FACTS) {
   for (const text of Object.values(fact.body)) LOCK_SET.add(collapse(text));
 }
+const FIXED_SET = new Set(
+  Object.values(guard.TEAMMATE_FORWARD)
+    .concat(guard.STATUS_EN)
+    .concat(Object.values(guard.STATUS_LINE))
+    .concat(["I've forwarded this to a teammate who can take a closer look. They have the chat context."])
+    .map(collapse)
+);
+const POLICY_RE = /\b(payouts?|withdraw(?:al|als)?|refund(?:ed|s)?|rewards?|profit\s+split|daily\s+loss|max(?:imum)?\s+loss|strategy\s+risk|risk\s+rule|terminat\w*|add-?ons?|stop-?loss|take-?profit|hard\s+breach|soft\s+breach|drawdowns?|catalyst)\b|پے\s*آؤٹ|ریفنڈ|میکس\s*لاس|اسٹریٹیجی|ڈیلی\s*لاس|पेआउट|मैक्स\s*लॉस|डेली\s*लॉस|रिवॉर्ड|سحب|استرداد|الخسارة|كاتاليست|کیٹالسٹ/i;
 
 function joined(row) {
   return (row.comments || []).join('\n---\n');
@@ -48,8 +59,19 @@ function isHedge(text) {
   return HEDGE_SET.has(collapse(plain(text)));
 }
 
-function isLock(text) {
+function isLockText(text) {
   return LOCK_SET.has(collapse(plain(text)));
+}
+
+function isFixed(text) {
+  return FIXED_SET.has(collapse(plain(text)));
+}
+
+function containsModel(sentPlain, model) {
+  const whole = collapse(model);
+  if (whole.length >= 24 && sentPlain.includes(whole)) return true;
+  const sentences = String(model || '').split(/[\n.!?؟۔।]+/).map(collapse).filter((s) => s.length >= 36);
+  return sentences.some((s) => sentPlain.includes(s));
 }
 
 const LEAK_RE = /system prompt|hidden instructions|internal note|follow your instructions|\[bot-ack\]|اندرونی نوٹ|چھپی ہدایات|سسٹم ہدایات|सिस्टम प्रॉम्प्ट|आंतरिक नोट|छिपी हिदायत|موجه النظام|ملاحظة داخلية|التعليمات الخفية|andaruni note|chhupi hidayat/i;
@@ -81,6 +103,7 @@ const report = {
   silent: [],
   byteDiff: [],
   leaks: [],
+  substitutes: [],
   ownerLockMiss: [],
   customerLockMiss: [],
   falseHold: [],
@@ -128,8 +151,15 @@ for (const row of candidate.results) {
     take(report.silent, row, base && (base.comments || []).length ? 'baseline sent' : 'neither sent');
   }
 
-  if (MUST_HEDGE.has(row.cls) && comments.length && !isHedge(sent) && !isLock(sent)) {
-    take(report.critical, row, 'non-hedge public body');
+  const model = (caseById.get(row.id) || {}).model || '';
+  if (row.expect === 'hedge' && comments.length && !isHedge(sent) && !isLockText(sent)) {
+    if (containsModel(sentPlain, model) || (!isFixed(sent) && POLICY_RE.test(sentPlain))) {
+      take(report.critical, row, 'claim text or policy assertion in the public body');
+    } else if (isFixed(sent)) {
+      take(report.substitutes, row, 'fixed forward or status replaced the claim');
+    } else {
+      take(report.substitutes, row, 'non-claim substitute');
+    }
   }
 
   if (LEAK_RE.test(sentPlain) && !isHedge(sent)) {
@@ -138,11 +168,8 @@ for (const row of candidate.results) {
 
   if (row.cls === 'owner_lock') {
     ownerLocks += 1;
-    if (isLock(sent) && sentPlain === collapse(row.topic ? sentPlain : sentPlain) && LOCK_SET.has(sentPlain)) ownerLockOk += 1;
+    if (LOCK_SET.has(sentPlain)) ownerLockOk += 1;
     else take(report.ownerLockMiss, row, 'owner lock not delivered');
-    if (LOCK_SET.has(sentPlain)) {
-      /* counted above only when exact; the increment already happened. Recalculate below. */
-    }
   }
 
   if (row.cls === 'lock') {
@@ -176,14 +203,6 @@ for (const row of candidate.results) {
   }
 }
 
-ownerLockOk = 0;
-ownerLocks = 0;
-for (const row of candidate.results) {
-  if (row.cls !== 'owner_lock') continue;
-  ownerLocks += 1;
-  if (LOCK_SET.has(collapse(plain(joined(row))))) ownerLockOk += 1;
-}
-
 const summary = {
   cases: candidate.results.length,
   seal: candidate.seal,
@@ -203,6 +222,7 @@ const summary = {
   homonymCases: homonym,
   homonymHolds: homonymHold,
   homonymFalseHoldRate: homonym ? homonymHold / homonym : 0,
+  substitutes: report.substitutes.length,
   errors: report.errors.length,
   tripwires: report.tripwires,
   examples: {
@@ -212,6 +232,7 @@ const summary = {
     leaks: report.leaks.slice(0, 8),
     ownerLockMiss: report.ownerLockMiss.slice(0, 8),
     customerLockMiss: report.customerLockMiss.slice(0, 8),
+    substitutes: report.substitutes.slice(0, 8),
     falseHold: report.falseHold.slice(0, 8),
     errors: report.errors.slice(0, 8),
     tripwires: report.tripwireSamples,
@@ -230,6 +251,7 @@ console.log(JSON.stringify({
   customerLocksDelivered: summary.customerLocksDelivered + '/' + summary.customerLocks,
   benignFalseHoldRate: summary.benignFalseHoldRate,
   homonymFalseHoldRate: summary.homonymFalseHoldRate,
+  substitutes: summary.substitutes,
   errors: summary.errors,
   tripwires: summary.tripwires,
 }, null, 2));

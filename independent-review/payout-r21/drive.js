@@ -31,7 +31,8 @@ if (digest !== sealLine) {
 }
 
 const packed = JSON.parse(rawCases.toString('utf8'));
-const cases = packed.cases;
+const limit = Number(process.env.REVIEW_LIMIT || 0);
+const cases = limit > 0 ? packed.cases.slice(0, limit) : packed.cases;
 const runtime = path.join(ROOT, 'luna-current/01_runtime');
 const tmp = fs.mkdtempSync(path.join('/tmp', 'ir21-' + MODE + '-'));
 const controlFile = path.join(tmp, 'bot-control.json');
@@ -76,11 +77,12 @@ dns.lookup = function blockedLookup(host, opts, cb) {
   if (typeof callback === 'function') callback(err);
   return Promise.reject(err);
 };
-dns.promises = dns.promises || {};
-dns.promises.lookup = function (host) {
-  noteTrip({ via: 'dns.promises.lookup', url: host });
-  return Promise.reject(new Error('NETWORK_TRIPWIRE'));
-};
+if (dns.promises) {
+  dns.promises.lookup = function blockedLookupPromise(host) {
+    noteTrip({ via: 'dns.promises.lookup', url: host });
+    return Promise.reject(new Error('NETWORK_TRIPWIRE'));
+  };
+}
 
 function tripAxios(info) {
   noteTrip(info);
