@@ -3702,8 +3702,9 @@ async function commitFixedMessageHandoff(opts) {
   const turnId = String(
     (o.latestUser && (o.latestUser.id || o.latestUser.created_at)) || o.turnId || ''
   );
+  const savedHandoff = stPack.state && stPack.state.fixedHandoff;
   const progress = fixedMessageHandoff.progressForTurn(
-    stPack.state && stPack.state.fixedHandoff,
+    savedHandoff,
     turnId,
     o.path
   );
@@ -3746,6 +3747,7 @@ async function commitFixedMessageHandoff(opts) {
     conversation: full,
     progress,
     requireLiveAssignee: true,
+    recheckHold: o.path === 'recovery' || o.recheckHold === true || !!(savedHandoff && savedHandoff.assignAmbiguous),
     transport: o.transport || {
       postNote: (html) => postReply(conversationId, 'note', html),
       assign: async (id) => {

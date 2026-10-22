@@ -223,7 +223,21 @@ function stemArabicScript(word, lang) {
     }
     if (!stripped) break;
   }
-  return s.replace(/[\u0626\u06CC\u06D2]/g, '\u064A');
+  s = s.replace(/[\u0626\u06CC\u06D2]/g, '\u064A');
+  if (lang === 'ar') {
+    // Object clitics and the accusative alef left after tanween is removed.
+    // The lexicon stays the base noun; these endings are not added to it.
+    const clitics = ['\u0646\u064A', '\u0646\u0627', '\u0643\u0645', '\u0643\u0646', '\u0647\u0627', '\u0647\u0645', '\u0647\u0646'];
+    for (const cl of clitics) {
+      if (s.endsWith(cl) && s.length - cl.length >= 3) {
+        s = s.slice(0, -cl.length);
+        break;
+      }
+    }
+    if ((s.endsWith('\u0643') || s.endsWith('\u0647')) && s.length - 1 >= 3) s = s.slice(0, -1);
+    if (s.endsWith('\u0627') && s.length - 1 >= 3) s = s.slice(0, -1);
+  }
+  return s;
 }
 
 function stemHindi(word) {
@@ -250,6 +264,19 @@ function stemFor(word, lang) {
   if (lang === 'hi') return stemHindi(word);
   if (lang === 'ur' || lang === 'ar') return stemArabicScript(word, lang);
   return String(word || '');
+}
+
+function stemKeys(word, lang) {
+  const stem = stemFor(word, lang);
+  if (!stem) return [];
+  const keys = [stem];
+  if (lang !== 'ar') return keys;
+  // اوصل and وصل share one key once a single leading alef is set aside.
+  if (stem.charAt(0) === '\u0627' && stem.length - 1 >= 3) keys.push(stem.slice(1));
+  // A broken plural such as the hamza form of شخص keeps an internal alef.
+  const bare = stem.replace(/\u0627/g, '');
+  if (bare.length >= 3 && bare !== stem) keys.push(bare);
+  return keys;
 }
 
 function countMatches(re, text) {
@@ -314,25 +341,38 @@ function detectLanguage(text) {
   return detectLatinLanguage(s);
 }
 
-function containsToken(text, token, lang) {
+// R11 floor. Arabic is normalized substring. Urdu, Hindi, and the other
+// non-English grammars are folded substring. English stays a whole word.
+// Stem matching is added on top of this. It does not replace it.
+function legacyContainsToken(text, token, lang) {
   const raw = lang === 'ar' ? normalizeArabic(text) : String(text || '');
   const needle = lang === 'ar' ? normalizeArabic(token) : String(token || '');
   if (!needle) return false;
-  if (MORPH_LANGS.has(lang)) {
-    const stemmed = stemFor(token, lang);
-    if (!stemmed) return false;
-    for (const word of scriptWords(raw)) {
-      if (stemFor(word, lang) === stemmed) return true;
-    }
-    return false;
-  }
   if (lang === 'en') {
     return new RegExp('(?:^|[^a-z])' + needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:[^a-z]|$)', 'i').test(raw);
   }
-  // Latin, Cyrillic, and CJK grammar is structural. Fold case and accents so
-  // "Menschen" and "möchte" still match the role and the act.
+  if (lang === 'ar') return raw.indexOf(needle) !== -1;
   const fold = (s) => String(s || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
   return fold(raw).indexOf(fold(needle)) !== -1;
+}
+
+function stemContainsToken(text, token, lang) {
+  if (!MORPH_LANGS.has(lang)) return false;
+  const needles = stemKeys(token, lang);
+  if (!needles.length) return false;
+  const raw = lang === 'ar' ? normalizeArabic(text) : String(text || '');
+  const set = new Set(needles);
+  for (const word of scriptWords(raw)) {
+    for (const key of stemKeys(word, lang)) {
+      if (set.has(key)) return true;
+    }
+  }
+  return false;
+}
+
+function containsToken(text, token, lang) {
+  if (legacyContainsToken(text, token, lang)) return true;
+  return stemContainsToken(text, token, lang);
 }
 
 function grammarHit(text, lang) {
@@ -371,10 +411,30 @@ function stripHandoffTokens(text, lang) {
   const g = GRAMMAR[lang] || GRAMMAR.en;
   const pool = g.roles.concat(g.acts);
   if (MORPH_LANGS.has(lang)) {
-    const stems = new Set(pool.map((w) => stemFor(w, lang)).filter(Boolean));
-    t = scriptWords(t)
-      .filter((word) => !stems.has(stemFor(word, lang)))
-      .join(' ');
+    const stems = new Set();
+    for (const item of pool) {
+      for (const key of stemKeys(item, lang)) stems.add(key);
+    }
+    const kept = [];
+    for (const word of scriptWords(t)) {
+      const keys = stemKeys(word, lang);
+      if (keys.some((key) => stems.has(key))) continue;
+      if (pool.some((item) => legacyContainsToken(word, item, lang))) continue;
+      kept.push(word);
+    }
+    t = kept.join(' ');
+    if (lang === 'ar') {
+      let norm = normalizeArabic(t);
+      for (const w of pool) {
+        const needle = normalizeArabic(w);
+        if (needle) norm = norm.split(needle).join(' ');
+      }
+      t = norm;
+    } else {
+      for (const w of pool) {
+        if (w) t = t.split(w).join(' ');
+      }
+    }
   } else {
     for (const w of pool) {
       if (!w) continue;
@@ -755,8 +815,34 @@ function classifyAssignment(result, expect) {
   if (status >= 500) return { ok: false, reason: '500' };
   const blob = String(result.message || result.reason || '');
   if (status === 0 || /timeout|etimedout|econnaborted/i.test(blob)) return { ok: false, reason: 'timeout' };
-  // An explicit partial flag stays ambiguous. A 2xx body that merely carries
-  // error.list or errors is a definite failure and can be retried.
+  // The failed-assignment verdict is read before any ambiguous partial or
+  // unknown hold. A 2xx that names the wrong seat, names no seat on an
+  // otherwise incomplete body, or is an unnamed partial is retryable.
+  // A clean synthetic shell with no assignee field, no errors, and no
+  // partial or unknown flag stays successful for the older transports.
+  if (expect && expect.kind === 'assignment') {
+    const http = status >= 200 && status < 300 ? status : 200;
+    if (!(status >= 300)) {
+      const verdict = writeOpStore.classifyWriteOutcome(
+        { message_type: 'assignment', assignee_id: expect.assigneeId, admin_id: '' },
+        result.data,
+        http
+      );
+      if (verdict.confirm) return { ok: true, reason: 'assigned' };
+      if (!verdict.confirm && !verdict.unknown) {
+        const cleanLegacy =
+          verdict.reason === 'assignee-unconfirmed' &&
+          result.data &&
+          typeof result.data === 'object' &&
+          !assigneeFieldPresent(result.data) &&
+          result.partial !== true &&
+          result.unknown !== true &&
+          result.ok === true &&
+          !responseHasErrorList(result);
+        if (!cleanLegacy) return { ok: false, reason: 'failed' };
+      }
+    }
+  }
   if (result.partial === true) return { ok: false, reason: 'partial' };
   if (responseHasErrorList(result)) return { ok: false, reason: 'failed' };
   if (result.unknown || result.ok !== true) return { ok: false, reason: 'partial' };
@@ -960,6 +1046,22 @@ function ambiguousWrite(reason) {
   return reason === '500' || reason === 'timeout' || reason === 'partial';
 }
 
+function releaseStaleAssignmentHold(progress, src) {
+  if (!progress || progress.assignAmbiguous !== true) return;
+  const wanted = String((src && src.assigneeId) || progress.assigneeId || '');
+  const live = liveAdminAssignee(src && src.conversation);
+  if (wanted && live === wanted) {
+    progress.assignAmbiguous = false;
+    progress.assignConfirmed = true;
+    if (!progress.assigneeId) progress.assigneeId = wanted;
+    return;
+  }
+  if (!live || isLiveBotSeat(live, src)) {
+    progress.assignAmbiguous = false;
+    progress.assignConfirmed = false;
+  }
+}
+
 function progressForTurn(saved, turnId, path) {
   let progress = Object.assign(blankProgress(), saved || {});
   const id = String(turnId || '');
@@ -1016,6 +1118,11 @@ async function commit(ctx) {
   );
   // A definite 422 on the customer comment is retried. It is not an ambiguous hold.
   if (progress.commentRejected === '422') progress.messageAmbiguous = false;
+  // A timeout or 5xx hold stored on the ticket is not permanent. The next
+  // message, a restart, or an op-store wipe passes recheckHold and the live
+  // assignee is read again. Applied: post once. Still the bot or empty: retry.
+  // A same-turn replay without that signal keeps the hold.
+  if (src.recheckHold) releaseStaleAssignmentHold(progress, src);
   // A stored "confirmed" flag is not enough after the conversation parts are
   // gone. Replay rewrites the note and the assignment, then posts the fixed
   // line only when those writes validate. An ambiguous hold is left alone.
@@ -1126,7 +1233,8 @@ async function commit(ctx) {
 
   let lastAssignResult = null;
   if (!progress.assignConfirmed && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
-    // A 422 is definite and is retried. An ambiguous 500/timeout/partial is not.
+    // A 422 is definite and is retried. A 500/timeout hold stays put on a
+    // same-turn replay. recheckHold already cleared that flag for a later turn.
     if (progress.assignAmbiguous) {
       return finish({ reason: 'assign_ambiguous_held', withhold: true, progress });
     }
@@ -1376,7 +1484,10 @@ function resumeLostHandoff(opts) {
   // A 422 on the customer comment is a definite miss. Note removal must still
   // resume from the assignment op record instead of holding the handoff closed.
   if (progress.commentRejected === '422') progress.messageAmbiguous = false;
-  if (progress.assignAmbiguous || progress.noteAmbiguous || progress.messageAmbiguous) {
+  // A note or customer-comment ambiguous write still holds. An assignment
+  // timeout or 5xx does not: the live seat below is the record, not the flag.
+  const staleAssignmentHold = progress.assignAmbiguous === true;
+  if (progress.noteAmbiguous || progress.messageAmbiguous) {
     return Object.assign({}, empty, { reason: 'ambiguous_held' });
   }
   const opAssignee = op && op.status === 'confirmed' && op.kind === 'assignment' && String(op.madeBy || '') === botId
@@ -1385,7 +1496,7 @@ function resumeLostHandoff(opts) {
   const assigneeId = opAssignee || String(progress.assigneeId || '');
   if (!assigneeId) return Object.assign({}, empty, { reason: 'no_op_record' });
   const notePresent = noteInParts(parts, botId);
-  if (notePresent && progress.noteConfirmed === true) {
+  if (notePresent && progress.noteConfirmed === true && !staleAssignmentHold) {
     return {
       resume: false,
       hold: false,

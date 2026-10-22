@@ -142,7 +142,9 @@ tests.push(test('partial assignment success withholds the message and the awaiti
   });
   assert.strictEqual(result.setAwaiting, false);
   assert.strictEqual(result.sent, false);
-  assert.strictEqual(result.reason, 'assign_partial');
+  assert.strictEqual(result.reason, 'assign_failed');
+  assert.strictEqual(result.progress.assignAmbiguous, false);
+  assert.strictEqual(result.progress.phase, 'assignment-pending');
   assert.strictEqual(transport.calls.some((c) => c.op === 'message'), false);
 }));
 
