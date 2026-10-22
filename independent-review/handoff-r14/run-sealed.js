@@ -165,10 +165,20 @@ function prepareEnv(runtime, box) {
   process.env.CONTROL_SECRET = '';
   process.env.PORT = '0';
   writeControl(box.control);
-  const link = path.join(runtime, 'statePresend');
-  if (!fs.existsSync(link)) {
-    fs.symlinkSync(path.join(runtime, '..', '02_statePresend'), link);
+  const stateDir = path.join(runtime, 'statePresend');
+  const stateMarker = path.join(stateDir, 'presendMega.js');
+  let stateIsReal = false;
+  try {
+    stateIsReal = fs.existsSync(stateMarker) && !fs.lstatSync(stateDir).isSymbolicLink();
+  } catch (_) {
+    stateIsReal = false;
   }
+  if (!stateIsReal) {
+    fs.rmSync(stateDir, { recursive: true, force: true });
+    fs.cpSync(path.join(runtime, '..', '02_statePresend'), stateDir, { recursive: true });
+  }
+  const nested = path.join(runtime, '01_runtime');
+  if (!fs.existsSync(nested)) fs.symlinkSync(runtime, nested);
 }
 
 function loadRuntime(runtime) {
@@ -529,10 +539,12 @@ function applyPrelude(world, turn, turnIndex) {
   }
   if (turn.removeNote) world.parts = world.parts.filter((p) => String(p.part_type || '') !== 'note');
   if (turn.addHumanReply) {
-    world.parts.push(humanComment(Math.floor(Date.now() / 1000)));
+    world.parts.push(humanComment(Math.floor(Date.now() / 1000) + 20));
   }
   if (turnIndex > 0 && turn.topic !== 'conversation.admin.noted') {
-    const created = world.created + 100 + turnIndex;
+    // Later customer text must sort after the assignment part, which is stamped
+    // when the write is accepted. An equal timestamp is not "after".
+    const created = Math.floor(Date.now() / 1000) + 30 + turnIndex;
     world.parts.push(userPart(turn.text, created, turn.contactName || world.name, turn.email || world.email));
     if (turn.contactName) world.name = turn.contactName;
     if (turn.email) world.email = turn.email;
