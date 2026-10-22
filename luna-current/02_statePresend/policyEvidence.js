@@ -98,12 +98,13 @@ function clientTextsOf(messages) {
   return (messages || []).filter((m) => m && (m.role === 'client' || m.role === 'user')).map((m) => m.text || '');
 }
 
-const CONCEPT_RE = /(daily\s+drawdown|daily\s+loss(?:\s+limit)?|\bdll\b|max(?:imum)?\s+drawdown|max(?:imum)?\s+loss(?:\s+limit)?|\bmll\b)/gi;
+const CONCEPT_RE = /(daily[\s-]+drawdown|daily[\s-]+loss(?:[\s-]+limit)?|\bd\.?\s*l\.?\s*l\.?\b|max(?:imum)?[\s-]+drawdown|max(?:imum)?[\s-]+loss(?:[\s-]+limit)?(?!\s+allowed)|\bm\.?\s*l\.?\s*l\.?\b)/gi;
 
 function conceptId(phrase) {
-  const p = String(phrase || '');
-  if (/daily|\bdll\b/i.test(p)) return 'dll';
-  if (/max|\bmll\b/i.test(p)) return 'mll';
+  const p = String(phrase || '').toLowerCase();
+  const compact = p.replace(/[^a-z]/g, '');
+  if (compact === 'dll' || /daily/.test(p)) return 'dll';
+  if (compact === 'mll' || /max/.test(p)) return 'mll';
   return '';
 }
 
@@ -112,8 +113,36 @@ function conceptBefore(text, index) {
   let last = '';
   let match;
   const re = new RegExp(CONCEPT_RE.source, 'gi');
-  while ((match = re.exec(window))) last = match[1];
+  while ((match = re.exec(window))) last = match[1] || match[0];
   return conceptId(last);
+}
+
+// The nearest limit label wins, before or after the figure. DLL, daily loss
+// limit, and daily drawdown are one concept. MLL, max loss limit, and max
+// drawdown are the other. An equal distance keeps the label before the figure,
+// so "DLL 5%/3%, MLL 8%" leaves 3% on DLL.
+function conceptAround(text, index) {
+  const src = String(text || '');
+  const start = Math.max(0, index - 160);
+  const end = Math.min(src.length, index + 80);
+  const window = src.slice(start, end);
+  const re = new RegExp(CONCEPT_RE.source, 'gi');
+  let best = '';
+  let bestDist = Infinity;
+  let bestBefore = false;
+  let match;
+  while ((match = re.exec(window))) {
+    const at = start + match.index;
+    const matchEnd = at + match[0].length;
+    const before = matchEnd <= index;
+    const dist = before ? index - matchEnd : at - index;
+    if (dist < bestDist || (dist === bestDist && before && !bestBefore)) {
+      bestDist = dist;
+      best = match[1] || match[0];
+      bestBefore = before;
+    }
+  }
+  return conceptId(best);
 }
 
 function percentSpans(text) {
@@ -183,19 +212,18 @@ function evidenceHasRatio(evidence, value) {
   return hits;
 }
 
-function conceptMatches(draftConcept, evidence, indexes) {
+function conceptMatches(draftConcept, evidence, indexes, read) {
+  const conceptAt = read || conceptBefore;
   if (!indexes.length) return false;
-  if (!draftConcept) {
-    return indexes.some((index) => conceptBefore(evidence, index) === '');
-  }
-  return indexes.some((index) => conceptBefore(evidence, index) === draftConcept);
+  if (!draftConcept) return indexes.some((index) => conceptAt(evidence, index) === '');
+  return indexes.some((index) => conceptAt(evidence, index) === draftConcept);
 }
 
 /**
  * Every percent, currency amount, and ratio in a public body must appear in
- * the evidence and, when either side names daily drawdown / DLL or max
- * drawdown / MLL, that concept must be the same one. daily drawdown and daily
- * loss are DLL. max drawdown and max loss are MLL.
+ * the evidence and, when either side names a limit, that concept must be the
+ * same one. DLL, daily loss limit, and daily drawdown are one concept. MLL,
+ * max loss limit, and max drawdown are the other.
  * @returns {string[]}
  */
 function unsupportedPublicFigures(draft, evidenceText) {
@@ -203,18 +231,18 @@ function unsupportedPublicFigures(draft, evidenceText) {
   const bad = [];
   for (const span of percentSpans(draft)) {
     const hits = evidenceHasPercent(ev, span.value);
-    const concept = conceptBefore(draft, span.index);
-    if (!hits.length || !conceptMatches(concept, ev, hits)) bad.push(span.raw);
+    const concept = conceptAround(draft, span.index);
+    if (!hits.length || !conceptMatches(concept, ev, hits, conceptAround)) bad.push(span.raw);
   }
   for (const span of moneySpans(draft)) {
     const hits = evidenceHasMoney(ev, span.value, span.unit);
     const concept = conceptBefore(draft, span.index);
-    if (!hits.length || !conceptMatches(concept, ev, hits)) bad.push(span.raw);
+    if (!hits.length || !conceptMatches(concept, ev, hits, conceptBefore)) bad.push(span.raw);
   }
   for (const span of ratioSpans(draft)) {
     const hits = evidenceHasRatio(ev, span.value);
     const concept = conceptBefore(draft, span.index);
-    if (!hits.length || !conceptMatches(concept, ev, hits)) bad.push(span.raw);
+    if (!hits.length || !conceptMatches(concept, ev, hits, conceptBefore)) bad.push(span.raw);
   }
   return T.uniq(bad);
 }

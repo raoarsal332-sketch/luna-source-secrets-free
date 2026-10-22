@@ -2950,6 +2950,9 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     if (fixedMessageHandoff.isApprovedFaqAnswer(asked, body)) {
       return postReply(conversationId, 'comment', fixedMessageHandoff.approvedFaqCustomerBody(asked), { verbatim: true });
     }
+    if (fixedMessageHandoff.isUniqueFaqArticle(asked, body)) {
+      return postReply(conversationId, 'comment', fixedMessageHandoff.uniqueRankedFaqArticle(asked), { verbatim: true });
+    }
   }
   // Soft dedupe: never post the same public bot body twice in a row (identity asks etc.)
   try {
@@ -4023,6 +4026,7 @@ const handleWebhook = async (req, res) => {
         !fixedMessageHandoff.isAccountNumberQuestion(ownText)
       ) {
         const seat = String((owedNow && owedNow.assigneeId) || lost.assigneeId || recoveredOwn.assigneeId || handoffAssigneeId || '');
+        const requestText = fixedMessageHandoff.handoffRequestText(parts);
         const completion = owedNow && owedNow.message
           ? {
               action: 'fixed_message',
@@ -4033,7 +4037,7 @@ const handleWebhook = async (req, res) => {
             }
           : fixedMessageHandoff.decide({
           path: 'recovery',
-          latestText: ownText,
+          latestText: requestText || ownText,
           parts: (parts || []).filter((p) => {
             const pt = String((p && p.part_type) || '');
             return pt !== 'assignment' && pt !== 'assign';
@@ -4342,6 +4346,12 @@ const handleWebhook = async (req, res) => {
         await postClientCommentOnce(conversationId, challengeClarifier, latestUser, clientName);
         return res.sendStatus(200);
       }
+      const uniqueFaqBody = fixedMessageHandoff.uniqueRankedFaqArticle(text);
+      if (uniqueFaqBody) {
+        console.log('WELCOME_FAQ kb answer', conversationId);
+        await postClientCommentOnce(conversationId, uniqueFaqBody, latestUser, clientName);
+        return res.sendStatus(200);
+      }
     }
 
     // Behavior locks v2: spread test account (direct reply, no escalate)
@@ -4542,6 +4552,23 @@ const handleWebhook = async (req, res) => {
       if (!imgParts) {
         console.log('IMAGE_LOAD_NONE , escalate path preferred if model unsure', conversationId);
       }
+    }
+
+    if (fixedMessageHandoff.isHumanAgentRequest(text)) {
+      await commitFixedMessageHandoff({
+        path: 'welcome',
+        conversationId,
+        full,
+        parts,
+        latestUser,
+        text,
+        problem: text,
+        clientName,
+        liveAgent: true,
+        actionNeeded: 'Please take this conversation.',
+      });
+      console.log('FIXED_HANDOFF human request before model', conversationId);
+      return res.sendStatus(200);
     }
 
     /* LUNA_TOOLS_V1:BEGIN:runChat */
@@ -4940,6 +4967,12 @@ const handleWebhook = async (req, res) => {
         await postClientCommentOnce(conversationId, emptyClarifier, latestUser, clientName);
         return res.sendStatus(200);
       }
+      const emptyFaq = fixedMessageHandoff.uniqueRankedFaqArticle(text);
+      if (emptyFaq) {
+        console.log('WELCOME_FAQ kb answer', conversationId);
+        await postClientCommentOnce(conversationId, emptyFaq, latestUser, clientName);
+        return res.sendStatus(200);
+      }
       console.log('SKIP empty reply body', conversationId);
       return res.sendStatus(200);
     }
@@ -5271,6 +5304,12 @@ const handleWebhook = async (req, res) => {
       if (heldClarifier) {
         console.log('WELCOME_FAQ clarifier', conversationId);
         await postClientCommentOnce(conversationId, heldClarifier, latestUser, clientName);
+      } else {
+        const heldFaq = fixedMessageHandoff.uniqueRankedFaqArticle(text);
+        if (heldFaq) {
+          console.log('WELCOME_FAQ kb answer', conversationId);
+          await postClientCommentOnce(conversationId, heldFaq, latestUser, clientName);
+        }
       }
     }
     return res.sendStatus(200);

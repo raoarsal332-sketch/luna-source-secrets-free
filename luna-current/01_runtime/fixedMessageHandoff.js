@@ -492,6 +492,29 @@ function isPureHandoff(text, lang) {
   return stripHandoffTokens(text, lang).length < 28;
 }
 
+// Credential text is not part of the ask. A password attached to a human
+// request must not turn the request into a normal model reply.
+function handoffDetectionText(text) {
+  return redactCredentials(text)
+    .replace(/\b(?:password|passcode|passphrase|passwd|pwd|pass|otp|pin|token|secret)\b/gi, ' ')
+    .replace(/\[secret\]/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isHumanAgentRequest(text) {
+  const raw = String(text || '').trim();
+  if (!raw || isAccountNumberQuestion(raw) || isAssistantIdentityQuestion(raw)) return false;
+  if (isPasswordPolicyQuestion(raw) || isLegitimateClarification(raw)) return false;
+  const lang = detectLanguage(raw);
+  const detected = handoffDetectionText(raw);
+  if (!detected) return false;
+  if (isPureHandoff(detected, lang) || isPureLiveAgentAsk(detected)) return true;
+  if (isPureHandoff(raw, lang) || isPureLiveAgentAsk(raw)) return true;
+  if (!(isStructuralHandoffAsk(detected, lang) || isStructuralHandoffAsk(raw, lang))) return false;
+  return stripHandoffTokens(detected, lang).length < 28;
+}
+
 function isVagueEnglish(text) {
   const t = String(text || '').trim();
   if (!t) return true;
@@ -651,7 +674,9 @@ function decide(input) {
   const text = String(src.latestText || '');
   const parts = src.parts || [];
   const path = src.path || 'welcome';
-  const lang = detectLanguage(text);
+  // A password is not the language. Detect the request after the secret is removed.
+  const humanRequest = isHumanAgentRequest(text);
+  const lang = detectLanguage((humanRequest && handoffDetectionText(text)) || text);
   // An account-number question is answered on the normal path. This is before
   // ownership silence and before the force flag, so recovery, missed
   // escalation, and a human assignee cannot turn it into the fixed line or
@@ -720,7 +745,9 @@ function decide(input) {
   // Vague text, an identity supply, and a real handoff ask still follow force.
   const requestedForce = !!src.force || path !== 'welcome';
   const force = requestedForce && !isKnowledgeQuestion(text);
-  if (!force) {
+  // A human-agent request is a handoff on every turn, including after a prior
+  // bot reply. The locked line is chosen from this request, before any model reply.
+  if (!force && !isHumanAgentRequest(text)) {
     if (arsalSpoke(parts, src.botId)) {
       return {
         action: 'route_normal',
@@ -1558,6 +1585,35 @@ function ambiguousChallengeClarifier(text) {
   return CHALLENGE_CLARIFIER;
 }
 
+// A unique FAQ rank is the article. A tie stays the clarifier. Silence is not
+// an answer on the welcome path or on a later turn.
+function uniqueRankedFaqArticle(text) {
+  const raw = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!raw || isHumanAgentRequest(raw) || isAccountNumberQuestion(raw)) return '';
+  if (isPasswordPolicyQuestion(raw) || isLegitimateClarification(raw) || isWelcomeKbFigureQuestion(raw)) return '';
+  if (ambiguousChallengeClarifier(raw)) return '';
+  if (!hasInterrogative(raw)) return '';
+  try {
+    const faq = require('./faq-kb');
+    if (!faq || typeof faq.rankArticles !== 'function' || typeof faq.selectApprovedAnswer !== 'function') return '';
+    const ranked = faq.rankArticles(raw);
+    const top = ranked[0];
+    const second = ranked[1];
+    if (!top) return '';
+    if (second && Number(second.score) === Number(top.score)) return '';
+    const hit = faq.selectApprovedAnswer(raw);
+    return hit && hit.body ? String(hit.body).trim() : '';
+  } catch (_) {
+    return '';
+  }
+}
+
+function isUniqueFaqArticle(question, body) {
+  const article = uniqueRankedFaqArticle(question);
+  if (!article) return false;
+  return String(body || '').replace(/\s+/g, ' ').trim() === article.replace(/\s+/g, ' ').trim();
+}
+
 function approvedFaqCustomerBody(text) {
   if (!isWelcomeKbFigureQuestion(text)) return '';
   try {
@@ -1714,6 +1770,18 @@ function customerBody(part) {
   return stripHtml(part.body || '').replace(/\s+/g, ' ').trim();
 }
 
+// The original human-agent request, not a later turn. Lost-state completion
+// re-detects the locked line from this text after the op store is gone.
+function handoffRequestText(parts) {
+  const list = Array.isArray(parts) ? parts : [];
+  for (const part of list) {
+    const said = customerBody(part);
+    if (!said || isAccountNumberQuestion(said)) continue;
+    if (isHumanAgentRequest(said)) return said;
+  }
+  return '';
+}
+
 /**
  * The op store can be gone. Our assignment part, with no later comment from us
  * and no later human comment, still owes the fixed line. The internal note is
@@ -1783,7 +1851,11 @@ function activeOwedFixedLine(src) {
   const live = liveAdminAssignee(o.full);
   const landed = fromParts.owed || (!!assigneeId && live === assigneeId && !!rec);
   if (!landed || (!rec && !fromParts.owed)) return null;
-  const message = fixedMessageFor(detectLanguage(fromParts.priorText || o.latestText || ''));
+  const requestText = handoffRequestText(parts);
+  const languageSource = requestText
+    ? handoffDetectionText(requestText) || requestText
+    : fromParts.priorText || o.latestText || '';
+  const message = fixedMessageFor(detectLanguage(languageSource));
   if (!Object.values(FIXED_MESSAGES).includes(message)) return null;
   return { message, assigneeId, priorText: fromParts.priorText || '' };
 }
@@ -1891,6 +1963,8 @@ module.exports = {
   isAccountNumberQuestion,
   isAssistantIdentityQuestion,
   isPureLiveAgentAsk,
+  isHumanAgentRequest,
+  handoffRequestText,
   isExactAllowedTemplate,
   isTerminalHedge,
   isLegitimateClarification,
@@ -1912,6 +1986,8 @@ module.exports = {
   plainFaqCustomerLine,
   isWelcomeKbFigureQuestion,
   ambiguousChallengeClarifier,
+  uniqueRankedFaqArticle,
+  isUniqueFaqArticle,
   CHALLENGE_CLARIFIER,
   approvedFaqCustomerBody,
   isApprovedFaqAnswer,
