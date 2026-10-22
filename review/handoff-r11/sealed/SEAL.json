@@ -1,0 +1,19 @@
+{
+  "sealed_before_execution": true,
+  "files": {
+    "cases.json": "60bfd601725cfcba94223460a683d6715c137c3cbda303852ee8092c6235aea3",
+    "evaluate.js": "c9b2f6bec5e6c8528a779cccee51ca30e82d6da06e39d0ca833db51333205d83",
+    "generate-cases.js": "778cd295e97afcf92b7e80155947995e891c8639c7b504f329d8468448c38e2e",
+    "worker.js": "b5c3f88f4ac082a9657ca0b7626c0431abbe12e230a0fc8692d563364a7388bf"
+  },
+  "counts": {
+    "total": 366,
+    "lanes": {
+      "review": 242,
+      "recovery": 14,
+      "corpus": 110
+    }
+  },
+  "frozen_candidate": "1a5c35f754d5d5e80336a24b7371676e52ce9bf6",
+  "note": "Hash recorded before any sealed execution. Later result files are not part of this seal."
+}
