@@ -148,7 +148,8 @@ function respond(config) {
   const data = config.data || {};
   const kind = String(data.message_type || '');
   const script = (conv && conv.__script) || {};
-  const mode = script[kind] || 'ok';
+  // Cases name the assignment script "assign". Intercom's body uses message_type "assignment".
+  const mode = (kind === 'assignment' ? (script.assign || script.assignment) : script[kind]) || 'ok';
   const record = { method, url, data, status: 0, response: null };
   calls.push(record);
 
@@ -278,7 +279,19 @@ console.info = () => {};
 console.warn = () => {};
 console.error = () => {};
 
-const runtime = require(runtimeIndex);
+let runtime;
+try {
+  runtime = require(runtimeIndex);
+} catch (err) {
+  process.stdout.write(JSON.stringify({
+    id: spec.id,
+    calls: [],
+    modelPrompts: [],
+    tripwire,
+    error: String(err && err.stack || err),
+  }));
+  process.exit(0);
+}
 const handleWebhook = runtime.handleWebhook;
 
 let clock = Math.floor(Date.now() / 1000) - 50;

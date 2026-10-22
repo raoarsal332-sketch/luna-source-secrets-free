@@ -79,9 +79,11 @@ function score(spec, raw) {
   }
   if (expect.line && posts.length) {
     const want = expect.line;
-    const got = plain[0];
-    if (got !== want) reasons.push('line-mismatch');
-    if (expect.lineExact && bodies[0] !== want) reasons.push('line-not-exact');
+    const rawHit = bodies[0] === want;
+    const plainHit = plain[0] === want;
+    // A byte-exact raw body is the line, even when HTML whitespace folding would differ.
+    if (!rawHit && !plainHit) reasons.push('line-mismatch');
+    if (expect.lineExact && !rawHit) reasons.push('line-not-exact');
   } else if (expect.line && !posts.length && expect.customerPosts === 1) {
     reasons.push('line-missing');
   }
