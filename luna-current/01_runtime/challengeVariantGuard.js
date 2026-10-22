@@ -8,6 +8,10 @@ const COMPARISON_RE = /\b(?:difference|compare|versus|vs\.?|both|all challenges)
 const MULTI_REQUEST_RE = /\b(?:and|also|plus)\b/i;
 const HUMAN_RE = /\b(?:live agent|human agent|real person|speak to (?:an? )?agent|talk to (?:an? )?agent)\b/i;
 
+function isTerminalNumberHedge(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim() === "I can't confirm that figure from the approved details, so I won't guess a number.";
+}
+
 // These are factual safety fallbacks, not scripts. A valid model-written reply is
 // preserved so Luna can respond naturally from the full conversation context.
 const CLARIFICATION_VARIANTS = [
@@ -79,6 +83,7 @@ function shouldClarifyTwoStep(latestText, priorClientTexts = []) {
 }
 
 function clarifyTwoStepReply(latestText, priorClientTexts, draft, priorBotTexts = [], conversationId = '') {
+  if (isTerminalNumberHedge(draft)) return draft;
   if (!shouldClarifyTwoStep(latestText, priorClientTexts)) return draft;
   const isLegacyCanned = LEGACY_CANNED_REPLIES.has(String(draft || '').trim());
   if (isUsefulClarification(draft) && !isLegacyCanned) return draft;
@@ -90,6 +95,7 @@ function clarifyTwoStepReply(latestText, priorClientTexts, draft, priorBotTexts 
 }
 
 function explainTwoStepFollowup(latestText, priorBotTexts = [], draft, conversationId = '') {
+  if (isTerminalNumberHedge(draft)) return draft;
   if (!MEANING_RE.test(String(latestText || '').trim())) return draft;
   const lastBot = String(priorBotTexts.slice(-1)[0] || '');
   if (!/2[\s-]*step/i.test(lastBot) || !/lite/i.test(lastBot) || !/free\s*retry/i.test(lastBot)) return draft;
