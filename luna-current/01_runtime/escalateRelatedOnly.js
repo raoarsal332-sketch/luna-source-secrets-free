@@ -1,4 +1,9 @@
-const { isGreetingOrSmallTalk } = require('./statePresend/textUtils');
+let isGreetingOrSmallTalk = function () { return false; };
+try {
+  ({ isGreetingOrSmallTalk } = require('./statePresend/textUtils'));
+} catch (_) {
+  ({ isGreetingOrSmallTalk } = require('../02_statePresend/textUtils'));
+}
 /**
  * Luna , escalate awaiting-teammate RELATED-only status hold.
  * Engine target: fresh-2026-09-15-escalate-related-only-v1
@@ -181,7 +186,7 @@ function isClearKbFaqAsk(text) {
 
   // General payout minimum / schedule FAQ (not "where is MY payout")
   if (
-    /\b(payout\s*min(imum)?|minimum\s*payout|how\s+(much|long).{0,40}payout|payout\s*(time|schedule|policy))\b/.test(
+    /\b(payouts?\s*min(imum)?|minimum\s*payouts?|how\s+(much|long).{0,60}payouts?|payouts?\s*(?:time|schedule|policy|take))\b/.test(
       q
     ) &&
     !/\b(my\s+payout|where\s+is\s+my|still\s+waiting\s+on\s+my)\b/.test(q)
@@ -245,6 +250,10 @@ function isClearKbFaqAsk(text) {
 function isStatusPing(text) {
   const q = normalizeText(text);
   if (!q) return false;
+  // KB intent wins. "Is news trading allowed?" and "How long do payouts take?"
+  // are FAQ questions. A status ping is only short update/status phrasing with
+  // no FAQ intent.
+  if (isClearKbFaqAsk(q)) return false;
   return (
     /\b(any\s+update|updates?|news\??|how\s+long|still\s+waiting|waiting\s+for|eta|when\s+will|when\s+can|status|progress|heard\s+back|follow\s*up|following\s*up|checking\s+in|check\s*in)\b/.test(
       q
@@ -571,6 +580,37 @@ function applyTeammateReplyClear(state, parts, ids) {
 // Convenience: one-shot evaluate from ticket state + user text
 // ---------------------------------------------------------------------------
 
+function assigneeIdFrom(state, ids) {
+  const bag = ids && typeof ids === 'object' ? ids : {};
+  const conv = bag.conversation || bag.full || null;
+  const candidates = [
+    bag.assigneeId,
+    bag.adminAssigneeId,
+    bag.admin_assignee_id,
+    conv && conv.admin_assignee_id,
+    conv && conv.assignee && conv.assignee.id,
+    state && state.adminAssigneeId,
+    state && state.admin_assignee_id,
+  ];
+  for (const c of candidates) {
+    if (c == null) continue;
+    const s = String(c);
+    if (s !== '') return s;
+  }
+  return '';
+}
+
+function assigneeIsHumanOwner(assigneeId, ids) {
+  const id = String(assigneeId || '');
+  if (!id || id === '0') return false;
+  const bag = ids && typeof ids === 'object' ? ids : {};
+  const arsal = String(bag.arsalId || bag.ARSAL_ID || '');
+  const elite = String(bag.eliteAiId || bag.ELITE_AI_ID || '');
+  if (arsal && id === arsal) return false;
+  if (elite && id === elite) return false;
+  return true;
+}
+
 function evaluateFromConvState(state, userText, parts, ids) {
   const st = state || {};
   // Clear first if teammate already replied
@@ -584,6 +624,38 @@ function evaluateFromConvState(state, userText, parts, ids) {
       log: 'ESCALATE gate cleared (teammate public reply)',
       state: st,
       cleared: true,
+    };
+  }
+  let handoff = null;
+  try {
+    handoff = require('./fixedMessageHandoff');
+  } catch (_) {
+    handoff = null;
+  }
+  if (handoff && handoff.isAccountNumberQuestion(userText)) {
+    return {
+      action: 'FALLTHROUGH',
+      reason: 'account_number_question',
+      related: false,
+      clearFaq: false,
+      log: 'ESCALATE fallthrough account-number question',
+      state: st,
+      cleared: false,
+    };
+  }
+  // A status ping while a human or another assignee owns the conversation stays
+  // silent. Bot seats (Arsal / Elite) do not count. Callers that omit the
+  // assignee keep the previous STATUS_ONLY behavior.
+  const assigneeId = assigneeIdFrom(st, ids);
+  if (assigneeIsHumanOwner(assigneeId, ids) && isStatusPing(userText)) {
+    return {
+      action: 'SKIP',
+      reason: 'assignee_owns_status_ping',
+      related: true,
+      clearFaq: false,
+      log: 'ESCALATE skip status ping (assignee owns conversation)',
+      state: st,
+      cleared: false,
     };
   }
   const decision = decideEscalateAwaitingGate({

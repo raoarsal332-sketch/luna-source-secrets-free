@@ -1,11 +1,13 @@
 'use strict';
 const fs = require('fs');
+const path = require('path');
 const axios = require('axios');
 
 const FAQ_MD_PATHS = [
   process.env.FUNDEDELITE_FAQ_PATH || '',
   '/home/ubuntu/fundedelite-faqs.md',
   '/workspace/fundedelite-faqs.md',
+  path.join(__dirname, 'fundedelite-faqs.md'),
 ].filter(Boolean);
 
 const OFFICIAL_FAQ_HOME = 'https://faq.fundedelite.com/en/';
@@ -231,9 +233,28 @@ function shouldRetrieveOfficialFaq(clientText) {
  * Retrieve top FAQ snippets for a client question.
  * Uses synced official FAQ markdown + live fetch of matched article URLs.
  */
+function rankArticles(clientText) {
+  const tokens = tokenize(clientText);
+  return getArticles()
+    .map((a) => ({ a, score: scoreArticle(a, tokens, clientText) }))
+    .filter((x) => x.score >= 4)
+    .sort((x, y) => y.score - x.score);
+}
+
+// The top local article from the same ranking retrieveOfficialFaqContext uses.
+// The body is the synced answer. No figure is added.
+function selectApprovedAnswer(clientText) {
+  const ranked = rankArticles(clientText);
+  if (!ranked.length) return null;
+  const top = ranked[0];
+  let body = String((top.a && top.a.body) || '').trim();
+  if (!body) return null;
+  if (body.length > 1600) body = body.slice(0, 1600) + '…';
+  return { title: top.a.title, url: top.a.url, body, score: top.score };
+}
+
 async function retrieveOfficialFaqContext(clientText, opts) {
   const limit = (opts && opts.limit) || 4;
-  const tokens = tokenize(clientText);
   const articles = getArticles();
   if (!articles.length) {
     return {
@@ -245,11 +266,7 @@ async function retrieveOfficialFaqContext(clientText, opts) {
         OFFICIAL_SITE,
     };
   }
-  const ranked = articles
-    .map((a) => ({ a, score: scoreArticle(a, tokens, clientText) }))
-    .filter((x) => x.score >= 4)
-    .sort((x, y) => y.score - x.score)
-    .slice(0, limit);
+  const ranked = rankArticles(clientText).slice(0, limit);
 
   if (!ranked.length) {
     return {
@@ -310,6 +327,8 @@ function reloadFaqKb() {
 
 module.exports = {
   retrieveOfficialFaqContext,
+  selectApprovedAnswer,
+  rankArticles,
   shouldRetrieveOfficialFaq,
   reloadFaqKb,
   getArticles,
