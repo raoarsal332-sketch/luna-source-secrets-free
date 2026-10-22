@@ -264,6 +264,15 @@ const FIN_RECENT_OWNING_SEC = 180;
 const FIN_FRESH_CONV_SEC = 120;
 
 function clientRequestedLiveAgent(text) {
+  let guard = null;
+  try {
+    guard = require('./assistantIdentityGuard');
+  } catch (_) {
+    guard = null;
+  }
+  if (guard && typeof guard.isDirectIdentityQuestion === 'function' && guard.isDirectIdentityQuestion(text)) {
+    return false;
+  }
   const t = normalizeText(text);
   if (!t) return false;
 

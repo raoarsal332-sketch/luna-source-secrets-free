@@ -127,6 +127,65 @@ function warn(code, detail) {
   return { code, detail };
 }
 
+// Digit runs that are not a second trading account. A real order id is an
+// FE-prefixed token. Digits inside a receipt URL are part of that URL.
+// login / acct / account / mt5 / mt4 / id / user / no glued to digits are
+// account numbers, including MT511261194 (the 5 belongs to the prefix).
+// Those stay foreign unless the customer stated that exact digit run.
+const ACCOUNT_LABEL_RE = /\b(?:login|account|acct|mt5|mt4|user|id|no)(\d{4,12})\b/gi;
+
+function accountLabeledDigits(text) {
+  const out = [];
+  const s = String(text || '');
+  const re = new RegExp(ACCOUNT_LABEL_RE.source, 'gi');
+  let m;
+  while ((m = re.exec(s))) out.push(m[1]);
+  return out;
+}
+
+// Digits glued to an account prefix are account numbers. MT50123456 is the
+// login 50123456 with the platform prefix, so a stated 50123456 covers that
+// token. MT511261194 is not covered by a different number.
+function uncoveredAccountLabels(draft, stated) {
+  const out = [];
+  const re = new RegExp(ACCOUNT_LABEL_RE.source, 'gi');
+  let m;
+  while ((m = re.exec(String(draft || '')))) {
+    const glued = m[1];
+    const token = m[0];
+    const fullRun = (token.match(/(\d{4,12})$/) || [])[1] || glued;
+    const exact = stated.has(glued) || stated.has(fullRun) || stated.has(token);
+    const sameLogin = [...stated].some((n) => token.toLowerCase().endsWith(String(n).toLowerCase()));
+    if (exact || sameLogin) continue;
+    out.push(glued);
+    if (fullRun !== glued) out.push(fullRun);
+  }
+  return out;
+}
+
+function collectOrderShapeRuns(text, into) {
+  const s = String(text || '');
+  let m;
+  const feRe = /\bFE-?(\d{5,12})\b/gi;
+  while ((m = feRe.exec(s))) into.add(m[1]);
+  const urlRe = /https?:\/\/[^\s<>"')]+/gi;
+  while ((m = urlRe.exec(s))) {
+    const runs = m[0].match(/\d{5,12}/g) || [];
+    for (const n of runs) into.add(n);
+  }
+}
+
+function exemptStructuralNumberRuns(draft, clientTexts) {
+  const out = new Set();
+  collectOrderShapeRuns(draft, out);
+  for (const text of clientTexts || []) {
+    collectOrderShapeRuns(text, out);
+    for (const n of T.extractAccountNumbers(text)) out.add(n);
+    for (const n of accountLabeledDigits(text)) out.add(n);
+  }
+  return out;
+}
+
 /**
  * Main entry.
  */
@@ -251,9 +310,22 @@ function validate(draft, ctx) {
   }
   const known = state.known_details || {};
   if (known.account_number) {
-    const nums = T.extractAccountNumbers(d).filter((n) => n !== known.account_number);
-    const supported = new Set(T.extractAccountNumbers(messages.map((m) => m.text).join(' ')));
-    const foreign = nums.filter((n) => !supported.has(n));
+    const clientTexts = messages.filter((m) => m.role === 'client').map((m) => m.text);
+    const supported = new Set(
+      T.extractAccountNumbers(messages.map((m) => m.text).join(' '))
+        .concat(clientTexts.flatMap((text) => accountLabeledDigits(text)))
+    );
+    const nums = [...new Set(
+      T.extractAccountNumbers(d)
+        .concat(uncoveredAccountLabels(d, supported))
+        .filter((n) => n !== known.account_number && !supported.has(n))
+    )];
+    // FE order ids and receipt-URL digit runs are not other accounts.
+    // Account-prefix digits and any other number count only when the customer
+    // stated that exact run. A bare or glued account the customer never stated
+    // is still a foreign account.
+    const exempt = exemptStructuralNumberRuns(d, clientTexts);
+    const foreign = nums.filter((n) => !supported.has(n) && !exempt.has(n));
     if (foreign.length) hardFails.push(fail(HARD.CONVERSATION_CONTRADICTION, `Mentions account ${foreign.join(', ')} but the client's account is ${known.account_number}.`, `The client's account number is ${known.account_number}. Do not mention any other account number.`));
   }
   for (const c of state.recent_corrections || []) {
