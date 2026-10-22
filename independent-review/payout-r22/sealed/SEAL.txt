@@ -1,0 +1,31 @@
+sealed-set: independent-review/payout-r22/sealed/cases.json
+sha256: e1649c33dff0edae55b22b6b82893af58748dd27d0b23e46e615c475cc7f4a57
+count: 1470
+authored-before-candidate-execution: yes
+candidate-under-test: c283cfab43d75846c176f2efc07b3154a9176c61
+candidate-branch: cursor/t800-payout-r22-662e
+pr: 90
+note: Cases were written from the owner-final rules. The candidate was not executed to produce this file. Lock sentences are the approved delivery oracle. FAQ bodies are the baseline help articles. False claims, homonyms, benign probes, leaks, and path cases are newly authored.
+counts:
+  customer/bytes/forward 10
+  customer/bytes/status 13
+  customer/faq/faq 198
+  customer/hedge/homonym_assertion 24
+  customer/hedge/leak 24
+  customer/hedge/policy 304
+  customer/lock/lock 138
+  customer/pass/benign 72
+  customer/pass/homonym 108
+  defer/suppress/defer 18
+  fallback/hedge/policy 9
+  fallback/pass/benign 3
+  missing_verdict/fail_closed/missing_verdict 8
+  owner/bytes/forward 10
+  owner/bytes/status 13
+  owner/hedge/homonym_assertion 24
+  owner/hedge/leak 24
+  owner/hedge/policy 304
+  owner/lock/lock 138
+  owner/pass/homonym 12
+  retry/hedge/policy 9
+  retry/pass/benign 7
