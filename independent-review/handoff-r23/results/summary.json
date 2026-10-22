@@ -1,0 +1,70 @@
+{
+  "verdict": "NEEDS CHANGES",
+  "candidate": "b3398bbeb92149ddd386ccd9c1b1f97cb749573b",
+  "baselines": {
+    "r22": "998e9d5abdf48a35fdd4c4baa4718f20f5d2f217",
+    "r21": "49e500757ba0e76ba546217c00275f28f9fee86c"
+  },
+  "sealedCasesSha256": "412651bb53c4f38b0dec6e452fe5c7db94a208112312eff3be3d95774f9c76a8",
+  "sealedCommit": "ea625ff632f4e590c5f08bacc55332d76572124f",
+  "sealedTotal": 962,
+  "authorReportSha256": "8e36e934577af68d6b798d0f8af407887a7cc1a6ba3cb199acc76db9ffb45773",
+  "authorReportHashMatches": true,
+  "authorFileHashesMatch": true,
+  "tripwireFailures": 0,
+  "raw": {
+    "r23": { "pass": 898, "fail": 64 },
+    "r22": { "pass": 646, "fail": 316 },
+    "r21": { "pass": 658, "fail": 304 }
+  },
+  "candidateOnlyRegressions": [],
+  "asymmetricR23Fail": [
+    {
+      "id": "numbers-0034",
+      "r22": "pass",
+      "r21": "fail",
+      "classification": "oracle mismatch"
+    }
+  ],
+  "sharedOracleMisses": 63,
+  "gates": {
+    "product-critical": {
+      "count": 2,
+      "candidateOnly": 0,
+      "ids": ["numbers-0010", "numbers-0012"]
+    },
+    "leaks": {
+      "count": 1,
+      "candidateOnly": 0,
+      "ids": ["secrets-0033"]
+    },
+    "over-redaction": {
+      "count": 3,
+      "candidateOnly": 0,
+      "ids": ["numbers-0010", "numbers-0012", "secrets-0034"]
+    },
+    "duplicates": { "count": 0, "candidateOnly": 0, "ids": [] },
+    "recovery failures": { "count": 0, "candidateOnly": 0, "ids": [] },
+    "candidate-only regressions": { "count": 0, "ids": [] }
+  },
+  "oracleMismatchesExcluded": {
+    "count": 60,
+    "groups": {
+      "separator-draft-never-contained-50123456": 52,
+      "stub-replaced-by-faq-or-hedge": ["password-0051", "password-0052", "password-0053"],
+      "identity-posted-with-welcome-prefix": ["account-0010", "account-0011", "account-0012"],
+      "glued-digit-coverage-overclaim": ["numbers-0034"],
+      "ineligible-spread-withheld-account-line-posted": ["mt5-0021"]
+    }
+  },
+  "bucketsR23": {
+    "multilingual": "279/279",
+    "password": "50/53",
+    "numbers": "140/143",
+    "secrets": "35/89",
+    "recovery": "353/353",
+    "mt5": "24/25",
+    "faq": "8/8",
+    "account": "9/12"
+  }
+}
