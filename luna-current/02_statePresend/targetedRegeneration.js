@@ -32,26 +32,124 @@ const ASK_ITEM_RE = {
 // Sent instead of the generic checking-line when the client's own last message gives no
 // question or topic to work with at all (garbled/ambiguous input). Short, neutral, one ask.
 const CLARIFY_REPLY = 'Sorry, I want to make sure I get this right - could you tell me a bit more about what you mean?';
+const HEDGE_REPLY = "I can't confirm that figure from the approved details, so I won't guess a number.";
 
-/**
- * MISSED_QUESTION / WRONG_TOPIC reaching here means regeneration (if any ran) still
- * could not produce a compliant draft. Rather than always shipping the generic
- * "checking this now" line, tell clarify from escalate:
- *  - the client's last message has no extractable question/topic at all -> we do not
- *    understand it -> ask one short clarification (once; a repeat means escalate).
- *  - otherwise we understood the ask but cannot answer/comply -> hand off to a human via
- *    the engine's existing escalate path (same as MISSED_ESCALATION, reused, not duplicated).
- * Returns null for codes this distinction does not apply to (e.g. REPEATED_IMAGE_ASK,
- * which already has its own dedicated fix/hold handling above and below).
- */
+function lastClientText(opts) {
+  const state = opts && opts.ctx && opts.ctx.state;
+  return (state && state.last_client_message) || '';
+}
+
+function botOwnsConversation(opts) {
+  const ctx = (opts && opts.ctx) || {};
+  const id = ctx.assigneeId != null ? String(ctx.assigneeId) : '';
+  if (!id || id === '0') return true;
+  const bots = Array.isArray(ctx.botIds) ? ctx.botIds.map(String) : [];
+  return bots.indexOf(id) !== -1;
+}
+
+function isStatusPingOrFaq(text) {
+  let ero = null;
+  try {
+    ero = require('../01_runtime/escalateRelatedOnly');
+  } catch (_) {
+    ero = null;
+  }
+  if (!ero) return false;
+  if (typeof ero.isStatusPing === 'function' && ero.isStatusPing(text)) return true;
+  if (typeof ero.isClearKbFaqAsk === 'function' && ero.isClearKbFaqAsk(text)) return true;
+  return false;
+}
+
+function draftIsSpreadTemplate(text) {
+  let handoff = null;
+  try {
+    handoff = require('../01_runtime/fixedMessageHandoff');
+  } catch (_) {
+    handoff = null;
+  }
+  return !!(handoff && typeof handoff.isSpreadTemplateDraft === 'function' && handoff.isSpreadTemplateDraft(text));
+}
+
+function customerAskedSpread(text) {
+  try {
+    const gate = require('../01_runtime/spreadAskGate');
+    if (gate && typeof gate.isSpreadCheckAsk === 'function') return gate.isSpreadCheckAsk(text);
+  } catch (_) { /* strict gate unavailable */ }
+  return false;
+}
+
+function knowledgeUnanswerable(codes, opts) {
+  if (codes && codes.has && codes.has(presend.HARD.KNOWLEDGE_GAP_UNSAFE)) return true;
+  const knowledge = opts && opts.ctx && opts.ctx.knowledge;
+  const level = knowledge && knowledge.level;
+  return level === 'none' || level === 'conflicting';
+}
+
+function looksLikeOwnCase(text) {
+  return /\b(my\s+(?:payout|withdrawal)\s+(?:was|is|got)|i\s+was\s+breached|my\s+account\s+(?:was|is|got)\s+(?:disabled|breached|banned|rejected))\b/i.test(String(text || ''));
+}
+
+function isKbFaqQuestion(text) {
+  try {
+    const ero = require('../01_runtime/escalateRelatedOnly');
+    if (ero && typeof ero.isClearKbFaqAsk === 'function' && ero.isClearKbFaqAsk(text)) return true;
+  } catch (_) { /* FAQ list unavailable */ }
+  return /\b(?:drawdown|daily\s+loss|profit\s+target|leverage|holding\s+time|consistency|news\s+trading)\b/i.test(String(text || ''));
+}
+
+function isNegatedSpreadAsk(text) {
+  try {
+    const gate = require('../01_runtime/spreadAskGate');
+    return !!(gate && typeof gate.explain === 'function' && gate.explain(text).reason === 'negated-spread');
+  } catch (_) {
+    return false;
+  }
+}
+
+function legitimateClarifier(text) {
+  try {
+    const handoff = require('../01_runtime/fixedMessageHandoff');
+    return !!(handoff && typeof handoff.isLegitimateClarification === 'function' && handoff.isLegitimateClarification(text));
+  } catch (_) {
+    return false;
+  }
+}
+
+function faqAnswerShouldNotPromiseReview(draft, ctx) {
+  try {
+    const handoff = require('../01_runtime/fixedMessageHandoff');
+    if (handoff && typeof handoff.faqTeamReviewBlocked === 'function') {
+      return handoff.faqTeamReviewBlocked(lastClientText({ ctx }), draft);
+    }
+  } catch (_) {
+    /* handoff unavailable */
+  }
+  return false;
+}
+
 function decideFallbackIntent(codes, opts) {
   // A policy value contradicting the approved evidence is understood but unanswerable by the
   // bot: it must go to a teammate, never to the generic checking line and never as the wrong
-  // figure. Handled before the clarify/escalate split because the ask itself was understood.
-  if (codes.has(presend.HARD.UNSUPPORTED_NUMBER) || codes.has(presend.HARD.FORBIDDEN_DIAGNOSTIC_ACTION) || codes.has(presend.HARD.UNSUPPORTED_PROMISE)) return 'escalate';
+  // figure. An unsupported number, including a holding-time figure that survived regeneration,
+  // hedges instead. It must not open the fixed handoff line.
+  if (codes.has(presend.HARD.UNSUPPORTED_NUMBER)) {
+    if (botOwnsConversation(opts)) return 'hedge';
+    return 'unsupported-hold';
+  }
+  if (codes.has(presend.HARD.FORBIDDEN_DIAGNOSTIC_ACTION) || codes.has(presend.HARD.UNSUPPORTED_PROMISE)) {
+    return 'escalate';
+  }
   if (!codes.has(presend.HARD.MISSED_QUESTION) && !codes.has(presend.HARD.WRONG_TOPIC)) return null;
   const state = opts.ctx && opts.ctx.state;
   const lastClient = (state && state.last_client_message) || '';
+  // A non-answering FAQ draft regenerates earlier. If that still misses, hedge.
+  // Escalate only when the KB truly cannot answer, or the ask is the client's own case.
+  if (codes.has(presend.HARD.MISSED_QUESTION) && !codes.has(presend.HARD.MISSED_ESCALATION)) {
+    if (looksLikeOwnCase(lastClient) || knowledgeUnanswerable(codes, opts)) return 'escalate';
+    if (isKbFaqQuestion(lastClient) || isNegatedSpreadAsk(lastClient)) {
+      return botOwnsConversation(opts) ? 'faq-hedge' : 'faq-hold';
+    }
+  }
   const understood = T.extractQuestions(lastClient).length > 0 || T.extractTopics(lastClient).length > 0;
   if (understood) return 'escalate';
   const recentBotReplies = state && Array.isArray(state.last_bot_replies) ? state.last_bot_replies.slice() : [];
@@ -64,8 +162,42 @@ function decideFallbackIntent(codes, opts) {
  * Deterministic fallback when regeneration is unavailable or still fails.
  * Returns { body, send, reason }.
  */
+function accountQuestionAnswer(draft, opts) {
+  let handoff = null;
+  try {
+    handoff = require('../01_runtime/fixedMessageHandoff');
+  } catch (_) {
+    handoff = null;
+  }
+  if (!handoff || typeof handoff.isAccountNumberQuestion !== 'function') return null;
+  const state = opts && opts.ctx && opts.ctx.state;
+  const last = (state && state.last_client_message) || '';
+  if (!handoff.isAccountNumberQuestion(last)) return null;
+  const line = handoff.accountQuestionCustomerLine(last, draft);
+  if (!line || !String(line).trim()) return null;
+  return { body: String(line).trim(), send: true, reason: 'account-question-answer' };
+}
+
+function holdOrAccountAnswer(reason, draft, opts) {
+  const answered = accountQuestionAnswer(draft, opts);
+  if (answered) return answered;
+  return { body: '', send: false, reason: reason };
+}
+
 function safeFallback(draft, result, opts) {
   opts = opts || {};
+  if (String(draft || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY || String(T.stripHtml(draft) || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY) {
+    if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'unsupported-number-held' };
+    return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
+  }
+  // A real "which challenge do you mean" question is not an unsupported figure.
+  if (legitimateClarifier(draft) || legitimateClarifier(T.stripHtml(draft))) {
+    return {
+      body: String(T.stripHtml(draft) || draft).replace(/\s+/g, ' ').trim(),
+      send: true,
+      reason: 'challenge-clarifier',
+    };
+  }
   let body = T.stripHtml(draft);
   const codes = new Set(result.hardFails.map((f) => f.code));
 
@@ -86,9 +218,29 @@ function safeFallback(draft, result, opts) {
     try { body = opts.imageAskGuard.hookD(opts.conversationId, body); } catch (_) { /* ignore */ }
   }
 
-  // Missed human handoff: never send a normal/fallback reply — hold so the engine can escalate.
+  // A cleared or rejected draft must not become silence when the client asked
+  // for an account number. Prefer a usable draft, otherwise the MT5 fact line.
+  const accountAnswer = accountQuestionAnswer(body, opts);
+  if (accountAnswer) return accountAnswer;
+
+  // The spread template is not a promise and not a handoff. It is only for an
+  // eligible spread ask, decided from the customer's message.
+  const asked = lastClientText(opts);
+  if ((draftIsSpreadTemplate(draft) || draftIsSpreadTemplate(body)) && !customerAskedSpread(asked)) {
+    if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'spread-template-held' };
+    return { body: HEDGE_REPLY, send: true, reason: 'spread-template-not-asked' };
+  }
+
+  // Missed human handoff: hold so the engine can escalate, unless the client
+  // asked for an account number. That question gets a real answer, never silence.
   if (codes.has(presend.HARD.MISSED_ESCALATION)) {
-    return { body: '', send: false, reason: 'missed-escalation-held' };
+    return holdOrAccountAnswer('missed-escalation-held', body, opts);
+  }
+
+  // A FAQ answer that promises "the team will review" is not posted.
+  if (faqAnswerShouldNotPromiseReview(body, opts.ctx) || faqAnswerShouldNotPromiseReview(draft, opts.ctx)) {
+    if (!botOwnsConversation(opts)) return { body: '', send: false, reason: 'faq-team-review-held' };
+    return { body: HEDGE_REPLY, send: true, reason: 'faq-team-review-hedge' };
   }
 
   // Re-validate the stripped body with the same context; only accept if clean.
@@ -106,7 +258,11 @@ function safeFallback(draft, result, opts) {
   // clarify or an escalate is possible instead (Arsal requirement - see CLAUDE.md task notes).
   const intent = decideFallbackIntent(codes, opts);
   if (intent === 'clarify') return { body: CLARIFY_REPLY, send: true, reason: 'clarify-reply' };
-  if (intent === 'escalate') return { body: '', send: false, reason: 'needs-escalate' };
+  if (intent === 'hedge') return { body: HEDGE_REPLY, send: true, reason: 'unsupported-number-hedge' };
+  if (intent === 'faq-hedge') return { body: HEDGE_REPLY, send: true, reason: 'faq-miss-hedge' };
+  if (intent === 'unsupported-hold') return { body: '', send: false, reason: 'unsupported-number-held' };
+  if (intent === 'faq-hold') return { body: '', send: false, reason: 'faq-miss-held' };
+  if (intent === 'escalate') return holdOrAccountAnswer('needs-escalate', body, opts);
 
   // Unfixable: use the engine's safe fallback message if given (and not itself a
   // repeat of any recent reply), otherwise hold.
@@ -123,11 +279,11 @@ function safeFallback(draft, result, opts) {
     if (critical) {
       const fbCheck = presend.validate(opts.fallbackReply, opts.ctx || {});
       const stillBad = (fbCheck.hardFails || []).some((f) => f.code === presend.HARD.WRONG_TOPIC || f.code === presend.HARD.REPEATED_IMAGE_ASK || f.code === presend.HARD.MISSED_ESCALATION);
-      if (stillBad) return { body: '', send: false, reason: 'critical-unfixable-held' };
+      if (stillBad) return holdOrAccountAnswer('critical-unfixable-held', body, opts);
     }
     return { body: opts.fallbackReply, send: true, reason: 'fallback-reply' };
   }
-  return { body: '', send: false, reason: critical ? 'critical-unfixable-held' : 'unfixable-held' };
+  return holdOrAccountAnswer(critical ? 'critical-unfixable-held' : 'unfixable-held', body, opts);
 }
 
 // Keys processed recently (webhook redelivery protection). Cleared after RECENT_MS.
@@ -162,21 +318,67 @@ async function runWithRegeneration(p) {
   try {
     const results = [];
     let draft = p.draft;
+    if (String(draft || '').replace(/\s+/g, ' ').trim() === HEDGE_REPLY) {
+      if (!botOwnsConversation({ ctx: p.ctx })) {
+        return { body: '', send: false, attempts: 0, regenerated: false, results: [], finalReason: 'unsupported-number-held' };
+      }
+      return { body: HEDGE_REPLY, send: true, attempts: 0, regenerated: false, results: [], finalReason: 'unsupported-number-hedge' };
+    }
+    if (legitimateClarifier(draft)) {
+      return {
+        body: String(draft).replace(/\s+/g, ' ').trim(),
+        send: true,
+        attempts: 0,
+        regenerated: false,
+        results: [],
+        finalReason: 'challenge-clarifier',
+      };
+    }
     let attempts = 0;
     let regenerated = false;
     let result = presend.validate(draft, p.ctx);
     results.push(result);
-    while (!result.ok && attempts < maxRetries && typeof p.regenerate === 'function') {
+    while (
+      (!result.ok || faqAnswerShouldNotPromiseReview(draft, p.ctx)) &&
+      attempts < maxRetries &&
+      typeof p.regenerate === 'function'
+    ) {
       attempts += 1;
       let next = null;
       try { next = await p.regenerate(result.correctionInstruction, result.hardFails, p.ctx); } catch (_) { next = null; }
       if (typeof next !== 'string' || !next.trim()) break;
+      if (legitimateClarifier(next)) {
+        return {
+          body: String(next).replace(/\s+/g, ' ').trim(),
+          send: true,
+          attempts,
+          regenerated: true,
+          results,
+          finalReason: 'challenge-clarifier',
+        };
+      }
       regenerated = true;
       draft = next;
       result = presend.validate(draft, p.ctx);
       results.push(result);
     }
-    if (result.ok) return { body: draft, send: true, attempts, regenerated, results, finalReason: attempts ? 'regenerated-ok' : 'ok' };
+    if (faqAnswerShouldNotPromiseReview(draft, p.ctx)) {
+      if (!botOwnsConversation({ ctx: p.ctx })) {
+        return { body: '', send: false, attempts, regenerated, results, finalReason: 'faq-team-review-held' };
+      }
+      return { body: HEDGE_REPLY, send: true, attempts, regenerated, results, finalReason: 'faq-team-review-hedge' };
+    }
+    if (result.ok) {
+      // A clean validation does not make the spread template eligible. Eligibility
+      // is the customer's message. Anything else hedges, and a human owner holds.
+      if (draftIsSpreadTemplate(draft) && !customerAskedSpread(lastClientText({ ctx: p.ctx }))) {
+        if (!botOwnsConversation({ ctx: p.ctx })) {
+          return { body: '', send: false, attempts, regenerated, results, finalReason: 'spread-template-held' };
+        }
+        return { body: HEDGE_REPLY, send: true, attempts, regenerated, results, finalReason: 'spread-template-not-asked' };
+      }
+      return { body: draft, send: true, attempts, regenerated, results, finalReason: attempts ? 'regenerated-ok' : 'ok' };
+    }
     const fb = safeFallback(draft, result, { ctx: p.ctx, fallbackReply: p.fallbackReply, imageAskGuard: p.ctx && p.ctx.guards && p.ctx.guards.imageAskGuard, conversationId: p.ctx && p.ctx.conversationId });
     return { body: fb.body, send: fb.send, attempts, regenerated, results, finalReason: fb.reason };
   } finally {
@@ -184,4 +386,4 @@ async function runWithRegeneration(p) {
   }
 }
 
-module.exports = { runWithRegeneration, safeFallback, stripSentences, decideFallbackIntent, CLARIFY_REPLY, inflight, recentKeys };
+module.exports = { runWithRegeneration, safeFallback, stripSentences, decideFallbackIntent, CLARIFY_REPLY, HEDGE_REPLY, inflight, recentKeys };
