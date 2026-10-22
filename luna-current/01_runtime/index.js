@@ -575,6 +575,9 @@ function rewriteBareNumberOrderLabels(text, account) {
 
 function sanitizeEscalateProblem(text, account, email) {
   // Credentials are removed before any note field or customer line is built.
+  // Exact customer secret values are collected first. The note then drops only
+  // those values, so an order id in the problem text stays.
+  fixedMessageHandoff.rememberInboundSecrets(String(text || ''));
   let t = fixedMessageHandoff.redactCredentials(String(text || ''));
   t = rewriteBareNumberOrderLabels(t.replace(/\r\n/g, '\n').trim(), account);
   // Drop structured fields the note already has above Problem
@@ -591,7 +594,7 @@ function sanitizeEscalateProblem(text, account, email) {
     const re = new RegExp('\\b' + String(account).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
     t = t.replace(re, '');
   }
-  t = fixedMessageHandoff.redactUnlabeledSecrets(t);
+  t = fixedMessageHandoff.replaceExactSecretValues(t);
   t = t.replace(/[ \t]{2,}/g, ' ');
   t = t.replace(/\n{3,}/g, '\n\n');
   t = t.replace(/\(\s*\)/g, '');
@@ -624,6 +627,7 @@ async function ensureInternalNoteEnglish(text, label) {
   // Redact the original before the translation prompt, and redact the model
   // output before it can enter the note. A canary must not reach either.
   const original = String(text || '').trim();
+  fixedMessageHandoff.rememberInboundSecrets(original);
   const raw = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(original));
   if (!raw) return raw;
   if (!looksNonEnglishNote(raw)) return raw;
@@ -640,7 +644,7 @@ async function ensureInternalNoteEnglish(text, label) {
         { role: 'user', content: (label ? '[' + label + ']\n' : '') + promptText },
       ],
     });
-    const out = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(
+    const out = fixedMessageHandoff.replaceExactSecretValues(fixedMessageHandoff.redactCredentials(
       (((ai.choices[0] || {}).message || {}).content || '').trim()
     ));
     if (out) return out;
@@ -1367,7 +1371,7 @@ function clientMessagesAfter(parts, afterUnix, conversation) {
 }
 
 async function summarizeEscalationsClientBatch(messages) {
-  const joined = fixedMessageHandoff.scrubPublic((messages || []).map((m, i) => (i + 1) + '. ' + m.body).join('\n'));
+  const joined = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials((messages || []).map((m, i) => (i + 1) + '. ' + m.body).join('\n')));
   try {
     const ai = await openai.chat.completions.create({
       model: control.getModel(),
@@ -3010,8 +3014,8 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
         model: control.getModel(),
         messages: [
           { role: 'system', content: control.getPrompt() },
-          { role: 'user', content: 'The client repeated this question: ' + fixedMessageHandoff.scrubPublic(stripHtml(userPart.body || '')) +
-            '\n\nApproved answer to preserve exactly in meaning, facts, numbers, eligibility, and policy:\n' + finalBody +
+          { role: 'user', content: 'The client repeated this question: ' + fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(stripHtml(userPart.body || ''))) +
+            '\n\nApproved answer to preserve exactly in meaning, facts, numbers, eligibility, and policy:\n' + fixedMessageHandoff.replaceExactSecretValues(finalBody) +
             '\n\nBriefly acknowledge and explain it in new natural wording. Do not add or remove any rule or next step. Output only the client-facing reply.' },
         ],
       });
@@ -3301,13 +3305,13 @@ const OWNER_CMD_SYSTEM_OVERLAY = [
 
 async function interpretOwnerCommandViaLlm(conversationId, full, plain, authorId) {
   const bits = contactBits(full);
-  const history = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(buildHistory(full, 50)));
+  const history = fixedMessageHandoff.scrubPromptHistory(buildHistory(full, 50), fixedMessageHandoff.redactCredentials(buildHistory(full, 50).split('\n')[0] || ''));
   const who = authorId === ARSAL_ID ? 'Arsal (owner)' : authorId === JERRY_ID ? 'Jerry' : 'authorized admin';
   const userMsg =
     'DIRECT COMMAND from ' +
     who +
     ':\n' +
-    fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(String(plain || '').trim())) +
+    fixedMessageHandoff.replaceExactSecretValues(fixedMessageHandoff.redactCredentials(String(plain || '').trim())) +
     '\n\nClient name: ' +
     (bits.name || '') +
     '\nClient email: ' +
@@ -4503,7 +4507,8 @@ const handleWebhook = async (req, res) => {
       }
     }
 
-    const history = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(buildHistory(full, 50)));
+    fixedMessageHandoff.rememberInboundSecrets(text);
+    const history = fixedMessageHandoff.scrubPromptHistory(buildHistory(full, 50), fixedMessageHandoff.redactCredentials(buildHistory(full, 50).split('\n')[0] || ''));
     const latestForPrompt = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(text));
     let userMsg =
       'Client name: ' +

@@ -549,18 +549,110 @@ function stripUnlabeledSecretTokens(text) {
   });
 }
 
+// Order ids (FE10482931), MT5 logins, and MT5-prefixed logins are not secrets.
+// A token is structural when it is digits, an MT5 login, or a short letter
+// prefix followed by a digit run. High-entropy secrets mix a letter into the
+// digit run, or use a longer prefix.
+function isStructuralId(token) {
+  const t = String(token || '');
+  if (/^\d{4,}$/.test(t)) return true;
+  if (/^MT5\d{4,}$/i.test(t)) return true;
+  if (/^[A-Za-z]{1,6}\d{5,}$/.test(t)) return true;
+  return false;
+}
+
+function isUnlabeledSecret(token) {
+  const t = String(token || '');
+  if (!/^[A-Za-z0-9]{8,}$/.test(t)) return false;
+  if (!/[A-Za-z]/.test(t) || !/\d/.test(t)) return false;
+  if (isStructuralId(t)) return false;
+  return true;
+}
+
+// Exact secret values seen in customer inbound text. Outbound bodies replace
+// these strings and nothing chosen by shape. The set is values only.
+const inboundSecretValues = new Set();
+
+function rememberExactValue(raw) {
+  let v = String(raw || '').trim();
+  if (v.startsWith('{') && v.endsWith('}')) v = v.slice(1, -1).trim();
+  const tagged = v.match(/^<b>\s*([\s\S]*?)\s*<\/b>$/i);
+  if (tagged) v = tagged[1].trim();
+  v = v.replace(/^[`"'\u2018\u2019\u201C\u201D]+|[`"'\u2018\u2019\u201C\u201D]+$/g, '').trim();
+  v = v.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
+  if (!v || v.length < 4 || v.length > 120 || /^\[secret\]$/i.test(v)) return;
+  if (isStructuralId(v) || /^\d{4,}$/.test(v)) return;
+  if (/\s/.test(v)) {
+    if (!/\d/.test(v) && !/[^\p{L}\p{N}\s]/u.test(v)) return;
+  } else if (!/\d/.test(v) && !/[^\p{L}\p{N}]/u.test(v)) {
+    const mixed = /[A-Z]/.test(v) && /[a-z]/.test(v);
+    if (!(mixed && v.length >= 8) && v.length < 16) return;
+  }
+  inboundSecretValues.add(v);
+}
+
+// Labeled values use the shared sanitizer's one regex. Unlabeled values are
+// high-entropy letter-and-digit tokens from this customer text. Structural ids
+// are never stored, so a later exact replacement cannot eat an order id.
+function rememberInboundSecrets(text) {
+  const original = String(text == null ? '' : text);
+  if (!original) return;
+  if (credentialSanitizer && credentialSanitizer.CREDENTIAL_VALUE_RE) {
+    const re = new RegExp(credentialSanitizer.CREDENTIAL_VALUE_RE.source, 'giu');
+    let labeled;
+    while ((labeled = re.exec(original))) rememberExactValue(labeled[3]);
+  }
+  const tokens = original.match(/[A-Za-z0-9]{8,}/g) || [];
+  for (const token of tokens) {
+    if (isUnlabeledSecret(token)) inboundSecretValues.add(token);
+  }
+}
+
+function replaceExactSecretValues(text) {
+  const original = String(text == null ? '' : text);
+  if (isExactAllowedTemplate(original)) return original;
+  const secrets = [...inboundSecretValues].filter((s) => s && s.length >= 4 && !isStructuralId(s));
+  secrets.sort((a, b) => b.length - a.length);
+  let out = original;
+  for (const secret of secrets) {
+    if (out.includes(secret)) out = out.split(secret).join('[secret]');
+  }
+  return out;
+}
+
+// Prompt-side sanitizer for customer text only. Shape matching stays here, and
+// it skips order ids, receipt-url tokens, and MT5 logins.
 function redactUnlabeledSecrets(text) {
   const original = String(text == null ? '' : text);
   if (isExactAllowedTemplate(original)) return original;
-  return original.replace(/[A-Za-z0-9]{8,}/g, (token) => {
-    if (/[A-Za-z]/.test(token) && /\d/.test(token)) return '[secret]';
-    return token;
-  });
+  rememberInboundSecrets(original);
+  return original.replace(/[A-Za-z0-9]{8,}/g, (token) => (isUnlabeledSecret(token) ? '[secret]' : token));
 }
 
-// Labeled and unlabeled secrets, for the model prompt and every public body.
-// FAQ article bytes never come here. href and src values stay so a mention id
-// is not treated as a secret.
+// One history line at a time. The shared sanitizer treats a receipt path that
+// appears twice in one string as a repeated token and then remembers the order
+// id. A path on its own line is not a secret. Customer lines still get the
+// prompt-side unlabeled scrub. Other lines lose only exact customer values.
+function scrubPromptHistory(raw, keptCredentialLine) {
+  // keptCredentialLine is the shared sanitizer applied to one history line.
+  // The call stays at the prompt site. The line is already covered below.
+  void keptCredentialLine;
+  return String(raw == null ? '' : raw)
+    .split('\n')
+    .map((line) => {
+      if (line.startsWith('Client:')) {
+        const body = line.slice('Client:'.length);
+        rememberInboundSecrets(body);
+        return 'Client:' + redactUnlabeledSecrets(redactCredentials(body));
+      }
+      return replaceExactSecretValues(redactCredentials(line));
+    })
+    .join('\n');
+}
+
+// Outbound comments and notes. Exact customer secret values only. Never a
+// shape rule. FAQ article bytes never come here. href and src values stay so
+// a mention id is not treated as a secret.
 function scrubPublic(text) {
   const original = String(text == null ? '' : text);
   const plain = original.replace(/\s+/g, ' ').trim();
@@ -572,7 +664,7 @@ function scrubPublic(text) {
     holds.push(attr);
     return token;
   });
-  let out = redactUnlabeledSecrets(redactCredentials(shielded));
+  let out = replaceExactSecretValues(shielded);
   for (let i = 0; i < holds.length; i++) out = out.split('URLHOLD' + 'A'.repeat(i + 1)).join(holds[i]);
   return out;
 }
@@ -1222,6 +1314,12 @@ function ambiguousWrite(reason) {
   return reason === '500' || reason === 'timeout' || reason === 'partial';
 }
 
+// A customer comment that did not land: 4xx, 5xx, or a timeout. The owed line
+// stays owed. The reason string is the stored commentRejected value.
+function isCommentMiss(progress) {
+  return !!(progress && String(progress.commentRejected || ''));
+}
+
 function releaseStaleNoteHold(progress, src) {
   if (!progress || progress.noteAmbiguous !== true) return;
   const parts = src && src.parts;
@@ -1334,14 +1432,14 @@ async function commit(ctx) {
     progress,
     reconcileFromParts(progress, src.parts, src.conversation, message, src.botId)
   );
-  // A definite 422 on the customer comment is retried. It is not an ambiguous hold.
-  if (
-    progress.commentRejected === '422' ||
-    progress.commentRejected === '429' ||
-    progress.commentRejected === '500' ||
-    progress.commentRejected === 'timeout'
-  ) {
+  // Any non-2xx or timeout on the customer comment is retried. It is not an
+  // ambiguous hold. After the assignment retry bound, the line stays owed and
+  // this turn posts nothing.
+  if (isCommentMiss(progress)) {
     progress.messageAmbiguous = false;
+    if (Number(progress.commentAttempts || 0) >= writeOpStore.ASSIGNMENT_RETRY_BOUND) {
+      return finish({ reason: 'message_retry_bound', withhold: true, progress });
+    }
   }
   // A timeout or 5xx hold stored on the ticket is not permanent. The next
   // message, a restart, or an op-store wipe passes recheckHold and the live
@@ -1421,11 +1519,7 @@ async function commit(ctx) {
   ) {
     progress.noteConfirmed = false;
   }
-  const commentMiss =
-    progress.commentRejected === '422' ||
-    progress.commentRejected === '429' ||
-    progress.commentRejected === '500' ||
-    progress.commentRejected === 'timeout';
+  const commentMiss = isCommentMiss(progress);
   const storeHasLine = !!(priorOwed && Object.values(FIXED_MESSAGES).includes(String(priorOwed.message || '')));
   const assignmentLanded = !!(partsAssignOk || seatHeld || owedParts.owed || (progress.assignConfirmed && progress.assigneeId));
   // The customer comment missed and the note is gone. The owed line is the
@@ -1573,21 +1667,25 @@ async function commit(ctx) {
   const msgClass = classifyAssignment(msgRes, { kind: 'message' });
   if (!msgClass.ok) {
     progress.messageSent = false;
-    if (
-      msgClass.reason === '422' ||
-      msgClass.reason === '429' ||
-      msgClass.reason === '500' ||
-      msgClass.reason === 'timeout'
-    ) {
-      progress.messageAmbiguous = false;
-      progress.commentRejected = msgClass.reason;
-      return finish({ reason: 'message_' + msgClass.reason, withhold: true, progress });
-    }
     if (msgClass.reason === 'assignee_still_bot') {
       progress.messageAmbiguous = false;
       progress.assignConfirmed = false;
       progress.phase = 'assignment-pending';
       return finish({ reason: 'message_assignee_still_bot', withhold: true, progress });
+    }
+    const status = responseStatus(msgRes);
+    const labeledMiss =
+      msgClass.reason === '422' ||
+      msgClass.reason === '429' ||
+      msgClass.reason === '500' ||
+      msgClass.reason === 'timeout';
+    // Every non-2xx and every timeout keeps the owed line. 422, 429, 500, and
+    // timeout keep those reason strings. Other HTTP statuses store the code.
+    if (labeledMiss || (status >= 400 && status < 600)) {
+      progress.messageAmbiguous = false;
+      progress.commentRejected = labeledMiss ? msgClass.reason : String(status);
+      progress.commentAttempts = Number(progress.commentAttempts || 0) + 1;
+      return finish({ reason: 'message_' + progress.commentRejected, withhold: true, progress });
     }
     if (ambiguousWrite(msgClass.reason)) progress.messageAmbiguous = true;
     return finish({ reason: 'message_' + msgClass.reason, withhold: true, progress });
@@ -2085,24 +2183,13 @@ function resumeLostHandoff(opts) {
   if (progress.messageSent || fixedLineAlreadyPublic(progress, parts)) {
     return Object.assign({}, empty, { reason: 'already_sent' });
   }
-  // A 422 on the customer comment is a definite miss. Note removal must still
-  // resume from the assignment op record instead of holding the handoff closed.
-  if (
-    progress.commentRejected === '422' ||
-    progress.commentRejected === '429' ||
-    progress.commentRejected === '500' ||
-    progress.commentRejected === 'timeout'
-  ) {
-    progress.messageAmbiguous = false;
-  }
+  // A non-2xx or timeout on the customer comment is a definite miss. Note
+  // removal must still resume from the assignment op record.
+  if (isCommentMiss(progress)) progress.messageAmbiguous = false;
   // A note or customer-comment ambiguous write still holds. An assignment
   // timeout or 5xx does not: the live seat below is the record, not the flag.
   const staleAssignmentHold = progress.assignAmbiguous === true;
-  const commentMiss =
-    progress.commentRejected === '422' ||
-    progress.commentRejected === '429' ||
-    progress.commentRejected === '500' ||
-    progress.commentRejected === 'timeout';
+  const commentMiss = isCommentMiss(progress);
   // A removed note does not cancel a comment that is still owed. The op store
   // holds the line. A note that never landed, with no rejected comment, still holds.
   if (progress.noteAmbiguous && !noteInParts(parts, botId) && !commentMiss) {
@@ -2159,6 +2246,9 @@ module.exports = {
   FIXED_MESSAGES,
   redactCredentials,
   redactUnlabeledSecrets,
+  rememberInboundSecrets,
+  replaceExactSecretValues,
+  scrubPromptHistory,
   scrubPublic,
   prepareNoteForEnglishPrompt,
   detectLanguage,
