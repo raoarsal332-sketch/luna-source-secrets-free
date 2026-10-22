@@ -186,15 +186,20 @@ async function gate(p) {
       if (sx.extract) imageX.mergeIntoState(state, imageX.extract(p.visionText));
     }
 
-    const ctx = { state, messages, knowledge, route, guards, conversationId, forbiddenPatterns: p.forbiddenPatterns || [] };
+    const ctx = { state, messages, knowledge, route, guards, conversationId, forbiddenPatterns: p.forbiddenPatterns || [], assigneeId: p.assigneeId, botIds: p.botIds || [] };
     const fb = p.fallbackReply !== undefined ? p.fallbackReply : fallbackReply();
     const out = await regen.runWithRegeneration({ draft: original, ctx, regenerate: p.regenerate || null, maxRetries: p.maxRetries, fallbackReply: fb || undefined, key: p.messageId ? `${conversationId}:${p.messageId}` : undefined });
-    const first = out.results[0];
-    trace.record(tr, 'presend', { ok: first.ok, codes: first.hardFails.map((f) => f.code), soft: first.softWarnings.map((w) => w.code) });
+    // A clarifier (or other short-circuit) may return no presend rows. An empty
+    // list is not a throw and not a hold when the decision already has a body.
+    const presendRows = Array.isArray(out && out.results) ? out.results : [];
+    const first = presendRows[0] || { ok: !!(out && out.send), hardFails: [], softWarnings: [] };
+    const hardFails = Array.isArray(first.hardFails) ? first.hardFails : [];
+    const softWarnings = Array.isArray(first.softWarnings) ? first.softWarnings : [];
+    trace.record(tr, 'presend', { ok: !!first.ok, codes: hardFails.map((f) => f.code), soft: softWarnings.map((w) => w.code) });
     trace.record(tr, 'regeneration', { attempts: out.attempts, regenerated: out.regenerated, finalReason: out.finalReason });
     errors.record(first, { conversationId });
 
-    if (!first.ok) log(`presend ${mode()} conversation=${conversationId} route=${route} codes=${first.hardFails.map((f) => f.code).join(',')} final=${out.finalReason}`);
+    if (!first.ok) log(`presend ${mode()} conversation=${conversationId} route=${route} codes=${hardFails.map((f) => f.code).join(',')} final=${out.finalReason}`);
 
     // Critical maintainer codes must fail closed even while LUNA_PRESEND_MODE=observe.
     // Unrelated soft/observe behavior stays observe-only (fail-open for those).

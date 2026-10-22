@@ -166,7 +166,11 @@ function stripCredentialValues(text) {
   try {
     return require('./statePresend/credentialSanitizer').sanitizeCredentials(text);
   } catch (_) {
-    return String(text || '').replace(CREDENTIAL_VALUE_RE, (m, label, sep) => `${label}${sep}[secret]`);
+    try {
+      return require('../02_statePresend/credentialSanitizer').sanitizeCredentials(text);
+    } catch (__) {
+      return String(text || '').replace(CREDENTIAL_VALUE_RE, (m, label, sep) => `${label}${sep}[secret]`);
+    }
   }
 }
 
