@@ -68,7 +68,7 @@ const LATIN_MARKERS = Object.freeze({
   en: ['the', 'please', 'what', 'how', 'my', 'your', 'hello', 'help'],
 });
 
-const SHARED_SOUTH_ASIAN = ['mujhe', 'kya', 'chahiye', 'aap', 'mera', 'meri', 'nahi', 'nahin'];
+const SHARED_SOUTH_ASIAN = ['mujhe', 'kya', 'chahiye', 'chahie', 'aap', 'mera', 'meri', 'nahi', 'nahin', 'baat', 'karo', 'karna', 'milao', 'jodo'];
 
 const GRAMMAR = Object.freeze({
   ar: {
@@ -330,6 +330,9 @@ function detectLanguage(text) {
     const urdu = countMatches(URDU_ONLY, s);
     const arOnly = countMatches(ARABIC_ONLY, s);
     if (urdu > 0 && urdu >= arOnly) return 'ur';
+    // Urdu words such as بات and آدمی share the Arabic script and have no
+    // Urdu-only letter. Those lexical cues select the Urdu line.
+    if (hasUrduLexicalCue(s)) return 'ur';
     return 'ar';
   }
   const kana = (s.match(/[\u3040-\u30FF]/g) || []).length;
@@ -375,6 +378,15 @@ function containsToken(text, token, lang) {
   return stemContainsToken(text, token, lang);
 }
 
+const URDU_LEXICAL = Object.freeze(['ایجنٹ', 'بندہ', 'نمائندہ', 'آدمی', 'چاہیے', 'چاہتا', 'چاہتی', 'بات', 'ملاؤ', 'جوڑو', 'منتقل']);
+
+function hasUrduLexicalCue(text) {
+  for (const word of URDU_LEXICAL) {
+    if (containsToken(text, word, 'ur')) return true;
+  }
+  return false;
+}
+
 function grammarHit(text, lang) {
   const g = GRAMMAR[lang];
   if (!g) return { hit: false, roles: 0, acts: 0 };
@@ -397,9 +409,20 @@ function isAssistantIdentityQuestion(text) {
   );
 }
 
+function arabicScriptGrammarHit(text) {
+  const ur = grammarHit(text, 'ur');
+  const ar = grammarHit(text, 'ar');
+  const roles = ur.roles + ar.roles;
+  const acts = ur.acts + ar.acts;
+  const compact = String(text || '').replace(/\s+/g, ' ').trim();
+  const shortRole = roles > 0 && compact.length > 0 && compact.length <= 24;
+  return (roles > 0 && acts > 0) || shortRole;
+}
+
 function isStructuralHandoffAsk(text, lang) {
   const detected = lang || detectLanguage(text);
   const grammarLang = detected === 'hinglish' ? 'hinglish' : detected;
+  if (/[\u0600-\u06FF]/.test(String(text || '')) && arabicScriptGrammarHit(text)) return true;
   if (GRAMMAR[grammarLang] && grammarHit(text, grammarLang).hit) return true;
   if (detected === 'hinglish' && grammarHit(text, 'ur').hit) return true;
   if (grammarLang !== 'en' && grammarHit(text, 'en').hit) return true;
@@ -606,6 +629,23 @@ function fixedMessageFor(lang) {
   return FIXED_MESSAGES.en;
 }
 
+function isKnowledgeQuestion(text) {
+  const raw = String(text || '').trim();
+  if (!raw || isIdentitySupply(raw) || isVagueEnglish(raw) || isAccountNumberQuestion(raw)) return false;
+  if (isStructuralHandoffAsk(raw) || isPureLiveAgentAsk(raw)) return false;
+  if (!hasInterrogative(raw)) return false;
+  if (/\b(?:my|our)\s+(?:payout|withdrawal|account|kyc|login|ticket|case)\b/i.test(raw)) return false;
+  // "any update?" is a status ping. Force still completes a handoff for it.
+  // A knowledge question such as a withdrawal FAQ does not.
+  try {
+    const ero = require('./escalateRelatedOnly');
+    if (ero && typeof ero.isStatusPing === 'function' && ero.isStatusPing(raw)) return false;
+  } catch (_) {
+    /* status detector unavailable */
+  }
+  return true;
+}
+
 function decide(input) {
   const src = input || {};
   const text = String(src.latestText || '');
@@ -626,10 +666,12 @@ function decide(input) {
       language: lang,
     };
   }
+  const owedNow = activeOwedFixedLine(src);
   const ownershipOpts = Object.assign({}, src.ownershipOpts, {
     handoffAssigneeId:
       src.handoffAssigneeId ||
       (src.ownershipOpts && src.ownershipOpts.handoffAssigneeId) ||
+      (owedNow && owedNow.assigneeId) ||
       '',
   });
   const ownership = teammateHandoffGates.classifyOwnership(src.full, parts, ownershipOpts);
@@ -641,6 +683,18 @@ function decide(input) {
       reason: ownership.reason,
       message: null,
       language: lang,
+    };
+  }
+  // The assignment already landed and the customer line is still owed. The new
+  // text does not choose a different line and does not route as a fresh FAQ.
+  if (owedNow && owedNow.message) {
+    return {
+      action: 'fixed_message',
+      silent: false,
+      route: null,
+      reason: 'owed_fixed_line',
+      language: languageForFixedMessage(owedNow.message),
+      message: owedNow.message,
     };
   }
   // "Are you a bot or a real person?" asks who is replying. It is not a request
@@ -661,7 +715,11 @@ function decide(input) {
     structural ||
     ((lang !== 'ar' && lang !== 'ur' && lang !== 'hi') && softEdges.clientRequestedLiveAgent(text));
   const fin = !!src.finHandoff;
-  const force = !!src.force || path !== 'welcome';
+  // A non-welcome path used to force every sentence into the fixed line.
+  // A knowledge question that welcome would route normally stays on that path.
+  // Vague text, an identity supply, and a real handoff ask still follow force.
+  const requestedForce = !!src.force || path !== 'welcome';
+  const force = requestedForce && !isKnowledgeQuestion(text);
   if (!force) {
     if (arsalSpoke(parts, src.botId)) {
       return {
@@ -811,7 +869,7 @@ function classifyAssignment(result, expect) {
   if (result.timedOut || result.timeout) return { ok: false, reason: 'timeout' };
   if (result.reason === 'assignee_still_bot') return { ok: false, reason: 'assignee_still_bot' };
   const status = responseStatus(result);
-  if (status === 422) return { ok: false, reason: '422' };
+  if (status === 422 || status === 429) return { ok: false, reason: String(status) };
   if (status >= 500) return { ok: false, reason: '500' };
   const blob = String(result.message || result.reason || '');
   if (status === 0 || /timeout|etimedout|econnaborted/i.test(blob)) return { ok: false, reason: 'timeout' };
@@ -1117,7 +1175,14 @@ async function commit(ctx) {
     reconcileFromParts(progress, src.parts, src.conversation, message, src.botId)
   );
   // A definite 422 on the customer comment is retried. It is not an ambiguous hold.
-  if (progress.commentRejected === '422') progress.messageAmbiguous = false;
+  if (
+    progress.commentRejected === '422' ||
+    progress.commentRejected === '429' ||
+    progress.commentRejected === '500' ||
+    progress.commentRejected === 'timeout'
+  ) {
+    progress.messageAmbiguous = false;
+  }
   // A timeout or 5xx hold stored on the ticket is not permanent. The next
   // message, a restart, or an op-store wipe passes recheckHold and the live
   // assignee is read again. Applied: post once. Still the bot or empty: retry.
@@ -1169,6 +1234,7 @@ async function commit(ctx) {
     progress.assignConfirmed = true;
     progress.phase = 'completed';
     progress.assigneeId = String(src.assigneeId || progress.assigneeId || '');
+    if (src.conversationId && src.botId) writeOpStore.markOwedFixedLineSent(src.conversationId, src.botId);
     return finish({
       ok: true,
       reason: 'already_sent',
@@ -1232,6 +1298,14 @@ async function commit(ctx) {
   }
 
   let lastAssignResult = null;
+  if (src.conversationId && src.botId && !progress.messageSent) {
+    writeOpStore.rememberOwedFixedLine({
+      conversationId: src.conversationId,
+      madeBy: src.botId,
+      assigneeId: progress.assigneeId,
+      message,
+    });
+  }
   if (!progress.assignConfirmed && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
     // A 422 is definite and is retried. A 500/timeout hold stays put on a
     // same-turn replay. recheckHold already cleared that flag for a later turn.
@@ -1253,6 +1327,12 @@ async function commit(ctx) {
   progress.assignAmbiguous = false;
   if (progress.phase === 'assignment-pending') progress.phase = '';
 
+  if (
+    progress.messageAmbiguous &&
+    (assignmentAlreadyHeld(src.conversation, progress.assigneeId) || src.recheckHold)
+  ) {
+    progress.messageAmbiguous = false;
+  }
   if (progress.messageAmbiguous && !messageAlreadyPresent(src.parts, message, src.botId)) {
     return finish({ reason: 'message_ambiguous_held', withhold: true, progress });
   }
@@ -1289,10 +1369,15 @@ async function commit(ctx) {
   const msgClass = classifyAssignment(msgRes, { kind: 'message' });
   if (!msgClass.ok) {
     progress.messageSent = false;
-    if (msgClass.reason === '422') {
+    if (
+      msgClass.reason === '422' ||
+      msgClass.reason === '429' ||
+      msgClass.reason === '500' ||
+      msgClass.reason === 'timeout'
+    ) {
       progress.messageAmbiguous = false;
-      progress.commentRejected = '422';
-      return finish({ reason: 'message_422', withhold: true, progress });
+      progress.commentRejected = msgClass.reason;
+      return finish({ reason: 'message_' + msgClass.reason, withhold: true, progress });
     }
     if (msgClass.reason === 'assignee_still_bot') {
       progress.messageAmbiguous = false;
@@ -1305,6 +1390,7 @@ async function commit(ctx) {
   }
   progress.messageSent = true;
   progress.commentRejected = '';
+  if (src.conversationId && src.botId) writeOpStore.markOwedFixedLineSent(src.conversationId, src.botId);
   progress.messageAmbiguous = false;
   progress.phase = 'completed';
   return finish({
@@ -1450,6 +1536,140 @@ function isLegitimateClarification(text) {
     || /\bwhich challenge (?:do )?you mean\b/i.test(q);
 }
 
+function isPasswordPolicyQuestion(text) {
+  const q = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!q || !/\bpassword\b/i.test(q)) return false;
+  return /\b(?:policy|requirements?|rules?|criteria)\b/i.test(q);
+}
+
+function languageForFixedMessage(message) {
+  const line = String(message || '');
+  for (const lang of Object.keys(FIXED_MESSAGES)) {
+    if (FIXED_MESSAGES[lang] === line) return lang;
+  }
+  return 'en';
+}
+
+function botIdSet(botId, opts) {
+  const ids = new Set();
+  const add = (value) => {
+    const id = String(value || '');
+    if (id && id !== '0') ids.add(id);
+  };
+  add(botId);
+  const o = opts || {};
+  add(o.arsalId);
+  add(o.eliteAiId);
+  add(o.botId);
+  if (Array.isArray(o.botIds)) o.botIds.forEach(add);
+  return ids;
+}
+
+function partIsAfter(part, index, anchor, anchorIndex) {
+  const anchorAt = anchor && anchor.created_at != null && anchor.created_at !== '' ? Number(anchor.created_at) : NaN;
+  const partAt = part && part.created_at != null && part.created_at !== '' ? Number(part.created_at) : NaN;
+  if (Number.isFinite(anchorAt) && Number.isFinite(partAt)) return partAt > anchorAt;
+  return index > anchorIndex;
+}
+
+function assignmentIsOurs(part, botId, opts) {
+  if (!part) return false;
+  const pt = String(part.part_type || '');
+  if (pt !== 'assignment' && pt !== 'assign') return false;
+  const assigned = part.assigned_to || part.assignee || {};
+  const target = String((assigned && assigned.id) || part.assignee_id || '');
+  const bots = botIdSet(botId, opts);
+  if (!target || target === '0' || bots.has(target)) return false;
+  const authorId = String((part.author || {}).id || '');
+  if (!authorId) return true;
+  const elite = String((opts && opts.eliteAiId) || '');
+  if (elite && authorId === elite && authorId !== String(botId || '')) return false;
+  return bots.has(authorId);
+}
+
+function ourPublicComment(part, botId, opts) {
+  if (!isPublicCustomerReply(part)) return false;
+  const authorId = String((part.author || {}).id || '');
+  if (!authorId) return false;
+  return botIdSet(botId, opts).has(authorId);
+}
+
+function customerBody(part) {
+  if (!part) return '';
+  const type = String((part.author || {}).type || '');
+  if (type !== 'user' && type !== 'lead' && type !== 'contact') return '';
+  return stripHtml(part.body || '').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * The op store can be gone. Our assignment part, with no later comment from us
+ * and no later human comment, still owes the fixed line. The internal note is
+ * not required.
+ */
+function owedFixedLineFromParts(parts, botId, opts) {
+  const list = Array.isArray(parts) ? parts : [];
+  const empty = { owed: false, humanSince: false, ourCommentAfter: false, assigneeId: '', priorText: '' };
+  let anchor = null;
+  let anchorIndex = -1;
+  for (let i = 0; i < list.length; i++) {
+    if (!assignmentIsOurs(list[i], botId, opts)) continue;
+    if (!anchor || partIsAfter(list[i], i, anchor, anchorIndex)) {
+      anchor = list[i];
+      anchorIndex = i;
+    }
+  }
+  if (!anchor) return empty;
+  const assigned = anchor.assigned_to || anchor.assignee || {};
+  const assigneeId = String((assigned && assigned.id) || anchor.assignee_id || '');
+  let humanSince = false;
+  let ourCommentAfter = false;
+  let priorText = '';
+  for (let i = 0; i < list.length; i++) {
+    const part = list[i];
+    if (!part || i === anchorIndex) continue;
+    if (partIsAfter(part, i, anchor, anchorIndex)) {
+      if (ourPublicComment(part, botId, opts)) ourCommentAfter = true;
+      if (teammateHandoffGates.isHumanTeammatePublicReply(part, opts)) humanSince = true;
+      continue;
+    }
+    const said = customerBody(part);
+    if (said) priorText = said;
+  }
+  const linePublic = fixedLineInParts(list, '');
+  const owed = !humanSince && !ourCommentAfter && !linePublic;
+  return { owed, humanSince, ourCommentAfter, assigneeId, priorText };
+}
+
+function closeOwedFixedLine(conversationId, botId) {
+  if (conversationId && botId) writeOpStore.markOwedFixedLineSent(conversationId, botId);
+}
+
+function activeOwedFixedLine(src) {
+  const o = src || {};
+  const parts = o.parts || [];
+  const botId = String(o.botId || '');
+  const opts = o.ownershipOpts || {};
+  const fromParts = owedFixedLineFromParts(parts, botId, opts);
+  const convId = String(o.conversationId || (o.full && o.full.id) || '');
+  if (o.progress && o.progress.messageSent) {
+    closeOwedFixedLine(convId, botId);
+    return null;
+  }
+  if (fromParts.humanSince || fromParts.ourCommentAfter || fixedLineAlreadyPublic(o.progress, parts)) {
+    closeOwedFixedLine(convId, botId);
+    return null;
+  }
+  const rec = convId && botId ? writeOpStore.latestOwedFixedLine(convId, botId) : null;
+  const assigneeId = String((rec && rec.assigneeId) || fromParts.assigneeId || '');
+  const live = liveAdminAssignee(o.full);
+  const landed = fromParts.owed || (!!assigneeId && live === assigneeId && !!rec);
+  if (!landed || (!rec && !fromParts.owed)) return null;
+  let message = rec && Object.values(FIXED_MESSAGES).includes(String(rec.message || '')) ? rec.message : '';
+  if (!message) message = fixedMessageFor(detectLanguage(fromParts.priorText || o.latestText || ''));
+  if (!Object.values(FIXED_MESSAGES).includes(message)) return null;
+  return { message, assigneeId, priorText: fromParts.priorText || '' };
+}
+
 function partsWithoutOwnAssignment(parts, assigneeId) {
   const id = String(assigneeId || '');
   if (!id) return parts || [];
@@ -1483,13 +1703,21 @@ function resumeLostHandoff(opts) {
   }
   // A 422 on the customer comment is a definite miss. Note removal must still
   // resume from the assignment op record instead of holding the handoff closed.
-  if (progress.commentRejected === '422') progress.messageAmbiguous = false;
+  if (
+    progress.commentRejected === '422' ||
+    progress.commentRejected === '429' ||
+    progress.commentRejected === '500' ||
+    progress.commentRejected === 'timeout'
+  ) {
+    progress.messageAmbiguous = false;
+  }
   // A note or customer-comment ambiguous write still holds. An assignment
   // timeout or 5xx does not: the live seat below is the record, not the flag.
   const staleAssignmentHold = progress.assignAmbiguous === true;
-  if (progress.noteAmbiguous || progress.messageAmbiguous) {
+  if (progress.noteAmbiguous && !noteInParts(parts, botId)) {
     return Object.assign({}, empty, { reason: 'ambiguous_held' });
   }
+  progress.messageAmbiguous = false;
   const opAssignee = op && op.status === 'confirmed' && op.kind === 'assignment' && String(op.madeBy || '') === botId
     ? String(op.assigneeId || '')
     : '';
@@ -1548,7 +1776,11 @@ module.exports = {
   isExactAllowedTemplate,
   isTerminalHedge,
   isLegitimateClarification,
+  isPasswordPolicyQuestion,
   isPublicCustomerReply,
+  owedFixedLineFromParts,
+  activeOwedFixedLine,
+  fixedLineAlreadyPublic,
   partsWithoutOwnAssignment,
   resumeLostHandoff,
   isSpreadTemplateDraft,

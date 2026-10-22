@@ -2801,6 +2801,9 @@ async function postReply(conversationId, messageType, body, opts) {
   const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
   const exactTemplate = messageType !== 'note' && fixedMessageHandoff.isExactAllowedTemplate(redacted);
   const finalBody = messageType === 'note' || (opts && opts.verbatim) || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
+  if (opts && opts.owedFixedLine && messageType !== 'note') {
+    writeOpStore.releaseUnknownReply(conversationId, messageType, finalBody, ARSAL_ID);
+  }
   const r = await icRequest(
     'post',
     'https://api.intercom.io/conversations/' + conversationId + '/reply',
@@ -3709,8 +3712,19 @@ async function commitFixedMessageHandoff(opts) {
     o.path
   );
   const reconciledAssignee = fixedMessageHandoff.reconcileFromParts(progress, parts, full, '', ARSAL_ID).assigneeId;
-  const handoffAssigneeId = String(o.handoffAssigneeId || progress.assigneeId || reconciledAssignee || '');
-  const decision =
+  const owedNow = fixedMessageHandoff.activeOwedFixedLine({
+    conversationId,
+    botId: ARSAL_ID,
+    parts,
+    full,
+    latestText: text,
+    progress,
+    ownershipOpts: handoffOwnershipOpts(),
+  });
+  const handoffAssigneeId = String(
+    o.handoffAssigneeId || progress.assigneeId || reconciledAssignee || (owedNow && owedNow.assigneeId) || ''
+  );
+  let decision =
     o.decision ||
     fixedMessageHandoff.decide({
       path: o.path,
@@ -3718,12 +3732,28 @@ async function commitFixedMessageHandoff(opts) {
       parts,
       full,
       botId: ARSAL_ID,
+      conversationId,
       finHandoff: !!o.finHandoff,
       liveAgent: !!o.liveAgent,
       force: o.path !== 'welcome',
       handoffAssigneeId,
       ownershipOpts: handoffOwnershipOpts({ handoffAssigneeId }),
     });
+  if (
+    owedNow &&
+    owedNow.message &&
+    !fixedMessageHandoff.isAccountNumberQuestion(text) &&
+    decision.action !== 'silence' &&
+    !decision.silent
+  ) {
+    decision = {
+      action: 'fixed_message',
+      silent: false,
+      route: null,
+      reason: 'owed_fixed_line',
+      message: owedNow.message,
+    };
+  }
   if (decision.route === 'normal' || decision.action === 'silence' || decision.silent) {
     return Object.assign({ sent: false, setAwaiting: false }, decision);
   }
@@ -3738,6 +3768,7 @@ async function commitFixedMessageHandoff(opts) {
   });
   const assigneeId = progress.assigneeId || o.handoffAssigneeId || o.preferAssigneeId || built.assigneeId;
   const result = await fixedMessageHandoff.commit({
+    conversationId,
     decision,
     noteHtml: built.html,
     assigneeId,
@@ -3781,7 +3812,12 @@ async function commitFixedMessageHandoff(opts) {
           return { ok: false, status: 409, reason: 'assignee_still_bot', data: { admin_assignee_id: live } };
         }
         full.admin_assignee_id = live;
-        return postReply(conversationId, 'comment', body);
+        const freshParts = partsOf(fresh);
+        if (fixedMessageHandoff.fixedLineAlreadyPublic(null, freshParts)) {
+          writeOpStore.markOwedFixedLineSent(conversationId, ARSAL_ID);
+          return { ok: true, status: 200, data: { id: String(conversationId), type: 'conversation' } };
+        }
+        return postReply(conversationId, 'comment', body, { owedFixedLine: true });
       },
     },
   });
@@ -3919,6 +3955,15 @@ const handleWebhook = async (req, res) => {
         botId: ARSAL_ID,
         opRecord: opAssign,
       });
+      const owedNow = fixedMessageHandoff.activeOwedFixedLine({
+        conversationId,
+        botId: ARSAL_ID,
+        parts,
+        full,
+        latestText: ownText,
+        progress: progOwn,
+        ownershipOpts: handoffOwnershipOpts(),
+      });
       const pendingAssignee = String(
         (progOwn && progOwn.noteConfirmed && !progOwn.messageSent && progOwn.assigneeId) || ''
       );
@@ -3927,11 +3972,13 @@ const handleWebhook = async (req, res) => {
           (progOwn && !progOwn.messageSent && progOwn.assigneeId) ||
           lost.handoffAssigneeId ||
           (oweFixedLine ? recoveredOwn.assigneeId : '') ||
+          (owedNow && owedNow.assigneeId) ||
           ''
       );
-      const pendingHandoff = !!(oweFixedLine || pendingAssignee || lost.handoffAssigneeId);
-      const ownershipParts = lost.handoffAssigneeId
-        ? fixedMessageHandoff.partsWithoutOwnAssignment(parts, lost.handoffAssigneeId)
+      const pendingHandoff = !!(oweFixedLine || pendingAssignee || lost.handoffAssigneeId || owedNow);
+      const stripSeat = lost.handoffAssigneeId || (owedNow && owedNow.assigneeId) || '';
+      const ownershipParts = stripSeat
+        ? fixedMessageHandoff.partsWithoutOwnAssignment(parts, stripSeat)
         : parts;
       const owned = teammateHandoffGates.classifyOwnership(
         full,
@@ -3950,14 +3997,22 @@ const handleWebhook = async (req, res) => {
         handoffOwnershipOpts(pendingHandoff ? { handoffAssigneeId } : {})
       );
       if (
-        (oweFixedLine || lost.resume) &&
+        (oweFixedLine || lost.resume || owedNow) &&
         !owned.silent &&
         !humanCommented &&
         !foreignOwner &&
         !fixedMessageHandoff.isAccountNumberQuestion(ownText)
       ) {
-        const seat = String(lost.assigneeId || recoveredOwn.assigneeId || handoffAssigneeId || '');
-        const completion = fixedMessageHandoff.decide({
+        const seat = String((owedNow && owedNow.assigneeId) || lost.assigneeId || recoveredOwn.assigneeId || handoffAssigneeId || '');
+        const completion = owedNow && owedNow.message
+          ? {
+              action: 'fixed_message',
+              silent: false,
+              route: null,
+              reason: 'owed_fixed_line',
+              message: owedNow.message,
+            }
+          : fixedMessageHandoff.decide({
           path: 'recovery',
           latestText: ownText,
           parts: (parts || []).filter((p) => {
@@ -5045,6 +5100,18 @@ const handleWebhook = async (req, res) => {
     ) {
       try {
         console.log('PRESEND_MISSED_ESCALATION_ESCALATE', conversationId, __presend.reason || '');
+        if (
+          fixedMessageHandoff.isLegitimateClarification(text) ||
+          fixedMessageHandoff.isLegitimateClarification(body) ||
+          fixedMessageHandoff.isPasswordPolicyQuestion(text)
+        ) {
+          const keep = fixedMessageHandoff.isLegitimateClarification(body) ? String(body).trim() : '';
+          if (keep && !fixedMessageHandoff.isTerminalHedge(keep)) {
+            await postClientCommentOnce(conversationId, keep, latestUser, clientName);
+          }
+          console.log('PRESEND skip clarifier or password policy', conversationId);
+          return res.sendStatus(200);
+        }
         // Greetings / small-talk must NEVER force a teammate handoff. Live bug:
         // "Hello arsal how are you ?" → MISSED_QUESTION → forwarded-to-teammate.
         const __greet =
@@ -5103,6 +5170,9 @@ const handleWebhook = async (req, res) => {
         const __spreadNegated = __spreadAskGate.explain(text).reason === 'negated-spread' && !isClearlyAccountSpecificIssue(text);
         if (
           !fixedMessageHandoff.isAccountNumberQuestion(text) &&
+          !fixedMessageHandoff.isLegitimateClarification(text) &&
+          !fixedMessageHandoff.isLegitimateClarification(body) &&
+          !fixedMessageHandoff.isPasswordPolicyQuestion(text) &&
           ((__unsupportedNumber && !__missedHuman) || __originalSpread || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) || fixedMessageHandoff.isTerminalHedge(body) || fixedMessageHandoff.isTerminalHedge(__originalDraft) || __faqMiss || __spreadNegated)
         ) {
           console.log('PRESEND hedge instead of fixed line', conversationId);

@@ -171,6 +171,71 @@ function invalidateHandoffAssignment(conversationId, madeBy, assigneeId) {
   return changed;
 }
 
+function owedFixedLineKey(conversationId, madeBy) {
+  return 'owed-fixed-line:' + String(conversationId || '') + ':' + String(madeBy || '');
+}
+
+// Recorded before the assignment so a landed seat still owes the customer line
+// after a restart. The idempotency key is the one post of that line.
+function rememberOwedFixedLine(input) {
+  const src = input || {};
+  const conversationId = String(src.conversationId || '');
+  const madeBy = String(src.madeBy || '');
+  if (!conversationId || !madeBy) return null;
+  const key = owedFixedLineKey(conversationId, madeBy);
+  const prev = get(key);
+  if (prev && prev.messageSent) return prev;
+  const message = String(src.message || '');
+  const idempotencyKey = crypto
+    .createHash('sha256')
+    .update(['fixed-line', conversationId, madeBy, message].join('\n'))
+    .digest('hex');
+  return set(key, {
+    status: 'confirmed',
+    kind: 'owed-fixed-line',
+    conversationId,
+    madeBy,
+    assigneeId: String(src.assigneeId || (prev && prev.assigneeId) || ''),
+    message,
+    idempotencyKey,
+    messageSent: false,
+  });
+}
+
+function latestOwedFixedLine(conversationId, madeBy) {
+  const rec = get(owedFixedLineKey(conversationId, madeBy));
+  if (!rec || rec.kind !== 'owed-fixed-line' || rec.messageSent) return null;
+  if (!rec.conversationId) return null;
+  return rec;
+}
+
+function markOwedFixedLineSent(conversationId, madeBy) {
+  const key = owedFixedLineKey(conversationId, madeBy);
+  const prev = get(key);
+  if (!prev) return null;
+  return set(key, Object.assign({}, prev, { messageSent: true, status: 'confirmed' }));
+}
+
+// A timeout or 5xx on the customer line is unknown at the HTTP layer. If the
+// parts still do not contain the line, that unknown record must not block the
+// one owed post. Assignment and note unknowns are left in place.
+function releaseUnknownReply(conversationId, messageType, body, adminId) {
+  const url = 'https://api.intercom.io/conversations/' + String(conversationId || '') + '/reply';
+  const data = {
+    message_type: messageType,
+    type: 'admin',
+    admin_id: adminId,
+    body: body,
+  };
+  const key = opKey('post', url, data);
+  const prev = get(key);
+  if (!prev || prev.status !== 'unknown') return false;
+  const all = load();
+  delete all[key];
+  save(all);
+  return true;
+}
+
 function latestHandoffAssignment(conversationId, madeBy) {
   const wantConv = String(conversationId || '');
   const wantBy = String(madeBy || '');
@@ -199,5 +264,9 @@ module.exports = {
   conversationIdFromUrl,
   classifyWriteOutcome,
   invalidateHandoffAssignment,
+  rememberOwedFixedLine,
+  latestOwedFixedLine,
+  markOwedFixedLineSent,
+  releaseUnknownReply,
   latestHandoffAssignment,
 };
