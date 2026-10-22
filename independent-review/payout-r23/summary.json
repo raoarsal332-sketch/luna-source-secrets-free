@@ -1,0 +1,733 @@
+{
+  "sealSha256": "6e7e561a864ebb011621ed38e209014b1dade8507b109eb2952d3ad06fba3ad8",
+  "cases": 1447,
+  "freezeOk": {
+    "SHA256SUMS.txt": true,
+    "payoutClaimGuard.js": true,
+    "index.js.public-sends.diff": true,
+    "faqAllowlist.json": true,
+    "approved.lock.json": true,
+    "T800_R23_REPORT.md": true
+  },
+  "suites": [
+    {
+      "lane": "t800-payout-r13",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r14",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r15",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r16",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r17",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r18",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r19",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r20",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r21",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    },
+    {
+      "lane": "t800-payout-r22",
+      "pass": true,
+      "note": "clean extract of 96485a93, unpatched index.js"
+    }
+  ],
+  "critical": 38,
+  "silentDrops": 0,
+  "byteRegressions": 204,
+  "falseHolds": 38,
+  "falseHoldPool": 425,
+  "falseHoldRate": 0.08941176470588236,
+  "homonymPool": 92,
+  "homonymHolds": 9,
+  "homonymHoldRate": 0.09782608695652174,
+  "instructionLeaks": 0,
+  "ownerLocks": 138,
+  "ownerLocksDelivered": 92,
+  "ownerLockFailures": 46,
+  "deferCases": 6,
+  "deferBypasses": 0,
+  "missingCases": 6,
+  "missingFailures": 0,
+  "hedgePostedOnClaims": 513,
+  "claimCases": 584,
+  "errors": 0,
+  "byPath": {
+    "customer": {
+      "cases": 938,
+      "comments": 938,
+      "hedge": 251,
+      "exact": 412,
+      "forward": 253,
+      "other": 22,
+      "none": 0,
+      "critical": 19,
+      "silent": 0
+    },
+    "owner": {
+      "cases": 473,
+      "comments": 473,
+      "hedge": 293,
+      "exact": 134,
+      "forward": 0,
+      "other": 46,
+      "none": 0,
+      "critical": 19,
+      "silent": 0
+    },
+    "retry": {
+      "cases": 13,
+      "comments": 13,
+      "hedge": 13,
+      "exact": 0,
+      "forward": 0,
+      "other": 0,
+      "none": 0,
+      "critical": 0,
+      "silent": 0
+    },
+    "fallback": {
+      "cases": 11,
+      "comments": 11,
+      "hedge": 8,
+      "exact": 0,
+      "forward": 3,
+      "other": 0,
+      "none": 0,
+      "critical": 0,
+      "silent": 0
+    },
+    "defer": {
+      "cases": 6,
+      "comments": 0,
+      "hedge": 0,
+      "exact": 0,
+      "forward": 0,
+      "other": 0,
+      "none": 6,
+      "critical": 0,
+      "silent": 0
+    },
+    "missing": {
+      "cases": 6,
+      "comments": 6,
+      "hedge": 6,
+      "exact": 0,
+      "forward": 0,
+      "other": 0,
+      "none": 0,
+      "critical": 0,
+      "silent": 0
+    }
+  },
+  "examples": {
+    "critical": [
+      {
+        "id": "r23-00103",
+        "path": "customer",
+        "lang": "ar",
+        "rule": "reset_breakeven",
+        "bucket": "claim",
+        "sample": "السلام علیکم Review،\n\nإعادة التعيين متاحة حتى أثناء التراجع.",
+        "error": "",
+        "log": [],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00104",
+        "path": "owner",
+        "lang": "ar",
+        "rule": "reset_breakeven",
+        "bucket": "claim",
+        "sample": "إعادة التعيين متاحة حتى أثناء التراجع.",
+        "error": "",
+        "log": [
+          "AUTH_NOTE REPLY rev-r23-00104 10118526 rev-r23-00104-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": true,
+        "textMatch": true
+      },
+      {
+        "id": "r23-00105",
+        "path": "customer",
+        "lang": "ar",
+        "rule": "reset_breakeven",
+        "bucket": "claim",
+        "sample": "السلام علیکم Review،\n\nلا، إعادة التعيين مسموحة دون التعادل.",
+        "error": "",
+        "log": [],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00106",
+        "path": "owner",
+        "lang": "ar",
+        "rule": "reset_breakeven",
+        "bucket": "claim",
+        "sample": "لا، إعادة التعيين مسموحة دون التعادل.",
+        "error": "",
+        "log": [
+          "AUTH_NOTE REPLY rev-r23-00106 10118526 rev-r23-00106-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": true,
+        "textMatch": true
+      },
+      {
+        "id": "r23-00107",
+        "path": "customer",
+        "lang": "ar",
+        "rule": "reset_breakeven",
+        "bucket": "claim",
+        "sample": "السلام علیکم Review،\n\nالمنطقة الحمراء لا تمنع إعادة التعيين. يمكنك البدء من جديد.",
+        "error": "",
+        "log": [],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00108",
+        "path": "owner",
+        "lang": "ar",
+        "rule": "reset_breakeven",
+        "bucket": "claim",
+        "sample": "المنطقة الحمراء لا تمنع إعادة التعيين. يمكنك البدء من جديد.",
+        "error": "",
+        "log": [
+          "AUTH_NOTE REPLY rev-r23-00108 10118526 rev-r23-00108-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": true,
+        "textMatch": true
+      },
+      {
+        "id": "r23-00133",
+        "path": "customer",
+        "lang": "en",
+        "rule": "no_prior_profit",
+        "bucket": "claim",
+        "sample": "Hello Review,\n\nThe old gain is not gone. It carries over.",
+        "error": "",
+        "log": [],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00134",
+        "path": "owner",
+        "lang": "en",
+        "rule": "no_prior_profit",
+        "bucket": "claim",
+        "sample": "The old gain is not gone. It carries over.",
+        "error": "",
+        "log": [
+          "AUTH_NOTE REPLY rev-r23-00134 10118526 rev-r23-00134-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": true,
+        "exactHtml": true,
+        "textMatch": true
+      }
+    ],
+    "silent": [],
+    "byte": [
+      {
+        "id": "r23-00685",
+        "path": "customer",
+        "lang": "en",
+        "rule": "faq",
+        "bucket": "faq",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "FAQ_RETRIEVE rev-r23-00685 0",
+          "[statePresend] presend enforce conversation=rev-r23-00685 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00685 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": "",
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00686",
+        "path": "customer",
+        "lang": "en",
+        "rule": "faq",
+        "bucket": "faq",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "FAQ_RETRIEVE rev-r23-00686 0",
+          "[statePresend] presend enforce conversation=rev-r23-00686 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00686 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": "",
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00687",
+        "path": "customer",
+        "lang": "en",
+        "rule": "faq",
+        "bucket": "faq",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "FAQ_RETRIEVE rev-r23-00687 0",
+          "[statePresend] presend enforce conversation=rev-r23-00687 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00687 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": "",
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00688",
+        "path": "customer",
+        "lang": "en",
+        "rule": "faq",
+        "bucket": "faq",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "FAQ_RETRIEVE rev-r23-00688 0",
+          "[statePresend] presend enforce conversation=rev-r23-00688 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00688 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": "",
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00689",
+        "path": "customer",
+        "lang": "en",
+        "rule": "faq",
+        "bucket": "faq",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "FAQ_RETRIEVE rev-r23-00689 0",
+          "[statePresend] presend enforce conversation=rev-r23-00689 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00689 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": "",
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00690",
+        "path": "customer",
+        "lang": "en",
+        "rule": "faq",
+        "bucket": "faq",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "FAQ_RETRIEVE rev-r23-00690 0",
+          "[statePresend] presend enforce conversation=rev-r23-00690 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00690 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": "",
+        "exactHtml": false,
+        "textMatch": false
+      }
+    ],
+    "falseHold": [
+      {
+        "id": "r23-00954",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00954 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00954 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00960",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00960 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00960 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00963",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00963 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00963 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00966",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00966 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00966 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00969",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00969 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00969 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00972",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00972 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00972 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00975",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00975 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00975 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00978",
+        "path": "customer",
+        "lang": "en",
+        "rule": "status_punct",
+        "bucket": "status",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00978 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00978 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      }
+    ],
+    "homonymHold": [
+      {
+        "id": "r23-00986",
+        "path": "customer",
+        "lang": "en",
+        "rule": "homonym",
+        "bucket": "homonym",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00986 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00986 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00990",
+        "path": "customer",
+        "lang": "en",
+        "rule": "homonym",
+        "bucket": "homonym",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-00990 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-00990 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-01001",
+        "path": "customer",
+        "lang": "en",
+        "rule": "homonym",
+        "bucket": "homonym",
+        "sample": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "error": "",
+        "log": [
+          "[statePresend] presend enforce conversation=rev-r23-01001 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PRESEND_MISSED_ESCALATION_ESCALATE rev-r23-01001 needs-escalate"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-01005",
+        "path": "customer",
+        "lang": "en",
+        "rule": "homonym",
+        "bucket": "homonym",
+        "sample": "Download the trading platform and reset the terminal if it freezes.",
+        "error": "",
+        "log": [],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-01025",
+        "path": "customer",
+        "lang": "ur",
+        "rule": "homonym",
+        "bucket": "homonym",
+        "sample": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+        "error": "",
+        "log": [
+          "PAYOUT_GUARD_VISIBLE_HEDGE hedge"
+        ],
+        "comments": 1,
+        "hedgePosted": true,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-01031",
+        "path": "customer",
+        "lang": "hi",
+        "rule": "homonym",
+        "bucket": "homonym",
+        "sample": "मैं इसकी पुष्टि नहीं कर सकता। हमारी टीम पुष्टि करेगी।",
+        "error": "",
+        "log": [
+          "PAYOUT_GUARD_VISIBLE_HEDGE hedge"
+        ],
+        "comments": 1,
+        "hedgePosted": true,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      }
+    ],
+    "leak": [],
+    "lock": [
+      {
+        "id": "r23-00549",
+        "path": "owner",
+        "lang": "roman",
+        "rule": "strategy_risk",
+        "bucket": "lock",
+        "sample": "A Strategy Risk or Risk Rule breach on a funded account is a soft breach with a reset. It does not terminate or close the account.",
+        "error": "",
+        "log": [
+          "PAYOUT_GUARD_VISIBLE_HEDGE locked",
+          "AUTH_NOTE REPLY rev-r23-00549 10118526 rev-r23-00549-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00552",
+        "path": "owner",
+        "lang": "hinglish",
+        "rule": "strategy_risk",
+        "bucket": "lock",
+        "sample": "A Strategy Risk or Risk Rule breach on a funded account is a soft breach with a reset. It does not terminate or close the account.",
+        "error": "",
+        "log": [
+          "PAYOUT_GUARD_VISIBLE_HEDGE locked",
+          "AUTH_NOTE REPLY rev-r23-00552 10118526 rev-r23-00552-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00555",
+        "path": "owner",
+        "lang": "roman",
+        "rule": "daily_loss_hard",
+        "bucket": "lock",
+        "sample": "Touching the daily loss limit or the max loss limit is a hard breach. A hard breach ends the account.",
+        "error": "",
+        "log": [
+          "PAYOUT_GUARD_VISIBLE_HEDGE locked",
+          "AUTH_NOTE REPLY rev-r23-00555 10118526 rev-r23-00555-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      },
+      {
+        "id": "r23-00558",
+        "path": "owner",
+        "lang": "hinglish",
+        "rule": "daily_loss_hard",
+        "bucket": "lock",
+        "sample": "Touching the daily loss limit or the max loss limit is a hard breach. A hard breach ends the account.",
+        "error": "",
+        "log": [
+          "PAYOUT_GUARD_VISIBLE_HEDGE locked",
+          "AUTH_NOTE REPLY rev-r23-00558 10118526 rev-r23-00558-note"
+        ],
+        "comments": 1,
+        "hedgePosted": false,
+        "containsNeedle": false,
+        "exactHtml": false,
+        "textMatch": false
+      }
+    ],
+    "defer": [],
+    "missing": []
+  },
+  "tripwireHits": 262,
+  "tripwireUnique": [
+    "https.request"
+  ]
+}
