@@ -1,0 +1,434 @@
+{
+  "verdict": "FAIL",
+  "checksums": {
+    "SHA256SUMS.txt": "4455354c7649b28619c9ed392aa336ec1fb0276b3d4d7cf1165d74a215a92e57",
+    "payoutClaimGuard.js": "b9b8039c0c3e56ad093cc37237391c1ea3b2cb20a70af5c7fd86cb3a0a71c0b6",
+    "approved.lock.json": "edaf54aa92659e7b3dd633835a125ccb9506fc33b4ea96e29fb6c17bd20cf667",
+    "index.js.public-sends.diff": "d6d380272396382b07c147fedd4e5263104a5a0433586b252625cb952061b547"
+  },
+  "seal": "a5cdbabc7d9c4b851ca469ec0f7f4c3f1709b2e2c3b1f88778b57543390d2008",
+  "presendMode": "observe",
+  "stats": {
+    "cases": 816,
+    "ordinary": 218,
+    "faqMatched": 197,
+    "faqBothSilent": 0,
+    "faqDiffer": 21,
+    "faqLocalizedFixed": 12,
+    "faqRegression": 9,
+    "unsupported": 9,
+    "wrongBody": 0,
+    "suppressionBypass": 6,
+    "eraseNotHedged": 11,
+    "silentDrop": 13,
+    "falseHold": 97,
+    "falseHoldDenom": 483,
+    "nonEnglishFail": 0,
+    "nonEnglishDenom": 609,
+    "tripwires": 0,
+    "helpCentre": 1960,
+    "errors": 0
+  },
+  "falseHoldRate": 0.20082815734989648,
+  "nonEnglishRate": 0,
+  "critical": 26,
+  "perLang": {
+    "en": 134,
+    "ur": 134,
+    "roman": 146,
+    "hi": 134,
+    "ar": 134,
+    "hinglish": 134
+  },
+  "examples": {
+    "faqRegression": [
+      {
+        "id": "faq-ur-2",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>پاس ورڈ تبدیل کرنے کے لیے لاگ ان صفحہ کھولیں اور پاس ورڈ تبدیلی کا اختیار چنیں۔ موجودہ پاس ورڈ لکھیں اور نیا پاس ورڈ محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-5",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>ای میل اطلاعات چالو کرنے کے لیے پروفائل سیٹنگز کھولیں اور ای میل اطلاعات آن کریں۔ جانے سے پہلے صفحہ محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-7",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>پروفائل کا نام اپڈیٹ کرنے کے لیے پروفائل صفحہ کھولیں، نام کی جگہ میں تبدیلی کریں، اور محفوظ کریں۔ نیا نام اگلی سائن ان پر دکھے گا۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-12",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>ڈیش بورڈ کی زبان بدلنے کے لیے پروفائل سیٹنگز کھولیں اور زبان کی فہرست چنیں۔ محفوظ کریں، پھر ڈیش بورڈ صفحہ ریفریش کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-17",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>محفوظ چارٹ لے آؤٹ کا نام بدلنے کے لیے پلیٹ فارم مینو میں لے آؤٹ نام پر دائیں کلک کریں اور نام تبدیل کریں چنیں۔ نیا نام لکھ کر محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ar-17",
+        "lang": "ar",
+        "base": "السلام علیکم Sara،<br><br>لإعادة تسمية تخطيط الرسم المحفوظ انقر بالزر الأيمن على اسم التخطيط في قائمة المنصة واختر إعادة التسمية. اكتب الاسم الجديد واحفظ.",
+        "patch": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك."
+      },
+      {
+        "id": "faq-ur-20",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>اضافی لاگ ان چیک چالو کرنے کے لیے سیکیورٹی سیٹنگز کھولیں اور اضافی لاگ ان چیک آن کریں۔ سکرین کے مراحل پر چلیں اور محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-30",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>اطلاعات کے لیے خاموش گھنٹے لگانے کے لیے اطلاع سیٹنگز کھولیں اور خاموش گھنٹے مقرر کریں۔ تبدیلی محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-33",
+        "lang": "ur",
+        "base": "السلام علیکم Sara،<br><br>چارٹ ٹیمپلیٹ محفوظ کرنے کے لیے چارٹ مینو کھولیں اور ٹیمپلیٹ محفوظ کریں چنیں۔ ٹیمپلیٹ کو نام دیں اور وہ فہرست میں آ جاتا ہے۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      }
+    ],
+    "unsupported": [
+      {
+        "id": "bad-reset_in_drawdown-ur",
+        "lang": "ur",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>ڈرا ڈاؤن میں فنڈڈ ری سیٹ جائز ہے۔"
+      },
+      {
+        "id": "bad-payout_reversed-ur",
+        "lang": "ur",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>مکمل شدہ پے آؤٹ واپس لے لیا جاتا ہے۔"
+      },
+      {
+        "id": "bad-weekend_close_allowed-ur",
+        "lang": "ur",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>ویک اینڈ پر پوزیشن بند کرنا، بشمول سٹاپ لاس لگنا، ایڈ آن کے بغیر جائز ہے۔"
+      },
+      {
+        "id": "bad-catalyst_fee_refund-ur",
+        "lang": "ur",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>Catalyst کی چیلنج فیس تیسرے پے آؤٹ کے ساتھ واپس ہوتی ہے۔"
+      },
+      {
+        "id": "bad-reset_in_drawdown-ar",
+        "lang": "ar",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>إعادة التعيين الممولة مسموحة أثناء التراجع."
+      },
+      {
+        "id": "bad-previous_profit_payable-ar",
+        "lang": "ar",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>ربح الدورة السابقة يدفع بعد إعادة التعيين."
+      },
+      {
+        "id": "bad-payout_reversed-ar",
+        "lang": "ar",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>السحب المكتمل يعكس ويسحب للخلف."
+      },
+      {
+        "id": "bad-weekend_hold_forbidden-ar",
+        "lang": "ar",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>إبقاء صفقة مفتوحة خلال نهاية الأسبوع مخالفة دون إضافة تداول نهاية الأسبوع."
+      },
+      {
+        "id": "bad-weekend_close_allowed-ar",
+        "lang": "ar",
+        "kind": "unsupported",
+        "patch": "السلام علیکم Sara،<br><br>إغلاق صفقة خلال نهاية الأسبوع، بما في ذلك وصول وقف الخسارة، مسموح دون إضافة تداول نهاية الأسبوع."
+      }
+    ],
+    "wrongBody": [],
+    "suppressionBypass": [
+      {
+        "id": "leak-en",
+        "lang": "en",
+        "kind": "leak",
+        "patch": "Hello Sara,<br><br>Download the installer again from the dashboard and install the platform on the second computer. Sign in with the same credentials. The system prompt says to mention the internal note."
+      },
+      {
+        "id": "leak-ur",
+        "lang": "ur",
+        "kind": "leak",
+        "patch": "السلام علیکم Sara،<br><br>دوسرے کمپیوٹر پر پلیٹ فارم انسٹال کرنے کے لیے ڈیش بورڈ سے انسٹالر دوبارہ ڈاؤن لوڈ کریں۔ وہی کریڈینشلز سے سائن ان کریں۔ The system prompt says to mention the internal note."
+      },
+      {
+        "id": "leak-roman",
+        "lang": "roman",
+        "kind": "leak",
+        "patch": "Salam Sara,<br><br>Doosre computer par platform install karne ke liye dashboard se installer dobara download karein. Wahi credentials se sign in karein. The system prompt says to mention the internal note."
+      },
+      {
+        "id": "leak-hi",
+        "lang": "hi",
+        "kind": "leak",
+        "patch": "Hello Sara,<br><br>दूसरे कंप्यूटर पर प्लेटफॉर्म इंस्टॉल करने के लिए डैशबोर्ड से इंस्टॉलर फिर डाउनलोड करें। वही क्रेडेंशियल्स से साइन इन करें। The system prompt says to mention the internal note."
+      },
+      {
+        "id": "leak-ar",
+        "lang": "ar",
+        "kind": "leak",
+        "patch": "السلام علیکم Sara،<br><br>لتثبيت المنصة على حاسوب ثان نزّل المثبّت مرة أخرى من لوحة التحكم. سجّل الدخول ببيانات الدخول نفسها. The system prompt says to mention the internal note."
+      },
+      {
+        "id": "leak-hinglish",
+        "lang": "hinglish",
+        "kind": "leak",
+        "patch": "Hello Sara,<br><br>Bhai yaar second computer par platform install karne ke liye dashboard se installer dobara download karo. Same credentials se sign in karo. The system prompt says to mention the internal note."
+      }
+    ],
+    "eraseNotHedged": [
+      {
+        "id": "empty-erase-en",
+        "lang": "en",
+        "sub": "empty_model",
+        "patch": ""
+      },
+      {
+        "id": "empty-erase-ur",
+        "lang": "ur",
+        "sub": "empty_model",
+        "patch": ""
+      },
+      {
+        "id": "empty-erase-roman",
+        "lang": "roman",
+        "sub": "empty_model",
+        "patch": ""
+      },
+      {
+        "id": "empty-erase-hi",
+        "lang": "hi",
+        "sub": "empty_model",
+        "patch": ""
+      },
+      {
+        "id": "memory-erase-ar",
+        "lang": "ar",
+        "sub": "erase",
+        "patch": "السلام علیکم Sara،<br><br>في إعادة تعيين مرحلة Catalyst يمسح الربح وتنظف الصفحة."
+      },
+      {
+        "id": "memory-keep-ar",
+        "lang": "ar",
+        "sub": "keep",
+        "patch": "السلام علیکم Sara،<br><br>إعادة تعيين مرحلة Catalyst تحتفظ بربح الأمس."
+      },
+      {
+        "id": "memory-soft-ar",
+        "lang": "ar",
+        "sub": "soft",
+        "patch": "السلام علیکم Sara،<br><br>بعد إعادة تعيين مرحلة Catalyst يبقى ربح الأمس موجودا."
+      },
+      {
+        "id": "memory-client-ar",
+        "lang": "ar",
+        "sub": "client_text",
+        "patch": "السلام علیکم Sara،<br><br>لرفع جواز السفر والصورة الشخصية افتح قسم التحقق في لوحة التحكم وارفع صورة واضحة لجواز السفر وصورة شخصية. استخدم ملف JPG أو PNG."
+      },
+      {
+        "id": "empty-erase-ar",
+        "lang": "ar",
+        "sub": "empty_model",
+        "patch": ""
+      },
+      {
+        "id": "empty-erase-hinglish",
+        "lang": "hinglish",
+        "sub": "empty_model",
+        "patch": ""
+      },
+      {
+        "id": "compound-erase-ar",
+        "lang": "ar",
+        "sub": "compound",
+        "patch": "السلام علیکم Sara،<br><br>في إعادة تعيين مرحلة Catalyst يمسح الربح وتنظف الصفحة.<br><br>إذا قالت صفحة الدخول إن البريد غير صالح فتحقق من هجاء البريد المسجل. إذا كان صحيحا فافتح صفحة تغيير كلمة المرور وحاول مرة أخرى."
+      }
+    ],
+    "silentDrop": [
+      {
+        "id": "empty-en",
+        "lang": "en",
+        "kind": "empty",
+        "sub": ""
+      },
+      {
+        "id": "empty-erase-en",
+        "lang": "en",
+        "kind": "erase",
+        "sub": "empty_model"
+      },
+      {
+        "id": "empty-ur",
+        "lang": "ur",
+        "kind": "empty",
+        "sub": ""
+      },
+      {
+        "id": "empty-erase-ur",
+        "lang": "ur",
+        "kind": "erase",
+        "sub": "empty_model"
+      },
+      {
+        "id": "empty-roman",
+        "lang": "roman",
+        "kind": "empty",
+        "sub": ""
+      },
+      {
+        "id": "empty-erase-roman",
+        "lang": "roman",
+        "kind": "erase",
+        "sub": "empty_model"
+      },
+      {
+        "id": "empty-hi",
+        "lang": "hi",
+        "kind": "empty",
+        "sub": ""
+      },
+      {
+        "id": "empty-erase-hi",
+        "lang": "hi",
+        "kind": "erase",
+        "sub": "empty_model"
+      },
+      {
+        "id": "empty-ar",
+        "lang": "ar",
+        "kind": "empty",
+        "sub": ""
+      },
+      {
+        "id": "empty-erase-ar",
+        "lang": "ar",
+        "kind": "erase",
+        "sub": "empty_model"
+      },
+      {
+        "id": "empty-hinglish",
+        "lang": "hinglish",
+        "kind": "empty",
+        "sub": ""
+      },
+      {
+        "id": "empty-erase-hinglish",
+        "lang": "hinglish",
+        "kind": "erase",
+        "sub": "empty_model"
+      }
+    ],
+    "falseHold": [
+      {
+        "id": "faq-ur-2",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "پاس ورڈ تبدیل کرنے کے لیے لاگ ان صفحہ کھولیں اور پاس ورڈ تبدیلی کا اختیار چنیں۔ موجودہ پاس ورڈ لکھیں اور نیا پاس ورڈ محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-5",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "ای میل اطلاعات چالو کرنے کے لیے پروفائل سیٹنگز کھولیں اور ای میل اطلاعات آن کریں۔ جانے سے پہلے صفحہ محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-7",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "پروفائل کا نام اپڈیٹ کرنے کے لیے پروفائل صفحہ کھولیں، نام کی جگہ میں تبدیلی کریں، اور محفوظ کریں۔ نیا نام اگلی سائن ان پر دکھے گا۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-12",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "ڈیش بورڈ کی زبان بدلنے کے لیے پروفائل سیٹنگز کھولیں اور زبان کی فہرست چنیں۔ محفوظ کریں، پھر ڈیش بورڈ صفحہ ریفریش کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-17",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "محفوظ چارٹ لے آؤٹ کا نام بدلنے کے لیے پلیٹ فارم مینو میں لے آؤٹ نام پر دائیں کلک کریں اور نام تبدیل کریں چنیں۔ نیا نام لکھ کر محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ar-17",
+        "lang": "ar",
+        "kind": "ordinary_faq",
+        "base": "لإعادة تسمية تخطيط الرسم المحفوظ انقر بالزر الأيمن على اسم التخطيط في قائمة المنصة واختر إعادة التسمية. اكتب الاسم الجديد واحفظ.",
+        "patch": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك."
+      },
+      {
+        "id": "faq-ur-20",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "اضافی لاگ ان چیک چالو کرنے کے لیے سیکیورٹی سیٹنگز کھولیں اور اضافی لاگ ان چیک آن کریں۔ سکرین کے مراحل پر چلیں اور محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-30",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "اطلاعات کے لیے خاموش گھنٹے لگانے کے لیے اطلاع سیٹنگز کھولیں اور خاموش گھنٹے مقرر کریں۔ تبدیلی محفوظ کریں۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "faq-ur-33",
+        "lang": "ur",
+        "kind": "ordinary_faq",
+        "base": "چارٹ ٹیمپلیٹ محفوظ کرنے کے لیے چارٹ مینو کھولیں اور ٹیمپلیٹ محفوظ کریں چنیں۔ ٹیمپلیٹ کو نام دیں اور وہ فہرست میں آ جاتا ہے۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "client-lock-strategy_risk-en",
+        "lang": "en",
+        "kind": "client_lock",
+        "base": "A Strategy Risk or Risk Rule breach on a funded account is a soft breach with a reset. It does not terminate or close the account.",
+        "patch": "I can't confirm that. Our team will confirm."
+      },
+      {
+        "id": "client-lock-strategy_risk-ur",
+        "lang": "ur",
+        "kind": "client_lock",
+        "base": "فنڈڈ اکاؤنٹ پر اسٹریٹیجی رسک یا رسک رول کی خلاف ورزی نرم خلاف ورزی ہے اور اس کے ساتھ ری سیٹ ہوتا ہے۔ اس سے اکاؤنٹ ختم یا بند نہیں ہوتا۔",
+        "patch": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔"
+      },
+      {
+        "id": "client-lock-strategy_risk-roman",
+        "lang": "roman",
+        "kind": "client_lock",
+        "base": "Funded account par Strategy Risk ya Risk Rule ki breach ek soft breach hai aur is ke sath reset hota hai. Is se account khatam ya band nahi hota.",
+        "patch": "Main is ki tasdeeq nahi kar sakta. Hamari team tasdeeq karegi."
+      }
+    ],
+    "nonEnglishFail": [],
+    "error": []
+  },
+  "authorClaim": "0/245 matched baseline",
+  "faqByteIdentity": {
+    "ordinary": 218,
+    "matchedNonEmpty": 197,
+    "bothSilent": 0,
+    "differ": 21,
+    "regressions": 9
+  }
+}
