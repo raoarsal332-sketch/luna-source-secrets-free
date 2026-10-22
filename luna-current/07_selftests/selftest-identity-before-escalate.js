@@ -34,7 +34,7 @@ const stale = ero.decideEscalateAwaitingGate({
   userText: 'payout says not eligible on my other account',
 });
 assert.strictEqual(stale.action, 'FALLTHROUGH');
-assert.strictEqual(stale.supersedesAwaiting, true);
+assert.strictEqual(stale.supersedesAwaiting, false);
 
 assert.ok(src.includes('async function ensureIdentityBeforeAccountEscalate'));
 assert.ok((src.match(/ensureIdentityBeforeAccountEscalate\(\{/g) || []).length >= 3);

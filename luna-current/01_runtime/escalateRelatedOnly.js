@@ -35,18 +35,30 @@ function getMessageContent(msg) {
   return msg.content || msg.body || msg.text || msg.message || '';
 }
 
+function mentionsStrategyRisk(text) {
+  return /strategy\s+risk|risk\s+rule|اسٹریٹیجی|سٹریٹیجی|رسک\s*رول|स्ट्रैटेजी|रणनीति\s*जोखिम|مخاطر الاستراتيجية|قاعدة المخاطر/i.test(String(text || ''));
+}
+
 function wordOverlapScore(a, b) {
   const stop = new Set([
     'the', 'a', 'an', 'and', 'or', 'to', 'of', 'in', 'on', 'for', 'is', 'it',
     'my', 'me', 'i', 'you', 'your', 'we', 'our', 'this', 'that', 'with', 'at',
     'be', 'as', 'so', 'if', 'can', 'please', 'hi', 'hello', 'hey', 'just',
   ]);
-  const tok = (s) =>
-    normalizeText(s)
-      .split(/[^a-z0-9]+/)
-      .filter((w) => w.length > 2 && !stop.has(w));
+  const tok = (s) => {
+    const words = normalizeText(s)
+      .split(/[^\p{L}\p{N}]+/u)
+      .filter((w) => {
+        if (!w || stop.has(w)) return false;
+        if (/^[a-z0-9]+$/i.test(w)) return w.length > 2;
+        return [...w].length > 1;
+      });
+    if (mentionsStrategyRisk(s)) words.push('strategyrisk');
+    return words;
+  };
   const A = new Set(tok(a));
   const B = tok(b);
+  if (A.has('strategyrisk') && B.includes('strategyrisk')) return 1;
   if (!A.size || !B.length) return 0;
   let hit = 0;
   for (const w of B) if (A.has(w)) hit += 1;
@@ -457,12 +469,19 @@ function decideEscalateAwaitingGate(input = {}) {
   // unrelated detail like their phone number while awaiting update on a separate escalated
   // issue must be answered normally, not held with a generic "team is reviewing" reply). This
   // is confirmed intentional design, not a MISSED_ESCALATION-style fail-open bug.
+  //
+  // The fallthrough must not clear the awaiting or defer flag. A follow-up classified
+  // unrelated, including Roman Urdu that does not overlap an English escalate problem,
+  // leaves escalateAwaitingFirstTeammate and deferredRelatedReply armed. index.js clears
+  // those flags only when supersedesAwaiting is true, so this stays false. The flag is
+  // cleared when a teammate has publicly replied, or when the conversation state itself
+  // is removed. Public forwards stay suppressed while the flag is set.
   return {
     action: 'FALLTHROUGH',
     reason: 'unrelated_other',
     related: false,
     clearFaq: false,
-    supersedesAwaiting: true,
+    supersedesAwaiting: false,
     log: 'ESCALATE fallthrough unrelated (awaiting teammate first)',
   };
 }
