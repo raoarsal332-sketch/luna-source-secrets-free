@@ -1,0 +1,11 @@
+Independent review seal for Handoff R22.
+
+This file records the case-set hash before any handleWebhook run.
+cases.json is frozen. Do not edit it after this seal.
+
+cases.json SHA-256: f8f5db46c4cced66fdcf1b26db03d296d4746520f47bb0efcc9acc87f41e4343
+cases.json git commit: 44312008a382840135b2d517347febfabbff894c
+case count: 958
+candidate under review: 998e9d5abdf48a35fdd4c4baa4718f20f5d2f217
+baselines: 49e500757ba0e76ba546217c00275f28f9fee86c and 0d9af3733d48cd7a59ca20dab8e3a00531e2ca6d
+handleWebhook runs before this seal: none
