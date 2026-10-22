@@ -18,6 +18,8 @@
  * approved is false. This module does not deploy, call Intercom, or read secrets.
  */
 
+const fs = require('fs');
+const path = require('path');
 const softEdges = require('./softEdges');
 const teammateHandoffGates = require('./teammateHandoffGates');
 const writeOpStore = require('./writeOpStore');
@@ -118,6 +120,10 @@ const GRAMMAR = Object.freeze({
   id: {
     roles: ['agen', 'manusia', 'petugas', 'orang'],
     acts: ['bicara', 'ingin', 'hubungkan', 'transfer'],
+  },
+  it: {
+    roles: ['operatore', 'agente', 'umano', 'umana', 'persona', 'collega'],
+    acts: ['parlare', 'voglio', 'vorrei', 'collegare', 'trasferire'],
   },
   ru: {
     roles: ['оператор', 'человек', 'сотрудник', 'агент'],
@@ -318,6 +324,10 @@ function detectLatinLanguage(text) {
       bestScore = score;
     }
   }
+  // A Hindi courtesy word in Latin script (kripya) does not select the Hindi
+  // line when Roman Urdu grammar is present. Devanagari is what selects Hindi.
+  // The locked line stays the Roman Urdu / Hinglish line.
+  if (best === 'hi' && scoreWords(text, ROMAN_URDU_CUES) > 0 && (scores.ur || 0) === 0) return 'hinglish';
   if (best !== 'en' && bestScore > (scores.en || 0)) return best;
   // Latin South Asian without Devanagari or Urdu-only letters is Hinglish.
   // The handoff line stays the approved Urdu line unless a Roman one is approved.
@@ -452,11 +462,22 @@ function scriptOf(text) {
   return 'ar';
 }
 
+// "kisi" is an indefinite person, not a short role. It is a handoff only
+// together with the talk act "baat" (kisi se baat). A bare "kisi" is not.
+function romanSomeoneTalk(text) {
+  const s = String(text || '');
+  if (/[\u0900-\u097F\u0600-\u06FF]/.test(s)) return false;
+  const someone = /(?:^|[^a-z])kisi(?:[^a-z]|$)/i.test(s);
+  const talk = /(?:^|[^a-z])baat(?:[^a-z]|$)/i.test(s);
+  return someone && talk;
+}
+
 function romanHinglishHandoff(text) {
   const s = String(text || '');
   if (/[\u0900-\u097F\u0600-\u06FF]/.test(s)) return false;
   const g = grammarHit(s, 'hinglish');
-  return g.roles > 0 && g.acts > 0;
+  if (g.roles > 0 && g.acts > 0) return true;
+  return romanSomeoneTalk(s);
 }
 
 function isStructuralHandoffAsk(text, lang) {
@@ -599,6 +620,78 @@ function rememberExactValue(raw) {
   inboundSecretValues.add(v);
 }
 
+function declaredSecretPath() {
+  if (process.env.LUNA_DECLARED_SECRET_FILE) return process.env.LUNA_DECLARED_SECRET_FILE;
+  if (process.env.LUNA_OP_STORE_FILE) {
+    return path.join(path.dirname(process.env.LUNA_OP_STORE_FILE), 'luna-declared-secrets.json');
+  }
+  if (process.env.LUNA_CONTROL_STATE_FILE) {
+    return path.join(path.dirname(process.env.LUNA_CONTROL_STATE_FILE), 'luna-declared-secrets.json');
+  }
+  return path.join('/tmp', 'luna-declared-secrets.json');
+}
+
+function cleanDeclaredValue(raw) {
+  let v = String(raw || '').trim();
+  if (v.startsWith('{') && v.endsWith('}')) v = v.slice(1, -1).trim();
+  const tagged = v.match(/^<b>\s*([\s\S]*?)\s*<\/b>$/i);
+  if (tagged) v = tagged[1].trim();
+  v = v.replace(/^[`"'\u2018\u2019\u201C\u201D]+|[`"'\u2018\u2019\u201C\u201D]+$/g, '').trim();
+  v = v.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
+  if (!v || v.length < 4 || v.length > 120 || /^\[secret\]$/i.test(v)) return '';
+  return v;
+}
+
+function readDeclaredSecrets() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(declaredSecretPath(), 'utf8'));
+    const labeled = Array.isArray(parsed && parsed.labeled) ? parsed.labeled.map((v) => String(v)) : [];
+    const unlabeled = Array.isArray(parsed && parsed.unlabeled) ? parsed.unlabeled.map((v) => String(v)) : [];
+    return { labeled, unlabeled };
+  } catch (_) {
+    return { labeled: [], unlabeled: [] };
+  }
+}
+
+function writeDeclaredSecrets(data) {
+  const file = declaredSecretPath();
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const tmp = file + '.tmp-' + process.pid;
+  fs.writeFileSync(tmp, JSON.stringify({
+    labeled: [...new Set(data.labeled || [])],
+    unlabeled: [...new Set(data.unlabeled || [])],
+  }));
+  fs.renameSync(tmp, file);
+}
+
+// A labeled secret, including one that looks like an order id, has to survive
+// a process restart. The shared sanitizer's memory does not. Unlabeled
+// structural ids are not stored.
+function persistDeclaredValue(kind, raw) {
+  const value = cleanDeclaredValue(raw);
+  if (!value) return;
+  if (kind === 'unlabeled' && (isStructuralId(value) || !isUnlabeledSecret(value))) return;
+  const data = readDeclaredSecrets();
+  const bucket = kind === 'labeled' ? data.labeled : data.unlabeled;
+  if (bucket.includes(value)) return;
+  bucket.push(value);
+  writeDeclaredSecrets(data);
+}
+
+function hydrateDeclaredSecrets() {
+  const data = readDeclaredSecrets();
+  for (const value of data.labeled) {
+    if (!cleanDeclaredValue(value)) continue;
+    if (credentialSanitizer && typeof credentialSanitizer.sanitizeCredentials === 'function') {
+      credentialSanitizer.sanitizeCredentials('pin: ' + value);
+    }
+  }
+  for (const value of data.unlabeled) {
+    if (!value || isStructuralId(value)) continue;
+    inboundSecretValues.add(value);
+  }
+}
+
 // Labeled values use the shared sanitizer's one regex. Unlabeled values are
 // high-entropy letter-and-digit tokens from this customer text. Structural ids
 // are never stored, so a later exact replacement cannot eat an order id.
@@ -608,11 +701,17 @@ function rememberInboundSecrets(text) {
   if (credentialSanitizer && credentialSanitizer.CREDENTIAL_VALUE_RE) {
     const re = new RegExp(credentialSanitizer.CREDENTIAL_VALUE_RE.source, 'giu');
     let labeled;
-    while ((labeled = re.exec(original))) rememberExactValue(labeled[3]);
+    while ((labeled = re.exec(original))) {
+      rememberExactValue(labeled[3]);
+      persistDeclaredValue('labeled', labeled[3]);
+    }
   }
   const tokens = original.match(/[A-Za-z0-9]{8,}/g) || [];
   for (const token of tokens) {
-    if (isUnlabeledSecret(token)) inboundSecretValues.add(token);
+    if (isUnlabeledSecret(token)) {
+      inboundSecretValues.add(token);
+      persistDeclaredValue('unlabeled', token);
+    }
   }
 }
 
@@ -843,6 +942,14 @@ function fixedMessageFor(lang) {
   return FIXED_MESSAGES.en;
 }
 
+// Italian has an approved line only for the existing live-agent phrases.
+// Any other Italian handoff uses the English line instead of staying silent.
+function handoffLineLanguage(text, detected) {
+  const lang = detected || detectLanguage(text);
+  if (lang === 'it' && !softEdges.clientRequestedLiveAgent(text)) return 'en';
+  return lang;
+}
+
 function isKnowledgeQuestion(text) {
   const raw = String(text || '').trim();
   if (!raw || isIdentitySupply(raw) || isVagueEnglish(raw) || isAccountNumberQuestion(raw)) return false;
@@ -970,12 +1077,13 @@ function decide(input) {
       };
     }
   }
-  const message = fixedMessageFor(lang);
+  const lineLang = handoffLineLanguage(text, lang);
+  const message = fixedMessageFor(lineLang);
   const language =
-    lang === 'hinglish' && message === FIXED_MESSAGES.ur
+    lineLang === 'hinglish' && message === FIXED_MESSAGES.ur
       ? 'ur'
-      : Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lang)
-        ? lang
+      : Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lineLang)
+        ? lineLang
         : 'en';
   return {
     action: 'fixed_message',
@@ -1542,10 +1650,13 @@ async function commit(ctx) {
   // The op store is gone and our assignment part is already in the conversation.
   // Do not open a second handoff. The line is re-derived from that part's request.
   if (!storeHasLine && !priorAssignOp && owedParts.owed && !enteredNoteConfirmed && !progress.noteAmbiguous) {
-    const requestText = handoffRequestText(src.parts);
-    const source = requestText ? (handoffDetectionText(requestText) || requestText) : '';
+    const source = conversationLanguageSource({
+      parts: src.parts,
+      full: src.conversation,
+      priorText: owedParts.priorText,
+    });
     if (source) {
-      const derived = fixedMessageFor(scriptOf(source) || detectLanguage(source));
+      const derived = fixedMessageFor(handoffLineLanguage(source, scriptOf(source) || detectLanguage(source)));
       if (Object.values(FIXED_MESSAGES).includes(derived)) message = derived;
     }
     progress.noteConfirmed = true;
@@ -2070,6 +2181,39 @@ function customerBody(part) {
   return stripHtml(part.body || '').replace(/\s+/g, ' ').trim();
 }
 
+function statusPingText(text) {
+  try {
+    const ero = require('./escalateRelatedOnly');
+    return !!(ero && typeof ero.isStatusPing === 'function' && ero.isStatusPing(text));
+  } catch (_) {
+    return false;
+  }
+}
+
+// Language comes from the conversation, not from a later status ping.
+// source.body and earlier customer text outrank "any update?".
+function conversationLanguageSource(src) {
+  const o = src || {};
+  const parts = o.parts || [];
+  const samples = [];
+  const push = (raw) => {
+    const said = stripHtml(raw || '').replace(/\s+/g, ' ').trim();
+    if (!said || statusPingText(said)) return;
+    samples.push(said);
+  };
+  const source = o.full && o.full.source;
+  if (source) push(source.body || source.subject || '');
+  for (const part of parts) push(customerBody(part));
+  if (o.priorText) push(o.priorText);
+  for (const said of samples) {
+    if (isHumanAgentRequest(said)) return handoffDetectionText(said) || said;
+  }
+  if (samples.length) return samples[samples.length - 1];
+  const requestText = handoffRequestText(parts);
+  if (requestText) return handoffDetectionText(requestText) || requestText;
+  return String(o.latestText || '');
+}
+
 // The original human-agent request, not a later turn. Lost-state completion
 // re-detects the locked line from this text after the op store is gone.
 function handoffRequestText(parts) {
@@ -2151,11 +2295,13 @@ function activeOwedFixedLine(src) {
   const live = liveAdminAssignee(o.full);
   const landed = fromParts.owed || (!!assigneeId && live === assigneeId && !!rec);
   if (!landed || (!rec && !fromParts.owed)) return null;
-  const requestText = handoffRequestText(parts);
-  const languageSource = requestText
-    ? handoffDetectionText(requestText) || requestText
-    : fromParts.priorText || o.latestText || '';
-  const message = fixedMessageFor(detectLanguage(languageSource));
+  const languageSource = conversationLanguageSource({
+    parts,
+    full: o.full,
+    latestText: o.latestText,
+    priorText: fromParts.priorText,
+  });
+  const message = fixedMessageFor(handoffLineLanguage(languageSource, scriptOf(languageSource) || detectLanguage(languageSource)));
   if (!Object.values(FIXED_MESSAGES).includes(message)) return null;
   return { message, assigneeId, priorText: fromParts.priorText || '' };
 }
@@ -2248,6 +2394,8 @@ function isPublicCustomerReply(part) {
   if (pt === 'note' || pt === 'assignment' || pt === 'assign' || pt === 'open' || pt === 'close') return false;
   return !!stripHtml(part.body || '');
 }
+
+hydrateDeclaredSecrets();
 
 module.exports = {
   STATUS,

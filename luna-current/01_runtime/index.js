@@ -91,12 +91,29 @@ const icHeaders = () => ({
 const IC_TIMEOUT_MS = 20000;
 const IC_MAX_RETRY = 2;
 
+// Pending means a process started the write and has not recorded the result.
+// The owner is alive only while that pid still exists. A restart leaves the
+// record behind; the next process must be allowed to post the owed reply.
+function writeOwnerAlive(rec) {
+  const pid = Number(rec && rec.pid);
+  if (!pid) return false;
+  if (pid === process.pid) return true;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
 async function icRequest(method, url, data, tag) {
   // Reads and consequential writes need different retry policies. The old loop retried a
   // POST after a timeout or a 5xx, but in both cases the remote side may already have
   // ACCEPTED it, so a retry could post a second reply/note/assignment. Intercom documents no
   // idempotency key for these endpoints, so an ambiguous write is reported as unknown rather
-  // than repeated. A 429 is a rejection (nothing was applied), so it stays retryable.
+  // than repeated. A write 429 is one rejection: nothing was applied, and the
+  // same body is not posted again inside this call. The handoff bound retries
+  // that single failure on a later turn. Reads may still retry a 429.
   const isWrite = !['get', 'head', 'options'].includes(String(method || 'get').toLowerCase());
   let last = { status: 0, data: null };
   let ambiguous = false;
@@ -105,7 +122,10 @@ async function icRequest(method, url, data, tag) {
   if (isWrite) {
     opId = writeOpStore.opKey(method, url, data);
     const prev = writeOpStore.get(opId);
-    if (writeOpStore.shouldSkipReplay(prev)) {
+    // A pending write whose process is gone did not finish. The next process
+    // posts the owed reply once instead of treating that leftover as in flight.
+    const stalePending = !!(prev && prev.status === 'pending' && !writeOwnerAlive(prev));
+    if (writeOpStore.shouldSkipReplay(prev) && !stalePending) {
       console.error('IC_REQ_REPLAY_SUPPRESSED', tag, url, prev && prev.status);
       return {
         ok: prev.status === 'confirmed',
@@ -118,6 +138,7 @@ async function icRequest(method, url, data, tag) {
     // failed-confirmed is a live miss. Carry its attempt count through the one retry.
     writeOpStore.set(opId, {
       status: 'pending',
+      pid: process.pid,
       attempts: prev && Number(prev.attempts) ? Number(prev.attempts) : 0,
       kind: (prev && prev.kind) || (data && data.message_type) || '',
     });
@@ -161,7 +182,7 @@ async function icRequest(method, url, data, tag) {
         return { ok: true, status: r.status, data: r.data };
       }
       if (r.status === 429) {
-        // Rejected outright: nothing was applied, so retrying is safe for reads and writes.
+        if (isWrite) break;
       } else if (r.status >= 500) {
         if (isWrite) { ambiguous = true; break; } // may have been applied server-side
       } else {
