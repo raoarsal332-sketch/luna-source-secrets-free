@@ -1,0 +1,533 @@
+{
+  "root": "/tmp/luna-r14",
+  "sealed": "/workspace/independent-review/handoff-r15/sealed/cases.json",
+  "cases": 36,
+  "passed": 1,
+  "failed": 35,
+  "criticalFailed": 35,
+  "recoveryFailed": 15,
+  "elapsedMs": 3988,
+  "byClass": {
+    "faq-normal": {
+      "pass": 1,
+      "fail": 6
+    },
+    "faq-hedge": {
+      "pass": 0,
+      "fail": 3
+    },
+    "clarifier": {
+      "pass": 0,
+      "fail": 3
+    },
+    "silence": {
+      "pass": 0,
+      "fail": 1
+    },
+    "owner-spoof": {
+      "pass": 0,
+      "fail": 1
+    },
+    "recovery": {
+      "pass": 0,
+      "fail": 15
+    },
+    "faq-after-handoff": {
+      "pass": 0,
+      "fail": 6
+    }
+  },
+  "failures": [
+    {
+      "id": "faq-normal-welcome-9",
+      "class": "faq-normal",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "faq-normal-welcome-16",
+      "class": "faq-normal",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "faq-normal-welcome-19",
+      "class": "faq-normal",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "faq-normal-welcome-20",
+      "class": "faq-normal",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "faq-hedge-1",
+      "class": "faq-hedge",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "expected hedge got [\"Hello Review,<br><br>The daily drawdown is 99%.\"]",
+        "forbidden posted text 99%"
+      ],
+      "bodies": [
+        "Hello Review,<br><br>The daily drawdown is 99%."
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "faq-hedge-2",
+      "class": "faq-hedge",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "expected hedge got [\"Hello Review,<br><br>The daily drawdown is 99%.\"]",
+        "forbidden posted text 99%"
+      ],
+      "bodies": [
+        "Hello Review,<br><br>The daily drawdown is 99%."
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "faq-hedge-6",
+      "class": "faq-hedge",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "expected hedge got [\"Hello Review,<br><br>I don't have an open update on this conversation. What would you like me to check?\"]"
+      ],
+      "bodies": [
+        "Hello Review,<br><br>I don't have an open update on this conversation. What would you like me to check?"
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "clarifier-2",
+      "class": "clarifier",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1",
+        "missing text Please tell me which challenge you mean"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "clarifier-7",
+      "class": "clarifier",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1",
+        "missing text Please tell me which challenge you mean"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "clarifier-9",
+      "class": "clarifier",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "assignmentSuccess 1 != 0",
+        "handoffNotes 1 != 0",
+        "fixed line posted [\"A teammate now has this conversation.\"]",
+        "missing text Please tell me which challenge you mean",
+        "forbidden posted text A teammate now has this conversation."
+      ],
+      "bodies": [
+        "A teammate now has this conversation."
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "silence-stale",
+      "class": "silence",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "assignmentSuccess 1 != 0",
+        "assignmentPosts 1 != 0",
+        "handoffNotes 1 != 0"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "spoof-customer-comment",
+      "class": "owner-spoof",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 1 != 0"
+      ],
+      "bodies": [
+        "Hello Review,<br><br>I can help with your FundedElite account from here."
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "recovery-timeout-roman-ur",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-timeout-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-500-roman-ur",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-500-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-timeout-ur",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-timeout-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-500-ur",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-500-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-timeout-ar",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-timeout-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ar got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-500-ar",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-500-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ar got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-timeout-hi",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-timeout-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact hi got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-500-hi",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-500-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact hi got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-timeout-hinglish",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-timeout-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-500-hinglish",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "unlanded-500-then-retry",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 2",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-timeout-500-ur",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "repeated-unlanded-then-success",
+      "reasons": [
+        "customerCount 0 != 1",
+        "assignmentSuccess 0 != 1",
+        "assignmentPosts 1 != 3",
+        "byte-exact ur got []"
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-note-timeout-held",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "note-timeout-not-replayed",
+      "reasons": [
+        "customerCount 1 != 0"
+      ],
+      "bodies": [
+        "Hello Review,<br><br>A teammate can help with that."
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "recovery-note-500-held",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "note-500-not-replayed",
+      "reasons": [
+        "customerCount 1 != 0"
+      ],
+      "bodies": [
+        "Hello Review,<br><br>A teammate can help with that."
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "faq-normal-extra-9",
+      "class": "faq-normal",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "customerCount 0 != 1"
+      ],
+      "bodies": [],
+      "assignmentPosts": 0,
+      "comments": 0
+    },
+    {
+      "id": "faq-normal-extra-10",
+      "class": "faq-normal",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "bare number hedge"
+      ],
+      "bodies": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "assignmentPosts": 0,
+      "comments": 1
+    },
+    {
+      "id": "handoff-then-faq-en",
+      "class": "faq-after-handoff",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "later article missing"
+      ],
+      "bodies": [
+        "A teammate now has this conversation."
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "handoff-then-faq-roman-ur",
+      "class": "faq-after-handoff",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "later article missing"
+      ],
+      "bodies": [
+        "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "handoff-then-faq-ur",
+      "class": "faq-after-handoff",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "later article missing"
+      ],
+      "bodies": [
+        "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "handoff-then-faq-ar",
+      "class": "faq-after-handoff",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "later article missing"
+      ],
+      "bodies": [
+        "هذه المحادثة الآن لدى أحد الزملاء."
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "handoff-then-faq-hi",
+      "class": "faq-after-handoff",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "later article missing"
+      ],
+      "bodies": [
+        "यह बातचीत अब एक साथी के पास है।"
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "handoff-then-faq-hinglish",
+      "class": "faq-after-handoff",
+      "critical": true,
+      "recovery": "",
+      "reasons": [
+        "later article missing"
+      ],
+      "bodies": [
+        "یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+      ],
+      "assignmentPosts": 1,
+      "comments": 1
+    },
+    {
+      "id": "recovery-human-after-422",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "human-reply-after-landed-fault",
+      "reasons": [
+        "forbidden posted text A teammate now has this conversation."
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    },
+    {
+      "id": "recovery-human-after-500",
+      "class": "recovery",
+      "critical": true,
+      "recovery": "human-reply-after-landed-fault",
+      "reasons": [
+        "forbidden posted text A teammate now has this conversation."
+      ],
+      "bodies": [],
+      "assignmentPosts": 1,
+      "comments": 0
+    }
+  ]
+}
