@@ -67,8 +67,17 @@ function shouldSkipReplay(rec) {
   return rec.status === 'confirmed' || rec.status === 'unknown' || rec.status === 'pending';
 }
 
+function hasErrorPayload(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  if (String(data.type || '') === 'error.list') return true;
+  if (Array.isArray(data.errors) && data.errors.length > 0) return true;
+  return false;
+}
+
 function isValidWriteSuccess(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  // An id does not make an error list a successful write.
+  if (hasErrorPayload(data)) return false;
   if (data.id != null && String(data.id)) return true;
   if (data.type === 'conversation' || data.type === 'admin_reply' || data.type === 'comment') return true;
   if (data.conversation_parts) return true;
@@ -96,30 +105,70 @@ function conversationIdFromUrl(url) {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
-// A 2xx assignment body that names a different assignee is a definite miss.
-// It is not confirmed and it is not an unknown write, so the same assignment
-// can be retried for the intended seat.
+// One strict 2xx judgment. error.list or errors is a definite failure even when
+// an id is present, so the op is not confirmed and a later attempt is not
+// replay-suppressed. An assignment is confirmed only when the response names
+// the intended seat. A different seat, or no seat, is a definite miss.
 function classifyWriteOutcome(requestData, responseData, status) {
   const code = Number(status || 0);
   if (!(code >= 200 && code < 300)) return { confirm: false, unknown: false, reason: 'http' };
+  if (hasErrorPayload(responseData)) {
+    return { confirm: false, unknown: false, reason: 'errors' };
+  }
   const request = requestData && typeof requestData === 'object' ? requestData : {};
   const wanted = request.message_type === 'assignment' && request.assignee_id != null
     ? String(request.assignee_id)
     : '';
   const named = namedAssigneeId(responseData);
-  if (wanted && wanted !== '0' && named && named !== wanted) {
-    return { confirm: false, unknown: false, reason: 'wrong-assignee' };
+  if (wanted && wanted !== '0') {
+    if (!named || named !== wanted) {
+      return {
+        confirm: false,
+        unknown: false,
+        reason: named ? 'wrong-assignee' : 'assignee-unconfirmed',
+      };
+    }
+    return {
+      confirm: true,
+      unknown: false,
+      reason: 'confirmed',
+      record: {
+        status: 'confirmed',
+        kind: 'assignment',
+        assigneeId: wanted,
+        madeBy: request.admin_id != null ? String(request.admin_id) : '',
+      },
+    };
   }
   if (!isValidWriteSuccess(responseData)) {
     return { confirm: false, unknown: true, reason: 'malformed-success' };
   }
-  const record = { status: 'confirmed' };
-  if (wanted && wanted !== '0') {
-    record.kind = 'assignment';
-    record.assigneeId = wanted;
-    record.madeBy = request.admin_id != null ? String(request.admin_id) : '';
+  return { confirm: true, unknown: false, reason: 'confirmed', record: { status: 'confirmed' } };
+}
+
+// A live conversation that is still on the bot contradicts a stored confirmation.
+// Drop it so the next assignment is not replay-suppressed.
+function invalidateHandoffAssignment(conversationId, madeBy, assigneeId) {
+  const wantConv = String(conversationId || '');
+  const wantBy = String(madeBy || '');
+  const wantSeat = String(assigneeId || '');
+  if (!wantConv || !wantBy) return false;
+  const all = load();
+  let changed = false;
+  for (const [key, rec] of Object.entries(all)) {
+    if (!rec || rec.status !== 'confirmed' || rec.kind !== 'assignment') continue;
+    if (String(rec.conversationId || '') !== wantConv) continue;
+    if (String(rec.madeBy || '') !== wantBy) continue;
+    if (wantSeat && String(rec.assigneeId || '') !== wantSeat) continue;
+    all[key] = Object.assign({}, rec, {
+      status: 'failed',
+      reason: 'assignee_still_bot',
+      at: Date.now(),
+    });
+    changed = true;
   }
-  return { confirm: true, unknown: false, reason: 'confirmed', record };
+  if (changed) save(all);
+  return changed;
 }
 
 function latestHandoffAssignment(conversationId, madeBy) {
@@ -144,9 +193,11 @@ module.exports = {
   get,
   set,
   shouldSkipReplay,
+  hasErrorPayload,
   isValidWriteSuccess,
   namedAssigneeId,
   conversationIdFromUrl,
   classifyWriteOutcome,
+  invalidateHandoffAssignment,
   latestHandoffAssignment,
 };

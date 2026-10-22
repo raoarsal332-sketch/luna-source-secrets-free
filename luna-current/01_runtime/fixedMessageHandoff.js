@@ -20,6 +20,7 @@
 
 const softEdges = require('./softEdges');
 const teammateHandoffGates = require('./teammateHandoffGates');
+const writeOpStore = require('./writeOpStore');
 
 let assistantIdentityGuard = null;
 try {
@@ -196,6 +197,61 @@ function normalizeArabic(s) {
     .replace(/ى/g, 'ي');
 }
 
+const MORPH_LANGS = new Set(['ur', 'ar', 'hi']);
+
+function scriptWords(text) {
+  return String(text || '').match(/[\p{L}\p{M}]+/gu) || [];
+}
+
+// Suffix stem for Urdu and Arabic. Inflections such as the Urdu oblique and
+// plural of a role share one stem with the lexicon form. The lexicon itself
+// stays the base form; inflected spellings are not added to it.
+function stemArabicScript(word, lang) {
+  let s = normalizeArabic(word);
+  if (!s) return '';
+  s = s.replace(/\u06BA/g, '\u0646');
+  if (lang === 'ar' && s.startsWith('\u0627\u0644') && s.length - 2 >= 3) s = s.slice(2);
+  const suffixes = ['\u0648\u0646', '\u064A\u0646', '\u0627\u062A', '\u0627\u0646', '\u06D2', '\u06C1', '\u06BE', '\u0647'];
+  for (let n = 0; n < 4; n += 1) {
+    let stripped = false;
+    for (const suf of suffixes) {
+      if (s.endsWith(suf) && s.length - suf.length >= 3) {
+        s = s.slice(0, -suf.length);
+        stripped = true;
+        break;
+      }
+    }
+    if (!stripped) break;
+  }
+  return s.replace(/[\u0626\u06CC\u06D2]/g, '\u064A');
+}
+
+function stemHindi(word) {
+  let s = String(word || '');
+  if (!s) return '';
+  // यों / याँ are the plural endings added after the stem, including after a
+  // vowel sign that belongs to the lexicon form. ों and ें are the shorter ones.
+  const suffixes = ['\u092F\u094B\u0902', '\u092F\u093E\u0902', '\u092F\u093E\u0901', '\u094B\u0902', '\u0947\u0902', '\u094B', '\u0947'];
+  for (let n = 0; n < 3; n += 1) {
+    let stripped = false;
+    for (const suf of suffixes) {
+      if (s.endsWith(suf) && s.length - suf.length >= 3) {
+        s = s.slice(0, -suf.length);
+        stripped = true;
+        break;
+      }
+    }
+    if (!stripped) break;
+  }
+  return s;
+}
+
+function stemFor(word, lang) {
+  if (lang === 'hi') return stemHindi(word);
+  if (lang === 'ur' || lang === 'ar') return stemArabicScript(word, lang);
+  return String(word || '');
+}
+
 function countMatches(re, text) {
   const m = String(text || '').match(re);
   return m ? m.length : 0;
@@ -262,10 +318,17 @@ function containsToken(text, token, lang) {
   const raw = lang === 'ar' ? normalizeArabic(text) : String(text || '');
   const needle = lang === 'ar' ? normalizeArabic(token) : String(token || '');
   if (!needle) return false;
+  if (MORPH_LANGS.has(lang)) {
+    const stemmed = stemFor(token, lang);
+    if (!stemmed) return false;
+    for (const word of scriptWords(raw)) {
+      if (stemFor(word, lang) === stemmed) return true;
+    }
+    return false;
+  }
   if (lang === 'en') {
     return new RegExp('(?:^|[^a-z])' + needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:[^a-z]|$)', 'i').test(raw);
   }
-  if (lang === 'ar') return raw.indexOf(needle) !== -1;
   // Latin, Cyrillic, and CJK grammar is structural. Fold case and accents so
   // "Menschen" and "möchte" still match the role and the act.
   const fold = (s) => String(s || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
@@ -307,14 +370,21 @@ function stripHandoffTokens(text, lang) {
   let t = String(text || '');
   const g = GRAMMAR[lang] || GRAMMAR.en;
   const pool = g.roles.concat(g.acts);
-  for (const w of pool) {
-    if (!w) continue;
-    if (lang === 'en') {
-      t = t.replace(new RegExp('\\b' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi'), ' ');
-    } else if (lang === 'ar') {
-      t = normalizeArabic(t).split(normalizeArabic(w)).join(' ');
-    } else {
-      t = t.split(w).join(' ');
+  if (MORPH_LANGS.has(lang)) {
+    const stems = new Set(pool.map((w) => stemFor(w, lang)).filter(Boolean));
+    t = scriptWords(t)
+      .filter((word) => !stems.has(stemFor(word, lang)))
+      .join(' ');
+  } else {
+    for (const w of pool) {
+      if (!w) continue;
+      if (lang === 'en') {
+        t = t.replace(new RegExp('\\b' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi'), ' ');
+      } else if (lang === 'ar') {
+        t = normalizeArabic(t).split(normalizeArabic(w)).join(' ');
+      } else {
+        t = t.split(w).join(' ');
+      }
     }
   }
   return t
@@ -428,7 +498,7 @@ function isAccountNumberQuestion(text) {
 const ACCOUNT_QUESTION_LINES = Object.freeze({
   en: 'For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.',
   ur: 'MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔',
-  ar: 'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.',
+  ar: 'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.',
   hi: 'MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।',
   it: "Su MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano.",
   hinglish: 'MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti.',
@@ -582,14 +652,53 @@ function decide(input) {
 }
 
 function responseHasErrorList(result) {
-  const blobs = [];
-  if (result && typeof result === 'object') blobs.push(result);
-  if (result && result.data && typeof result.data === 'object') blobs.push(result.data);
-  for (const blob of blobs) {
-    if (String(blob.type || '') === 'error.list') return true;
-    if (Array.isArray(blob.errors) && blob.errors.length) return true;
-  }
+  if (!result || typeof result !== 'object') return false;
+  if (writeOpStore.hasErrorPayload(result)) return true;
+  if (result.data && writeOpStore.hasErrorPayload(result.data)) return true;
   return false;
+}
+
+function responseStatus(result) {
+  const top = Number(result && result.status || 0);
+  if (top) return top;
+  const data = result && result.data;
+  if (!data || typeof data !== 'object') return 0;
+  const nested = Number(data.status || 0);
+  if (nested) return nested;
+  const errors = Array.isArray(data.errors) ? data.errors : [];
+  for (const err of errors) {
+    const code = Number(err && err.status || 0);
+    if (code) return code;
+  }
+  return 0;
+}
+
+function assigneeFieldPresent(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (Object.prototype.hasOwnProperty.call(data, 'admin_assignee_id')) return true;
+  if (Object.prototype.hasOwnProperty.call(data, 'assignee_id')) return true;
+  if (data.assigned_to) return true;
+  if (data.assignee) return true;
+  return false;
+}
+
+function liveAdminAssignee(conversation) {
+  if (!conversation || conversation.admin_assignee_id == null) return '';
+  const id = String(conversation.admin_assignee_id);
+  if (!id || id === '0') return '';
+  return id;
+}
+
+function isLiveBotSeat(id, src) {
+  const seat = String(id || '');
+  if (!seat) return false;
+  const o = src || {};
+  if (o.botId && seat === String(o.botId)) return true;
+  const ids = [];
+  if (o.arsalId) ids.push(o.arsalId);
+  if (o.eliteAiId) ids.push(o.eliteAiId);
+  if (Array.isArray(o.botIds)) ids.push(...o.botIds);
+  return ids.some((item) => item != null && String(item) === seat);
 }
 
 function resourcePartList(data) {
@@ -640,20 +749,34 @@ function expectedResourcePresent(data, expect) {
 function classifyAssignment(result, expect) {
   if (!result || typeof result !== 'object') return { ok: false, reason: 'timeout' };
   if (result.timedOut || result.timeout) return { ok: false, reason: 'timeout' };
-  const status = Number(result.status || 0);
+  if (result.reason === 'assignee_still_bot') return { ok: false, reason: 'assignee_still_bot' };
+  const status = responseStatus(result);
   if (status === 422) return { ok: false, reason: '422' };
   if (status >= 500) return { ok: false, reason: '500' };
   const blob = String(result.message || result.reason || '');
   if (status === 0 || /timeout|etimedout|econnaborted/i.test(blob)) return { ok: false, reason: 'timeout' };
-  const errors = result.data && Array.isArray(result.data.errors) ? result.data.errors : [];
-  if (errors.length) return { ok: false, reason: 'partial' };
-  if (result.unknown || result.partial || result.ok !== true) return { ok: false, reason: 'partial' };
+  // An explicit partial flag stays ambiguous. A 2xx body that merely carries
+  // error.list or errors is a definite failure and can be retried.
+  if (result.partial === true) return { ok: false, reason: 'partial' };
+  if (responseHasErrorList(result)) return { ok: false, reason: 'failed' };
+  if (result.unknown || result.ok !== true) return { ok: false, reason: 'partial' };
   if (status < 200 || status >= 300) return { ok: false, reason: 'partial' };
   // HTTP 200 with an error list is a failed write. data null is ambiguous.
   // Neither is a confirmed note, assignment, or message.
-  if (responseHasErrorList(result)) return { ok: false, reason: 'failed' };
   if (Object.prototype.hasOwnProperty.call(result, 'data') && result.data == null) {
     return { ok: false, reason: 'partial' };
+  }
+  if (expect && expect.kind === 'assignment') {
+    const verdict = writeOpStore.classifyWriteOutcome(
+      { message_type: 'assignment', assignee_id: expect.assigneeId, admin_id: '' },
+      result.data,
+      status || 200
+    );
+    // Older synthetic transports return a conversation shell with no assignee
+    // field and no errors. That body stays successful. A named seat must match.
+    if (!verdict.confirm && !(verdict.reason === 'assignee-unconfirmed' && !assigneeFieldPresent(result.data))) {
+      return { ok: false, reason: 'failed' };
+    }
   }
   if (expect && expectedResourcePresent(result.data, expect) === false) {
     return { ok: false, reason: 'failed' };
@@ -829,6 +952,7 @@ function blankProgress() {
     phase: '',
     messageSent: false,
     messageAmbiguous: false,
+    commentRejected: '',
   };
 }
 
@@ -890,6 +1014,8 @@ async function commit(ctx) {
     progress,
     reconcileFromParts(progress, src.parts, src.conversation, message, src.botId)
   );
+  // A definite 422 on the customer comment is retried. It is not an ambiguous hold.
+  if (progress.commentRejected === '422') progress.messageAmbiguous = false;
   // A stored "confirmed" flag is not enough after the conversation parts are
   // gone. Replay rewrites the note and the assignment, then posts the fixed
   // line only when those writes validate. An ambiguous hold is left alone.
@@ -987,25 +1113,30 @@ async function commit(ctx) {
 
   // Stored assignment confirmation without the assignment part, and without the
   // seat already on the conversation, is not confirmed. Write it again.
+  // A parts record also does not count while the live assignee is still the bot.
+  const liveIsBot = isLiveBotSeat(liveAdminAssignee(src.conversation), src);
   if (
     progress.assignConfirmed === true &&
-    !partsAssignOk &&
+    !progress.assignAmbiguous &&
     !assignmentAlreadyHeld(src.conversation, progress.assigneeId) &&
-    !progress.assignAmbiguous
+    (!partsAssignOk || liveIsBot)
   ) {
     progress.assignConfirmed = false;
   }
 
+  let lastAssignResult = null;
   if (!progress.assignConfirmed && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
     // A 422 is definite and is retried. An ambiguous 500/timeout/partial is not.
     if (progress.assignAmbiguous) {
       return finish({ reason: 'assign_ambiguous_held', withhold: true, progress });
     }
     const asgRes = await transport.assign(progress.assigneeId);
+    lastAssignResult = asgRes;
     const asgClass = classifyAssignment(asgRes, { kind: 'assignment', assigneeId: progress.assigneeId });
     if (!asgClass.ok) {
       if (ambiguousWrite(asgClass.reason)) progress.assignAmbiguous = true;
       else progress.phase = 'assignment-pending';
+      progress.assignConfirmed = false;
       return finish({ reason: 'assign_' + asgClass.reason, withhold: true, progress });
     }
     wroteAssign = true;
@@ -1026,13 +1157,47 @@ async function commit(ctx) {
     progress.messageSent = false;
     return finish({ reason: 'unverified_before_message', withhold: true, progress });
   }
+  const namedSeat = wroteAssign ? resourceAssigneeId(lastAssignResult && lastAssignResult.data) : '';
+  const responseConfirms = !!(namedSeat && namedSeat === String(progress.assigneeId || ''));
+  const stillBot = isLiveBotSeat(liveAdminAssignee(src.conversation), src);
+  const legacyUnnamed =
+    wroteAssign &&
+    !assigneeFieldPresent(lastAssignResult && lastAssignResult.data) &&
+    !responseHasErrorList(lastAssignResult || {});
+  // The fixed line is not posted while the live assignee is still the bot,
+  // unless this turn's assignment response named the intended seat. A legacy
+  // unnamed synthetic success stays postable so older transports keep working.
+  // The runtime sets requireLiveAssignee and refetches before it will post.
+  if (stillBot && !responseConfirms && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
+    if (src.requireLiveAssignee || !legacyUnnamed) {
+      progress.assignConfirmed = false;
+      progress.messageSent = false;
+      progress.messageAmbiguous = false;
+      progress.phase = 'assignment-pending';
+      return finish({ reason: 'assignee_still_bot', withhold: true, progress });
+    }
+  }
   const msgRes = await transport.postMessage(message);
   const msgClass = classifyAssignment(msgRes, { kind: 'message' });
   if (!msgClass.ok) {
+    progress.messageSent = false;
+    if (msgClass.reason === '422') {
+      progress.messageAmbiguous = false;
+      progress.commentRejected = '422';
+      return finish({ reason: 'message_422', withhold: true, progress });
+    }
+    if (msgClass.reason === 'assignee_still_bot') {
+      progress.messageAmbiguous = false;
+      progress.assignConfirmed = false;
+      progress.phase = 'assignment-pending';
+      return finish({ reason: 'message_assignee_still_bot', withhold: true, progress });
+    }
     if (ambiguousWrite(msgClass.reason)) progress.messageAmbiguous = true;
     return finish({ reason: 'message_' + msgClass.reason, withhold: true, progress });
   }
   progress.messageSent = true;
+  progress.commentRejected = '';
+  progress.messageAmbiguous = false;
   progress.phase = 'completed';
   return finish({
     ok: true,
@@ -1208,6 +1373,9 @@ function resumeLostHandoff(opts) {
   if (progress.messageSent || fixedLineAlreadyPublic(progress, parts)) {
     return Object.assign({}, empty, { reason: 'already_sent' });
   }
+  // A 422 on the customer comment is a definite miss. Note removal must still
+  // resume from the assignment op record instead of holding the handoff closed.
+  if (progress.commentRejected === '422') progress.messageAmbiguous = false;
   if (progress.assignAmbiguous || progress.noteAmbiguous || progress.messageAmbiguous) {
     return Object.assign({}, empty, { reason: 'ambiguous_held' });
   }

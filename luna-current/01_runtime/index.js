@@ -3742,12 +3742,45 @@ async function commitFixedMessageHandoff(opts) {
     assigneeId,
     parts,
     botId: ARSAL_ID,
+    botIds: [ARSAL_ID, ELITE_AI_ID],
     conversation: full,
     progress,
+    requireLiveAssignee: true,
     transport: o.transport || {
       postNote: (html) => postReply(conversationId, 'note', html),
-      assign: (id) => assignToTeammate(conversationId, id),
-      postMessage: (body) => postReply(conversationId, 'comment', body),
+      assign: async (id) => {
+        const assigned = await assignToTeammate(conversationId, id);
+        if (!assigned || !assigned.ok) return assigned;
+        const fresh = await fetchConversation(conversationId);
+        const live = fresh && fresh.admin_assignee_id != null ? String(fresh.admin_assignee_id) : '';
+        if (!live) return assigned;
+        full.admin_assignee_id = live;
+        if (live !== String(id)) {
+          writeOpStore.invalidateHandoffAssignment(conversationId, ARSAL_ID, id);
+          return {
+            ok: false,
+            status: assigned.status || 200,
+            reason: 'assignee_still_bot',
+            data: Object.assign({}, assigned.data || {}, { admin_assignee_id: live }),
+          };
+        }
+        if (assigned.data && typeof assigned.data === 'object' && !Array.isArray(assigned.data)) {
+          assigned.data = Object.assign({}, assigned.data, { admin_assignee_id: live });
+        }
+        return assigned;
+      },
+      postMessage: async (body) => {
+        const fresh = await fetchConversation(conversationId);
+        const live = fresh && fresh.admin_assignee_id != null ? String(fresh.admin_assignee_id) : '';
+        const bots = new Set([String(ARSAL_ID), String(ELITE_AI_ID), '0', '']);
+        if (!fresh || bots.has(live) || (assigneeId && live !== String(assigneeId))) {
+          if (live) full.admin_assignee_id = live;
+          writeOpStore.invalidateHandoffAssignment(conversationId, ARSAL_ID, assigneeId);
+          return { ok: false, status: 409, reason: 'assignee_still_bot', data: { admin_assignee_id: live } };
+        }
+        full.admin_assignee_id = live;
+        return postReply(conversationId, 'comment', body);
+      },
     },
   });
   stPack.state.fixedHandoff = result.progress;
