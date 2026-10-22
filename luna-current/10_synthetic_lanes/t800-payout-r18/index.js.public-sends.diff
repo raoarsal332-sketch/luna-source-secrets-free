@@ -1,0 +1,140 @@
+diff --git a/luna-current/01_runtime/index.js b/luna-current/01_runtime/index.js
+--- a/luna-current/01_runtime/index.js
++++ b/luna-current/01_runtime/index.js
+@@ -2839,6 +2839,72 @@
+ // serialized, not dropped.
+ const clientSendLocks = new Map();
+ 
++
++// Final payout stage for every public body. This helper does not send by itself.
++// It runs only after ownership (Fin wait), already-replied, human-teammate, pause,
++// and aiOff checks. Those skips still return before this helper is called, so a
++// suppressed send stays suppressed. The helper runs after presend rewriting,
++// identity replacement, variant clarification, welcome text, and repeat retries.
++// A postgate hit does not return null: a failed postgate is a deny, so the helper
++// hedges and never passes that body through. A defer window suppresses every public
++// send, including the forward line, status lines, and retries, in every script.
++// An empty or erase turn outside that window posts the localized hedge. Empty model
++// replies are sent through postClientCommentOnce so they reach this stage.
++// Customer turns, identity retries, and deferred replies that later send go
++// through postClientCommentOnce. Owner REPLY, send-this-message, and FOLLOW
++// (which executes an owner REPLY) are guarded at their post. Owner-dictated
++// text is guarded. Fail closed to the visible hedge. The directory that would
++// hold presend state under 01_runtime is absent and this helper does not require it.
++function payoutLatestClient(parts) {
++  const list = Array.isArray(parts) ? parts : [];
++  for (let i = list.length - 1; i >= 0; i--) {
++    const part = list[i];
++    if (!part) continue;
++    const author = part.author || {};
++    const type = String(author.type || part.role || '');
++    if (type !== 'user' && type !== 'lead' && type !== 'client') continue;
++    const raw = part.body || part.text || '';
++    return typeof stripHtml === 'function' ? stripHtml(raw) : String(raw);
++  }
++  return '';
++}
++
++function payoutGuardPublicBody(body, parts, clientText, conversationId, flags) {
++  const hedge = "I can't confirm that. Our team will confirm.";
++  try {
++    const payoutGuard = require('../10_synthetic_lanes/t800-payout-r18/payoutClaimGuard');
++    let state = null;
++    try {
++      if (typeof getConvState === 'function' && conversationId) {
++        state = (getConvState(conversationId) || {}).state || null;
++      }
++    } catch (e) { state = null; }
++    const payoutParts = (Array.isArray(parts) ? parts : []).map((p) => Object.assign({}, p, {
++      body: typeof stripHtml === 'function' ? stripHtml((p && (p.body || p.text)) || '') : ((p && (p.body || p.text)) || ''),
++    }));
++    const payout = payoutGuard.guardPublicBody(body, {
++      clientText: clientText || payoutLatestClient(payoutParts),
++      parts: payoutParts,
++      state: state,
++      botIds: [
++        typeof ARSAL_ID !== 'undefined' ? ARSAL_ID : '',
++        typeof ELITE_AI_ID !== 'undefined' ? ELITE_AI_ID : '',
++      ],
++      postgateFailed: !!(flags && flags.postgateFailed),
++    });
++    if (payout && (payout.suppressed || payout.send === false)) return null;
++    if (!payout || payout.silent || !payout.body) {
++      console.error('PAYOUT_GUARD_FAIL_CLOSED', payout && payout.reason);
++      return hedge;
++    }
++    if (payout.failClosed || payout.replaced) console.log('PAYOUT_GUARD_VISIBLE_HEDGE', payout.reason);
++    return payout.body;
++  } catch (err) {
++    console.error('[payoutClaimGuard] fail-closed', err && err.message);
++    return hedge;
++  }
++}
++
+ async function postClientCommentOnce(conversationId, body, userPart, clientName) {
+   const lockKey = String(conversationId);
+   const prev = clientSendLocks.get(lockKey) || Promise.resolve();
+@@ -2975,10 +3041,12 @@
+       const fbHits = fallback && fallback !== finalBody ? await verdict(fallback) : hits;
+       if (fbHits.length) {
+         console.log('POSTGATE_SUPPRESSED', conversationId, 'candidate=' + hits.join(',') + ' fallback=' + fbHits.join(','));
+-        return null;
++        const payoutPost = payoutGuardPublicBody(finalBody, parts, latestClientText, conversationId, { postgateFailed: true });
++        finalBody = payoutPost == null ? "I can't confirm that. Our team will confirm." : payoutPost;
++      } else {
++        console.log('POSTGATE_REVALIDATE_FELLBACK', conversationId, hits.join(','));
++        finalBody = fallback;
+       }
+-      console.log('POSTGATE_REVALIDATE_FELLBACK', conversationId, hits.join(','));
+-      finalBody = fallback;
+     }
+   }
+ 
+@@ -2988,6 +3056,9 @@
+     return null;
+   }
+ 
++  finalBody = payoutGuardPublicBody(finalBody, parts, latestClientText, conversationId);
++  if (finalBody == null) return null;
++
+   return postReply(conversationId, 'comment', finalBody);
+ }
+ 
+@@ -3277,6 +3348,8 @@
+     control.clearAiOff(conversationId);
+     // Owner-dictated public REPLY: never welcome-intro, never already-replied skip (Escalations often have prior Arsal notes).
+     let out = postProcessModelReply(body, conversationId);
++    out = payoutGuardPublicBody(out, typeof partsOf === 'function' ? partsOf(full) : [], '', conversationId);
++    if (out == null) return 'REPLY';
+     const r = await postReply(conversationId, 'comment', out);
+     if (r && r.status >= 200 && r.status < 300) {
+       await postReply(conversationId, 'note', 'Sent to client.');
+@@ -3449,6 +3522,8 @@
+       control.clearAiOff(conversationId);
+       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
+       let out = postProcessModelReply(cmdBody, conversationId);
++      out = payoutGuardPublicBody(out, typeof partsOf === 'function' ? partsOf(full) : [], '', conversationId);
++      if (out == null) return 'REPLY';
+       const r = await postReply(conversationId, 'comment', out);
+       if (r && r.status >= 200 && r.status < 300) {
+         await postReply(conversationId, 'note', 'Sent to client.');
+@@ -4311,7 +4386,8 @@
+     const __isScopeDecline = String(parsed.body || '').trim() === '[[SCOPE_DECLINE]]';
+     let body = postProcessModelReply(parsed.body || '', conversationId);
+     if (!body) {
+-      console.log('SKIP empty reply body', conversationId);
++      console.log('EMPTY reply reaches payout guard', conversationId);
++      await postClientCommentOnce(conversationId, body || '', latestUser, clientName);
+       return res.sendStatus(200);
+     }
+ 
+@@ -4329,7 +4405,8 @@
+           console.log('STRIP known-account re-ask from model reply', conversationId, __knownIds.account);
+         }
+         if (!body) {
+-          console.log('SKIP empty after strip known-account ask', conversationId);
++          console.log('EMPTY reply reaches payout guard', conversationId);
++          await postClientCommentOnce(conversationId, body || '', latestUser, clientName);
+           return res.sendStatus(200);
+         }
+       }
