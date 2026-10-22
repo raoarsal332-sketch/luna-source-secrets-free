@@ -1,0 +1,327 @@
+{
+  "elapsedMs": 49335,
+  "caseCount": 958,
+  "casesSha256": "f8f5db46c4cced66fdcf1b26db03d296d4746520f47bb0efcc9acc87f41e4343",
+  "casesCommit": "44312008a382840135b2d517347febfabbff894c",
+  "candidate": "998e9d5abdf48a35fdd4c4baa4718f20f5d2f217",
+  "baselines": {
+    "r21": "49e500757ba0e76ba546217c00275f28f9fee86c",
+    "r20": "0d9af3733d48cd7a59ca20dab8e3a00531e2ca6d"
+  },
+  "counts": {
+    "candidateOnly": 12,
+    "regressionVsR21": 0,
+    "preExisting": 18,
+    "r22Fixes": 301,
+    "tripwire": 0
+  },
+  "versions": {
+    "r22": {
+      "pass": 928,
+      "fail": 30,
+      "total": 958,
+      "gates": {
+        "product-critical": {
+          "pass": 928,
+          "fail": 30
+        },
+        "leaks": {
+          "pass": 90,
+          "fail": 8
+        },
+        "over-redaction": {
+          "pass": 126,
+          "fail": 8
+        },
+        "duplicates": {
+          "pass": 139,
+          "fail": 5
+        },
+        "recovery": {
+          "pass": 134,
+          "fail": 5
+        }
+      }
+    },
+    "r21": {
+      "pass": 639,
+      "fail": 319,
+      "total": 958,
+      "gates": {
+        "product-critical": {
+          "pass": 639,
+          "fail": 319
+        },
+        "leaks": {
+          "pass": 71,
+          "fail": 27
+        },
+        "over-redaction": {
+          "pass": 20,
+          "fail": 114
+        },
+        "duplicates": {
+          "pass": 104,
+          "fail": 40
+        },
+        "recovery": {
+          "pass": 101,
+          "fail": 38
+        }
+      }
+    },
+    "r20": {
+      "pass": 577,
+      "fail": 381,
+      "total": 958,
+      "gates": {
+        "product-critical": {
+          "pass": 577,
+          "fail": 381
+        },
+        "leaks": {
+          "pass": 63,
+          "fail": 35
+        },
+        "over-redaction": {
+          "pass": 0,
+          "fail": 134
+        },
+        "duplicates": {
+          "pass": 62,
+          "fail": 82
+        },
+        "recovery": {
+          "pass": 59,
+          "fail": 80
+        }
+      }
+    }
+  },
+  "tripwireByVersion": {
+    "r22": {
+      "turns": 1183,
+      "tripwire": 0,
+      "errors": 0
+    },
+    "r21": {
+      "turns": 1183,
+      "tripwire": 0,
+      "errors": 0
+    },
+    "r20": {
+      "turns": 1183,
+      "tripwire": 0,
+      "errors": 0
+    }
+  },
+  "r22FixesByTarget": {
+    "r22-urdu-tie": 73,
+    "(untargeted)": 42,
+    "r22-fresh-replied": 80,
+    "r22-number-gate": 94,
+    "r22-declared-secret": 12
+  },
+  "candidateOnly": [
+    {
+      "id": "num-wide-prefix-0",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-2",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-3",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-4",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-6",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-7",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-8",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-10",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-11",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-12",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-14",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    },
+    {
+      "id": "num-wide-prefix-15",
+      "bucket": "numbers",
+      "target": "r22-prefix-width",
+      "gates": [
+        "product-critical"
+      ],
+      "reasons": [
+        "t0:commentIncludes",
+        "t0:commentExcludes",
+        "t0:commentExcludes"
+      ],
+      "r21Pass": true,
+      "r20Pass": true
+    }
+  ],
+  "preExisting": [
+    "lang-hinglish-2",
+    "lang-it-1",
+    "lang-it-2",
+    "secret-restart-history-0",
+    "secret-restart-history-1",
+    "secret-restart-history-2",
+    "secret-restart-history-3",
+    "secret-restart-history-4",
+    "secret-restart-history-5",
+    "secret-restart-history-6",
+    "secret-restart-history-7",
+    "rec-429-en",
+    "wiped-store-ur",
+    "wiped-store-hi",
+    "wiped-store-ar",
+    "wiped-store-it",
+    "lang-hinglish2-1",
+    "lang-hinglish2-old-1"
+  ]
+}
