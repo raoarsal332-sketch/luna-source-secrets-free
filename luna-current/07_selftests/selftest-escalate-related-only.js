@@ -215,10 +215,10 @@ check('6b unrelated non-FAQ still FALLTHROUGH (not status-only)', () => {
   });
   assert.strictEqual(d.action, 'FALLTHROUGH');
   assert.strictEqual(d.reason, 'unrelated_other');
-  assert.strictEqual(d.supersedesAwaiting, true);
+  assert.strictEqual(d.supersedesAwaiting, false);
 });
 
-check('6c handoff-only Arsal lock + payout issue supersedes awaiting', () => {
+check('6c handoff-only Arsal lock + payout issue does not clear awaiting', () => {
   const d = ero.decideEscalateAwaitingGate({
     awaitingFirstTeammate: true,
     userText: 'My payout says not eligible. Please try again.',
@@ -226,10 +226,10 @@ check('6c handoff-only Arsal lock + payout issue supersedes awaiting', () => {
   });
   assert.strictEqual(d.action, 'FALLTHROUGH');
   assert.strictEqual(d.related, false);
-  assert.strictEqual(d.supersedesAwaiting, true);
+  assert.strictEqual(d.supersedesAwaiting, false);
 });
 
-check('6d status wording naming a different topic supersedes awaiting', () => {
+check('6d status wording naming a different topic does not clear awaiting', () => {
   const d = ero.decideEscalateAwaitingGate({
     awaitingFirstTeammate: true,
     userText: 'Any update on why my payout is not eligible?',
@@ -238,7 +238,20 @@ check('6d status wording naming a different topic supersedes awaiting', () => {
   });
   assert.strictEqual(d.action, 'FALLTHROUGH');
   assert.strictEqual(d.related, false);
-  assert.strictEqual(d.supersedesAwaiting, true);
+  assert.strictEqual(d.supersedesAwaiting, false);
+});
+
+check('6g roman urdu unrelated follow-up does not clear awaiting', () => {
+  const d = ero.decideEscalateAwaitingGate({
+    awaitingFirstTeammate: true,
+    userText: 'Aap batao paisa aaj wapas chahiye hafte mein',
+    lastEscalateProblem: 'Payout is not eligible and says please try again.',
+    lastEscalateTopic: 'payout',
+  });
+  assert.strictEqual(d.action, 'FALLTHROUGH');
+  assert.strictEqual(d.reason, 'unrelated_other');
+  assert.strictEqual(d.related, false);
+  assert.strictEqual(d.supersedesAwaiting, false);
 });
 
 check('6e same payout follow-up remains STATUS_ONLY', () => {
