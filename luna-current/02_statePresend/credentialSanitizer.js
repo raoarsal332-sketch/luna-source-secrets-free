@@ -42,6 +42,140 @@ function normalizeCredentialText(text) {
   return String(text == null ? '' : text).normalize('NFKC').replace(/\p{Cf}/gu, '');
 }
 
+// A format character is a hard stop only when it sits between two complete
+// letter-and-digit tokens. That keeps a pin from swallowing the next order id.
+// A format character inside a label, or inside one token, is still removed.
+function isCfChar(ch) {
+  return /\p{Cf}/u.test(ch);
+}
+
+function isAlnumChar(ch) {
+  return /[A-Za-z0-9]/.test(ch);
+}
+
+function alnumRunBefore(chars, index) {
+  let i = index;
+  while (i >= 0 && isCfChar(chars[i])) i -= 1;
+  if (i < 0 || !isAlnumChar(chars[i])) return '';
+  const end = i;
+  while (i >= 0 && isAlnumChar(chars[i])) i -= 1;
+  return chars.slice(i + 1, end + 1).join('');
+}
+
+function alnumRunAfter(chars, index) {
+  let i = index;
+  while (i < chars.length && isCfChar(chars[i])) i += 1;
+  if (i >= chars.length || !isAlnumChar(chars[i])) return '';
+  const start = i;
+  while (i < chars.length && isAlnumChar(chars[i])) i += 1;
+  return chars.slice(start, i).join('');
+}
+
+function isSeparateValueToken(run) {
+  return run.length >= 4 && /[A-Za-z]/.test(run) && /\d/.test(run);
+}
+
+function prepareCredentialText(text) {
+  const nfkc = String(text == null ? '' : text).normalize('NFKC');
+  if (!/\p{Cf}/u.test(nfkc)) return nfkc;
+  const chars = Array.from(nfkc);
+  const boundary = new Set();
+  for (let i = 0; i < chars.length; i += 1) {
+    if (!isCfChar(chars[i])) continue;
+    const left = alnumRunBefore(chars, i - 1);
+    const right = alnumRunAfter(chars, i + 1);
+    if (isSeparateValueToken(left) && isSeparateValueToken(right)) boundary.add(i);
+  }
+  let out = '';
+  for (let i = 0; i < chars.length; i += 1) {
+    if (!isCfChar(chars[i])) {
+      out += chars[i];
+      continue;
+    }
+    if (boundary.has(i) && !out.endsWith('\n')) out += '\n';
+  }
+  return out;
+}
+
+// Detection only. Cyrillic and Greek letters that look like Latin are folded
+// so a homoglyph label cannot skip the credential pattern. The stored secret
+// and the returned text keep the original characters.
+const CONFUSABLES = {};
+function mapConfusables(from, to) {
+  const src = Array.from(from);
+  const dst = Array.from(to);
+  for (let i = 0; i < src.length; i += 1) CONFUSABLES[src[i]] = dst[i];
+}
+mapConfusables('АаВвЕеКкМмНнОоРрСсТтУуХхЅѕІіЈј', 'AaBbEeKkMmHhOoPpCcTtYyXxSsIiJj');
+mapConfusables('ΑαΒΕεΖζΗΙιΚκΜΝΟοΡρΤτΥυΧχ', 'AaBEeZzHIiKkMNOoPpTtYyXx');
+mapConfusables('\u0500\u0501\u051a\u051b\u051c\u051d\u04ba\u04bb\u04c0\u04ae\u04af\u03bd', 'DdQqWwHhIYYv');
+
+function foldConfusables(text) {
+  const raw = String(text || '');
+  if (!/[\u0370-\u03FF\u0400-\u052F]/u.test(raw)) return raw;
+  let changed = false;
+  let out = '';
+  for (const ch of raw) {
+    const mapped = CONFUSABLES[ch];
+    if (mapped) {
+      out += mapped;
+      changed = true;
+    } else {
+      out += ch;
+    }
+  }
+  return changed ? out : raw;
+}
+
+function confusableLabelSpans(prepared, folded) {
+  const spans = [];
+  if (folded === prepared) return spans;
+  for (const source of [CREDENTIAL_VALUE_RE, FLEX_LABEL_RE]) {
+    const re = new RegExp(source.source, 'giu');
+    let m;
+    while ((m = re.exec(folded))) {
+      const label = m[1];
+      const sep = m[2];
+      const value = m[3];
+      const labelStart = m.index;
+      if (prepared.slice(labelStart, labelStart + label.length) === label) continue;
+      const valueStart = labelStart + label.length + sep.length;
+      const origValue = prepared.slice(valueStart, valueStart + value.length);
+      const cleaned = cleanSecretValue(origValue);
+      if (!cleaned || /^\[secret\]$/i.test(cleaned)) continue;
+      spans.push({ valueStart, valueEnd: valueStart + value.length, origValue });
+    }
+  }
+  return spans;
+}
+
+function applyConfusableLabels(prepared) {
+  const folded = foldConfusables(prepared);
+  const spans = confusableLabelSpans(prepared, folded);
+  if (!spans.length) return prepared;
+  spans.sort((a, b) => b.valueStart - a.valueStart || b.valueEnd - a.valueEnd);
+  let out = prepared;
+  let cursor = out.length;
+  for (const span of spans) {
+    if (span.valueEnd > cursor) continue;
+    rememberSecret(span.origValue);
+    out = out.slice(0, span.valueStart) + '[secret]' + out.slice(span.valueEnd);
+    cursor = span.valueStart;
+  }
+  return out;
+}
+
+function labeledCredentialValues(text) {
+  const prepared = prepareCredentialText(text);
+  const folded = foldConfusables(prepared);
+  const values = [];
+  const plain = new RegExp(CREDENTIAL_VALUE_RE.source, 'giu');
+  let m;
+  while ((m = plain.exec(prepared))) values.push(m[3]);
+  for (const span of confusableLabelSpans(prepared, folded)) values.push(span.origValue);
+  return values;
+}
+
 function flexLabel(label) {
   const chars = Array.from(String(label || ''));
   let out = '';
@@ -290,7 +424,7 @@ function sanitizeCredentials(text) {
   // character is still the same token, including inside a label value.
   // Known secrets are removed in normalized form before the label pass, so a
   // spaced echo is not split into a label plus a leftover value.
-  const normalized = normalizeCredentialText(original);
+  const normalized = applyConfusableLabels(prepareCredentialText(original));
   const echoed = redactRememberedValues(normalized);
   const repeated = redactRepeatedBase64(echoed);
   const labeled = repeated
@@ -336,4 +470,5 @@ module.exports = {
   UNICODE_CREDENTIAL_RE,
   CREDENTIAL_SEP,
   UNICODE_PASSWORD_LABEL,
+  labeledCredentialValues,
 };

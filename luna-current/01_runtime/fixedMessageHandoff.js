@@ -578,14 +578,17 @@ function stripUnlabeledSecretTokens(text) {
   });
 }
 
-// Order ids (FE10482931), MT5 logins, and MT5-prefixed logins are not secrets.
-// A token is structural when it is digits, an MT5 login, or a short letter
-// prefix followed by a digit run. High-entropy secrets mix a letter into the
-// digit run, or use a longer prefix.
+// Order ids (FE10482931), MT5 logins, and account-prefixed logins are not secrets.
+// A token is structural when it is digits, an MT5 login, an account prefix
+// (login, acct, account, mt5, mt4, id, user, no) of any length plus the digits
+// glued to it, or a short letter prefix followed by a digit run. High-entropy
+// secrets mix a letter into the digit run, or use a longer prefix that is not
+// an account label.
 function isStructuralId(token) {
   const t = String(token || '');
   if (/^\d{4,}$/.test(t)) return true;
   if (/^MT5\d{4,}$/i.test(t)) return true;
+  if (/^(?:login|account|acct|mt5|mt4|user|id|no)\d+$/i.test(t)) return true;
   if (/^[A-Za-z]{1,6}\d{5,}$/.test(t)) return true;
   return false;
 }
@@ -698,7 +701,12 @@ function hydrateDeclaredSecrets() {
 function rememberInboundSecrets(text) {
   const original = String(text == null ? '' : text);
   if (!original) return;
-  if (credentialSanitizer && credentialSanitizer.CREDENTIAL_VALUE_RE) {
+  if (credentialSanitizer && typeof credentialSanitizer.labeledCredentialValues === 'function') {
+    for (const value of credentialSanitizer.labeledCredentialValues(original)) {
+      rememberExactValue(value);
+      persistDeclaredValue('labeled', value);
+    }
+  } else if (credentialSanitizer && credentialSanitizer.CREDENTIAL_VALUE_RE) {
     const re = new RegExp(credentialSanitizer.CREDENTIAL_VALUE_RE.source, 'giu');
     let labeled;
     while ((labeled = re.exec(original))) {
