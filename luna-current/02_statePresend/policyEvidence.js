@@ -98,23 +98,148 @@ function clientTextsOf(messages) {
   return (messages || []).filter((m) => m && (m.role === 'client' || m.role === 'user')).map((m) => m.text || '');
 }
 
+const CONCEPT_RE = /(daily\s+drawdown|daily\s+loss(?:\s+limit)?|\bdll\b|max(?:imum)?\s+drawdown|max(?:imum)?\s+loss(?:\s+limit)?|\bmll\b)/gi;
+
+function conceptId(phrase) {
+  const p = String(phrase || '');
+  if (/daily|\bdll\b/i.test(p)) return 'dll';
+  if (/max|\bmll\b/i.test(p)) return 'mll';
+  return '';
+}
+
+function conceptBefore(text, index) {
+  const window = String(text || '').slice(Math.max(0, index - 160), index);
+  let last = '';
+  let match;
+  const re = new RegExp(CONCEPT_RE.source, 'gi');
+  while ((match = re.exec(window))) last = match[1];
+  return conceptId(last);
+}
+
+function percentSpans(text) {
+  const out = [];
+  const re = /(?<![\w.])(\d+(?:[.,]\d+)?)\s*(%|percent)(?!\w)/gi;
+  let match;
+  while ((match = re.exec(String(text || '')))) {
+    out.push({ raw: match[0].trim(), value: match[1], index: match.index });
+  }
+  return out;
+}
+
+function moneySpans(text) {
+  const out = [];
+  const re = /(?<![\w.])(?:([$€£])\s*(\d+(?:[.,]\d+)?)|(\d+(?:[.,]\d+)?)\s*(usd|eur|gbp))\b/gi;
+  let match;
+  while ((match = re.exec(String(text || '')))) {
+    const symbol = match[1] || '';
+    const value = match[2] || match[3];
+    const word = match[4] || '';
+    const unit = symbol === '$' || word === 'usd' ? 'usd' : symbol === '€' || word === 'eur' ? 'eur' : 'gbp';
+    out.push({ raw: match[0].trim(), value, unit, index: match.index });
+  }
+  return out;
+}
+
+function ratioSpans(text) {
+  const out = [];
+  const re = /(?<![\w.])(\d+)\s*:\s*(\d+)\b/g;
+  let match;
+  while ((match = re.exec(String(text || '')))) {
+    out.push({ raw: match[0].trim(), value: match[1] + ':' + match[2], index: match.index });
+  }
+  return out;
+}
+
+function evidenceHasPercent(evidence, value) {
+  const escaped = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(?<![\\w.])' + escaped + '\\s*(?:%|percent)(?!\\w)', 'i');
+  const hits = [];
+  const src = String(evidence || '');
+  let match;
+  const global = new RegExp(re.source, 'gi');
+  while ((match = global.exec(src))) hits.push(match.index);
+  return hits;
+}
+
+function evidenceHasMoney(evidence, value, unit) {
+  const escaped = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const symbol = unit === 'usd' ? '\\$' : unit === 'eur' ? '€' : '£';
+  const word = unit;
+  const re = new RegExp('(?:' + symbol + '\\s*' + escaped + '|(?<![\\w.])' + escaped + '\\s*' + word + ')\\b', 'gi');
+  const hits = [];
+  let match;
+  const src = String(evidence || '');
+  while ((match = re.exec(src))) hits.push(match.index);
+  return hits;
+}
+
+function evidenceHasRatio(evidence, value) {
+  const parts = String(value).split(':');
+  const re = new RegExp('(?<![\\w.])' + parts[0] + '\\s*:\\s*' + parts[1] + '\\b', 'g');
+  const hits = [];
+  let match;
+  const src = String(evidence || '');
+  while ((match = re.exec(src))) hits.push(match.index);
+  return hits;
+}
+
+function conceptMatches(draftConcept, evidence, indexes) {
+  if (!indexes.length) return false;
+  if (!draftConcept) {
+    return indexes.some((index) => conceptBefore(evidence, index) === '');
+  }
+  return indexes.some((index) => conceptBefore(evidence, index) === draftConcept);
+}
+
+/**
+ * Every percent, currency amount, and ratio in a public body must appear in
+ * the evidence and, when either side names daily drawdown / DLL or max
+ * drawdown / MLL, that concept must be the same one. daily drawdown and daily
+ * loss are DLL. max drawdown and max loss are MLL.
+ * @returns {string[]}
+ */
+function unsupportedPublicFigures(draft, evidenceText) {
+  const ev = String(evidenceText || '');
+  const bad = [];
+  for (const span of percentSpans(draft)) {
+    const hits = evidenceHasPercent(ev, span.value);
+    const concept = conceptBefore(draft, span.index);
+    if (!hits.length || !conceptMatches(concept, ev, hits)) bad.push(span.raw);
+  }
+  for (const span of moneySpans(draft)) {
+    const hits = evidenceHasMoney(ev, span.value, span.unit);
+    const concept = conceptBefore(draft, span.index);
+    if (!hits.length || !conceptMatches(concept, ev, hits)) bad.push(span.raw);
+  }
+  for (const span of ratioSpans(draft)) {
+    const hits = evidenceHasRatio(ev, span.value);
+    const concept = conceptBefore(draft, span.index);
+    if (!hits.length || !conceptMatches(concept, ev, hits)) bad.push(span.raw);
+  }
+  return T.uniq(bad);
+}
+
 /**
  * @returns {string[]} raw drafted figures that are not supported by the applicable rule
  */
 function unsupportedPolicyNumbers(draft, evidenceText, messages) {
   const ev = String(evidenceText || '').trim();
   if (!ev) return [];
+  const figureBad = unsupportedPublicFigures(draft, ev);
   const clients = clientTextsOf(messages);
   const addon = addonStatus(clients);
   const evidenceFacts = gap.numericFacts(ev)
     .map((f) => ({ ...f, unit: canonUnitName(f.unit), ctx: contextWords(ev, f.raw), win: windowOf(ev, f.raw) }))
     .filter((f) => POLICY_UNITS.has(f.unit));
-  if (!evidenceFacts.length) return [];
+  if (!evidenceFacts.length) return T.uniq(figureBad);
 
   const bad = [];
   for (const raw of gap.numericFacts(draft)) {
     const f = { ...raw, unit: canonUnitName(raw.unit) };
     if (!POLICY_UNITS.has(f.unit)) continue;
+    // Percents, currency, and ratios are judged above, including concept binding.
+    // The older same-fact loop still owns time units.
+    if (f.unit === '%' || f.unit === 'usd' || f.unit === 'eur' || f.unit === 'gbp') continue;
     if (isCustomerSpecificRestate(f, clients)) continue;
 
     const ctx = contextWords(draft, f.raw);
@@ -145,7 +270,7 @@ function unsupportedPolicyNumbers(draft, evidenceText, messages) {
       bad.push(f.raw);
     }
   }
-  return T.uniq(bad);
+  return T.uniq(bad.concat(figureBad));
 }
 
 function isTimeUnit(u) {
@@ -154,6 +279,7 @@ function isTimeUnit(u) {
 
 module.exports = {
   unsupportedPolicyNumbers,
+  unsupportedPublicFigures,
   canonUnitName,
   addonStatus,
   POLICY_UNITS,
