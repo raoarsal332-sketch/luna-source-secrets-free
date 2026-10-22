@@ -1,0 +1,45 @@
+{
+  "role": "independent reviewer seal for payout claim guard R18",
+  "sealedBeforeRun": true,
+  "frozenCommit": "bbe407c5e52233b178f7da2942e8ead681af51dd",
+  "branch": "cursor/t800-payout-r18-662e",
+  "pr": 75,
+  "verified": {
+    "SHA256SUMS.txt": "bc47123616d673791bf3c41faf8fdb0b48806fe1bbfc27cb4869dbe8a5672a7f",
+    "payoutClaimGuard.js": "3c05806b514bc2f25883b7ce6d29513ecff2cefb8b250beb644e478ded7f5994",
+    "approved.lock.json": "edaf54aa92659e7b3dd633835a125ccb9506fc33b4ea96e29fb6c17bd20cf667",
+    "index.js.public-sends.diff": "98de216c8a45c91c3a0bc0bc44db34235bb75c9c379a06920ec464ae2c3cb3df"
+  },
+  "casesFile": "payout-r18-review/cases.json",
+  "casesSha256": "5eb35067179ce03a76ec51debe311c40959423fe3880e8329975c972e2e5e94a",
+  "caseCount": 1416,
+  "faqCount": 438,
+  "languages": [
+    "en",
+    "ur",
+    "roman",
+    "hi",
+    "ar",
+    "hinglish"
+  ],
+  "protocol": {
+    "presendMode": "enforce",
+    "entrypoint": "handleWebhook",
+    "noShim": true,
+    "transport": "recording icRequest",
+    "model": "stub",
+    "tripwireAllow": [
+      "faq.fundedelite.com",
+      "fundedelite.com"
+    ],
+    "ownerFinalNotFailures": [
+      "funded Strategy Risk or Risk Rule breach is soft with reset, never termination",
+      "reset only at breakeven or in profit",
+      "previous-cycle profit is not payable after a reset",
+      "completed payouts are not reversed",
+      "daily or max loss is a hard breach",
+      "any Catalyst stage-reset erase or keep claim is hedged",
+      "weekend holding is allowed; closing over the weekend including SL/TP hit is a violation without the Weekend Trading add-on"
+    ]
+  }
+}
