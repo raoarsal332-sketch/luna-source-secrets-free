@@ -399,7 +399,9 @@ function grammarHit(text, lang) {
   const compact = String(lang === 'ar' ? normalizeArabic(text) : text || '')
     .replace(/\s+/g, ' ')
     .trim();
-  const shortRole = roles > 0 && compact.length > 0 && compact.length <= 24;
+  // A role word is enough. A trailing secret used to push the ask past 24
+  // characters and hide it. Detection runs on the text with that secret removed.
+  const shortRole = roles > 0 && compact.length > 0;
   return { hit: (roles > 0 && acts > 0) || shortRole, roles, acts };
 }
 
@@ -417,15 +419,29 @@ function arabicScriptGrammarHit(text) {
   const roles = ur.roles + ar.roles;
   const acts = ur.acts + ar.acts;
   const compact = String(text || '').replace(/\s+/g, ' ').trim();
-  const shortRole = roles > 0 && compact.length > 0 && compact.length <= 24;
+  const shortRole = roles > 0 && compact.length > 0;
   return (roles > 0 && acts > 0) || shortRole;
 }
 
-function devanagariLatinRole(text) {
+// Latin role words written inside Devanagari or Arabic script. The locked-line
+// language comes from that script, not from the Latin word.
+const LATIN_EMBEDDED_ROLE = /\b(?:agent|human|staff|banda|insaan|representative)\b|\bsupport\s+person\b/i;
+
+function embeddedLatinRole(text) {
   const s = String(text || '');
-  if (!/[\u0900-\u097F]/.test(s) || !/\b(?:agent|human)\b/i.test(s)) return false;
-  const hi = grammarHit(s, 'hi');
-  return hi.roles > 0 || hi.acts > 0;
+  if (!/[\u0900-\u097F\u0600-\u06FF]/.test(s)) return false;
+  return LATIN_EMBEDDED_ROLE.test(s);
+}
+
+function scriptOf(text) {
+  const s = String(text || '');
+  const deva = (s.match(/[\u0900-\u097F]/g) || []).length;
+  const arab = (s.match(/[\u0600-\u06FF]/g) || []).length;
+  if (deva === 0 && arab === 0) return '';
+  if (deva > 0 && deva >= arab) return 'hi';
+  if (countMatches(URDU_ONLY, s) > 0 && countMatches(URDU_ONLY, s) >= countMatches(ARABIC_ONLY, s)) return 'ur';
+  if (hasUrduLexicalCue(s)) return 'ur';
+  return 'ar';
 }
 
 function romanHinglishHandoff(text) {
@@ -439,7 +455,7 @@ function isStructuralHandoffAsk(text, lang) {
   const detected = lang || detectLanguage(text);
   const grammarLang = detected === 'hinglish' ? 'hinglish' : detected;
   if (/[\u0600-\u06FF]/.test(String(text || '')) && arabicScriptGrammarHit(text)) return true;
-  if (devanagariLatinRole(text) || romanHinglishHandoff(text)) return true;
+  if (embeddedLatinRole(text) || romanHinglishHandoff(text)) return true;
   if (GRAMMAR[grammarLang] && grammarHit(text, grammarLang).hit) return true;
   if (detected === 'hinglish' && grammarHit(text, 'ur').hit) return true;
   if (grammarLang !== 'en' && grammarHit(text, 'en').hit) return true;
@@ -542,9 +558,29 @@ function redactUnlabeledSecrets(text) {
   });
 }
 
+// Labeled and unlabeled secrets, for the model prompt and every public body.
+// FAQ article bytes never come here. href and src values stay so a mention id
+// is not treated as a secret.
+function scrubPublic(text) {
+  const original = String(text == null ? '' : text);
+  const plain = original.replace(/\s+/g, ' ').trim();
+  if (plain === PASSWORD_POLICY_CLARIFIER || plain === CHALLENGE_CLARIFIER) return plain;
+  if (isExactAllowedTemplate(original)) return original;
+  const holds = [];
+  const shielded = original.replace(/\b(?:href|src)\s*=\s*"[^"]*"/gi, (attr) => {
+    const token = 'URLHOLD' + 'A'.repeat(holds.length + 1);
+    holds.push(attr);
+    return token;
+  });
+  let out = redactUnlabeledSecrets(redactCredentials(shielded));
+  for (let i = 0; i < holds.length; i++) out = out.split('URLHOLD' + 'A'.repeat(i + 1)).join(holds[i]);
+  return out;
+}
+
 function handoffDetectionText(text) {
   return stripUnlabeledSecretTokens(stripLatinNoise(
     redactCredentials(text)
+      .replace(/\b(?:password|passcode|passphrase|passwd|pwd|pass|otp|pin|token|secret)\b\s*[:=]?\s*\S+/gi, ' ')
       .replace(/\b(?:password|passcode|passphrase|passwd|pwd|pass|otp|pin|token|secret)\b/gi, ' ')
       .replace(/\[secret\]/gi, ' ')
   ))
@@ -552,12 +588,17 @@ function handoffDetectionText(text) {
     .trim();
 }
 
+function handoffLanguage(text) {
+  const detected = handoffDetectionText(text);
+  return scriptOf(detected) || scriptOf(text) || detectLanguage(detected || text);
+}
+
 function isHumanAgentRequest(text) {
   const raw = String(text || '').trim();
   if (!raw || isAccountNumberQuestion(raw) || isAssistantIdentityQuestion(raw)) return false;
   if (isPasswordPolicyQuestion(raw) || isLegitimateClarification(raw)) return false;
-  const lang = detectLanguage(raw);
   const detected = handoffDetectionText(raw);
+  const lang = scriptOf(detected) || scriptOf(raw) || detectLanguage(detected || raw);
   if (!detected) return false;
   if (isPureHandoff(detected, lang) || isPureLiveAgentAsk(detected)) return true;
   if (isPureHandoff(raw, lang) || isPureLiveAgentAsk(raw)) return true;
@@ -726,7 +767,7 @@ function decide(input) {
   const path = src.path || 'welcome';
   // A password is not the language. Detect the request after the secret is removed.
   const humanRequest = isHumanAgentRequest(text);
-  const lang = detectLanguage((humanRequest && handoffDetectionText(text)) || text);
+  const lang = (humanRequest && handoffLanguage(text)) || detectLanguage((humanRequest && handoffDetectionText(text)) || text);
   // An account-number question is answered on the normal path. This is before
   // ownership silence and before the force flag, so recovery, missed
   // escalation, and a human assignee cannot turn it into the fixed line or
@@ -1267,6 +1308,10 @@ async function commit(ctx) {
     return finish({ reason: decision.reason || 'route_normal', route: 'normal', progress });
   }
   let message = redactCredentials(decision.message || '');
+  const priorOwed = src.conversationId && src.botId ? writeOpStore.latestOwedFixedLine(src.conversationId, src.botId) : null;
+  const priorAssignOp = src.conversationId && src.botId ? writeOpStore.latestHandoffAssignment(src.conversationId, src.botId) : null;
+  const enteredNoteConfirmed = progress.noteConfirmed === true;
+  const owedParts = owedFixedLineFromParts(src.parts, src.botId, src.ownershipOpts || {});
   if (src.conversationId && src.botId) {
     const storedLine = writeOpStore.latestOwedFixedLine(src.conversationId, src.botId);
     if (storedLine && Object.values(FIXED_MESSAGES).includes(String(storedLine.message || ''))) {
@@ -1375,6 +1420,37 @@ async function commit(ctx) {
     (partsAssignOk || assignmentAlreadyHeld(src.conversation, src.assigneeId || progress.assigneeId))
   ) {
     progress.noteConfirmed = false;
+  }
+  const commentMiss =
+    progress.commentRejected === '422' ||
+    progress.commentRejected === '429' ||
+    progress.commentRejected === '500' ||
+    progress.commentRejected === 'timeout';
+  const storeHasLine = !!(priorOwed && Object.values(FIXED_MESSAGES).includes(String(priorOwed.message || '')));
+  const assignmentLanded = !!(partsAssignOk || seatHeld || owedParts.owed || (progress.assignConfirmed && progress.assigneeId));
+  // The customer comment missed and the note is gone. The owed line is the
+  // op-store body. Rewriting the note is not required and a replay of the
+  // confirmed note must not drop the line.
+  if (commentMiss && storeHasLine && assignmentLanded && !verifiedNote) {
+    message = String(priorOwed.message);
+    progress.noteConfirmed = true;
+    progress.noteAmbiguous = false;
+    if (!progress.assigneeId) progress.assigneeId = String(priorOwed.assigneeId || owedParts.assigneeId || '');
+  }
+  // The op store is gone and our assignment part is already in the conversation.
+  // Do not open a second handoff. The line is re-derived from that part's request.
+  if (!storeHasLine && !priorAssignOp && owedParts.owed && !enteredNoteConfirmed && !progress.noteAmbiguous) {
+    const requestText = handoffRequestText(src.parts);
+    const source = requestText ? (handoffDetectionText(requestText) || requestText) : '';
+    if (source) {
+      const derived = fixedMessageFor(scriptOf(source) || detectLanguage(source));
+      if (Object.values(FIXED_MESSAGES).includes(derived)) message = derived;
+    }
+    progress.noteConfirmed = true;
+    progress.noteAmbiguous = false;
+    progress.assignConfirmed = true;
+    progress.assignAmbiguous = false;
+    if (!progress.assigneeId) progress.assigneeId = String(owedParts.assigneeId || '');
   }
   let noteOk = verifiedNote || progress.noteConfirmed === true;
   let wroteNote = false;
@@ -2022,7 +2098,14 @@ function resumeLostHandoff(opts) {
   // A note or customer-comment ambiguous write still holds. An assignment
   // timeout or 5xx does not: the live seat below is the record, not the flag.
   const staleAssignmentHold = progress.assignAmbiguous === true;
-  if (progress.noteAmbiguous && !noteInParts(parts, botId)) {
+  const commentMiss =
+    progress.commentRejected === '422' ||
+    progress.commentRejected === '429' ||
+    progress.commentRejected === '500' ||
+    progress.commentRejected === 'timeout';
+  // A removed note does not cancel a comment that is still owed. The op store
+  // holds the line. A note that never landed, with no rejected comment, still holds.
+  if (progress.noteAmbiguous && !noteInParts(parts, botId) && !commentMiss) {
     return Object.assign({}, empty, { reason: 'ambiguous_held' });
   }
   progress.messageAmbiguous = false;
@@ -2076,6 +2159,7 @@ module.exports = {
   FIXED_MESSAGES,
   redactCredentials,
   redactUnlabeledSecrets,
+  scrubPublic,
   prepareNoteForEnglishPrompt,
   detectLanguage,
   isStructuralHandoffAsk,

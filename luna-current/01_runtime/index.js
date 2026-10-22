@@ -624,7 +624,7 @@ async function ensureInternalNoteEnglish(text, label) {
   // Redact the original before the translation prompt, and redact the model
   // output before it can enter the note. A canary must not reach either.
   const original = String(text || '').trim();
-  const raw = fixedMessageHandoff.redactCredentials(original);
+  const raw = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(original));
   if (!raw) return raw;
   if (!looksNonEnglishNote(raw)) return raw;
   const promptText = raw;
@@ -640,9 +640,9 @@ async function ensureInternalNoteEnglish(text, label) {
         { role: 'user', content: (label ? '[' + label + ']\n' : '') + promptText },
       ],
     });
-    const out = fixedMessageHandoff.redactCredentials(
+    const out = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(
       (((ai.choices[0] || {}).message || {}).content || '').trim()
-    );
+    ));
     if (out) return out;
   } catch (e) {
     console.error('NOTE_EN_OVERLAY fail', label || '', e && e.message);
@@ -1367,7 +1367,7 @@ function clientMessagesAfter(parts, afterUnix, conversation) {
 }
 
 async function summarizeEscalationsClientBatch(messages) {
-  const joined = (messages || []).map((m, i) => (i + 1) + '. ' + m.body).join('\n');
+  const joined = fixedMessageHandoff.scrubPublic((messages || []).map((m, i) => (i + 1) + '. ' + m.body).join('\n'));
   try {
     const ai = await openai.chat.completions.create({
       model: control.getModel(),
@@ -2808,13 +2808,10 @@ async function fetchConversation(id) {
 }
 
 async function postReply(conversationId, messageType, body, opts) {
-  // Notes are already Intercom HTML (mentions, <b>, <br>). Never run toHtml on them ,
-  // escaping turns <br>/<a> into visible code and breaks teammate @mentions.
-  // Redact before either shape is sent so a canary cannot leave in a note or a comment.
-  const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
+  const redacted = (opts&&opts.keepApprovedBytes&&messageType!=='note')?String(body||''):fixedMessageHandoff.scrubPublic(String(body||''));
   const exactTemplate = messageType !== 'note' && fixedMessageHandoff.isExactAllowedTemplate(redacted);
   let finalBody = messageType === 'note' || (opts && opts.verbatim) || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
-  if(opts&&opts.keepApprovedBytes&&messageType!=='note'&&(''+body).replace(/\p{Cf}/gu,'')===redacted)finalBody=body;
+  if(opts&&opts.keepApprovedBytes&&messageType!=='note')finalBody=body;
   if (opts && opts.owedFixedLine && messageType !== 'note') {
     writeOpStore.releaseUnknownReply(conversationId, messageType, finalBody, ARSAL_ID);
   }
@@ -3013,7 +3010,7 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
         model: control.getModel(),
         messages: [
           { role: 'system', content: control.getPrompt() },
-          { role: 'user', content: 'The client repeated this question: ' + stripHtml(userPart.body || '') +
+          { role: 'user', content: 'The client repeated this question: ' + fixedMessageHandoff.scrubPublic(stripHtml(userPart.body || '')) +
             '\n\nApproved answer to preserve exactly in meaning, facts, numbers, eligibility, and policy:\n' + finalBody +
             '\n\nBriefly acknowledge and explain it in new natural wording. Do not add or remove any rule or next step. Output only the client-facing reply.' },
         ],
@@ -3304,13 +3301,13 @@ const OWNER_CMD_SYSTEM_OVERLAY = [
 
 async function interpretOwnerCommandViaLlm(conversationId, full, plain, authorId) {
   const bits = contactBits(full);
-  const history = fixedMessageHandoff.redactCredentials(buildHistory(full, 50));
+  const history = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(buildHistory(full, 50)));
   const who = authorId === ARSAL_ID ? 'Arsal (owner)' : authorId === JERRY_ID ? 'Jerry' : 'authorized admin';
   const userMsg =
     'DIRECT COMMAND from ' +
     who +
     ':\n' +
-    fixedMessageHandoff.redactCredentials(String(plain || '').trim()) +
+    fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(String(plain || '').trim())) +
     '\n\nClient name: ' +
     (bits.name || '') +
     '\nClient email: ' +
@@ -4282,6 +4279,17 @@ const handleWebhook = async (req, res) => {
     }
     if (accountQuestionAnswered) return res.sendStatus(200);
 
+    // A password-policy question on a new ticket used to die in Fin-wait.
+    // It takes the same clarifier or approved answer as a later empty draft.
+    if (topic === 'conversation.user.created' && fixedMessageHandoff.isPasswordPolicyQuestion(text)) {
+      const createdPolicy = fixedMessageHandoff.passwordPolicyPublicLine(text, '');
+      if (createdPolicy) {
+        await postClientCommentOnce(conversationId, createdPolicy, latestUser, clientName);
+        console.log('FIN_WAIT password-policy user.created', conversationId);
+        return res.sendStatus(200);
+      }
+    }
+
     // Fin / Elite AI wait , hard gate before FAQ/AI/deterministic public replies
     if (shouldWaitForFin(full, text, topic)) {
       return res.sendStatus(200);
@@ -4495,8 +4503,8 @@ const handleWebhook = async (req, res) => {
       }
     }
 
-    const history = fixedMessageHandoff.redactCredentials(buildHistory(full, 50));
-    const latestForPrompt = fixedMessageHandoff.redactCredentials(text);
+    const history = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(buildHistory(full, 50)));
+    const latestForPrompt = fixedMessageHandoff.redactUnlabeledSecrets(fixedMessageHandoff.redactCredentials(text));
     let userMsg =
       'Client name: ' +
       (bits.name || '') +
