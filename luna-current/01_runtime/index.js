@@ -119,7 +119,7 @@ async function icRequest(method, url, data, tag) {
     writeOpStore.set(opId, {
       status: 'pending',
       attempts: prev && Number(prev.attempts) ? Number(prev.attempts) : 0,
-      kind: prev && prev.kind,
+      kind: (prev && prev.kind) || (data && data.message_type) || '',
     });
   }
 
@@ -184,7 +184,7 @@ async function icRequest(method, url, data, tag) {
       writeOpStore.set(opId, {
         status: 'unknown',
         attempts: Number(prior.attempts) || 0,
-        kind: prior.kind,
+        kind: prior.kind || (data && data.message_type) || '',
       });
     }
     console.error('IC_REQ_UNKNOWN', tag, url, 'write outcome unknown , not retried');
@@ -3797,7 +3797,7 @@ async function commitFixedMessageHandoff(opts) {
     conversation: full,
     progress,
     requireLiveAssignee: true,
-    recheckHold: o.path === 'recovery' || o.recheckHold === true || !!(savedHandoff && savedHandoff.assignAmbiguous),
+    recheckHold: o.path === 'recovery' || o.recheckHold === true || !!(savedHandoff && (savedHandoff.assignAmbiguous || savedHandoff.noteAmbiguous)),
     transport: o.transport || {
       postNote: (html) => postReply(conversationId, 'note', html),
       assign: async (id) => {
@@ -4236,7 +4236,11 @@ const handleWebhook = async (req, res) => {
     {
       const stPackH = getConvState(conversationId);
       const prog = stPackH.state && stPackH.state.fixedHandoff;
-      if (prog && prog.noteConfirmed && !prog.messageSent) {
+      if (
+        prog &&
+        !prog.messageSent &&
+        (prog.noteConfirmed || prog.noteAmbiguous || prog.assignAmbiguous || prog.phase === 'assignment-pending')
+      ) {
         /* FIXED_MESSAGE_HANDOFF_R3:recovery */
         if (fixedMessageHandoff.isAccountNumberQuestion(text)) {
           console.log('FIXED_HANDOFF recovery account-question exemption', conversationId, {
@@ -4330,6 +4334,12 @@ const handleWebhook = async (req, res) => {
       if (approvedFaqBody) {
         console.log('WELCOME_FAQ kb answer', conversationId);
         await postClientCommentOnce(conversationId, approvedFaqBody, latestUser, clientName);
+        return res.sendStatus(200);
+      }
+      const challengeClarifier = fixedMessageHandoff.ambiguousChallengeClarifier(text);
+      if (challengeClarifier) {
+        console.log('WELCOME_FAQ clarifier', conversationId);
+        await postClientCommentOnce(conversationId, challengeClarifier, latestUser, clientName);
         return res.sendStatus(200);
       }
     }
@@ -4924,6 +4934,12 @@ const handleWebhook = async (req, res) => {
         });
         return res.sendStatus(200);
       }
+      const emptyClarifier = fixedMessageHandoff.ambiguousChallengeClarifier(text);
+      if (emptyClarifier) {
+        console.log('WELCOME_FAQ clarifier', conversationId);
+        await postClientCommentOnce(conversationId, emptyClarifier, latestUser, clientName);
+        return res.sendStatus(200);
+      }
       console.log('SKIP empty reply body', conversationId);
       return res.sendStatus(200);
     }
@@ -5249,6 +5265,13 @@ const handleWebhook = async (req, res) => {
         console.error('PRESEND_MISSED_ESCALATION_ESCALATE_ERR', e && e.message);
       }
       return res.sendStatus(200);
+    }
+    {
+      const heldClarifier = fixedMessageHandoff.ambiguousChallengeClarifier(text);
+      if (heldClarifier) {
+        console.log('WELCOME_FAQ clarifier', conversationId);
+        await postClientCommentOnce(conversationId, heldClarifier, latestUser, clientName);
+      }
     }
     return res.sendStatus(200);
     } finally {

@@ -1104,6 +1104,29 @@ function ambiguousWrite(reason) {
   return reason === '500' || reason === 'timeout' || reason === 'partial';
 }
 
+function releaseStaleNoteHold(progress, src) {
+  if (!progress || progress.noteAmbiguous !== true) return;
+  const parts = src && src.parts;
+  const botId = src && src.botId;
+  if (noteInParts(parts, botId) || noteAlreadyPresent(parts, botId)) {
+    progress.noteAmbiguous = false;
+    progress.noteConfirmed = true;
+    return;
+  }
+  // The parts still have no note, so the timeout or HTTP 500 did not land.
+  // failed-confirmed lets the same note body be tried once. The customer
+  // line, when one is already owed, stays the body stored at owe-time.
+  progress.noteAmbiguous = false;
+  progress.noteConfirmed = false;
+  if (src && src.conversationId && src.botId) {
+    writeOpStore.confirmNoteDidNotLand({
+      conversationId: src.conversationId,
+      madeBy: src.botId,
+      body: redactCredentials(src.noteHtml || ''),
+    });
+  }
+}
+
 function releaseStaleAssignmentHold(progress, src) {
   if (!progress || progress.assignAmbiguous !== true) return;
   const wanted = String((src && src.assigneeId) || progress.assigneeId || '');
@@ -1166,9 +1189,24 @@ async function commit(ctx) {
   if (decision.route === 'normal' || decision.action === 'route_normal') {
     return finish({ reason: decision.reason || 'route_normal', route: 'normal', progress });
   }
-  const message = redactCredentials(decision.message || '');
+  let message = redactCredentials(decision.message || '');
+  if (src.conversationId && src.botId) {
+    const storedLine = writeOpStore.latestOwedFixedLine(src.conversationId, src.botId);
+    if (storedLine && Object.values(FIXED_MESSAGES).includes(String(storedLine.message || ''))) {
+      message = String(storedLine.message);
+    }
+  }
   if (!message || !Object.values(FIXED_MESSAGES).includes(message)) {
     return finish({ reason: 'no_fixed_message', withhold: true, progress });
+  }
+  if (src.conversationId && src.botId) {
+    writeOpStore.rememberOwedFixedLine({
+      conversationId: src.conversationId,
+      madeBy: src.botId,
+      assigneeId: String(src.assigneeId || progress.assigneeId || ''),
+      message,
+      language: languageForFixedMessage(message),
+    });
   }
   Object.assign(
     progress,
@@ -1187,7 +1225,10 @@ async function commit(ctx) {
   // message, a restart, or an op-store wipe passes recheckHold and the live
   // assignee is read again. Applied: post once. Still the bot or empty: retry.
   // A same-turn replay without that signal keeps the hold.
-  if (src.recheckHold) releaseStaleAssignmentHold(progress, src);
+  if (src.recheckHold) {
+    releaseStaleAssignmentHold(progress, src);
+    releaseStaleNoteHold(progress, src);
+  }
   // A stored "confirmed" flag is not enough after the conversation parts are
   // gone. Replay rewrites the note and the assignment, then posts the fixed
   // line only when those writes validate. An ambiguous hold is left alone.
@@ -1304,6 +1345,7 @@ async function commit(ctx) {
       madeBy: src.botId,
       assigneeId: progress.assigneeId,
       message,
+      language: languageForFixedMessage(message),
     });
   }
   if (!progress.assignConfirmed && !assignmentAlreadyHeld(src.conversation, progress.assigneeId)) {
@@ -1488,6 +1530,32 @@ function isWelcomeKbFigureQuestion(text) {
   return q === 'what is the daily loss limit'
     || q === 'how does the profit target work'
     || q === 'what is the leverage';
+}
+
+const CHALLENGE_CLARIFIER = 'Please tell me which challenge you mean.';
+
+// A welcome ask that does not name a product, and whose FAQ ranking is empty
+// or tied, gets the challenge clarifier. A tied rank is not an answer and it
+// is not silence.
+function ambiguousChallengeClarifier(text) {
+  const raw = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!raw || isLegitimateClarification(raw) || isPasswordPolicyQuestion(raw)) return '';
+  if (isWelcomeKbFigureQuestion(raw)) return '';
+  if (!/\bchallenge\b/i.test(raw)) return '';
+  if (/\b(?:catalyst|instant|flash|lite|1[\s-]*step|2[\s-]*step|one[\s-]*step|two[\s-]*step|free\s*retry)\b/i.test(raw)) return '';
+  let ranked = [];
+  try {
+    const faq = require('./faq-kb');
+    ranked = faq && typeof faq.rankArticles === 'function' ? faq.rankArticles(raw) : [];
+  } catch (_) {
+    ranked = [];
+  }
+  const top = ranked[0];
+  const second = ranked[1];
+  const empty = !top;
+  const ambiguous = !!(top && second && Number(second.score) === Number(top.score));
+  if (!empty && !ambiguous) return '';
+  return CHALLENGE_CLARIFIER;
 }
 
 function approvedFaqCustomerBody(text) {
@@ -1706,11 +1774,16 @@ function activeOwedFixedLine(src) {
   }
   const rec = convId && botId ? writeOpStore.latestOwedFixedLine(convId, botId) : null;
   const assigneeId = String((rec && rec.assigneeId) || fromParts.assigneeId || '');
+  // The body stored at owe-time is the line, including when the assignment has
+  // not landed yet. The retry turn's text does not choose a different line.
+  const stored = rec && Object.values(FIXED_MESSAGES).includes(String(rec.message || '')) ? String(rec.message) : '';
+  if (stored) {
+    return { message: stored, assigneeId, priorText: fromParts.priorText || '' };
+  }
   const live = liveAdminAssignee(o.full);
   const landed = fromParts.owed || (!!assigneeId && live === assigneeId && !!rec);
   if (!landed || (!rec && !fromParts.owed)) return null;
-  let message = rec && Object.values(FIXED_MESSAGES).includes(String(rec.message || '')) ? rec.message : '';
-  if (!message) message = fixedMessageFor(detectLanguage(fromParts.priorText || o.latestText || ''));
+  const message = fixedMessageFor(detectLanguage(fromParts.priorText || o.latestText || ''));
   if (!Object.values(FIXED_MESSAGES).includes(message)) return null;
   return { message, assigneeId, priorText: fromParts.priorText || '' };
 }
@@ -1838,6 +1911,8 @@ module.exports = {
   hasPendingHandoffCase,
   plainFaqCustomerLine,
   isWelcomeKbFigureQuestion,
+  ambiguousChallengeClarifier,
+  CHALLENGE_CLARIFIER,
   approvedFaqCustomerBody,
   isApprovedFaqAnswer,
   faqTeamReviewBlocked,

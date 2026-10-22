@@ -88,6 +88,14 @@ function assignmentOpKey(conversationId, adminId, assigneeId) {
 // up to this bound, and never as a second customer line.
 const ASSIGNMENT_RETRY_BOUND = 5;
 
+function confirmUnknownMiss(key, patch) {
+  const prev = get(key);
+  if (!prev || prev.status !== 'unknown') return null;
+  const attempts = Number(prev.attempts || 0) + 1;
+  if (attempts > ASSIGNMENT_RETRY_BOUND) return null;
+  return set(key, Object.assign({}, prev, patch, { attempts }));
+}
+
 function confirmAssignmentDidNotLand(input) {
   const src = input || {};
   const conversationId = String(src.conversationId || '');
@@ -95,19 +103,48 @@ function confirmAssignmentDidNotLand(input) {
   const assigneeId = String(src.assigneeId || '');
   if (!conversationId || !madeBy || !assigneeId) return null;
   const key = assignmentOpKey(conversationId, madeBy, assigneeId);
-  const prev = get(key);
-  if (!prev || prev.status !== 'unknown') return null;
-  const attempts = Number(prev.attempts || 0) + 1;
-  if (attempts > ASSIGNMENT_RETRY_BOUND) return null;
-  return set(key, Object.assign({}, prev, {
+  return confirmUnknownMiss(key, {
     status: 'failed-confirmed',
     reason: 'assignment-did-not-land',
-    kind: prev.kind || 'assignment',
+    kind: 'assignment',
     conversationId,
     madeBy,
     assigneeId,
-    attempts,
-  }));
+  });
+}
+
+// Same bytes icRequest posts for an internal note.
+function noteRequestData(adminId, body) {
+  return {
+    message_type: 'note',
+    type: 'admin',
+    admin_id: adminId,
+    body: body,
+  };
+}
+
+function noteOpKey(conversationId, adminId, body) {
+  const url = 'https://api.intercom.io/conversations/' + String(conversationId || '') + '/reply';
+  return opKey('post', url, noteRequestData(adminId, body));
+}
+
+// A live re-check that the note is not in the parts confirms the unknown note
+// did not land. failed-confirmed is not replay-suppressed, so the same note
+// body is tried once. The customer line stays the body stored at owe-time.
+function confirmNoteDidNotLand(input) {
+  const src = input || {};
+  const conversationId = String(src.conversationId || '');
+  const madeBy = String(src.madeBy || '');
+  const body = String(src.body || '');
+  if (!conversationId || !madeBy || !body) return null;
+  const key = noteOpKey(conversationId, madeBy, body);
+  return confirmUnknownMiss(key, {
+    status: 'failed-confirmed',
+    reason: 'note-did-not-land',
+    kind: 'note',
+    conversationId,
+    madeBy,
+  });
 }
 
 function hasErrorPayload(data) {
@@ -228,18 +265,23 @@ function rememberOwedFixedLine(input) {
   const key = owedFixedLineKey(conversationId, madeBy);
   const prev = get(key);
   if (prev && prev.messageSent) return prev;
-  const message = String(src.message || '');
-  const idempotencyKey = crypto
-    .createHash('sha256')
-    .update(['fixed-line', conversationId, madeBy, message].join('\n'))
-    .digest('hex');
+  // The first owed body is the line. A later turn must not replace it with a
+  // line recomputed from that turn's text.
+  const incoming = String(src.message || '');
+  const message = prev && prev.message ? String(prev.message) : incoming;
+  if (!message) return prev || null;
+  const language = prev && prev.language ? String(prev.language) : String(src.language || '');
+  const idempotencyKey = prev && prev.idempotencyKey
+    ? prev.idempotencyKey
+    : crypto.createHash('sha256').update(['fixed-line', conversationId, madeBy, message].join('\n')).digest('hex');
   return set(key, {
     status: 'confirmed',
     kind: 'owed-fixed-line',
     conversationId,
     madeBy,
-    assigneeId: String(src.assigneeId || (prev && prev.assigneeId) || ''),
+    assigneeId: String((prev && prev.assigneeId) || src.assigneeId || ''),
     message,
+    language,
     idempotencyKey,
     messageSent: false,
   });
@@ -304,6 +346,9 @@ module.exports = {
   assignmentRequestData,
   assignmentOpKey,
   confirmAssignmentDidNotLand,
+  noteRequestData,
+  noteOpKey,
+  confirmNoteDidNotLand,
   ASSIGNMENT_RETRY_BOUND,
   hasErrorPayload,
   isValidWriteSuccess,
