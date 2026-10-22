@@ -296,10 +296,18 @@ function scoreWords(text, words) {
   return n;
 }
 
+// Roman Urdu function words. These outweigh English fillers (please, sir, hi)
+// so a mixed line such as "janab please mujhe agent chahiye" stays Urdu.
+const ROMAN_URDU_CUES = ['mujhe', 'chahiye', 'hai', 'karna', 'baat', 'kisi', 'se', 'ko', 'ka'];
+const ENGLISH_FILLER = ['please', 'sir', 'hi'];
+
 function detectLatinLanguage(text) {
   const scores = {};
   for (const lang of Object.keys(LATIN_MARKERS)) scores[lang] = scoreWords(text, LATIN_MARKERS[lang]);
   const south = scoreWords(text, SHARED_SOUTH_ASIAN);
+  if (scoreWords(text, ROMAN_URDU_CUES) > 0) {
+    scores.en = Math.max(0, (scores.en || 0) - scoreWords(text, ENGLISH_FILLER));
+  }
   let best = 'en';
   let bestScore = scores.en || 0;
   for (const lang of Object.keys(scores)) {

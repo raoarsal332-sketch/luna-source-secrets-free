@@ -4284,12 +4284,16 @@ const handleWebhook = async (req, res) => {
     if (accountQuestionAnswered) return res.sendStatus(200);
 
     // A password-policy question on a new ticket used to die in Fin-wait.
-    // It takes the same clarifier or approved answer as a later empty draft.
-    if (topic === 'conversation.user.created' && fixedMessageHandoff.isPasswordPolicyQuestion(text)) {
+    // A fresh user.replied (same age window as a new ticket) took the same silent
+    // path. Both take the clarifier or approved answer, before Fin-wait.
+    const freshUserReplied = topic === 'conversation.user.replied' &&
+      conversationAgeSec(full) >= 0 &&
+      conversationAgeSec(full) < FIN_FRESH_CONV_SEC;
+    if ((topic === 'conversation.user.created' || freshUserReplied) && fixedMessageHandoff.isPasswordPolicyQuestion(text)) {
       const createdPolicy = fixedMessageHandoff.passwordPolicyPublicLine(text, '');
       if (createdPolicy) {
         await postClientCommentOnce(conversationId, createdPolicy, latestUser, clientName);
-        console.log('FIN_WAIT password-policy user.created', conversationId);
+        console.log(topic === 'conversation.user.created' ? 'FIN_WAIT password-policy user.created' : 'FIN_WAIT password-policy fresh user.replied', conversationId);
         return res.sendStatus(200);
       }
     }

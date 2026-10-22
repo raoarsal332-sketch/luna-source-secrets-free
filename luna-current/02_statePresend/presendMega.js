@@ -127,6 +127,36 @@ function warn(code, detail) {
   return { code, detail };
 }
 
+// Digit runs that are not a second trading account. Order ids (a short letter
+// prefix, or an order/invoice/receipt label), digits inside a receipt URL, and
+// account numbers the customer actually wrote. A bare number from neither stays
+// a foreign account for CONVERSATION_CONTRADICTION.
+function collectStructuralDigitRuns(text, into) {
+  const s = String(text || '');
+  let m;
+  const orderRe = /\b[A-Za-z]{1,6}(\d{5,12})\b/g;
+  while ((m = orderRe.exec(s))) into.add(m[1]);
+  const labeledRe = /\b(?:order|invoice|receipt)\s*(?:id|number|no\.?|#)?\s*[:#-]?\s*(\d{5,12})\b/gi;
+  while ((m = labeledRe.exec(s))) into.add(m[1]);
+  const urlRe = /https?:\/\/[^\s<>"')]+/gi;
+  while ((m = urlRe.exec(s))) {
+    const runs = m[0].match(/\d{5,12}/g) || [];
+    for (const n of runs) into.add(n);
+  }
+}
+
+function exemptStructuralNumberRuns(draft, clientTexts) {
+  const out = new Set();
+  collectStructuralDigitRuns(draft, out);
+  for (const text of clientTexts || []) {
+    collectStructuralDigitRuns(text, out);
+    for (const n of T.extractAccountNumbers(text)) out.add(n);
+    const mt5 = String(text || '').match(/\bMT5(\d{4,12})\b/gi) || [];
+    for (const tok of mt5) out.add(String(tok).replace(/^MT5/i, ''));
+  }
+  return out;
+}
+
 /**
  * Main entry.
  */
@@ -252,8 +282,13 @@ function validate(draft, ctx) {
   const known = state.known_details || {};
   if (known.account_number) {
     const nums = T.extractAccountNumbers(d).filter((n) => n !== known.account_number);
+    const clientTexts = messages.filter((m) => m.role === 'client').map((m) => m.text);
     const supported = new Set(T.extractAccountNumbers(messages.map((m) => m.text).join(' ')));
-    const foreign = nums.filter((n) => !supported.has(n));
+    // Order-id digit runs and receipt-URL digit runs are not other accounts.
+    // The customer's own account numbers (already in the message text) stay too.
+    // A bare number the customer never stated is still a foreign account.
+    const exempt = exemptStructuralNumberRuns(d, clientTexts);
+    const foreign = nums.filter((n) => !supported.has(n) && !exempt.has(n));
     if (foreign.length) hardFails.push(fail(HARD.CONVERSATION_CONTRADICTION, `Mentions account ${foreign.join(', ')} but the client's account is ${known.account_number}.`, `The client's account number is ${known.account_number}. Do not mention any other account number.`));
   }
   for (const c of state.recent_corrections || []) {
