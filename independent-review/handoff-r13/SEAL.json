@@ -1,0 +1,14 @@
+{
+  "sealedBeforeRun": true,
+  "casesFile": "independent-review/handoff-r13/cases.json",
+  "sha256": "56d0c9b801881ba8a15d780404cff90f24c73afb585828ac6c7c7d7ec03d0610",
+  "caseCount": 294,
+  "corpusCount": 276,
+  "recoveryCount": 18,
+  "frozenCommit": "d769d0aa25143698a804936991eb239cdfa0fb15",
+  "r11Commit": "1a5c35f754d5d5e80336a24b7371676e52ce9bf6",
+  "r12Commit": "b9ebaacc83e7d15f028799f7ba9139006ded19b7",
+  "baselineCommit": "e999d3c8caf327bf9a102e5ba562d9c114a92109",
+  "reportSha256": "bab7cd19feff1c67b3587f3bb6710c1ae20d9e3bc114338965577853e393443d",
+  "note": "Hash of cases.json committed before any candidate execution. cases.json must not be regenerated after results are observed."
+}
