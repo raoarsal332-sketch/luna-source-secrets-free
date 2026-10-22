@@ -419,7 +419,7 @@ function secretToken(n, kind) {
 }
 
 function rawSecret(token) {
-  const m = String(token || '').match(/[A-Za-z0-9]{8,}/);
+  const m = String(token || '').match(/Zq8\d{4}kLm/);
   return m ? m[0] : '';
 }
 
@@ -1393,7 +1393,7 @@ function summarize(rows) {
   }
   const summary = summarize(rows);
   summary.sealSha256 = crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex');
-  summary.caseIds = rows.map((r) => ({ id: r.id, ok: r.ok, product: r.product, leak: r.leak, duplicate: r.duplicate, recovery: r.recovery, soft: r.soft }));
+  summary.caseIds = rows.map((r) => ({ id: r.id, ok: r.ok, product: r.product, leak: r.leak, duplicate: r.duplicate, recovery: r.recovery, soft: r.soft, detail: r.detail || '' }));
   const outPath = process.env.LUNA_REVIEW_OUT || path.join(stateDir, 'result.json');
   fs.writeFileSync(outPath, JSON.stringify(summary));
   process.stderr.write(JSON.stringify({
