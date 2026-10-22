@@ -449,7 +449,7 @@ async function runTurn(turn, stateDir) {
     remote[turn.convId] = buildConv(turn);
   } else if (!remote[turn.convId]) {
     remote[turn.convId] = buildConv(turn);
-  } else if (turn.appendUser) {
+  } else     if (turn.appendUser) {
     const conv = remote[turn.convId];
     conv.conversation_parts.conversation_parts.push({
       id: turn.partId || 'user-next-' + recording.length,
@@ -458,8 +458,10 @@ async function runTurn(turn, stateDir) {
       created_at: Math.floor(Date.now() / 1000),
       author: { type: 'user', id: 'user-1', name: turn.clientName || '', email: 'user@example.test' },
     });
-    if (turn.assignee != null) conv.admin_assignee_id = String(turn.assignee);
-    if (turn.team != null) conv.team_assignee_id = String(turn.team);
+    // A follow-up turn carries the default bot assignee. Writing that default
+    // back would undo an assignment this conversation already holds.
+    if (turn.assignee != null && String(turn.assignee) !== '10118526') conv.admin_assignee_id = String(turn.assignee);
+    if (turn.team != null && String(turn.team) !== '0') conv.team_assignee_id = String(turn.team);
   }
   saveRemote(stateDir, remote);
   const req = { body: { topic: turn.topic || 'conversation.user.replied', data: { item: { id: String(turn.convId) } } } };
@@ -527,6 +529,8 @@ async function runCase(message) {
     let parsed = null;
     try { parsed = JSON.parse(w.body); } catch (_) { parsed = null; }
     if (!parsed) continue;
+    // A rejected or timed-out request is not a public line. Only an applied write counts.
+    if (w.applied !== true) continue;
     if (parsed.message_type === 'comment') publicBodies.push(redact(parsed.body || ''));
     if (parsed.message_type === 'note') noteBodies.push(redact(parsed.body || ''));
   }

@@ -123,7 +123,8 @@ function main() {
     process.exit(2);
   }
   const { cases, hash } = assertSeal();
-  const sharedDir = path.join('/tmp', 'r12-review-shared-' + path.basename(runtimeRoot));
+  const runtimeTag = sha256(runtimeRoot).slice(0, 12);
+  const sharedDir = path.join('/tmp', 'r12-review-shared-' + runtimeTag);
   fs.rmSync(sharedDir, { recursive: true, force: true });
   fs.mkdirSync(sharedDir, { recursive: true });
   const shared = cases.filter((c) => !c.isolate);
@@ -134,7 +135,7 @@ function main() {
   for (const cse of cases) {
     let raw;
     if (cse.isolate) {
-      const dir = path.join('/tmp', 'r12-review-iso-' + cse.id);
+      const dir = path.join('/tmp', 'r12-review-iso-' + runtimeTag + '-' + cse.id);
       fs.rmSync(dir, { recursive: true, force: true });
       raw = runIsolated(cse, runtimeRoot, dir);
     } else {
