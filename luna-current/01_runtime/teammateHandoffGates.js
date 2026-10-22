@@ -65,20 +65,152 @@ function isHumanTeammatePublicReply(part, opts) {
   const a = (part && part.author) || {};
   if (!part) return false;
   const pt = String(part.part_type || '');
-  if (pt !== 'comment' && pt !== 'assignment' && pt !== 'open') return false;
-  // Real human teammates (and Arsal's admin seat) post as Intercom author type 'admin'.
-  // 'bot' is any bot/workflow author (Luna's own Elite AI seat, Fin, Operator, or a third-party
-  // automation) and must never count as a "human teammate already replied" (fail closed).
-  if (a.type !== 'admin') return false;
+  if (pt === 'note') return false;
+  // 'admin' is the usual Intercom teammate type. 'teammate' is the same person when the
+  // payload uses that author type. 'bot' is never a human reply.
+  // A missing part_type with a real body is treated as public: dropping it would let the
+  // bot speak over a human whose payload omitted part_type.
+  const knownPublic = pt === 'comment' || pt === 'assignment' || pt === 'open';
+  const missingPartType = pt === '';
+  if (!knownPublic && !missingPartType) return false;
+  const type = String(a.type || '');
+  if (type !== 'admin' && type !== 'teammate') return false;
   const id = String(a.id || '');
   if (id && (id === arsalId || id === eliteAiId)) return false;
   // Elite AI / Fin by name even if id missing in fixtures
   if (/elite\s*ai|\bfin\b/i.test(String(a.name || ''))) return false;
   const body = stripHtml(part.body || '');
   if (!body) return false;
-  // Ignore empty assignment stubs
-  if (pt !== 'comment' && body.length < 3) return false;
+  // Ignore empty assignment stubs. A missing part_type is not a stub: any body counts.
+  if (knownPublic && pt !== 'comment' && body.length < 3) return false;
   return true;
+}
+
+function teamLabel(full) {
+  if (!full || typeof full !== 'object') return '';
+  const team = full.team_assignee || full.team || {};
+  const named = team && typeof team === 'object' ? team.name : '';
+  return String(named || full.team_assignee_name || full.team_name || '');
+}
+
+function readAssignee(full) {
+  if (!full || typeof full !== 'object') return { id: '', type: '' };
+  const raw = full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
+  const obj =
+    (full.assignee && typeof full.assignee === 'object' && full.assignee) ||
+    (full.admin_assignee && typeof full.admin_assignee === 'object' && full.admin_assignee) ||
+    null;
+  const objId = obj && obj.id != null ? String(obj.id) : '';
+  const id = raw && raw !== '0' ? raw : objId && objId !== '0' ? objId : '';
+  return { id, type: obj ? String(obj.type || '') : '' };
+}
+
+function isBotSeat(id, opts) {
+  const s = String(id || '');
+  if (!s || s === '0') return true;
+  const arsalId = String((opts && opts.arsalId) || '');
+  const eliteAiId = String((opts && opts.eliteAiId) || '');
+  return s === arsalId || s === eliteAiId;
+}
+
+function isAmbiguousAssignee(full) {
+  if (!full || typeof full !== 'object') return false;
+  const raw = full.admin_assignee_id != null ? String(full.admin_assignee_id) : '';
+  const obj =
+    (full.assignee && typeof full.assignee === 'object' && full.assignee) ||
+    (full.admin_assignee && typeof full.admin_assignee === 'object' && full.admin_assignee) ||
+    null;
+  if (!obj) return false;
+  const objId = obj.id != null ? String(obj.id) : '';
+  const objType = String(obj.type || '');
+  if ((objType === 'admin' || objType === 'teammate' || objType === '') && !objId && (!raw || raw === '0')) {
+    return true;
+  }
+  if (objId && raw && raw !== '0' && objId !== raw) return true;
+  return false;
+}
+
+function latestAssignmentTargetId(parts) {
+  let bestAt = -1;
+  let bestId = '';
+  for (const part of parts || []) {
+    if (!part) continue;
+    const pt = String(part.part_type || '');
+    if (pt !== 'assignment' && pt !== 'assign') continue;
+    const assigned = part.assigned_to || part.assignee || {};
+    const id = String((assigned && assigned.id) || part.assignee_id || '');
+    if (!id) continue;
+    const at = Number(part.created_at || 0);
+    if (at >= bestAt) {
+      bestAt = at;
+      bestId = id;
+    }
+  }
+  return bestId;
+}
+
+function isStaleOwnership(parts, assignee, opts) {
+  const bestId = latestAssignmentTargetId(parts);
+  if (!bestId || isBotSeat(bestId, opts)) return false;
+  const current = String((assignee && assignee.id) || '');
+  if (!current || isBotSeat(current, opts)) return true;
+  if (current !== bestId) return true;
+  return false;
+}
+
+/**
+ * Fail closed. Human, Risk, Escalations, or unclear ownership means the bot stays silent.
+ * handoffAssigneeId is the assignee this handoff itself just confirmed and has not yet
+ * told the customer about. That seat is not foreign ownership.
+ */
+function classifyOwnership(full, parts, opts) {
+  const o = opts || {};
+  const teamId = full && full.team_assignee_id != null ? String(full.team_assignee_id) : '';
+  const label = teamLabel(full);
+  const riskId = String(o.riskTeamId || '');
+  const escId = String(o.escalationsTeamId || '');
+  if ((riskId && teamId === riskId) || /\brisk\b/i.test(label)) {
+    return { silent: true, reason: 'risk_team' };
+  }
+  if ((escId && teamId === escId) || /\bescalations?\b/i.test(label)) {
+    return { silent: true, reason: 'escalations_team' };
+  }
+  const assignee = readAssignee(full);
+  if (isAmbiguousAssignee(full)) {
+    return { silent: true, reason: 'ambiguous_ownership' };
+  }
+  if (isStaleOwnership(parts, assignee, o)) {
+    return { silent: true, reason: 'stale_ownership' };
+  }
+  const handoffAssigneeId = String(o.handoffAssigneeId || '');
+  if (!isBotSeat(assignee.id, o)) {
+    if (!(handoffAssigneeId && assignee.id === handoffAssigneeId)) {
+      return { silent: true, reason: 'human_assignee' };
+    }
+  }
+  for (const part of parts || []) {
+    if (!part) continue;
+    const a = part.author || {};
+    const type = String(a.type || '');
+    const pt = String(part.part_type || '');
+    const id = String(a.id || '');
+    if (id && isBotSeat(id, o) && id !== '0') continue;
+    if (/elite\s*ai|\bfin\b/i.test(String(a.name || ''))) continue;
+    if ((type === 'admin' || type === 'teammate') && pt === '' && stripHtml(part.body || '')) {
+      return { silent: true, reason: 'admin_body_without_part_type' };
+    }
+  }
+  for (const part of parts || []) {
+    const a = (part && part.author) || {};
+    if (String(a.type || '') !== 'teammate') continue;
+    const id = String(a.id || '');
+    if (id && (id === String(o.arsalId || '') || id === String(o.eliteAiId || ''))) continue;
+    return { silent: true, reason: 'author_type_teammate' };
+  }
+  if (humanTeammateAlreadyRepliedPublic(parts, o)) {
+    return { silent: true, reason: 'human_reply' };
+  }
+  return { silent: false, reason: 'bot_owned' };
 }
 
 function humanTeammateAlreadyRepliedPublic(parts, opts) {
@@ -207,47 +339,13 @@ function isNewMetaQuestionAfterHandoff(text) {
  * skip=true => do not send public Arsal reply (and caller should not escalate).
  */
 function shouldDeferToHumanTeammate(full, parts, text, opts) {
-  const teammateReplied = humanTeammateAlreadyRepliedPublic(parts, opts);
-  const assigneeHuman = isAssignedToHumanTeammate(full, opts);
-  if (!teammateReplied && !assigneeHuman) {
-    return { skip: false, reason: '' };
-  }
-
-  const t = String(text || '').trim();
-  if (isShortClientAckExpanded(t) || isGreetingOnlyClientMsg(t) || isEmojiOnlyClientMsg(t)) {
-    return {
-      skip: true,
-      reason: 'teammate_handoff_short_ack_or_greeting',
-    };
-  }
-
-  // If a human already publicly guided (esp. JP/external), do not restart same issue.
-  if (teammateReplied && teammateDirectedExternalOrHandled(parts, opts)) {
-    if (isNewMetaQuestionAfterHandoff(t)) {
-      return { skip: false, reason: 'allow_meta_after_jp_handoff' };
-    }
-    if (looksLikeSameIssueRestatement(t, parts)) {
-      return { skip: true, reason: 'teammate_already_handled_same_issue' };
-    }
-    // Account-number-only / identity dump after teammate already handled → don't re-own
-    // Normalize ideographic/fullwidth spaces (seen live: "My account number is　211080")
-    const tNorm = t.replace(/[\u3000\u00a0]/g, ' ').replace(/\s+/g, ' ').trim();
-    if (/^\d{5,12}$/.test(tNorm) || /^my\s+account\s+number\s+is\s+\d{5,12}\.?$/i.test(tNorm)) {
-      return { skip: true, reason: 'teammate_handled_identity_only' };
-    }
-    // Default: teammate owns thread after external handoff — don't steal with guidance/escalation.
-    // Allow fallthrough only for clear new unrelated questions (has ? and not same issue).
-    if (/[?]/.test(t) && !looksLikeSameIssueRestatement(t, parts) && t.length > 25) {
-      return { skip: false, reason: 'allow_new_question_after_handoff' };
-    }
-    // Soft: if assignee is human teammate and message is short-ish without new ?, defer
-    if (assigneeHuman && t.length < 180 && !/[?]/.test(t) && !isNewMetaQuestionAfterHandoff(t)) {
-      return { skip: true, reason: 'teammate_owned_pending_no_new_ask' };
-    }
-  }
-
-  // Teammate replied (guidance) but not necessarily JP — still never restart on short/greeting (already handled).
-  // If assignee is human and latest is only continuing without ?, prefer defer when teammate spoke last publicly.
+  void text;
+  // Ownership is fail-closed in every language. A human assignee, a human public body
+  // (including an admin body with no part_type, or author type teammate), a Risk or
+  // Escalations team, or ambiguous/stale ownership all stay silent. English phrase
+  // checks must not reopen the thread.
+  const ownership = classifyOwnership(full, parts, opts);
+  if (ownership.silent) return { skip: true, reason: ownership.reason };
   return { skip: false, reason: '' };
 }
 
@@ -285,6 +383,7 @@ module.exports = {
   isEmojiOnlyClientMsg,
   isHumanTeammatePublicReply,
   humanTeammateAlreadyRepliedPublic,
+  classifyOwnership,
   teammateDirectedExternalOrHandled,
   isAssignedToHumanTeammate,
   looksLikeSameIssueRestatement,
