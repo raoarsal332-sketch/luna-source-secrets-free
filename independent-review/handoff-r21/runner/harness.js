@@ -256,7 +256,7 @@ function createWorld(stateDir) {
   const unexpected = [];
   let conv = null;
   let fail = '';
-  let clock = Math.floor(Date.now() / 1000) - 10;
+  let clock = Math.floor(Date.now() / 1000);
   global.__lunaReply = 'ACTION: REPLY\nOK';
   global.__lunaModel = function (req) {
     const messages = (req && req.messages) || [];
@@ -338,6 +338,10 @@ function createWorld(stateDir) {
     get conv() { return conv; },
     set conv(v) { conv = v; },
     setFail(v) { fail = v || ''; },
+    noteTime(at) {
+      const n = Number(at || 0);
+      if (n > clock) clock = n;
+    },
     nextClock() { clock += 1; return clock; },
   };
 }
@@ -373,11 +377,18 @@ function freshConv(id, text, turn) {
   };
 }
 
+function catchUp(world, conv) {
+  world.noteTime(conv && conv.created_at);
+  const parts = conv && conv.conversation_parts && conv.conversation_parts.conversation_parts || [];
+  for (const part of parts) world.noteTime(part && part.created_at);
+}
+
 async function runTurn(world, index, faq, conv, turn) {
   world.calls.length = 0;
   world.prompts.length = 0;
   world.unexpected.length = 0;
   world.setFail(turn.fail || '');
+  catchUp(world, conv);
   global.__lunaReply = turn.model || 'ACTION: REPLY\nOK';
   if (turn.faqBlock) {
     faq.retrieveOfficialFaqContext = async function () {
