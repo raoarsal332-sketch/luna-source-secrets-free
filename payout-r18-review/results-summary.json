@@ -1,0 +1,503 @@
+{
+  "cases": 1416,
+  "faqCases": 438,
+  "criticalCases": 128,
+  "silentDrops": 0,
+  "faqRegressions": 139,
+  "falseHolds": 2,
+  "falseHoldRate": 0.0014124293785310734,
+  "nonEnglishCases": 1180,
+  "nonEnglishFailures": 0,
+  "nonEnglishRate": 0,
+  "flagCounts": {
+    "faq_regression": 139,
+    "false_hold": 2,
+    "wrong_body": 81,
+    "unsupported": 47
+  },
+  "verdict": "FAIL",
+  "elapsedMs": 314152,
+  "presendMode": "enforce",
+  "helpCentreProbe": {
+    "ok": true,
+    "status": 200
+  },
+  "tripwire": {
+    "total": 1669,
+    "blocked": 406,
+    "allowed": 1263,
+    "blockedHosts": [
+      "api.intercom.io"
+    ],
+    "allowedHosts": [
+      "faq.fundedelite.com"
+    ]
+  },
+  "samples": {
+    "unsupported": [
+      {
+        "id": "r18-0634",
+        "kind": "paraphrase",
+        "lang": "roman",
+        "path": "owner",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Aap batao: sabiq munafa ada hota hai jab naya funded account khulta hai.",
+        "base": "",
+        "logs": [
+          "AUTH_NOTE REPLY r18c994 10118526 n-r18c994"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0639",
+        "kind": "paraphrase",
+        "lang": "hi",
+        "path": "customer",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Hello Sam,<br><br>नया फंडेड अकाउंट खुलने पर पिछला लाभ दिया जाता है।",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c999 "
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0640",
+        "kind": "paraphrase",
+        "lang": "hi",
+        "path": "owner",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "नया फंडेड अकाउंट खुलने पर पिछला लाभ दिया जाता है।",
+        "base": "",
+        "logs": [
+          "AUTH_NOTE REPLY r18c1000 10118526 n-r18c1000"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0652",
+        "kind": "paraphrase",
+        "lang": "hinglish",
+        "path": "owner",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Bhai naya account khulne par pichla profit pay ho jata hai yaar.",
+        "base": "",
+        "logs": [
+          "AUTH_NOTE REPLY r18c1012 10118526 n-r18c1012"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0667",
+        "kind": "paraphrase",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Salam Sam,<br><br>Aap ka mukammal payout wapas le liya gaya hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c1027 "
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0668",
+        "kind": "paraphrase",
+        "lang": "roman",
+        "path": "owner",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Aap ka mukammal payout wapas le liya gaya hai.",
+        "base": "",
+        "logs": [
+          "AUTH_NOTE REPLY r18c1028 10118526 n-r18c1028"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0669",
+        "kind": "paraphrase",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Salam Sam,<br><br>Aap batao: jo adayegi bhej di gayi hai use wapas liya ja sakta hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c1029 "
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0670",
+        "kind": "paraphrase",
+        "lang": "roman",
+        "path": "owner",
+        "expect": "hedge",
+        "flags": [
+          "unsupported"
+        ],
+        "comment": "Aap batao: jo adayegi bhej di gayi hai use wapas liya ja sakta hai.",
+        "base": "",
+        "logs": [
+          "AUTH_NOTE REPLY r18c1030 10118526 n-r18c1030"
+        ],
+        "error": ""
+      }
+    ],
+    "wrong_body": [
+      {
+        "id": "r18-0379",
+        "kind": "lock",
+        "lang": "hi",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "मैंने इसे समीक्षा के लिए एक साथी के पास भेज दिया है। उनके पास आपके खाते का विवरण और चैट का संदर्भ है।",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c739 ",
+          "[statePresend] presend enforce conversation=r18c739 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0397",
+        "kind": "lock",
+        "lang": "en",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c757 ",
+          "[statePresend] presend enforce conversation=r18c757 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0407",
+        "kind": "lock",
+        "lang": "hinglish",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "Maine ise review ke liye ek teammate ke paas bhej diya hai. Unke paas aapke account ki detail aur chat ka context hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c767 ",
+          "[statePresend] presend enforce conversation=r18c767 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0425",
+        "kind": "lock",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "Main ne ise review ke liye ek teammate ke paas bhej diya hai. Un ke paas aap ke account ki detail aur chat ka context hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c785 ",
+          "[statePresend] presend enforce conversation=r18c785 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0431",
+        "kind": "lock",
+        "lang": "hinglish",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "Maine ise review ke liye ek teammate ke paas bhej diya hai. Unke paas aapke account ki detail aur chat ka context hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c791 ",
+          "[statePresend] presend enforce conversation=r18c791 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0522",
+        "kind": "welcome_lock",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "Main ne ise review ke liye ek teammate ke paas bhej diya hai. Un ke paas aap ke account ki detail aur chat ka context hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c882 ",
+          "[statePresend] presend enforce conversation=r18c882 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0534",
+        "kind": "welcome_lock",
+        "lang": "hinglish",
+        "path": "customer",
+        "expect": "lock",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "Maine ise review ke liye ek teammate ke paas bhej diya hai. Unke paas aapke account ki detail aur chat ka context hai.",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c894 ",
+          "[statePresend] presend enforce conversation=r18c894 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0603",
+        "kind": "paraphrase",
+        "lang": "hi",
+        "path": "customer",
+        "expect": "hedge",
+        "flags": [
+          "wrong_body"
+        ],
+        "comment": "मैंने इसे समीक्षा के लिए एक साथी के पास भेज दिया है। उनके पास आपके खाते का विवरण और चैट का संदर्भ है।",
+        "base": "",
+        "logs": [
+          "FAQ_RETRIEVE r18c963 ",
+          "[statePresend] presend enforce conversation=r18c963 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      }
+    ],
+    "suppression_bypass": [],
+    "erase_unhedged": [],
+    "leak": [],
+    "silent_drop": [],
+    "faq_regression": [
+      {
+        "id": "r18-0003",
+        "kind": "faq",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Main ne ise review ke liye ek teammate ke paas bhej diya hai. Un ke paas aap ke account ki detail aur chat ka context hai.",
+        "base": "Salam Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c5 ",
+          "[statePresend] presend enforce conversation=r18c5 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0006",
+        "kind": "faq",
+        "lang": "hinglish",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Maine ise review ke liye ek teammate ke paas bhej diya hai. Unke paas aapke account ki detail aur chat ka context hai.",
+        "base": "Hello Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c11 ",
+          "[statePresend] presend enforce conversation=r18c11 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0015",
+        "kind": "faq",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Main ne ise review ke liye ek teammate ke paas bhej diya hai. Un ke paas aap ke account ki detail aur chat ka context hai.",
+        "base": "Salam Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c29 ",
+          "[statePresend] presend enforce conversation=r18c29 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0018",
+        "kind": "faq",
+        "lang": "hinglish",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Maine ise review ke liye ek teammate ke paas bhej diya hai. Unke paas aapke account ki detail aur chat ka context hai.",
+        "base": "Hello Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c35 ",
+          "[statePresend] presend enforce conversation=r18c35 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0021",
+        "kind": "faq",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Main ne ise review ke liye ek teammate ke paas bhej diya hai. Un ke paas aap ke account ki detail aur chat ka context hai.",
+        "base": "Salam Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c41 ",
+          "[statePresend] presend enforce conversation=r18c41 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0025",
+        "kind": "faq",
+        "lang": "en",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "base": "Hello Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c49 ",
+          "[statePresend] presend enforce conversation=r18c49 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0027",
+        "kind": "faq",
+        "lang": "roman",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Main ne ise review ke liye ek teammate ke paas bhej diya hai. Un ke paas aap ke account ki detail aur chat ka context hai.",
+        "base": "Salam Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c53 ",
+          "[statePresend] presend enforce conversation=r18c53 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0030",
+        "kind": "faq",
+        "lang": "hinglish",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression"
+        ],
+        "comment": "Maine ise review ke liye ek teammate ke paas bhej diya hai. Unke paas aapke account ki detail aur chat ka context hai.",
+        "base": "Hello Sam,<br><br>I've forwarded this to a teammate who can take a closer look. They have the chat context.",
+        "logs": [
+          "FAQ_RETRIEVE r18c59 ",
+          "[statePresend] presend enforce conversation=r18c59 route=FAST codes=MISSED_QUESTION final=needs-escalate",
+          "PAYOUT_GUARD_VISIBLE_HEDGE forward"
+        ],
+        "error": ""
+      }
+    ],
+    "false_hold": [
+      {
+        "id": "r18-0146",
+        "kind": "faq",
+        "lang": "ur",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression",
+          "false_hold"
+        ],
+        "comment": "میں اس کی تصدیق نہیں کر سکتا۔ ہماری ٹیم تصدیق کرے گی۔",
+        "base": "السلام علیکم Sam،<br><br>ڈرائنگ منتخب کریں اور حذف کریں، یا ٹول بار میں ڈرائنگ صاف کرنے کا اختیار استعمال کریں۔",
+        "logs": [
+          "FAQ_RETRIEVE r18c291 ",
+          "PAYOUT_GUARD_VISIBLE_HEDGE erase"
+        ],
+        "error": ""
+      },
+      {
+        "id": "r18-0167",
+        "kind": "faq",
+        "lang": "ar",
+        "path": "customer",
+        "expect": "pass",
+        "flags": [
+          "faq_regression",
+          "false_hold"
+        ],
+        "comment": "لا أستطيع تأكيد ذلك. سيؤكد فريقنا ذلك.",
+        "base": "السلام علیکم Sam،<br><br>نعم. كل متصفح يحتفظ بجلسته حتى تخرج.",
+        "logs": [
+          "FAQ_RETRIEVE r18c333 ",
+          "PAYOUT_GUARD_VISIBLE_HEDGE erase"
+        ],
+        "error": ""
+      }
+    ],
+    "non_english": []
+  }
+}
