@@ -1312,6 +1312,15 @@ async function commit(ctx) {
     if (progress.assignAmbiguous) {
       return finish({ reason: 'assign_ambiguous_held', withhold: true, progress });
     }
+    // The seat is still the bot, so the unknown assignment did not land.
+    // failed-confirmed lets the same idempotency key be tried once.
+    if (src.recheckHold && src.conversationId && src.botId) {
+      writeOpStore.confirmAssignmentDidNotLand({
+        conversationId: src.conversationId,
+        madeBy: src.botId,
+        assigneeId: progress.assigneeId,
+      });
+    }
     const asgRes = await transport.assign(progress.assigneeId);
     lastAssignResult = asgRes;
     const asgClass = classifyAssignment(asgRes, { kind: 'assignment', assigneeId: progress.assigneeId });
@@ -1461,6 +1470,42 @@ function hasPendingHandoffCase(state) {
   if (prog.noteConfirmed && !prog.messageSent) return true;
   if (prog.assignAmbiguous || prog.noteAmbiguous || prog.messageAmbiguous) return true;
   return false;
+}
+
+function normalizeFaqAsk(text) {
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+    .replace(/[.!?]+$/g, '')
+    .trim();
+}
+
+// These welcome asks were replaced by the number hedge. They are KB questions.
+// The locked line language is not involved. The answer is the selected article.
+function isWelcomeKbFigureQuestion(text) {
+  const q = normalizeFaqAsk(text);
+  return q === 'what is the daily loss limit'
+    || q === 'how does the profit target work'
+    || q === 'what is the leverage';
+}
+
+function approvedFaqCustomerBody(text) {
+  if (!isWelcomeKbFigureQuestion(text)) return '';
+  try {
+    const faq = require('./faq-kb');
+    if (!faq || typeof faq.selectApprovedAnswer !== 'function') return '';
+    const hit = faq.selectApprovedAnswer(text);
+    return hit && hit.body ? String(hit.body).trim() : '';
+  } catch (_) {
+    return '';
+  }
+}
+
+function isApprovedFaqAnswer(question, body) {
+  const approved = approvedFaqCustomerBody(question);
+  if (!approved) return false;
+  return String(body || '').replace(/\s+/g, ' ').trim() === approved.replace(/\s+/g, ' ').trim();
 }
 
 function plainFaqCustomerLine(text) {
@@ -1792,6 +1837,9 @@ module.exports = {
   STATUS_PING_CLARIFY,
   hasPendingHandoffCase,
   plainFaqCustomerLine,
+  isWelcomeKbFigureQuestion,
+  approvedFaqCustomerBody,
+  isApprovedFaqAnswer,
   faqTeamReviewBlocked,
   hasAssignmentPart,
   fixedMessageFor,

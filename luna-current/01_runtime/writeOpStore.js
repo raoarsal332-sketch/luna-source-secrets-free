@@ -67,6 +67,49 @@ function shouldSkipReplay(rec) {
   return rec.status === 'confirmed' || rec.status === 'unknown' || rec.status === 'pending';
 }
 
+// Same bytes icRequest posts for an assignment. The op key is the idempotency key.
+function assignmentRequestData(adminId, assigneeId) {
+  return {
+    message_type: 'assignment',
+    type: 'admin',
+    admin_id: adminId,
+    assignee_id: Number(assigneeId),
+  };
+}
+
+function assignmentOpKey(conversationId, adminId, assigneeId) {
+  const url = 'https://api.intercom.io/conversations/' + String(conversationId || '') + '/reply';
+  return opKey('post', url, assignmentRequestData(adminId, assigneeId));
+}
+
+// A live re-check that the seat is still the bot confirms the unknown assignment
+// did not land. failed-confirmed is not replay-suppressed, so the same key is
+// tried once on this turn. Further misses stay owed and retry on later turns,
+// up to this bound, and never as a second customer line.
+const ASSIGNMENT_RETRY_BOUND = 5;
+
+function confirmAssignmentDidNotLand(input) {
+  const src = input || {};
+  const conversationId = String(src.conversationId || '');
+  const madeBy = String(src.madeBy || '');
+  const assigneeId = String(src.assigneeId || '');
+  if (!conversationId || !madeBy || !assigneeId) return null;
+  const key = assignmentOpKey(conversationId, madeBy, assigneeId);
+  const prev = get(key);
+  if (!prev || prev.status !== 'unknown') return null;
+  const attempts = Number(prev.attempts || 0) + 1;
+  if (attempts > ASSIGNMENT_RETRY_BOUND) return null;
+  return set(key, Object.assign({}, prev, {
+    status: 'failed-confirmed',
+    reason: 'assignment-did-not-land',
+    kind: prev.kind || 'assignment',
+    conversationId,
+    madeBy,
+    assigneeId,
+    attempts,
+  }));
+}
+
 function hasErrorPayload(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
   if (String(data.type || '') === 'error.list') return true;
@@ -258,6 +301,10 @@ module.exports = {
   get,
   set,
   shouldSkipReplay,
+  assignmentRequestData,
+  assignmentOpKey,
+  confirmAssignmentDidNotLand,
+  ASSIGNMENT_RETRY_BOUND,
   hasErrorPayload,
   isValidWriteSuccess,
   namedAssigneeId,

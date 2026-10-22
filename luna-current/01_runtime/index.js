@@ -115,7 +115,12 @@ async function icRequest(method, url, data, tag) {
         data: null,
       };
     }
-    writeOpStore.set(opId, { status: 'pending' });
+    // failed-confirmed is a live miss. Carry its attempt count through the one retry.
+    writeOpStore.set(opId, {
+      status: 'pending',
+      attempts: prev && Number(prev.attempts) ? Number(prev.attempts) : 0,
+      kind: prev && prev.kind,
+    });
   }
 
   for (let attempt = 0; attempt <= IC_MAX_RETRY; attempt += 1) {
@@ -174,7 +179,14 @@ async function icRequest(method, url, data, tag) {
   }
 
   if (ambiguous) {
-    if (opId) writeOpStore.set(opId, { status: 'unknown' });
+    if (opId) {
+      const prior = writeOpStore.get(opId) || {};
+      writeOpStore.set(opId, {
+        status: 'unknown',
+        attempts: Number(prior.attempts) || 0,
+        kind: prior.kind,
+      });
+    }
     console.error('IC_REQ_UNKNOWN', tag, url, 'write outcome unknown , not retried');
     return { ok: false, unknown: true, status: last.status || 0, data: last.data };
   }
@@ -426,7 +438,7 @@ async function assignToTeammate(conversationId, teammateId) {
   const r = await icRequest(
     'post',
     'https://api.intercom.io/conversations/' + conversationId + '/reply',
-    { message_type: 'assignment', type: 'admin', admin_id: ARSAL_ID, assignee_id: Number(teammateId) },
+    writeOpStore.assignmentRequestData(ARSAL_ID, teammateId),
     'ASSIGN'
   );
   console.log('ASSIGN', conversationId, teammateId, r.status, r.ok ? 'ok' : 'FAIL');
@@ -2932,6 +2944,13 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
   if (fixedMessageHandoff.isTerminalHedge(String(body || ''))) {
     return postReply(conversationId, 'comment', String(body || '').replace(/\s+/g, ' ').trim());
   }
+  // A welcome KB answer is the selected article, posted as stored. It is not a hedge.
+  {
+    const asked = userPart ? stripHtml(userPart.body || '') : '';
+    if (fixedMessageHandoff.isApprovedFaqAnswer(asked, body)) {
+      return postReply(conversationId, 'comment', fixedMessageHandoff.approvedFaqCustomerBody(asked), { verbatim: true });
+    }
+  }
   // Soft dedupe: never post the same public bot body twice in a row (identity asks etc.)
   try {
     const norm = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -4304,6 +4323,17 @@ const handleWebhook = async (req, res) => {
       }
     }
 
+    // Welcome KB asks use the same article ranking as the later FAQ retrieval.
+    // The number hedge stays for a model figure the article does not contain.
+    {
+      const approvedFaqBody = fixedMessageHandoff.approvedFaqCustomerBody(text);
+      if (approvedFaqBody) {
+        console.log('WELCOME_FAQ kb answer', conversationId);
+        await postClientCommentOnce(conversationId, approvedFaqBody, latestUser, clientName);
+        return res.sendStatus(200);
+      }
+    }
+
     // Behavior locks v2: spread test account (direct reply, no escalate)
     if (isSpreadCheckAsk(text)) {
       await postClientCommentOnce(conversationId, postProcessModelReply(SPREAD_TEST_REPLY, conversationId), latestUser, clientName);
@@ -4846,8 +4876,9 @@ const handleWebhook = async (req, res) => {
       }
     }
     if (fixedMessageHandoff.isTerminalHedge(body)) {
-      console.log('HEDGE terminal', conversationId);
-      await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
+      const approvedFaqBody = fixedMessageHandoff.approvedFaqCustomerBody(text);
+      console.log(approvedFaqBody ? 'WELCOME_FAQ kb answer' : 'HEDGE terminal', conversationId);
+      await postClientCommentOnce(conversationId, approvedFaqBody || UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
       return res.sendStatus(200);
     }
     if (!body) {
@@ -5075,8 +5106,14 @@ const handleWebhook = async (req, res) => {
     } catch (__e) { /* observation must never affect the reply */ }
     /* LUNA_MAINTAINER_V1:END:observe */
     if (fixedMessageHandoff.faqTeamReviewBlocked(text, body)) {
-      console.log('FAQ team-review hedge', conversationId);
-      body = UNSUPPORTED_NUMBER_HEDGE;
+      const approvedFaqBody = fixedMessageHandoff.approvedFaqCustomerBody(text);
+      if (approvedFaqBody) {
+        console.log('WELCOME_FAQ kb answer', conversationId);
+        body = approvedFaqBody;
+      } else {
+        console.log('FAQ team-review hedge', conversationId);
+        body = UNSUPPORTED_NUMBER_HEDGE;
+      }
       if (__presend) __presend.send = true;
     }
     if (__presend.send) {
@@ -5175,6 +5212,13 @@ const handleWebhook = async (req, res) => {
           !fixedMessageHandoff.isPasswordPolicyQuestion(text) &&
           ((__unsupportedNumber && !__missedHuman) || __originalSpread || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text)) || fixedMessageHandoff.isTerminalHedge(body) || fixedMessageHandoff.isTerminalHedge(__originalDraft) || __faqMiss || __spreadNegated)
         ) {
+          const __approvedFaq = fixedMessageHandoff.approvedFaqCustomerBody(text);
+          const __figureHedge = (__unsupportedNumber && !__missedHuman) || __originalSpread || __spreadNegated || (fixedMessageHandoff.isSpreadTemplateDraft(body) && !isSpreadCheckAsk(text));
+          if (__approvedFaq && !__figureHedge) {
+            console.log('WELCOME_FAQ kb answer', conversationId);
+            await postClientCommentOnce(conversationId, __approvedFaq, latestUser, clientName);
+            return res.sendStatus(200);
+          }
           console.log('PRESEND hedge instead of fixed line', conversationId);
           await postClientCommentOnce(conversationId, UNSUPPORTED_NUMBER_HEDGE, latestUser, clientName);
           return res.sendStatus(200);
