@@ -166,8 +166,14 @@ for (const item of cases) {
       else if (joined(measured) !== joined(bodies(b, 'publicMeasured'))) flags.add('faq_regression');
     }
   } else if (item.expect === 'lock') {
+    const baselineSame = b && joined(measured) === joined(bodies(b, 'publicMeasured'));
     if (!measured.length) flags.add('silent_drop');
-    else if (!measured.every((body) => lockMatches(body, item.expectText))) flags.add('wrong_body');
+    else if (measured.every((body) => lockMatches(body, item.expectText))) {
+      // exact locked sentence delivered
+    } else if (baselineSame) {
+      // Presend replaced the draft before the guard on both runtimes.
+      flags.add('lock_not_reached');
+    } else flags.add('wrong_body');
   } else if (item.expect === 'hedge') {
     const blob = joined(measured);
     const marker = leakHit(blob, item.leakMarkers);

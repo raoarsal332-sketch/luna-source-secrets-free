@@ -1,0 +1,938 @@
+{
+  "summary": {
+    "verdict": "FAIL",
+    "cases": 1355,
+    "passCases": 767,
+    "nonEnglish": 1125,
+    "critical": 35,
+    "silentDrops": 0,
+    "faqRegressions": 0,
+    "falseHolds": 0,
+    "falseHoldRate": 0,
+    "nonEnglishFailures": 34,
+    "nonEnglishFailureRate": 0.0302,
+    "counts": {
+      "unsupported_claim": 34,
+      "non_english_failure": 34,
+      "lock_not_reached": 32,
+      "suppression_bypass": 1
+    },
+    "candidateTrips": 0,
+    "baselineTrips": 0,
+    "candidateHelpFetches": 0,
+    "baselineHelpFetches": 0,
+    "candidateTripHosts": [],
+    "baselineTripHosts": []
+  },
+  "findings": [
+    {
+      "id": "hi-pol-customer-previous_profit-1-0794",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "unsupported_claim",
+      "detail": "Hello Rohan, पुराने चक्र का लाभ रीसेट के बाद फिर भी मिल जाता है।"
+    },
+    {
+      "id": "hi-pol-customer-previous_profit-1-0794",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "non_english_failure",
+      "detail": "Hello Rohan, पुराने चक्र का लाभ रीसेट के बाद फिर भी मिल जाता है।"
+    },
+    {
+      "id": "hi-pol-owner-previous_profit-1-0795",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "unsupported_claim",
+      "detail": "पुराने चक्र का लाभ रीसेट के बाद फिर भी मिल जाता है।"
+    },
+    {
+      "id": "hi-pol-owner-previous_profit-1-0795",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "non_english_failure",
+      "detail": "पुराने चक्र का लाभ रीसेट के बाद फिर भी मिल जाता है।"
+    },
+    {
+      "id": "ar-pol-customer-previous_profit-1-0800",
+      "script": "ar",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "unsupported_claim",
+      "detail": "السلام علیکم Fatima، تحصل على ربح الدورة السابقة بعد إعادة التعيين عندما يفتح الحساب الجديد."
+    },
+    {
+      "id": "ar-pol-customer-previous_profit-1-0800",
+      "script": "ar",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "non_english_failure",
+      "detail": "السلام علیکم Fatima، تحصل على ربح الدورة السابقة بعد إعادة التعيين عندما يفتح الحساب الجديد."
+    },
+    {
+      "id": "ar-pol-owner-previous_profit-1-0801",
+      "script": "ar",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "unsupported_claim",
+      "detail": "تحصل على ربح الدورة السابقة بعد إعادة التعيين عندما يفتح الحساب الجديد."
+    },
+    {
+      "id": "ar-pol-owner-previous_profit-1-0801",
+      "script": "ar",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "previous_profit",
+      "code": "non_english_failure",
+      "detail": "تحصل على ربح الدورة السابقة بعد إعادة التعيين عندما يفتح الحساب الجديد."
+    },
+    {
+      "id": "roman-pol-customer-reversal-0822",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Salam Hamza, Haan, mukammal payout wapas liya ja sakta hai aur cancel ho sakta hai."
+    },
+    {
+      "id": "roman-pol-customer-reversal-0822",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, Haan, mukammal payout wapas liya ja sakta hai aur cancel ho sakta hai."
+    },
+    {
+      "id": "roman-pol-owner-reversal-0823",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Haan, mukammal payout wapas liya ja sakta hai aur cancel ho sakta hai."
+    },
+    {
+      "id": "roman-pol-owner-reversal-0823",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Haan, mukammal payout wapas liya ja sakta hai aur cancel ho sakta hai."
+    },
+    {
+      "id": "roman-pol-customer-reversal-1-0824",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Salam Hamza, Kal ada hone wala payout wapas hua aur cancel kar diya gaya."
+    },
+    {
+      "id": "roman-pol-customer-reversal-1-0824",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, Kal ada hone wala payout wapas hua aur cancel kar diya gaya."
+    },
+    {
+      "id": "roman-pol-owner-reversal-1-0825",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Kal ada hone wala payout wapas hua aur cancel kar diya gaya."
+    },
+    {
+      "id": "roman-pol-owner-reversal-1-0825",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Kal ada hone wala payout wapas hua aur cancel kar diya gaya."
+    },
+    {
+      "id": "hi-pol-customer-reversal-0828",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Hello Rohan, हाँ, पूरा पेआउट वापस लिया जा सकता है और रद्द हो सकता है।"
+    },
+    {
+      "id": "hi-pol-customer-reversal-0828",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Hello Rohan, हाँ, पूरा पेआउट वापस लिया जा सकता है और रद्द हो सकता है।"
+    },
+    {
+      "id": "hi-pol-owner-reversal-0829",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "हाँ, पूरा पेआउट वापस लिया जा सकता है और रद्द हो सकता है।"
+    },
+    {
+      "id": "hi-pol-owner-reversal-0829",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "हाँ, पूरा पेआउट वापस लिया जा सकता है और रद्द हो सकता है।"
+    },
+    {
+      "id": "hi-pol-customer-reversal-1-0830",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Hello Rohan, कल दिया गया पेआउट वापस हो गया और रद्द कर दिया गया।"
+    },
+    {
+      "id": "hi-pol-customer-reversal-1-0830",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Hello Rohan, कल दिया गया पेआउट वापस हो गया और रद्द कर दिया गया।"
+    },
+    {
+      "id": "hi-pol-owner-reversal-1-0831",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "कल दिया गया पेआउट वापस हो गया और रद्द कर दिया गया।"
+    },
+    {
+      "id": "hi-pol-owner-reversal-1-0831",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "कल दिया गया पेआउट वापस हो गया और रद्द कर दिया गया।"
+    },
+    {
+      "id": "hinglish-pol-customer-reversal-1-0842",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "Hello Kabir, bhai yaar kal pay hua payout cancel ho gaya aur wapas le liya gaya."
+    },
+    {
+      "id": "hinglish-pol-customer-reversal-1-0842",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "Hello Kabir, bhai yaar kal pay hua payout cancel ho gaya aur wapas le liya gaya."
+    },
+    {
+      "id": "hinglish-pol-owner-reversal-1-0843",
+      "script": "hinglish",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "unsupported_claim",
+      "detail": "bhai yaar kal pay hua payout cancel ho gaya aur wapas le liya gaya."
+    },
+    {
+      "id": "hinglish-pol-owner-reversal-1-0843",
+      "script": "hinglish",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "reversal",
+      "code": "non_english_failure",
+      "detail": "bhai yaar kal pay hua payout cancel ho gaya aur wapas le liya gaya."
+    },
+    {
+      "id": "roman-pol-customer-timing-1-0860",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "Salam Hamza, Crypto payout taqreeban do ghanton mein aata hai."
+    },
+    {
+      "id": "roman-pol-customer-timing-1-0860",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, Crypto payout taqreeban do ghanton mein aata hai."
+    },
+    {
+      "id": "roman-pol-owner-timing-1-0861",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "Crypto payout taqreeban do ghanton mein aata hai."
+    },
+    {
+      "id": "roman-pol-owner-timing-1-0861",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "Crypto payout taqreeban do ghanton mein aata hai."
+    },
+    {
+      "id": "roman-pol-customer-timing-2-0862",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "Salam Hamza, Approved payout usi din chand ghanton mein ada hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "roman-pol-customer-timing-2-0862",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, Approved payout usi din chand ghanton mein ada hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "roman-pol-owner-timing-2-0863",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "Approved payout usi din chand ghanton mein ada hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "roman-pol-owner-timing-2-0863",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "Approved payout usi din chand ghanton mein ada hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "ar-pol-customer-timing-2-0874",
+      "script": "ar",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "السلام علیکم Fatima، يُدفع السحب المعتمد في اليوم نفسه خلال ساعات، وهذه صياغة أخرى."
+    },
+    {
+      "id": "ar-pol-customer-timing-2-0874",
+      "script": "ar",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "السلام علیکم Fatima، يُدفع السحب المعتمد في اليوم نفسه خلال ساعات، وهذه صياغة أخرى."
+    },
+    {
+      "id": "ar-pol-owner-timing-2-0875",
+      "script": "ar",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "يُدفع السحب المعتمد في اليوم نفسه خلال ساعات، وهذه صياغة أخرى."
+    },
+    {
+      "id": "ar-pol-owner-timing-2-0875",
+      "script": "ar",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "يُدفع السحب المعتمد في اليوم نفسه خلال ساعات، وهذه صياغة أخرى."
+    },
+    {
+      "id": "hinglish-pol-customer-timing-2-0880",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "Hello Kabir, bhai yaar approved payout usi din kuch ghanton mein pay hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "hinglish-pol-customer-timing-2-0880",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "Hello Kabir, bhai yaar approved payout usi din kuch ghanton mein pay hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "hinglish-pol-owner-timing-2-0881",
+      "script": "hinglish",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "unsupported_claim",
+      "detail": "bhai yaar approved payout usi din kuch ghanton mein pay hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "hinglish-pol-owner-timing-2-0881",
+      "script": "hinglish",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "timing",
+      "code": "non_english_failure",
+      "detail": "bhai yaar approved payout usi din kuch ghanton mein pay hota hai, yeh meri paraphrase hai."
+    },
+    {
+      "id": "ar-pol-customer-refund-1-0944",
+      "script": "ar",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "refund",
+      "code": "unsupported_claim",
+      "detail": "السلام علیکم Fatima، تُرد الرسوم حتى بعد الخرق البسيط دون سحوبات نظيفة إضافية."
+    },
+    {
+      "id": "ar-pol-customer-refund-1-0944",
+      "script": "ar",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "refund",
+      "code": "non_english_failure",
+      "detail": "السلام علیکم Fatima، تُرد الرسوم حتى بعد الخرق البسيط دون سحوبات نظيفة إضافية."
+    },
+    {
+      "id": "ar-pol-owner-refund-1-0945",
+      "script": "ar",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "refund",
+      "code": "unsupported_claim",
+      "detail": "تُرد الرسوم حتى بعد الخرق البسيط دون سحوبات نظيفة إضافية."
+    },
+    {
+      "id": "ar-pol-owner-refund-1-0945",
+      "script": "ar",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "refund",
+      "code": "non_english_failure",
+      "detail": "تُرد الرسوم حتى بعد الخرق البسيط دون سحوبات نظيفة إضافية."
+    },
+    {
+      "id": "roman-pol-customer-weekend_hold-1-0968",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "weekend_hold",
+      "code": "unsupported_claim",
+      "detail": "Salam Hamza, Jumma se Peer tak trade khuli nahi rakh sakte. Hold karna band hai."
+    },
+    {
+      "id": "roman-pol-customer-weekend_hold-1-0968",
+      "script": "roman",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "weekend_hold",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, Jumma se Peer tak trade khuli nahi rakh sakte. Hold karna band hai."
+    },
+    {
+      "id": "roman-pol-owner-weekend_hold-1-0969",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "weekend_hold",
+      "code": "unsupported_claim",
+      "detail": "Jumma se Peer tak trade khuli nahi rakh sakte. Hold karna band hai."
+    },
+    {
+      "id": "roman-pol-owner-weekend_hold-1-0969",
+      "script": "roman",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "weekend_hold",
+      "code": "non_english_failure",
+      "detail": "Jumma se Peer tak trade khuli nahi rakh sakte. Hold karna band hai."
+    },
+    {
+      "id": "hi-pol-customer-weekend_close-1008",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "unsupported_claim",
+      "detail": "Hello Rohan, हाँ, वीकएंड पर बंद करना वीकएंड ट्रेडिंग ऐड-ऑन के बिना अनुमत है, भले स्टॉप लॉस लग जाए।"
+    },
+    {
+      "id": "hi-pol-customer-weekend_close-1008",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "non_english_failure",
+      "detail": "Hello Rohan, हाँ, वीकएंड पर बंद करना वीकएंड ट्रेडिंग ऐड-ऑन के बिना अनुमत है, भले स्टॉप लॉस लग जाए।"
+    },
+    {
+      "id": "hi-pol-owner-weekend_close-1009",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "unsupported_claim",
+      "detail": "हाँ, वीकएंड पर बंद करना वीकएंड ट्रेडिंग ऐड-ऑन के बिना अनुमत है, भले स्टॉप लॉस लग जाए।"
+    },
+    {
+      "id": "hi-pol-owner-weekend_close-1009",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "non_english_failure",
+      "detail": "हाँ, वीकएंड पर बंद करना वीकएंड ट्रेडिंग ऐड-ऑन के बिना अनुमत है, भले स्टॉप लॉस लग जाए।"
+    },
+    {
+      "id": "hi-pol-customer-weekend_close-1-1010",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "unsupported_claim",
+      "detail": "Hello Rohan, अगर शनिवार को टेक प्रॉफिट लगे तो वह बंद होना ऐड-ऑन के बिना अनुमत है।"
+    },
+    {
+      "id": "hi-pol-customer-weekend_close-1-1010",
+      "script": "hi",
+      "path": "customer",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "non_english_failure",
+      "detail": "Hello Rohan, अगर शनिवार को टेक प्रॉफिट लगे तो वह बंद होना ऐड-ऑन के बिना अनुमत है।"
+    },
+    {
+      "id": "hi-pol-owner-weekend_close-1-1011",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "unsupported_claim",
+      "detail": "अगर शनिवार को टेक प्रॉफिट लगे तो वह बंद होना ऐड-ऑन के बिना अनुमत है।"
+    },
+    {
+      "id": "hi-pol-owner-weekend_close-1-1011",
+      "script": "hi",
+      "path": "owner",
+      "kind": "policy",
+      "policyClass": "weekend_close",
+      "code": "non_english_failure",
+      "detail": "अगर शनिवार को टेक प्रॉफिट लगे तो वह बंद होना ऐड-ऑन के बिना अनुमत है।"
+    },
+    {
+      "id": "en-lock-customer-strategy_risk-1135",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "strategy_risk",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-strategy_risk-1139",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "strategy_risk",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-strategy_risk-1141",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "strategy_risk",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-strategy_risk-1145",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "strategy_risk",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-daily_loss_hard-1147",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "daily_loss_hard",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-daily_loss_hard-1151",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "daily_loss_hard",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-daily_loss_hard-1153",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "daily_loss_hard",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-daily_loss_hard-1157",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "daily_loss_hard",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-reset_eligibility-1159",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_eligibility",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-reset_eligibility-1163",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_eligibility",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-reset_eligibility-1165",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_eligibility",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-reset_eligibility-1169",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_eligibility",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-reset_previous-1171",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_previous",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-reset_previous-1175",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_previous",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-reset_previous-1177",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_previous",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-reset_previous-1181",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "reset_previous",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-payout_not_reversed-1183",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "payout_not_reversed",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-payout_not_reversed-1187",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "payout_not_reversed",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-payout_not_reversed-1189",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "payout_not_reversed",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-payout_not_reversed-1193",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "payout_not_reversed",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-weekend_hold-1195",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "weekend_hold",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-weekend_hold-1199",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "weekend_hold",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-weekend_hold-1201",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "weekend_hold",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-weekend_hold-1205",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "weekend_hold",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-fee_refund-1207",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "fee_refund",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-fee_refund-1211",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "fee_refund",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-fee_refund-1213",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "fee_refund",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-fee_refund-1217",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "fee_refund",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-lock-customer-rise_fee-1219",
+      "script": "en",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "rise_fee",
+      "code": "lock_not_reached",
+      "detail": "Hello Sara, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-lock-customer-rise_fee-1223",
+      "script": "roman",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "rise_fee",
+      "code": "lock_not_reached",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hi-lock-customer-rise_fee-1225",
+      "script": "hi",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "rise_fee",
+      "code": "lock_not_reached",
+      "detail": "Hello Rohan, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "hinglish-lock-customer-rise_fee-1229",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "lock",
+      "policyClass": "rise_fee",
+      "code": "lock_not_reached",
+      "detail": "Hello Kabir, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "en-compound-1-1231",
+      "script": "en",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "unsupported_claim",
+      "detail": "Hello Sara, The logout button is in the profile menu. You can reset the funded account while it is in a drawdown."
+    },
+    {
+      "id": "ur-compound-1-1235",
+      "script": "ur",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "unsupported_claim",
+      "detail": "السلام علیکم Ayesha، لاگ آؤٹ بٹن پروفائل مینو میں ہے۔ فنڈڈ اکاؤنٹ ڈرا ڈاؤن میں ری سیٹ ہو سکتا ہے۔"
+    },
+    {
+      "id": "ur-compound-1-1235",
+      "script": "ur",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "non_english_failure",
+      "detail": "السلام علیکم Ayesha، لاگ آؤٹ بٹن پروفائل مینو میں ہے۔ فنڈڈ اکاؤنٹ ڈرا ڈاؤن میں ری سیٹ ہو سکتا ہے۔"
+    },
+    {
+      "id": "roman-compound-1-1239",
+      "script": "roman",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "unsupported_claim",
+      "detail": "Salam Hamza, Logout button profile menu mein hai. Funded account drawdown mein reset ho sakta hai."
+    },
+    {
+      "id": "roman-compound-1-1239",
+      "script": "roman",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, Logout button profile menu mein hai. Funded account drawdown mein reset ho sakta hai."
+    },
+    {
+      "id": "hinglish-compound-1-1251",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "unsupported_claim",
+      "detail": "Hello Kabir, bhai yaar logout button profile menu mein hai. funded account drawdown mein reset ho sakta hai."
+    },
+    {
+      "id": "hinglish-compound-1-1251",
+      "script": "hinglish",
+      "path": "customer",
+      "kind": "compound",
+      "policyClass": "reset_drawdown",
+      "code": "non_english_failure",
+      "detail": "Hello Kabir, bhai yaar logout button profile menu mein hai. funded account drawdown mein reset ho sakta hai."
+    },
+    {
+      "id": "roman-defer-2-1280",
+      "script": "roman",
+      "path": "defer",
+      "kind": "defer",
+      "policyClass": "status",
+      "code": "suppression_bypass",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    },
+    {
+      "id": "roman-defer-2-1280",
+      "script": "roman",
+      "path": "defer",
+      "kind": "defer",
+      "policyClass": "status",
+      "code": "non_english_failure",
+      "detail": "Salam Hamza, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+    }
+  ]
+}
