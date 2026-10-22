@@ -1,0 +1,20 @@
+{
+  "verdict": "FAIL",
+  "frozen_commit": "990877d82cc43312ae115218ee46e1753e81e79b",
+  "case_sha256": "43a17f275906240478874cb234eb93bd99ba018573fdc43060991af1073e0772",
+  "template_sha256": "3db13cd4f6f9f075e5ed372aab275f009d28fa0ec8fd272fb1ac25cb3e2f6e15",
+  "template_length": 213,
+  "leaks": { "cases": 293, "events": 1708, "intercom_cases": 164, "model_cases": 85, "memory_cases": 245, "log_cases": 0 },
+  "control_remeasured": { "cases": 198, "leaks": 0 },
+  "bypasses": [{ "id": "BYP13b", "vector": "worker_threads", "script": "worker.noexecargv" }],
+  "unauthorized_template_sends": 0,
+  "eligible_template": { "eligible": 32, "exact": 19, "misses": ["TE09", "TE10", "TE11", "TE12", "TE13", "TE14", "TE20", "TE21", "TE23", "TE25", "TE27", "TE29", "TE31"] },
+  "borderline_exact": ["TB03", "TB04", "TB05", "TB13", "TB15", "TB18"],
+  "fail_closed_logger_and_intercom_misses": 0,
+  "fail_closed_memory_or_model_residue": ["F0002", "F0004", "F0006", "F0007", "F0008"],
+  "overblock": { "patched_marker_hits": 0, "unpatched_marker_hits": 122, "invalid_on_both": 102, "valid": 122, "overblocked": 122, "rate": 1 },
+  "template_password_outside_exact_body": 0,
+  "taint_leaks": ["N0002", "N0003", "N0005"],
+  "recovery_leaks": ["R0002"],
+  "owner_intercom_leaks": 48
+}
