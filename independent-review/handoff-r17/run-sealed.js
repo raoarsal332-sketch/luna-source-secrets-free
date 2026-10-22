@@ -67,7 +67,7 @@ function impl(config) {
       status: 200,
       data: {
         admins: [{
-          id: 'human-7',
+          id: '7007007',
           name: 'Mina Support',
           email: 'mina.support@example.test',
           away_mode_enabled: false,
@@ -112,8 +112,10 @@ module.exports.default = OpenAI;
 `);
 
 session.reply = function reply(url, data) {
-  const kind = data && data.message_type ? String(data.message_type) : 'post';
-  const mode = (session.script && session.script[kind]) || 'ok';
+  const rawKind = data && data.message_type ? String(data.message_type) : 'post';
+  const kind = rawKind === 'assignment' ? 'assignment' : rawKind;
+  const scriptKey = rawKind === 'assignment' ? 'assign' : rawKind;
+  const mode = (session.script && session.script[scriptKey]) || 'ok';
   const id = session.world && session.world.id;
   function record(status, confirmed, err) {
     session.calls.push({
@@ -208,8 +210,12 @@ dns.lookup = function () {
   err.code = 'TRIPWIRE';
   throw err;
 };
-dns.promises = dns.promises || {};
-dns.promises.lookup = dns.lookup;
+if (dns.promises) {
+  dns.promises.lookup = function () {
+    session.tripwires.push('dns');
+    return Promise.reject(Object.assign(new Error('NETWORK_TRIPWIRE dns'), { code: 'TRIPWIRE' }));
+  };
+}
 
 process.env.LUNA_CONTROL_STATE_FILE = path.join(tmp, 'control.json');
 process.env.LUNA_OP_STORE_FILE = path.join(tmp, 'ops.json');
@@ -233,13 +239,36 @@ fs.writeFileSync(process.env.LUNA_CONTROL_STATE_FILE, JSON.stringify({
 fs.writeFileSync(process.env.LUNA_OP_STORE_FILE, '{}');
 fs.writeFileSync(process.env.TICKET_STATE_FILE, '{}');
 
+const runtimeDir = path.join(__dirname, '../../luna-current/01_runtime');
+function ensureDirCopy(name, source) {
+  const dest = path.join(runtimeDir, name);
+  if (fs.existsSync(dest)) {
+    const stat = fs.lstatSync(dest);
+    if (stat.isSymbolicLink()) fs.unlinkSync(dest);
+    else return;
+  }
+  fs.cpSync(source, dest, { recursive: true });
+}
+function ensureLink(name, source) {
+  const dest = path.join(runtimeDir, name);
+  if (fs.existsSync(dest)) return;
+  fs.symlinkSync(source, dest);
+}
+ensureDirCopy('statePresend', path.join(runtimeDir, '../02_statePresend'));
+ensureLink('luna-maintainer', path.join(runtimeDir, '../03_luna-maintainer'));
+
 const runtime = require('../../luna-current/01_runtime/index.js');
 const policy = require('../../luna-current/02_statePresend/policyEvidence.js');
 const handleWebhook = runtime.handleWebhook;
 
 const log = console.log;
 const errorLog = console.error;
-console.log = function () {};
+const logBuf = [];
+console.log = function () {
+  const line = Array.prototype.map.call(arguments, (item) => String(item)).join(' ');
+  logBuf.push(line);
+  if (logBuf.length > 40) logBuf.shift();
+};
 
 const ARSAL = '10118526';
 let seq = 0;
@@ -455,7 +484,10 @@ async function runWebhookCase(entry) {
     const delta = sliceDelta(session.calls, session.modelCalls, callFrom, modelFrom);
     const before = errors.length;
     checkExpect(turn.expect, delta, errors);
-    for (let k = before; k < errors.length; k += 1) errors[k] = 'turn ' + i + ' ' + errors[k];
+    if (errors.length > before) {
+      for (let k = before; k < errors.length; k += 1) errors[k] = 'turn ' + i + ' ' + errors[k];
+      errors.push('log ' + logBuf.slice(-8).join(' | ').slice(0, 500));
+    }
     for (const action of turn.after || []) applyAfter(world, action);
   }
   if (entry.caseExpect) {
@@ -498,9 +530,11 @@ async function main() {
   let passed = 0;
   const started = Date.now();
   for (const entry of sealed.cases) {
+    if (process.env.DEBUG_CASE && entry.id !== process.env.DEBUG_CASE) continue;
     session.calls = [];
     session.modelCalls = [];
     session.tripwires = [];
+    logBuf.length = 0;
     let errors = [];
     try {
       if (entry.group === 'figure-policy') errors = runFigure(entry);
@@ -526,7 +560,7 @@ async function main() {
     failed: failures.length,
     tags,
     elapsedMs: Date.now() - started,
-    failures: failures.slice(0, 80),
+    failures: failures,
   };
   fs.writeFileSync(path.join(ROOT, 'run-summary.json'), JSON.stringify(summary, null, 2));
   log('SEAL', sealHash);
