@@ -145,6 +145,8 @@ function stripHtml(s) {
 function redactCredentials(text) {
   // The only label list is the shared sanitizer. It runs on the original text.
   const original = String(text == null ? '' : text);
+  const plain = original.replace(/\s+/g, ' ').trim();
+  if (plain === PASSWORD_POLICY_CLARIFIER || plain === CHALLENGE_CLARIFIER) return plain;
   if (credentialSanitizer && typeof credentialSanitizer.isExactAllowedTemplate === 'function') {
     if (credentialSanitizer.isExactAllowedTemplate(original)) return original;
   }
@@ -419,10 +421,25 @@ function arabicScriptGrammarHit(text) {
   return (roles > 0 && acts > 0) || shortRole;
 }
 
+function devanagariLatinRole(text) {
+  const s = String(text || '');
+  if (!/[\u0900-\u097F]/.test(s) || !/\b(?:agent|human)\b/i.test(s)) return false;
+  const hi = grammarHit(s, 'hi');
+  return hi.roles > 0 || hi.acts > 0;
+}
+
+function romanHinglishHandoff(text) {
+  const s = String(text || '');
+  if (/[\u0900-\u097F\u0600-\u06FF]/.test(s)) return false;
+  const g = grammarHit(s, 'hinglish');
+  return g.roles > 0 && g.acts > 0;
+}
+
 function isStructuralHandoffAsk(text, lang) {
   const detected = lang || detectLanguage(text);
   const grammarLang = detected === 'hinglish' ? 'hinglish' : detected;
   if (/[\u0600-\u06FF]/.test(String(text || '')) && arabicScriptGrammarHit(text)) return true;
+  if (devanagariLatinRole(text) || romanHinglishHandoff(text)) return true;
   if (GRAMMAR[grammarLang] && grammarHit(text, grammarLang).hit) return true;
   if (detected === 'hinglish' && grammarHit(text, 'ur').hit) return true;
   if (grammarLang !== 'en' && grammarHit(text, 'en').hit) return true;
@@ -509,12 +526,28 @@ function stripLatinNoise(text) {
 
 // Credential text is not part of the ask. A password attached to a human
 // request must not turn the request into a normal model reply.
+function stripUnlabeledSecretTokens(text) {
+  return String(text || '').replace(/[A-Za-z0-9]{8,}/g, (token) => {
+    if (/[A-Za-z]/.test(token) && /\d/.test(token)) return ' ';
+    return token;
+  });
+}
+
+function redactUnlabeledSecrets(text) {
+  const original = String(text == null ? '' : text);
+  if (isExactAllowedTemplate(original)) return original;
+  return original.replace(/[A-Za-z0-9]{8,}/g, (token) => {
+    if (/[A-Za-z]/.test(token) && /\d/.test(token)) return '[secret]';
+    return token;
+  });
+}
+
 function handoffDetectionText(text) {
-  return stripLatinNoise(
+  return stripUnlabeledSecretTokens(stripLatinNoise(
     redactCredentials(text)
       .replace(/\b(?:password|passcode|passphrase|passwd|pwd|pass|otp|pin|token|secret)\b/gi, ' ')
       .replace(/\[secret\]/gi, ' ')
-  )
+  ))
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -2042,6 +2075,7 @@ module.exports = {
   STATUS,
   FIXED_MESSAGES,
   redactCredentials,
+  redactUnlabeledSecrets,
   prepareNoteForEnglishPrompt,
   detectLanguage,
   isStructuralHandoffAsk,
@@ -2055,6 +2089,7 @@ module.exports = {
   isLegitimateClarification,
   isPasswordPolicyQuestion,
   passwordPolicyPublicLine,
+  PASSWORD_POLICY_CLARIFIER,
   supportedFigureDraft,
   isPublicCustomerReply,
   owedFixedLineFromParts,

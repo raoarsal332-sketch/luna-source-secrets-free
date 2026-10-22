@@ -591,6 +591,7 @@ function sanitizeEscalateProblem(text, account, email) {
     const re = new RegExp('\\b' + String(account).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
     t = t.replace(re, '');
   }
+  t = fixedMessageHandoff.redactUnlabeledSecrets(t);
   t = t.replace(/[ \t]{2,}/g, ' ');
   t = t.replace(/\n{3,}/g, '\n\n');
   t = t.replace(/\(\s*\)/g, '');
@@ -2812,7 +2813,8 @@ async function postReply(conversationId, messageType, body, opts) {
   // Redact before either shape is sent so a canary cannot leave in a note or a comment.
   const redacted = fixedMessageHandoff.redactCredentials(String(body || ''));
   const exactTemplate = messageType !== 'note' && fixedMessageHandoff.isExactAllowedTemplate(redacted);
-  const finalBody = messageType === 'note' || (opts && opts.verbatim) || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
+  let finalBody = messageType === 'note' || (opts && opts.verbatim) || fixedMessageHandoff.isTerminalHedge(redacted) ? redacted : (exactTemplate ? redacted : toHtml(redacted));
+  if(opts&&opts.keepApprovedBytes&&messageType!=='note'&&(''+body).replace(/\p{Cf}/gu,'')===redacted)finalBody=body;
   if (opts && opts.owedFixedLine && messageType !== 'note') {
     writeOpStore.releaseUnknownReply(conversationId, messageType, finalBody, ARSAL_ID);
   }
@@ -2948,10 +2950,10 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
   {
     const asked = userPart ? stripHtml(userPart.body || '') : '';
     if (fixedMessageHandoff.isApprovedFaqAnswer(asked, body)) {
-      return postReply(conversationId, 'comment', fixedMessageHandoff.approvedFaqCustomerBody(asked), { verbatim: true });
+      return postReply(conversationId, 'comment', fixedMessageHandoff.approvedFaqCustomerBody(asked), { verbatim: true, keepApprovedBytes: true });
     }
     if (fixedMessageHandoff.isUniqueFaqArticle(asked, body)) {
-      return postReply(conversationId, 'comment', fixedMessageHandoff.uniqueRankedFaqArticle(asked), { verbatim: true });
+      return postReply(conversationId, 'comment', fixedMessageHandoff.uniqueRankedFaqArticle(asked), { verbatim: true, keepApprovedBytes: true });
     }
     if (figureKnowledge && fixedMessageHandoff.supportedFigureDraft(body, '', figureKnowledge) === String(body || '').replace(/\s+/g, ' ').trim()) {
       return postReply(conversationId, 'comment', String(body || '').replace(/\s+/g, ' ').trim(), { verbatim: true });
@@ -2978,6 +2980,10 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     }
   } catch (e) {
     console.error('identical-body dedupe fail', conversationId, e && e.message);
+  }
+  const __exactClarifier = String(body || '').replace(/\s+/g, ' ').trim();
+  if (__exactClarifier === fixedMessageHandoff.CHALLENGE_CLARIFIER || __exactClarifier === fixedMessageHandoff.PASSWORD_POLICY_CLARIFIER) {
+    return postReply(conversationId, 'comment', __exactClarifier, { verbatim: true });
   }
   const priorClientTexts = userPart ? parts
     .filter((p) => String((p.author || {}).id || '') === String((userPart.author || {}).id || '') &&
@@ -4915,6 +4921,12 @@ const handleWebhook = async (req, res) => {
         return res.sendStatus(200);
       }
     }
+    if (fixedMessageHandoff.isPasswordPolicyQuestion(text) && (!String(body || '').trim() || fixedMessageHandoff.isTerminalHedge(body))) {
+      const policyLine = fixedMessageHandoff.passwordPolicyPublicLine(text, __originalDraft || body);
+      console.log('PASSWORD_POLICY clarifier', conversationId);
+      await postClientCommentOnce(conversationId, policyLine, latestUser, clientName);
+      return res.sendStatus(200);
+    }
     if (fixedMessageHandoff.isTerminalHedge(body)) {
       const approvedFaqBody = fixedMessageHandoff.approvedFaqCustomerBody(text);
       console.log(approvedFaqBody ? 'WELCOME_FAQ kb answer' : 'HEDGE terminal', conversationId);
@@ -5168,6 +5180,20 @@ const handleWebhook = async (req, res) => {
       }
       if (__presend) __presend.send = true;
     }
+    if (fixedMessageHandoff.isPasswordPolicyQuestion(text) && (!String(body || '').trim() || fixedMessageHandoff.isTerminalHedge(body))) {
+      const policyLine = fixedMessageHandoff.passwordPolicyPublicLine(text, __originalDraft || body);
+      if (policyLine) {
+        body = policyLine;
+        if (__presend) __presend.send = true;
+      }
+    }
+    if (!fixedMessageHandoff.isAccountNumberQuestion(text)) {
+      const __figEarly = fixedMessageHandoff.supportedFigureDraft(__originalDraft, body, __presendKnowledge);
+      if (__figEarly) {
+        await postClientCommentOnce(conversationId, __figEarly, latestUser, clientName, __presendKnowledge);
+        return res.sendStatus(200);
+      }
+    }
     if (__presend.send) {
       await postClientCommentOnce(conversationId, body, latestUser, clientName); /* LUNA_STATE_PRESEND_V1:guardSend */
       return res.sendStatus(200);
@@ -5266,6 +5292,7 @@ const handleWebhook = async (req, res) => {
         };
         const __faqMiss = typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' && escalateRelatedOnly.isClearKbFaqAsk(text) && !isClearlyAccountSpecificIssue(text);
         const __spreadNegated = __spreadAskGate.explain(text).reason === 'negated-spread' && !isClearlyAccountSpecificIssue(text);
+        if(await __postFig())return res.sendStatus(200);
         if (
           !fixedMessageHandoff.isAccountNumberQuestion(text) &&
           !fixedMessageHandoff.isLegitimateClarification(text) &&
@@ -5309,6 +5336,14 @@ const handleWebhook = async (req, res) => {
       return res.sendStatus(200);
     }
     {
+      if (fixedMessageHandoff.isPasswordPolicyQuestion(text) && (!String(body || '').trim() || fixedMessageHandoff.isTerminalHedge(body))) {
+        const policyLine = fixedMessageHandoff.passwordPolicyPublicLine(text, __originalDraft || body);
+        if (policyLine) {
+          console.log('PASSWORD_POLICY clarifier', conversationId);
+          await postClientCommentOnce(conversationId, policyLine, latestUser, clientName);
+          return res.sendStatus(200);
+        }
+      }
       const heldClarifier = fixedMessageHandoff.ambiguousChallengeClarifier(text);
       if (heldClarifier) {
         console.log('WELCOME_FAQ clarifier', conversationId);
