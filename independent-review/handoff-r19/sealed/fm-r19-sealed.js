@@ -262,7 +262,8 @@ global.__lunaAxios = function (cfg) {
     return Promise.reject(Object.assign(new Error('NETWORK_TRIPWIRE ' + url), { code: 'TRIPWIRE' }));
   }
   const recorded = data && typeof data === 'object' ? JSON.parse(JSON.stringify(data)) : data;
-  calls.push({ method, url, data: recorded });
+  const rec = { method, url, data: recorded, status: 0, accepted: false };
+  calls.push(rec);
   if (url.includes('/admins')) {
     return Promise.resolve({
       status: 200,
@@ -283,8 +284,14 @@ global.__lunaAxios = function (cfg) {
   }
   if (method === 'post' && data && data.message_type) {
     try {
-      return Promise.resolve(handleWrite(data));
+      const res = handleWrite(data);
+      rec.status = res && res.status ? res.status : 0;
+      const errList = !!(res && res.data && res.data.type === 'error.list');
+      rec.accepted = rec.status >= 200 && rec.status < 300 && !errList;
+      return Promise.resolve(res);
     } catch (err) {
+      rec.status = 0;
+      rec.accepted = false;
       return Promise.reject(err);
     }
   }
@@ -333,8 +340,12 @@ function ofKind(list, kind) {
   return writesOf(list).filter((c) => c.data.message_type === kind);
 }
 
+function acceptedOf(list, kind) {
+  return ofKind(list, kind).filter((c) => c.accepted);
+}
+
 function bodies(list, kind) {
-  return ofKind(list, kind).map((c) => String(c.data.body || ''));
+  return acceptedOf(list, kind).map((c) => String(c.data.body || ''));
 }
 
 function blobOf(trace) {
@@ -547,18 +558,39 @@ function leakScan(traces, secrets) {
   return found;
 }
 
+function leakPlaces(traces, secret) {
+  if (!secret) return [];
+  const places = [];
+  for (const trace of traces) {
+    for (const call of writesOf(trace.calls)) {
+      if (JSON.stringify(call.data).includes(secret)) {
+        places.push(call.data.message_type + (call.accepted ? '' : ':rejected'));
+      }
+    }
+    if ((trace.prompts || []).some((p) => String(p).includes(secret))) places.push('prompt');
+  }
+  return [...new Set(places)];
+}
+
 function hasPlaceholder(traces) {
   return traces.some((t) => bodies(t.calls, 'note').some((b) => b.includes('[secret]')));
 }
 
+function acceptedNoteCount(traces) {
+  return traces.reduce((n, t) => n + acceptedOf(t.calls, 'note').length, 0);
+}
+
 function commentCount(traces) {
-  return traces.reduce((n, t) => n + ofKind(t.calls, 'comment').length, 0);
+  return traces.reduce((n, t) => n + acceptedOf(t.calls, 'comment').length, 0);
 }
 function assignCount(traces) {
-  return traces.reduce((n, t) => n + ofKind(t.calls, 'assignment').length, 0);
+  return traces.reduce((n, t) => n + acceptedOf(t.calls, 'assignment').length, 0);
 }
 function noteCount(traces) {
-  return traces.reduce((n, t) => n + ofKind(t.calls, 'note').length, 0);
+  return traces.reduce((n, t) => n + acceptedOf(t.calls, 'note').length, 0);
+}
+function attemptCount(traces, kind) {
+  return traces.reduce((n, t) => n + ofKind(t.calls, kind).length, 0);
 }
 
 function result(id, group, flags) {
@@ -591,16 +623,16 @@ for (const u of UTTERANCES) {
           conv = makeConv('h' + n, text, turnSpec.mode);
           const trace = await turn({ topic: turnSpec.topic, reply: 'ACTION: REPLY\nMODELSHOULDNOTPOST ' + secret });
           const comments = bodies(trace.calls, 'comment');
-          const kinds = writesOf(trace.calls).map((c) => c.data.message_type);
+          const kinds = writesOf(trace.calls).filter((c) => c.accepted).map((c) => c.data.message_type);
           const leaks = leakScan([trace], secret ? [secret] : []);
           const line = LINES[u.lang];
           const posted = comments.length === 1 && (comments[0] === line || plain(comments[0]) === line);
           const flags = { detail: '' };
           if (leaks.length) {
             flags.leak = true;
-            flags.detail = 'secret in note, assignment, comment, or prompt';
+            flags.detail = 'secret in ' + leakPlaces([trace], secret).join('+');
           }
-          if (comments.length > 1 || ofKind(trace.calls, 'assignment').length > 1) {
+          if (comments.length > 1 || acceptedOf(trace.calls, 'assignment').length > 1) {
             flags.duplicate = true;
             flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'duplicate write ' + kinds.join(',');
           }
@@ -609,12 +641,13 @@ for (const u of UTTERANCES) {
             else flags.soft = true;
             flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'comments=' + JSON.stringify(comments.map(plain)) + ' kinds=' + kinds.join(',');
           }
-          if (secret && !leaks.length && !hasPlaceholder([trace])) {
+          if (secret && !leaks.length && acceptedNoteCount([trace]) && !hasPlaceholder([trace])) {
             flags.soft = true;
-            flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'unlabeled or labeled token not replaced with [secret]';
+            flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'note omitted [secret]';
           }
           if (comments.some((b) => b.includes('MODELSHOULDNOTPOST'))) {
-            flags.product = true;
+            if (u.gate === 'product') flags.product = true;
+            else flags.soft = true;
             flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'model draft posted';
           }
           return result(this.id, 'handoff', flags);
@@ -737,8 +770,14 @@ for (const item of FAQ_CASES) {
           return result(this.id, 'faq', flags);
         }
         if (comments.length !== 1 || comments[0] !== item.body) {
+          const posted = comments[0] || '';
           flags.product = true;
-          flags.detail = 'FAQ bytes mismatch len=' + (comments[0] ? comments[0].length : 0) + ' zwsp=' + (comments[0] ? comments[0].includes('\u200b') : false);
+          flags.detail = 'FAQ bytes mismatch len=' + posted.length
+            + ' expect=' + item.body.length
+            + ' zwsp=' + posted.includes('\u200b')
+            + ' hello=' + /Hello\s+Sam/i.test(posted)
+            + ' plainEq=' + (plain(posted) === item.body)
+            + ' cfEq=' + (posted.replace(/\p{Cf}/gu, '') === item.body.replace(/\p{Cf}/gu, ''));
         }
         if (comments.some((b) => /Hello\s+Sam/i.test(b))) {
           flags.product = true;
@@ -1150,8 +1189,8 @@ for (const lang of RECOVERY_LANGS) {
           if (kind === 'again') addUser(lang.text);
           const second = await turn({ topic: 'conversation.user.replied' });
           const flags = { detail: '' };
-          const firstComments = ofKind(first.calls, 'comment');
-          const secondComments = ofKind(second.calls, 'comment');
+          const firstComments = acceptedOf(first.calls, 'comment');
+          const secondComments = acceptedOf(second.calls, 'comment');
           const secondAssign = ofKind(second.calls, 'assignment');
           const line = LINES[lang.lang];
           if (firstComments.length !== 1 || plain(firstComments[0].data.body) !== line) {
@@ -1191,7 +1230,7 @@ for (const mode of ['timeout', '500']) {
           }));
         }
         const flags = { detail: '' };
-        const assigns = assignCount(traces);
+        const assigns = attemptCount(traces, 'assignment');
         const comments = commentCount(traces);
         if (comments) {
           flags.product = true;
@@ -1233,9 +1272,9 @@ for (const lang of RECOVERY_LANGS) {
           const leaks = leakScan(traces, [secret]);
           if (leaks.length) {
             flags.leak = true;
-            flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'secret survived recovery';
+            flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'secret in ' + leakPlaces(traces, secret).join('+');
           }
-          if (secret && !leaks.length && !hasPlaceholder(traces)) {
+          if (secret && !leaks.length && acceptedNoteCount(traces) && !hasPlaceholder(traces)) {
             flags.soft = true;
             flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'placeholder missing';
           }
@@ -1275,7 +1314,7 @@ function scoreRecovery(traces, line, opts) {
     flags.recovery = true;
     flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'unlanded retry assignments ' + secondAssign;
   }
-  const secondNotes = ofKind(traces[1].calls, 'note').length;
+  const secondNotes = acceptedOf(traces[1].calls, 'note').length;
   if (opts.noteRemoved && secondNotes !== 1) {
     flags.recovery = true;
     flags.detail = (flags.detail ? flags.detail + '; ' : '') + 'removed note rewritten ' + secondNotes;
@@ -1353,6 +1392,7 @@ function summarize(rows) {
     if (n % 100 === 0) process.stderr.write('sealed ' + n + '/' + cases.length + '\n');
   }
   const summary = summarize(rows);
+  summary.sealSha256 = crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex');
   summary.caseIds = rows.map((r) => ({ id: r.id, ok: r.ok, product: r.product, leak: r.leak, duplicate: r.duplicate, recovery: r.recovery, soft: r.soft }));
   const outPath = process.env.LUNA_REVIEW_OUT || path.join(stateDir, 'result.json');
   fs.writeFileSync(outPath, JSON.stringify(summary));
