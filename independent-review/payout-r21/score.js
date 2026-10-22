@@ -123,6 +123,12 @@ let ownerLockOk = 0;
 let customerLocks = 0;
 let customerLockOk = 0;
 let byteCompared = 0;
+let criticalN = 0;
+let silentN = 0;
+let byteN = 0;
+let leakN = 0;
+let substituteN = 0;
+let errorN = 0;
 
 for (const row of candidate.results) {
   report.counts[row.cls] = (report.counts[row.cls] || 0) + 1;
@@ -143,26 +149,34 @@ for (const row of candidate.results) {
   }
 
   if (row.expect === 'suppress' || row.expect === 'skip') {
-    if (comments.length) take(report.critical, row, 'public send during ' + row.expect);
+    if (comments.length) {
+      criticalN += 1;
+      take(report.critical, row, 'public send during ' + row.expect);
+    }
     continue;
   }
 
   if (!comments.length) {
+    silentN += 1;
     take(report.silent, row, base && (base.comments || []).length ? 'baseline sent' : 'neither sent');
   }
 
   const model = (caseById.get(row.id) || {}).model || '';
   if (row.expect === 'hedge' && comments.length && !isHedge(sent) && !isLockText(sent)) {
     if (containsModel(sentPlain, model) || (!isFixed(sent) && POLICY_RE.test(sentPlain))) {
+      criticalN += 1;
       take(report.critical, row, 'claim text or policy assertion in the public body');
     } else if (isFixed(sent)) {
+      substituteN += 1;
       take(report.substitutes, row, 'fixed forward or status replaced the claim');
     } else {
+      substituteN += 1;
       take(report.substitutes, row, 'non-claim substitute');
     }
   }
 
   if (LEAK_RE.test(sentPlain) && !isHedge(sent)) {
+    leakN += 1;
     take(report.leaks, row, 'leak marker in public body');
   }
 
@@ -199,19 +213,23 @@ for (const row of candidate.results) {
   if (BYTE_CLS.has(row.cls)) {
     byteCompared += 1;
     const b = base ? joined(base) : null;
-    if (b !== sent) take(report.byteDiff, row, 'baseline bytes differ');
+    if (b !== sent) {
+      byteN += 1;
+      take(report.byteDiff, row, 'baseline bytes differ');
+    }
   }
+  if (row.error) errorN += 1;
 }
 
 const summary = {
   cases: candidate.results.length,
   seal: candidate.seal,
   counts: report.counts,
-  critical: report.critical.length,
-  silentDrops: report.silent.length,
-  byteRegressions: report.byteDiff.length,
+  critical: criticalN,
+  silentDrops: silentN,
+  byteRegressions: byteN,
   byteCompared,
-  instructionLeaks: report.leaks.length,
+  instructionLeaks: leakN,
   ownerLocks,
   ownerLocksDelivered: ownerLockOk,
   customerLocks,
@@ -222,8 +240,8 @@ const summary = {
   homonymCases: homonym,
   homonymHolds: homonymHold,
   homonymFalseHoldRate: homonym ? homonymHold / homonym : 0,
-  substitutes: report.substitutes.length,
-  errors: report.errors.length,
+  substitutes: substituteN,
+  errors: errorN,
   tripwires: report.tripwires,
   examples: {
     critical: report.critical.slice(0, 8),
