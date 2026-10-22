@@ -25,6 +25,13 @@ const FIXED = {
 };
 const ACCOUNT_AR =
   'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.';
+const ACCOUNT_HI = 'MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।';
+const ACCOUNT_HING =
+  'MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti.';
+const ACCOUNT_UR =
+  'MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔';
+const ACCOUNT_IT =
+  "Su MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano.";
 const HEDGE = "I can't confirm that figure from the approved details, so I won't guess a number.";
 const PING =
   "I don't have an open update on this conversation. What would you like me to check?";
@@ -50,7 +57,11 @@ function clone(v) {
 }
 
 function installModel(scripted) {
-  const queue = Array.isArray(scripted) ? scripted.slice() : [scripted];
+  // A missing script is an empty queue. [undefined] would be consumed as a real
+  // turn and then fall through. The Luna system prompt itself names the owner
+  // command, so that phrase must not select the owner-note default. Only the
+  // owner-command user envelope ("DIRECT COMMAND from ...") does.
+  const queue = Array.isArray(scripted) ? scripted.slice() : scripted == null ? [] : [scripted];
   global.__lunaModel = {
     create: async (req) => {
       const system = ((req.messages || []).find((m) => m.role === 'system') || {}).content || '';
@@ -58,7 +69,7 @@ function installModel(scripted) {
       let content = queue.length ? queue.shift() : null;
       if (content == null) {
         if (/INTERNAL Intercom note/i.test(system)) content = 'Client asked for help with this conversation.';
-        else if (/OWNER \/ JERRY DIRECT COMMAND/i.test(system)) content = 'ACTION: NOTE\nBODY: Noted.';
+        else if (/DIRECT COMMAND from /i.test(user)) content = 'ACTION: NOTE\nBODY: Noted.';
         else content = 'ACTION: REPLY\nBODY: Please tell me which challenge you mean.';
       }
       if (content && typeof content === 'object' && content.throw) {
@@ -67,8 +78,11 @@ function installModel(scripted) {
       if (/INTERNAL Intercom note/i.test(system) && typeof content === 'string' && /ACTION:/.test(content)) {
         content = 'Client asked for help with this conversation.';
       }
-      void user;
-      return { choices: [{ message: { content: String(content == null ? '' : content) } }] };
+      const out = String(content == null ? '' : content);
+      if (process.env.LUNA_STUB_LOG === '1') {
+        console.error('STUB_OUT', JSON.stringify(out).slice(0, 200));
+      }
+      return { choices: [{ message: { content: out } }] };
     },
   };
 }
@@ -438,7 +452,15 @@ function classifySignature(recorded) {
     if (fixedLang && publics.filter((b) => strip(b) === FIXED[fixedLang] || b === FIXED[fixedLang]).length) {
       cls = 'fixed';
       fixedExact = FIXED[fixedLang];
-    } else if (joined.includes(ACCOUNT_AR) || /account number is in the email/i.test(joined) || /اکاؤنٹ نمبر اس ای میل/.test(joined)) {
+    } else if (
+      joined.includes(ACCOUNT_AR) ||
+      joined.includes(ACCOUNT_HI) ||
+      joined.includes(ACCOUNT_HING) ||
+      joined.includes(ACCOUNT_UR) ||
+      joined.includes(ACCOUNT_IT) ||
+      /account number is in the email/i.test(joined) ||
+      /اکاؤنٹ نمبر اس ای میل/.test(joined)
+    ) {
       cls = 'account';
     } else if (publics.some((b) => strip(b) === HEDGE)) cls = 'hedge';
     else if (publics.some((b) => strip(b) === PING || b === PING)) cls = 'ping';
@@ -455,7 +477,9 @@ function strip(s) {
 
 function fixedCount(recorded) {
   const lines = new Set(Object.values(FIXED));
-  return recorded.filter((r) => r.messageType === 'comment' && lines.has(r.body)).length;
+  // A 422, 429, 5xx, or timeout records the attempted body. Only a 2xx comment
+  // is a public line that landed.
+  return recorded.filter((r) => r.messageType === 'comment' && r.status >= 200 && r.status < 300 && lines.has(r.body)).length;
 }
 
 function checkExpect(spec, recorded, signature) {
@@ -523,8 +547,14 @@ function checkExpect(spec, recorded, signature) {
     }
   }
   if (Array.isArray(expect.excludes)) {
-    const blob = recorded.map((r) => r.exact).join('\n');
+    const fixedLines = new Set(Object.values(FIXED));
+    // A rejected write (422/5xx) still records the attempted body. A fixed line
+    // counts as delivered only on a 2xx comment. Secrets and other forbidden
+    // text are scanned on every recorded request.
+    const delivered = okComments.map((r) => r.body).join('\n');
+    const allExact = recorded.map((r) => r.exact).join('\n');
     for (const piece of expect.excludes) {
+      const blob = fixedLines.has(piece) ? delivered : allExact;
       if (piece && blob.includes(piece)) {
         failures.push({
           code: 'forbidden-text',
@@ -582,7 +612,7 @@ function checkExpect(spec, recorded, signature) {
       assignedOk = true;
       liveSeat = rec.assigneeId;
     }
-    if (rec.messageType === 'comment' && lines.includes(rec.body)) {
+    if (rec.messageType === 'comment' && rec.status >= 200 && rec.status < 300 && lines.includes(rec.body)) {
       seenFixed += 1;
       const preexisting = spec.setup && spec.setup.assignee === 'seat';
       if (!assignedOk && !preexisting && rec.status >= 200 && rec.status < 300) {
