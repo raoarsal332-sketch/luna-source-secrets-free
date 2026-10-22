@@ -297,11 +297,16 @@ function sequence(id, klass, steps, expect) {
 sequence('F-after-password', 'faq', [
   { text: 'What password criteria do you use?', topic: 'conversation.user.created', createdAgo: 5, model: 'ACTION: REPLY\n' },
   { text: 'How does the challenge work?', topic: 'conversation.user.replied', createdAgo: 1000, model: 'ACTION: REPLY\n[secret] should not be here' },
-], Object.assign(faqExpect(challenge.body), {
+], {
+  successCommentsMin: 2,
+  lastComments: 1,
+  lastCommentEquals: challenge.body,
   commentIncludes: ['\u200b', challenge.url],
   commentExcludes: ['[secret]', POLICY],
-  lastCommentEquals: challenge.body,
-}));
+  zwsp: true,
+  bodySha256: crypto.createHash('sha256').update(challenge.body, 'utf8').digest('hex'),
+  secrets: [],
+});
 
 sequence('F-after-secret-reply', 'faq', [
   {
@@ -318,15 +323,16 @@ sequence('F-after-secret-reply', 'faq', [
     priorBot: true,
     model: 'ACTION: REPLY\n[secret] ' + LABELED,
   },
-], Object.assign({
-  successComments: 1,
+], {
+  successCommentsMin: 2,
+  lastComments: 1,
   lastCommentEquals: leverage.body,
-  commentIncludes: ['\u200b'],
+  commentIncludes: ['\u200b', leverage.url],
   commentExcludes: ['[secret]', LABELED, NOISE],
   secrets: [LABELED, NOISE],
   zwsp: true,
   bodySha256: crypto.createHash('sha256').update(leverage.body, 'utf8').digest('hex'),
-}, {}));
+});
 
 sequence('F-after-secret-challenge', 'faq', [
   {

@@ -1,6 +1,6 @@
 sealed-set: independent-review/handoff-r20/sealed/cases.json
-sha256: f3696556805097e9b903e1e88f4730a6712ea688f081023609ea590b55ebdae8
-bytes: 504912
+sha256: 64e9e5697e02601fcd4013ff88fc449f9c7ea07c34f864b8444165969588531f
+bytes: 504327
 cases: 981
 recovery: 200
 byClass: {"handoff":648,"password":90,"faq":6,"figure":20,"preserve":10,"reply-secret":7,"recovery":200}
