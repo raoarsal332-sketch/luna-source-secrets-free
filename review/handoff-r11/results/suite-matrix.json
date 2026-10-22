@@ -1,0 +1,36 @@
+{
+  "candidateOnly": [],
+  "trees": {
+    "main": "e999d3c8caf327bf9a102e5ba562d9c114a92109",
+    "r10": "c4553a93f20751b84ebdca5fb21cc7703af84a03",
+    "r11": "1a5c35f754d5d5e80336a24b7371676e52ce9bf6"
+  },
+  "lanes": {
+    "fixed-message-handoff-r2": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r3": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r4": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r5": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r6": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r7": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r8": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r9": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r10": {"main": "absent", "r10": "pass", "r11": "pass"},
+    "fixed-message-handoff-r11": {"main": "absent", "r10": "absent", "r11": "pass"}
+  },
+  "repair": {
+    "main": "pass",
+    "r10": "fail",
+    "r11": "fail",
+    "sharedFailures": [
+      "selftest-identity-before-escalate.js",
+      "selftest-lock-harden.js"
+    ]
+  },
+  "failfix": {
+    "identity": {"main": "pass", "r10": "pass", "r11": "pass"},
+    "retrieval": {"main": "fail", "r10": "fail", "r11": "fail"},
+    "variant": {"main": "pass", "r10": "pass", "r11": "pass"}
+  },
+  "maintainer": {"main": "fail", "r10": "fail", "r11": "fail"},
+  "rollback": {"corpusCases": 110, "mismatchesVersusR10": 0}
+}

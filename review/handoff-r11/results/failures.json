@@ -1,0 +1,334 @@
+[
+  {
+    "id": "lang-handoff-ur-2",
+    "lane": "review",
+    "group": "language",
+    "failClass": "product-critical",
+    "title": "handoff line ur-2",
+    "reasons": [
+      "fixed line missing: یہ گفتگو اب ایک ساتھی کے پاس ہے۔"
+    ],
+    "comments": [
+      "السلام علیکم Casey، The FAQ answer is that this rule depends on the challenge type."
+    ],
+    "writes": [
+      [
+        "comment",
+        200,
+        1,
+        ""
+      ]
+    ],
+    "log": [],
+    "tripwire": 0
+  },
+  {
+    "id": "lang-account-ar",
+    "lane": "review",
+    "group": "language",
+    "failClass": "defect",
+    "title": "account line ar",
+    "reasons": [
+      "missing public text: في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+    ],
+    "comments": [
+      "السلام علیکم Casey، في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر."
+    ],
+    "writes": [
+      [
+        "comment",
+        200,
+        1,
+        ""
+      ]
+    ],
+    "log": [
+      "FIN_HANDOFF_WELCOME route account-number lang-account-ar"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "clarify-0",
+    "lane": "review",
+    "group": "clarification",
+    "failClass": "over-block",
+    "title": "legitimate challenge clarifier is kept",
+    "reasons": [
+      "public count 0 < 1",
+      "missing public text: Please tell me which challenge you mean."
+    ],
+    "comments": [],
+    "writes": [],
+    "log": [
+      "[statePresend] gate error (fail-closed, holding send): Cannot read properties of undefined (reading 'ok')"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "clarify-faq-0",
+    "lane": "review",
+    "group": "clarification",
+    "failClass": "over-block",
+    "title": "clarifier on a leverage FAQ is kept",
+    "reasons": [
+      "public count 0 < 1",
+      "missing public text: which challenge"
+    ],
+    "comments": [],
+    "writes": [],
+    "log": [
+      "[statePresend] gate error (fail-closed, holding send): Cannot read properties of undefined (reading 'ok')"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "clarify-1",
+    "lane": "review",
+    "group": "clarification",
+    "failClass": "over-block",
+    "title": "legitimate challenge clarifier is kept",
+    "reasons": [
+      "public count 0 < 1",
+      "missing public text: Which challenge do you mean"
+    ],
+    "comments": [],
+    "writes": [],
+    "log": [
+      "[statePresend] gate error (fail-closed, holding send): Cannot read properties of undefined (reading 'ok')"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "clarify-faq-1",
+    "lane": "review",
+    "group": "clarification",
+    "failClass": "over-block",
+    "title": "clarifier on a leverage FAQ is kept",
+    "reasons": [
+      "public count 0 < 1",
+      "missing public text: which challenge"
+    ],
+    "comments": [],
+    "writes": [],
+    "log": [
+      "[statePresend] gate error (fail-closed, holding send): Cannot read properties of undefined (reading 'ok')"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "clarify-2",
+    "lane": "review",
+    "group": "clarification",
+    "failClass": "over-block",
+    "title": "legitimate challenge clarifier is kept",
+    "reasons": [
+      "public count 0 < 1",
+      "missing public text: Which challenge you mean for this rule"
+    ],
+    "comments": [],
+    "writes": [],
+    "log": [
+      "[statePresend] gate error (fail-closed, holding send): Cannot read properties of undefined (reading 'ok')"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "clarify-faq-2",
+    "lane": "review",
+    "group": "clarification",
+    "failClass": "over-block",
+    "title": "clarifier on a leverage FAQ is kept",
+    "reasons": [
+      "public count 0 < 1",
+      "missing public text: which challenge"
+    ],
+    "comments": [],
+    "writes": [],
+    "log": [
+      "[statePresend] gate error (fail-closed, holding send): Cannot read properties of undefined (reading 'ok')"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "write-assign-errors",
+    "lane": "review",
+    "group": "write-success",
+    "failClass": "product-critical",
+    "title": "write outcome assign-errors",
+    "reasons": [
+      "assignment op was confirmed"
+    ],
+    "comments": [],
+    "writes": [
+      [
+        "note",
+        200,
+        1,
+        ""
+      ],
+      [
+        "assignment",
+        200,
+        0,
+        ""
+      ]
+    ],
+    "log": [
+      "ASSIGN write-assign-errors 900001 200 ok",
+      "FIXED_HANDOFF withheld assign_partial write-assign-errors",
+      "FIN_HANDOFF_WELCOME write-assign-errors"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "write-retry-wrong-assignee",
+    "lane": "review",
+    "group": "write-success",
+    "failClass": "product-critical",
+    "title": "wrong assignee is retried once",
+    "reasons": [
+      "public count 0 < 1",
+      "fixed line missing: A teammate now has this conversation."
+    ],
+    "comments": [],
+    "writes": [
+      [
+        "note",
+        200,
+        1,
+        ""
+      ],
+      [
+        "assignment",
+        200,
+        0,
+        ""
+      ]
+    ],
+    "log": [
+      "ASSIGN write-retry-wrong-assignee 900001 200 FAIL",
+      "FIXED_HANDOFF withheld assign_partial write-retry-wrong-assignee",
+      "FIN_HANDOFF_WELCOME write-retry-wrong-assignee",
+      "FIXED_HANDOFF withheld assign_ambiguous_held write-retry-wrong-assignee",
+      "FIXED_HANDOFF recovery write-retry-wrong-assignee"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "write-retry-assign-errors",
+    "lane": "review",
+    "group": "write-success",
+    "failClass": "product-critical",
+    "title": "200 with errors is retried once",
+    "reasons": [
+      "public count 0 < 1",
+      "fixed line missing: A teammate now has this conversation."
+    ],
+    "comments": [],
+    "writes": [
+      [
+        "note",
+        200,
+        1,
+        ""
+      ],
+      [
+        "assignment",
+        200,
+        0,
+        ""
+      ]
+    ],
+    "log": [
+      "ASSIGN write-retry-assign-errors 900001 200 ok",
+      "FIXED_HANDOFF withheld assign_partial write-retry-assign-errors",
+      "FIN_HANDOFF_WELCOME write-retry-assign-errors",
+      "FIXED_HANDOFF withheld assign_ambiguous_held write-retry-assign-errors",
+      "FIXED_HANDOFF recovery write-retry-assign-errors"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "rec-remove-note",
+    "lane": "recovery",
+    "group": "recovery",
+    "failClass": "product-critical",
+    "title": "note removed after assignment is rewritten and the line posts once",
+    "reasons": [
+      "public count 0 < 1",
+      "fixed line missing: A teammate now has this conversation."
+    ],
+    "comments": [],
+    "writes": [
+      [
+        "note",
+        200,
+        1,
+        ""
+      ],
+      [
+        "assignment",
+        200,
+        1,
+        ""
+      ],
+      [
+        "comment",
+        422,
+        0,
+        ""
+      ]
+    ],
+    "log": [
+      "ASSIGN rec-remove-note 900001 200 ok",
+      "IC_REQ_FAIL OUT https://api.intercom.io/conversations/rec-remove-note/reply 422 {\"errors\":[{\"code\":\"invalid\"}]}",
+      "FIXED_HANDOFF withheld message_422 rec-remove-note",
+      "FIN_HANDOFF_WELCOME rec-remove-note",
+      "IC_REQ_REPLAY_SUPPRESSED NOTE https://api.intercom.io/conversations/rec-remove-note/reply confirmed",
+      "FIXED_HANDOFF withheld note_partial rec-remove-note",
+      "FIXED_HANDOFF lost-state completion rec-remove-note"
+    ],
+    "tripwire": 0
+  },
+  {
+    "id": "rec-op-unverified",
+    "lane": "recovery",
+    "group": "recovery",
+    "failClass": "product-critical",
+    "title": "op record without the seat held does not post the fixed line",
+    "reasons": [
+      "forbidden public text: A teammate now has this conversation.",
+      "fixed handoff line was public",
+      "fixed line count 1"
+    ],
+    "comments": [
+      "A teammate now has this conversation."
+    ],
+    "writes": [
+      [
+        "note",
+        200,
+        1,
+        ""
+      ],
+      [
+        "assignment",
+        200,
+        1,
+        ""
+      ],
+      [
+        "comment",
+        200,
+        1,
+        ""
+      ]
+    ],
+    "log": [
+      "ASSIGN rec-op-unverified 900001 200 ok",
+      "FIXED_HANDOFF sent recovery rec-op-unverified 900001",
+      "FIXED_HANDOFF lost-state completion rec-op-unverified"
+    ],
+    "tripwire": 0
+  }
+]
