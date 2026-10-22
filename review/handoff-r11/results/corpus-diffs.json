@@ -1,0 +1,2132 @@
+[
+  {
+    "id": "corp-faq-0",
+    "group": "faq",
+    "title": "What is the daily loss limit?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-1",
+    "group": "faq",
+    "title": "What is the profit target?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-2",
+    "group": "faq",
+    "title": "Are expert advisors allowed?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-3",
+    "group": "faq",
+    "title": "What are the trading days rules?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-4",
+    "group": "faq",
+    "title": "What is a free retry?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-5",
+    "group": "faq",
+    "title": "How do resets work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-7",
+    "group": "faq",
+    "title": "Is there a difference between lite and standard?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-8",
+    "group": "faq",
+    "title": "What happens if I breach a rule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-9",
+    "group": "faq",
+    "title": "Can I use an EA?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-11",
+    "group": "faq",
+    "title": "How does the daily loss get calculated in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-12",
+    "group": "faq",
+    "title": "What is SEP35?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-13",
+    "group": "faq",
+    "title": "Do you have a promo code?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-14",
+    "group": "faq",
+    "title": "What is Flash5?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-15",
+    "group": "faq",
+    "title": "Which challenge has a free retry?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-16",
+    "group": "faq",
+    "title": "What are the general rules?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-17",
+    "group": "faq",
+    "title": "How do payouts work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-18",
+    "group": "faq",
+    "title": "What is the payout schedule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-19",
+    "group": "faq",
+    "title": "What is the payout policy?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-20",
+    "group": "faq",
+    "title": "Is news trading allowed on the challenge?",
+    "differsFrom": [
+      "main",
+      "r10"
+    ],
+    "justified": true,
+    "justification": "R11 keeps this news-trading FAQ on the answer path. R10 selected the status-ping clarifier because the question contains \"news\".",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "Hello Casey, I don't have an open update on this conversation. What would you like me to check?"
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-21",
+    "group": "faq",
+    "title": "What is the news trading rule for the classic challenge?",
+    "differsFrom": [
+      "main",
+      "r10"
+    ],
+    "justified": true,
+    "justification": "R11 keeps this news-trading FAQ on the answer path. R10 selected the status-ping clarifier because the question contains \"news\".",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "Hello Casey, I don't have an open update on this conversation. What would you like me to check?"
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-22",
+    "group": "faq",
+    "title": "What leverage is offered?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-23",
+    "group": "faq",
+    "title": "What is FundedElite?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-24",
+    "group": "faq",
+    "title": "How does the standard challenge differ from lite?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-25",
+    "group": "faq",
+    "title": "What is the minimum trading days rule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-26",
+    "group": "faq",
+    "title": "Are weekend holds allowed as a general rule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-27",
+    "group": "faq",
+    "title": "What is a profit split in general terms?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-28",
+    "group": "faq",
+    "title": "How do I read the challenge rules?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-29",
+    "group": "faq",
+    "title": "What is the consistency rule in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-30",
+    "group": "faq",
+    "title": "What does the FAQ say about expert advisors?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-31",
+    "group": "faq",
+    "title": "Is copy trading mentioned as a general rule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-32",
+    "group": "faq",
+    "title": "What is the maximum lot rule in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-34",
+    "group": "faq",
+    "title": "What is instant funding as a product?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-35",
+    "group": "faq",
+    "title": "What is the scaling plan in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-36",
+    "group": "faq",
+    "title": "What countries are restricted in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-38",
+    "group": "faq",
+    "title": "What is the refund policy in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-faq-39",
+    "group": "faq",
+    "title": "What is the kyc process in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-0",
+    "group": "payout",
+    "title": "What is the minimum payout?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-1",
+    "group": "payout",
+    "title": "What is the payout minimum?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-2",
+    "group": "payout",
+    "title": "How much is the minimum payout?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-3",
+    "group": "payout",
+    "title": "How long do payouts take?",
+    "differsFrom": [
+      "main",
+      "r10"
+    ],
+    "justified": true,
+    "justification": "R11 keeps payout-duration FAQ asks on the FAQ path instead of the status-ping clarifier.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "Hello Casey, I don't have an open update on this conversation. What would you like me to check?"
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-4",
+    "group": "payout",
+    "title": "What is the payout time?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-5",
+    "group": "payout",
+    "title": "What is the payout schedule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-6",
+    "group": "payout",
+    "title": "How do payouts work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-7",
+    "group": "payout",
+    "title": "Why do payouts get rejected?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-8",
+    "group": "payout",
+    "title": "What is the payout rejection policy?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-9",
+    "group": "payout",
+    "title": "What if a payout is rejected?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-10",
+    "group": "payout",
+    "title": "How long does a payout take?",
+    "differsFrom": [
+      "main",
+      "r10"
+    ],
+    "justified": true,
+    "justification": "R11 keeps payout-duration FAQ asks on the FAQ path instead of the status-ping clarifier.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "Hello Casey, I don't have an open update on this conversation. What would you like me to check?"
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-11",
+    "group": "payout",
+    "title": "What is the minimum payout amount?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-12",
+    "group": "payout",
+    "title": "Is there a payout policy?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-13",
+    "group": "payout",
+    "title": "When is the payout schedule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-14",
+    "group": "payout",
+    "title": "How do standard payouts work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-15",
+    "group": "payout",
+    "title": "What payout minimum applies in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-16",
+    "group": "payout",
+    "title": "How long do payouts take on the classic challenge?",
+    "differsFrom": [
+      "main",
+      "r10"
+    ],
+    "justified": true,
+    "justification": "R11 keeps payout-duration FAQ asks on the FAQ path instead of the status-ping clarifier.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "Hello Casey, I don't have an open update on this conversation. What would you like me to check?"
+      ],
+      "r11": [
+        "I can't confirm that figure from the approved details, so I won't guess a number."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-17",
+    "group": "payout",
+    "title": "What is the general payout rule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-18",
+    "group": "payout",
+    "title": "Do payouts have a minimum?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-pay-19",
+    "group": "payout",
+    "title": "What is the payout processing policy?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-0",
+    "group": "spread",
+    "title": "Can I check the spreads on MT5?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-1",
+    "group": "spread",
+    "title": "How do I compare spreads?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-2",
+    "group": "spread",
+    "title": "Please share the MT5 test account so I can check spreads",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-3",
+    "group": "spread",
+    "title": "I want to see spreads on MetaTrader 5",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-4",
+    "group": "spread",
+    "title": "What server do I use to test spreads?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-5",
+    "group": "spread",
+    "title": "Show me the spread test login",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-6",
+    "group": "spread",
+    "title": "Can you give the demo account to inspect spreads?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-7",
+    "group": "spread",
+    "title": "How can I check the spread on your server?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-8",
+    "group": "spread",
+    "title": "MT5 login for spread test please",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-10",
+    "group": "spread",
+    "title": "Where is the spread test server?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-11",
+    "group": "spread",
+    "title": "Help me check spreads",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-12",
+    "group": "spread",
+    "title": "Spread test account details please",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-13",
+    "group": "spread",
+    "title": "Can I test spreads before I buy?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-spread-14",
+    "group": "spread",
+    "title": "What is the MT5 server for spread testing?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r11": [
+        "TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-0",
+    "group": "partnership",
+    "title": "How does the partnership program work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-1",
+    "group": "partnership",
+    "title": "Do you have an affiliate partnership?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-2",
+    "group": "partnership",
+    "title": "How do partners get paid?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-3",
+    "group": "partnership",
+    "title": "What is the partnership page?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-4",
+    "group": "partnership",
+    "title": "Can I join the partnership program?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-5",
+    "group": "partnership",
+    "title": "How does affiliate partnership work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-6",
+    "group": "partnership",
+    "title": "Tell me about the partner program",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-7",
+    "group": "partnership",
+    "title": "Is there a partnership for educators?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-8",
+    "group": "partnership",
+    "title": "How do I apply for partnership?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-9",
+    "group": "partnership",
+    "title": "What does the partnership include?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-10",
+    "group": "partnership",
+    "title": "How are partnership referrals tracked?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-11",
+    "group": "partnership",
+    "title": "Who do I contact about partnership?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-12",
+    "group": "partnership",
+    "title": "Is the partnership open?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-13",
+    "group": "partnership",
+    "title": "How do partnership commissions work in general?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-partner-14",
+    "group": "partnership",
+    "title": "What is the affiliate partnership rule?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R11 matches R10. The difference from baseline main is the R10 fixed-message, hedge, or exact-spread behavior that this candidate keeps.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [
+        "A teammate now has this conversation."
+      ],
+      "r11": [
+        "A teammate now has this conversation."
+      ]
+    }
+  },
+  {
+    "id": "corp-human-0",
+    "group": "human-owned",
+    "title": "What is the daily loss limit?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-1",
+    "group": "human-owned",
+    "title": "How long do payouts take?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-2",
+    "group": "human-owned",
+    "title": "I want to talk to a human",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, how can I help?"
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-3",
+    "group": "human-owned",
+    "title": "What is my account number?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-4",
+    "group": "human-owned",
+    "title": "any update?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-5",
+    "group": "human-owned",
+    "title": "Can I check the spreads on MT5?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, TEST SPREAD ACCOUNT DETAILS - For MT5 Testing on our new FundedElite server Platform: MetaTrader 5 Server: Fundedelite-Server Account Number: 55188 Password: QBG5FetfozKz7^a?J! Use this account to check spreads."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-6",
+    "group": "human-owned",
+    "title": "How does the partnership program work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-7",
+    "group": "human-owned",
+    "title": "Is news trading allowed?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-8",
+    "group": "human-owned",
+    "title": "status",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-9",
+    "group": "human-owned",
+    "title": "I am still waiting on my payout",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-10",
+    "group": "human-owned",
+    "title": "What is the profit target?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-11",
+    "group": "human-owned",
+    "title": "please connect me to a live agent",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, how can I help?"
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-12",
+    "group": "human-owned",
+    "title": "mera account number kya hai?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Salam Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-13",
+    "group": "human-owned",
+    "title": "مجھے ایک انسان سے بات چاہیے",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "السلام علیکم Casey، The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-14",
+    "group": "human-owned",
+    "title": "What leverage does the challenge use?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-15",
+    "group": "human-owned",
+    "title": "How do payouts work?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-16",
+    "group": "human-owned",
+    "title": "Hello, are you there?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-17",
+    "group": "human-owned",
+    "title": "Please look at my challenge rules question",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-18",
+    "group": "human-owned",
+    "title": "What is the minimum payout?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, I've forwarded this to a teammate who can take a closer look. They have the chat context."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  },
+  {
+    "id": "corp-human-19",
+    "group": "human-owned",
+    "title": "Can you reopen this and answer the FAQ?",
+    "differsFrom": [
+      "main"
+    ],
+    "justified": true,
+    "justification": "R10 and R11 keep a human-owned thread silent. Baseline main does not have this ownership gate.",
+    "public": {
+      "main": [
+        "Hello Casey, The FAQ answer is that this rule depends on the challenge type."
+      ],
+      "r10": [],
+      "r11": []
+    }
+  }
+]
