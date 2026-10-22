@@ -2542,11 +2542,11 @@ function shouldWaitForFin(full, latestUserText, topic) {
   // Fresh tickets: always let Fin take the first shot (source-fallback must not race).
   // A live-agent request is the exception, and only after ownership has already
   // declined to post. That check runs before this function is called.
-  if (topic === 'conversation.user.created') {
-    if (clientRequestedLiveAgent(text) || fixedMessageHandoff.isPureLiveAgentAsk(text)) {
-      console.log('FIN_WAIT bypass live-agent user.created', conversationId);
-      return false;
-    }
+    if (topic === 'conversation.user.created') {
+      if (clientRequestedLiveAgent(text) || fixedMessageHandoff.isPureLiveAgentAsk(text) || fixedMessageHandoff.isHumanAgentRequest(text)) {
+        console.log('FIN_WAIT bypass live-agent user.created', conversationId);
+        return false;
+      }
     // An eligible spread ask is the same kind of exception: ownership has already
     // run, and the locked reply is posted by the spread path below.
     if (typeof isSpreadCheckAsk === 'function' && isSpreadCheckAsk(text)) {
@@ -2914,12 +2914,12 @@ function ensureFirstReplyWelcomeIntro(body, clientName, parts, latestClientText 
 // serialized, not dropped.
 const clientSendLocks = new Map();
 
-async function postClientCommentOnce(conversationId, body, userPart, clientName) {
+async function postClientCommentOnce(conversationId, body, userPart, clientName, figureKnowledge) {
   const lockKey = String(conversationId);
   const prev = clientSendLocks.get(lockKey) || Promise.resolve();
   const run = prev
     .catch(() => {})
-    .then(() => postClientCommentOnceInner(conversationId, body, userPart, clientName));
+    .then(() => postClientCommentOnceInner(conversationId, body, userPart, clientName, figureKnowledge));
   const settled = run.then(() => {}, () => {});
   clientSendLocks.set(lockKey, settled);
   settled.then(() => {
@@ -2928,7 +2928,7 @@ async function postClientCommentOnce(conversationId, body, userPart, clientName)
   return run;
 }
 
-async function postClientCommentOnceInner(conversationId, body, userPart, clientName) {
+async function postClientCommentOnceInner(conversationId, body, userPart, clientName, figureKnowledge) {
   let gate = await checkSendBoundary(conversationId, userPart, clientName);
   if (!gate.ok) {
     console.log('SKIP pre-send', gate.why, conversationId);
@@ -2952,6 +2952,9 @@ async function postClientCommentOnceInner(conversationId, body, userPart, client
     }
     if (fixedMessageHandoff.isUniqueFaqArticle(asked, body)) {
       return postReply(conversationId, 'comment', fixedMessageHandoff.uniqueRankedFaqArticle(asked), { verbatim: true });
+    }
+    if (figureKnowledge && fixedMessageHandoff.supportedFigureDraft(body, '', figureKnowledge) === String(body || '').replace(/\s+/g, ' ').trim()) {
+      return postReply(conversationId, 'comment', String(body || '').replace(/\s+/g, ' ').trim(), { verbatim: true });
     }
   }
   // Soft dedupe: never post the same public bot body twice in a row (identity asks etc.)
@@ -5194,6 +5197,9 @@ const handleWebhook = async (req, res) => {
           const keep = fixedMessageHandoff.isLegitimateClarification(body) ? String(body).trim() : '';
           if (keep && !fixedMessageHandoff.isTerminalHedge(keep)) {
             await postClientCommentOnce(conversationId, keep, latestUser, clientName);
+          } else if (fixedMessageHandoff.isPasswordPolicyQuestion(text)) {
+            const policyLine = fixedMessageHandoff.passwordPolicyPublicLine(text, __originalDraft || body);
+            if (policyLine) await postClientCommentOnce(conversationId, policyLine, latestUser, clientName);
           }
           console.log('PRESEND skip clarifier or password policy', conversationId);
           return res.sendStatus(200);
@@ -5252,6 +5258,12 @@ const handleWebhook = async (req, res) => {
         const __missedHuman = __heldFails.some((f) => f && f.code === 'MISSED_ESCALATION');
         const __originalSpread =
           fixedMessageHandoff.isSpreadTemplateDraft(__originalDraft) && !isSpreadCheckAsk(text);
+        const __postFig = async () => {
+          const __fig = fixedMessageHandoff.supportedFigureDraft(__originalDraft, body, __presendKnowledge);
+          if (!__fig) return false;
+          await postClientCommentOnce(conversationId, __fig, latestUser, clientName, __presendKnowledge);
+          return true;
+        };
         const __faqMiss = typeof escalateRelatedOnly.isClearKbFaqAsk === 'function' && escalateRelatedOnly.isClearKbFaqAsk(text) && !isClearlyAccountSpecificIssue(text);
         const __spreadNegated = __spreadAskGate.explain(text).reason === 'negated-spread' && !isClearlyAccountSpecificIssue(text);
         if (
@@ -5277,11 +5289,8 @@ const handleWebhook = async (req, res) => {
           await postClientCommentOnce(conversationId, fixedMessageHandoff.accountQuestionCustomerLine(text, body||''), latestUser, clientName);
           return res.sendStatus(200);
         }
-        if (isClearlyAccountSpecificIssue(text)) {
-          const identityGate = await ensureIdentityBeforeAccountEscalate({conversationId,full,bits,text,kind:'ACCOUNT',latestUser,clientName,modelBody:text});
-          full=identityGate.full||full; idsHeld=identityGate.ids||idsHeld;
-          if (!identityGate.ready) return res.sendStatus(200);
-        }
+        if(isClearlyAccountSpecificIssue(text)){const g=await ensureIdentityBeforeAccountEscalate({conversationId,full,bits,text,kind:'ACCOUNT',latestUser,clientName,modelBody:text});full=g.full||full;idsHeld=g.ids||idsHeld;if(!g.ready)return res.sendStatus(200);}
+        if(await __postFig())return res.sendStatus(200);
         await commitFixedMessageHandoff({
           path: 'missed_escalation',
           conversationId,

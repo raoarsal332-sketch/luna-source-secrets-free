@@ -492,12 +492,29 @@ function isPureHandoff(text, lang) {
   return stripHandoffTokens(text, lang).length < 28;
 }
 
+// A long Latin token beside Devanagari or Arabic is noise (an unlabeled
+// secret, a mixed-case value). Ordinary short words such as "agent" stay,
+// so a Hindi request can still name the role in Latin letters.
+function stripLatinNoise(text) {
+  const s = String(text || '');
+  if (!/[\u0900-\u097F\u0600-\u06FF]/.test(s)) return s;
+  return s.replace(/[A-Za-z0-9][A-Za-z0-9._%+-]{5,}/g, (token) => {
+    const letters = token.replace(/[^A-Za-z]/g, '');
+    const hasDigit = /\d/.test(token);
+    const mixed = /[A-Z]/.test(token) && /[a-z]/.test(token);
+    if ((hasDigit && token.length >= 6) || (mixed && token.length >= 8) || letters.length >= 12) return ' ';
+    return token;
+  });
+}
+
 // Credential text is not part of the ask. A password attached to a human
 // request must not turn the request into a normal model reply.
 function handoffDetectionText(text) {
-  return redactCredentials(text)
-    .replace(/\b(?:password|passcode|passphrase|passwd|pwd|pass|otp|pin|token|secret)\b/gi, ' ')
-    .replace(/\[secret\]/gi, ' ')
+  return stripLatinNoise(
+    redactCredentials(text)
+      .replace(/\b(?:password|passcode|passphrase|passwd|pwd|pass|otp|pin|token|secret)\b/gi, ' ')
+      .replace(/\[secret\]/gi, ' ')
+  )
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -1711,6 +1728,74 @@ function isPasswordPolicyQuestion(text) {
   return /\b(?:policy|requirements?|rules?|criteria)\b/i.test(q);
 }
 
+const PASSWORD_POLICY_CLARIFIER = 'Which part of the password policy should I explain?';
+
+// A general password-policy question is not a handoff and not silence. Post
+// the usable draft, then an approved FAQ line. Otherwise ask which part.
+function passwordPolicyPublicLine(text, draft) {
+  if (!isPasswordPolicyQuestion(text)) return '';
+  const plain = String(draft || '').replace(/\s+/g, ' ').trim();
+  if (
+    plain &&
+    !isTerminalHedge(plain) &&
+    !isSpreadTemplateDraft(plain) &&
+    !isLegitimateClarification(plain) &&
+    !Object.values(FIXED_MESSAGES).includes(plain) &&
+    !looksLikePromiseOrAsk(plain)
+  ) {
+    return plain;
+  }
+  const approved = approvedFaqCustomerBody(text);
+  if (approved) return approved;
+  return PASSWORD_POLICY_CLARIFIER;
+}
+
+function draftHasPublicFigure(text) {
+  const s = String(text || '');
+  if (/(?<![\w.])\d+(?:[.,]\d+)?\s*(?:%|percent)(?!\w)/i.test(s)) return true;
+  if (/(?<![\w.])(?:[$€£]\s*\d+(?:[.,]\d+)?|\d+(?:[.,]\d+)?\s*(?:usd|eur|gbp)\b)/i.test(s)) return true;
+  if (/(?<![\w.])\d+\s*:\s*\d+\b/.test(s)) return true;
+  return false;
+}
+
+function evidenceTextFromKnowledge(knowledge) {
+  let gap = null;
+  try {
+    gap = require('../02_statePresend/knowledgeGapGate');
+  } catch (_) {
+    return '';
+  }
+  if (!gap || typeof gap.normalizeResults !== 'function') return '';
+  return gap
+    .normalizeResults(knowledge && knowledge.results ? knowledge.results : knowledge)
+    .map((row) => (row.title || '') + ' ' + row.text)
+    .join('\n')
+    .trim();
+}
+
+// The same binding check presend uses. A draft with no public figure is not
+// this path. A figure posts only when every percent, amount, and ratio is in
+// the evidence and bound to the same concept.
+function supportedFigureLine(draft, knowledge) {
+  const plain = String(draft || '').replace(/\s+/g, ' ').trim();
+  if (!plain || !draftHasPublicFigure(plain)) return '';
+  let policy = null;
+  try {
+    policy = require('../02_statePresend/policyEvidence');
+  } catch (_) {
+    return '';
+  }
+  if (!policy || typeof policy.unsupportedPublicFigures !== 'function') return '';
+  const evidence = evidenceTextFromKnowledge(knowledge);
+  if (!evidence) return '';
+  if (policy.unsupportedPublicFigures(plain, evidence).length) return '';
+  return plain;
+}
+
+function supportedFigureDraft(original, current, knowledge) {
+  return supportedFigureLine(original, knowledge) || supportedFigureLine(current, knowledge);
+}
+
 function languageForFixedMessage(message) {
   const line = String(message || '');
   for (const lang of Object.keys(FIXED_MESSAGES)) {
@@ -1969,6 +2054,8 @@ module.exports = {
   isTerminalHedge,
   isLegitimateClarification,
   isPasswordPolicyQuestion,
+  passwordPolicyPublicLine,
+  supportedFigureDraft,
   isPublicCustomerReply,
   owedFixedLineFromParts,
   activeOwedFixedLine,
