@@ -469,12 +469,19 @@ function decideEscalateAwaitingGate(input = {}) {
   // unrelated detail like their phone number while awaiting update on a separate escalated
   // issue must be answered normally, not held with a generic "team is reviewing" reply). This
   // is confirmed intentional design, not a MISSED_ESCALATION-style fail-open bug.
+  //
+  // The fallthrough must not clear the awaiting or defer flag. A follow-up classified
+  // unrelated, including Roman Urdu that does not overlap an English escalate problem,
+  // leaves escalateAwaitingFirstTeammate and deferredRelatedReply armed. index.js clears
+  // those flags only when supersedesAwaiting is true, so this stays false. The flag is
+  // cleared when a teammate has publicly replied, or when the conversation state itself
+  // is removed. Public forwards stay suppressed while the flag is set.
   return {
     action: 'FALLTHROUGH',
     reason: 'unrelated_other',
     related: false,
     clearFaq: false,
-    supersedesAwaiting: true,
+    supersedesAwaiting: false,
     log: 'ESCALATE fallthrough unrelated (awaiting teammate first)',
   };
 }
