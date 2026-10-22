@@ -1,0 +1,8 @@
+sealed-set: independent-review/handoff-r18/sealed/cases.json
+sha256: adcc4363c051a7945a3d1adf68eb56f6e717be5649f535988a8f2a7d83749e31
+cases: 593
+recovery: 204
+candidate: c7fe62e7daedca4452a28acf706bc5f613a2f805
+candidate-report: luna-current/10_synthetic_lanes/fixed-message-handoff-r18/FM_R18_REPORT.md
+candidate-report-sha256: ef3b5a839c3d311ee01d987dde566305b8457f814283476c74a4b6327e2c8155
+sealed-before-execution: true
