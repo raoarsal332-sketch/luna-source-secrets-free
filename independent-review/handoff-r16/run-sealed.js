@@ -70,10 +70,13 @@ function copyTree(src, dest, skip) {
 const runtimeSrc = path.join(root, 'luna-current', '01_runtime');
 const stateSrc = path.join(root, 'luna-current', '02_statePresend');
 const maintainerSrc = path.join(root, 'luna-current', '03_luna-maintainer');
-const mirror = path.join(os.tmpdir(), 'luna-sealed-mirror-' + label + '-' + process.pid);
-rmrf(mirror);
+const base = path.join(os.tmpdir(), 'luna-sealed-base-' + label + '-' + process.pid);
+const mirror = path.join(base, '01_runtime');
+rmrf(base);
 copyTree(runtimeSrc, mirror, new Set(['node_modules']));
-fs.symlinkSync(stateSrc, path.join(mirror, 'statePresend'));
+fs.symlinkSync(stateSrc, path.join(base, '02_statePresend'));
+fs.symlinkSync(stateSrc, path.join(base, 'statePresend'));
+copyTree(stateSrc, path.join(mirror, 'statePresend'));
 fs.symlinkSync(maintainerSrc, path.join(mirror, 'luna-maintainer'));
 const nm = path.join(runtimeSrc, 'node_modules');
 if (fs.existsSync(nm)) fs.symlinkSync(nm, path.join(mirror, 'node_modules'));
@@ -169,10 +172,16 @@ function adminList() {
   };
 }
 
+function scriptKey(op) {
+  if (op === 'assignment') return 'assign';
+  return op;
+}
+
 function outcomeFor(op) {
   const turn = current && current.turn;
   const script = (turn && turn.script) || {};
-  const spec = Object.prototype.hasOwnProperty.call(script, op) ? script[op] : 'ok';
+  const key = scriptKey(op);
+  const spec = Object.prototype.hasOwnProperty.call(script, key) ? script[key] : 'ok';
   return spec;
 }
 
@@ -368,7 +377,7 @@ function fakeRes() {
 function evalCase(item, stats) {
   const expect = item.expect || {};
   const reasons = [];
-  const visible = stats.successComments.map((c) => stripHtml(c.data && c.data.body));
+  const visible = stats.successComments.map((c) => stripHtml(c && c.body));
   if (expect.successComments != null && visible.length !== expect.successComments) {
     reasons.push('successComments ' + visible.length + ' != ' + expect.successComments);
   }
