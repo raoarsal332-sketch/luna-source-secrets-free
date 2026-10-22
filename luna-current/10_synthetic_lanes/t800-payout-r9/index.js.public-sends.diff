@@ -1,0 +1,66 @@
+diff --git a/luna-current/01_runtime/index.js b/luna-current/01_runtime/index.js
+--- a/luna-current/01_runtime/index.js
++++ b/luna-current/01_runtime/index.js
+@@ -2839,6 +2839,38 @@
+ // serialized, not dropped.
+ const clientSendLocks = new Map();
+ 
++// T800 payout R9. Runs for every public comment that goes through
++// postClientCommentOnce, including identity recovery, the Fin welcome,
++// and review-status, and also for the owner REPLY and the authorized-note
++// REPLY. This is not a presend-only hook. The statePresend directory under
++// 01_runtime is absent; this helper does not require it.
++// Fail closed: a throw, a silent result, or an empty body becomes the
++// visible hedge. The original draft is not posted, and the send is not dropped.
++function payoutGuardPublicBody(body, parts) {
++  const hedge = "I can't confirm that. Our team will confirm.";
++  try {
++    const payoutGuard = require('../10_synthetic_lanes/t800-payout-r9/payoutClaimGuard');
++    const payoutParts = (Array.isArray(parts) ? parts : []).map((p) => Object.assign({}, p, {
++      body: typeof stripHtml === 'function' ? stripHtml((p && (p.body || p.text)) || '') : ((p && (p.body || p.text)) || ''),
++    }));
++    const payout = payoutGuard.guardPublicBody(body, {
++      messages: payoutGuard.partsToMessages(payoutParts, [
++        typeof ARSAL_ID !== 'undefined' ? ARSAL_ID : '',
++        typeof ELITE_AI_ID !== 'undefined' ? ELITE_AI_ID : '',
++      ]),
++    });
++    if (!payout || payout.silent || payout.send !== true || !payout.body) {
++      console.error('PAYOUT_GUARD_FAIL_CLOSED', payout && payout.reason);
++      return hedge;
++    }
++    if (payout.failClosed || payout.replaced) console.log('PAYOUT_GUARD_VISIBLE_HEDGE', payout.reason);
++    return payout.body;
++  } catch (err) {
++    console.error('[payoutClaimGuard] fail-closed', err && err.message);
++    return hedge;
++  }
++}
++
+ async function postClientCommentOnce(conversationId, body, userPart, clientName) {
+   const lockKey = String(conversationId);
+   const prev = clientSendLocks.get(lockKey) || Promise.resolve();
+@@ -2988,6 +3020,7 @@
+     return null;
+   }
+ 
++  finalBody = payoutGuardPublicBody(finalBody, parts);
+   return postReply(conversationId, 'comment', finalBody);
+ }
+ 
+@@ -3277,6 +3310,7 @@
+     control.clearAiOff(conversationId);
+     // Owner-dictated public REPLY: never welcome-intro, never already-replied skip (Escalations often have prior Arsal notes).
+     let out = postProcessModelReply(body, conversationId);
++    out = payoutGuardPublicBody(out, typeof partsOf === 'function' ? partsOf(full) : []);
+     const r = await postReply(conversationId, 'comment', out);
+     if (r && r.status >= 200 && r.status < 300) {
+       await postReply(conversationId, 'note', 'Sent to client.');
+@@ -3449,6 +3483,7 @@
+       control.clearAiOff(conversationId);
+       // Auth-note REPLY (incl. send-this-message brackets): bypass already-replied / welcome-intro
+       let out = postProcessModelReply(cmdBody, conversationId);
++      out = payoutGuardPublicBody(out, typeof partsOf === 'function' ? partsOf(full) : []);
+       const r = await postReply(conversationId, 'comment', out);
+       if (r && r.status >= 200 && r.status < 300) {
+         await postReply(conversationId, 'note', 'Sent to client.');

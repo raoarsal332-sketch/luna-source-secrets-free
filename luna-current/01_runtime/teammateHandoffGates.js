@@ -138,12 +138,22 @@ function isAssignedToHumanTeammate(full, opts) {
   return true;
 }
 
+function mentionsStrategyRisk(text) {
+  return /strategy\s+risk|risk\s+rule|اسٹریٹیجی|سٹریٹیجی|رسک\s*رول|स्ट्रैटेजी|रणनीति\s*जोखिम|مخاطر الاستراتيجية|قاعدة المخاطر/i.test(String(text || ''));
+}
+
 function tokenizeIssue(text) {
-  return String(text || '')
+  const tokens = String(text || '')
     .toLowerCase()
-    .replace(/[^a-z0-9@.\s]/g, ' ')
+    .replace(/[^\p{L}\p{N}@.\s]/gu, ' ')
     .split(/\s+/)
-    .filter((w) => w.length >= 4 && !/^(please|could|would|this|that|with|have|from|your|account|number|email|thank|thanks|okay|hello|what|when|where|which|about|they|them|will|into|been|after|before)$/i.test(w));
+    .filter((w) => {
+      if (!w || /^(please|could|would|this|that|with|have|from|your|account|number|email|thank|thanks|okay|hello|what|when|where|which|about|they|them|will|into|been|after|before)$/i.test(w)) return false;
+      if (/^[a-z0-9@.]+$/i.test(w)) return w.length >= 4;
+      return [...w].length >= 2;
+    });
+  if (mentionsStrategyRisk(text)) tokens.push('strategyrisk');
+  return tokens;
 }
 
 function collectPriorClientTexts(parts) {
@@ -163,6 +173,11 @@ function collectPriorClientTexts(parts) {
 function looksLikeSameIssueRestatement(text, parts) {
   const t = String(text || '').trim();
   if (!t || t.length < 40) return false;
+  if (mentionsStrategyRisk(t)) {
+    const priors = collectPriorClientTexts(parts);
+    const earlier = priors.length && priors[priors.length - 1].trim() === t.trim() ? priors.slice(0, -1) : priors;
+    if (earlier.some((prev) => mentionsStrategyRisk(prev))) return true;
+  }
   const tokens = new Set(tokenizeIssue(t));
   if (tokens.size < 4) return false;
   const priors = collectPriorClientTexts(parts);
