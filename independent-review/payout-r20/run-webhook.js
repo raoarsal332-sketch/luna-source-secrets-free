@@ -145,12 +145,16 @@ Module.prototype.require = function patchedRequire(id) {
 };
 
 const errors = [];
+const logs = [];
 const origError = console.error;
 console.error = (...args) => {
   const line = args.map((x) => (typeof x === 'string' ? x : (x && x.message) || '')).join(' ');
   if (/WEBHOOK_ERR|NETWORK_TRIPWIRE|PAYOUT_GUARD/.test(line)) errors.push(line.slice(0, 500));
 };
-console.log = () => {};
+console.log = (...args) => {
+  const line = args.map((x) => (typeof x === 'string' ? x : '')).join(' ');
+  if (/AI_ACTION|PRESEND|ESCALAT|PAYOUT_|POSTGATE|SKIP |FAQ_RETRIEVE|statePresend/.test(line)) logs.push(line.slice(0, 300));
+};
 
 const runtimeIndex = path.join(runtimeDir, 'index.js');
 const runtimeModule = new Module(runtimeIndex, module);
@@ -280,6 +284,7 @@ function mockRes() {
     const convId = 'c' + String(i + 1);
     const beforeTrip = tripwire.length;
     const beforeErr = errors.length;
+    const beforeLogs = logs.length;
     const beforeTransport = transport.length;
     current = row;
     conversations.set(convId, buildConversation(row, convId));
@@ -321,6 +326,7 @@ function mockRes() {
       statusCode: res.statusCode,
       tripwire: tripwire.length - beforeTrip,
       errors: errors.slice(beforeErr),
+      logs: logs.slice(beforeLogs, beforeLogs + 12),
     });
   }
   const summary = {
