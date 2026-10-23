@@ -235,15 +235,15 @@ test('Latin roles inside Devanagari or Arabic script hand off in the script lang
   global.__lunaReply = 'ACTION: REPLY\nI can help with that.';
   const fresh = { topic: 'conversation.user.created', createdAgo: 5 };
   const arabic = await webhook('أريد human', fresh);
-  assert.deepStrictEqual(arabic.comments, [handoff.FIXED_MESSAGES.ar], JSON.stringify(arabic.comments));
+  assert.deepStrictEqual(arabic.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(arabic.comments));
   for (const role of ['staff', 'banda', 'insaan', 'representative']) {
     const out = await webhook('मुझे ' + role + ' से बात करनी है', fresh);
-    assert.deepStrictEqual(out.comments, [handoff.FIXED_MESSAGES.hi], role + ' ' + JSON.stringify(out.comments));
+    assert.deepStrictEqual(out.comments, [handoff.FIXED_MESSAGES.en], role + ' ' + JSON.stringify(out.comments));
   }
   const support = await webhook('मुझे support person से बात करनी है', fresh);
-  assert.deepStrictEqual(support.comments, [handoff.FIXED_MESSAGES.hi], JSON.stringify(support.comments));
+  assert.deepStrictEqual(support.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(support.comments));
   const urdu = await webhook('مجھے staff چاہیے', fresh);
-  assert.deepStrictEqual(urdu.comments, [handoff.FIXED_MESSAGES.ur], JSON.stringify(urdu.comments));
+  assert.deepStrictEqual(urdu.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(urdu.comments));
   const human = await webhook('please get me a human password: hunter2', fresh);
   assert.deepStrictEqual(human.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(human.comments));
   assert.strictEqual(JSON.stringify(human.comments).includes('hunter2'), false);

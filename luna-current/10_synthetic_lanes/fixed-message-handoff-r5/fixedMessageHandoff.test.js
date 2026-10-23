@@ -204,12 +204,12 @@ tests.push(test('Hinglish uses the approved Urdu handoff line', () => {
   assert.strictEqual(handoff.detectLanguage(text), 'hinglish');
   const result = decide(text, 'main_escalate');
   assert.strictEqual(result.action, 'fixed_message');
-  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.ur);
-  assert.strictEqual(result.language, 'ur');
+  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(result.language, 'en');
   assert.strictEqual(Object.prototype.hasOwnProperty.call(handoff.FIXED_MESSAGES, 'hinglish'), false);
   const ask = handoff.accountQuestionCustomerLine('mera account number kya hai', '');
   assert.ok(/account number/i.test(ask));
-  assert.strictEqual(ask, handoff.ACCOUNT_QUESTION_LINES.hinglish);
+  assert.strictEqual(ask, handoff.ACCOUNT_QUESTION_LINES.en);
 }));
 
 tests.push(test('lost ticket state and opstore reconcile from conversation parts', async () => {

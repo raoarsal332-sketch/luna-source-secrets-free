@@ -7,13 +7,20 @@
  * then exactly one fixed customer message. Assignment HTTP 500, timeout, 422, or a
  * partial success withholds the message and does not ask the caller to set
  * escalateAwaitingFirstTeammate. Ownership fails closed. Account-number questions
- * are not a welcome. Handoff asks in Urdu, Arabic, and Hindi are chosen by script
- * and language, and the fixed lines state only the assignment that just succeeded.
+ * are not a welcome. A handoff ask in any language posts the English line only.
+ * The line states only the assignment that just succeeded.
  *
  * Account-number questions are exempt on every path, including recovery and
  * missed escalation, and they are decided before ownership silence. Credential
  * values are removed from the original text, including after ' and ’, before a
  * note or a translation prompt is built.
+ *
+ * Customer-facing lines are English only. A previously stored translation is
+ * recognized so it is not posted again, and the retry posts the English line.
+ *
+ * Customer-facing lines are English only. A handoff detected in any language
+ * posts the English line. A previously stored translation is recognized so it
+ * is not posted again, and the retry posts the English line.
  *
  * approved is false. This module does not deploy, call Intercom, or read secrets.
  */
@@ -46,11 +53,36 @@ const STATUS = Object.freeze({
 
 const FIXED_MESSAGES = Object.freeze({
   en: 'A teammate now has this conversation.',
-  ur: 'یہ گفتگو اب ایک ساتھی کے پاس ہے۔',
-  ar: 'هذه المحادثة الآن لدى أحد الزملاء.',
-  hi: 'यह बातचीत अब एक साथी के पास है।',
-  it: 'Un collega ha ora questa conversazione.',
 });
+
+// Lines Luna used to post. They are never selected. A retry that still has one
+// stored, or a thread that already shows one, posts the English line once.
+const RETIRED_HANDOFF_LINES = Object.freeze([
+  'یہ گفتگو اب ایک ساتھی کے پاس ہے۔',
+  'هذه المحادثة الآن لدى أحد الزملاء.',
+  'यह बातचीत अब एक साथी के पास है।',
+  'Un collega ha ora questa conversazione.',
+]);
+
+function normalizeCustomerLine(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+function isRetiredHandoffLine(text) {
+  return RETIRED_HANDOFF_LINES.includes(normalizeCustomerLine(text));
+}
+
+function isApprovedHandoffLine(text) {
+  return normalizeCustomerLine(text) === FIXED_MESSAGES.en;
+}
+
+function isKnownHandoffLine(text) {
+  return isApprovedHandoffLine(text) || isRetiredHandoffLine(text);
+}
+
+function customerHandoffLine(text) {
+  return isKnownHandoffLine(text) ? FIXED_MESSAGES.en : '';
+}
 
 const URDU_ONLY = /[\u0679\u0688\u0691\u06BA\u06BE\u06C1\u06C2\u06C3\u06D2\u067E\u0686\u0698\u06AF\u06A9]/g;
 const ARABIC_ONLY = /[\u0629\u0649\u0643]/g;
@@ -137,7 +169,7 @@ const GRAMMAR = Object.freeze({
     roles: ['担当者', 'オペレーター', '人間'],
     acts: ['つなぐ', '代わり', '話したい', 'お願いします'],
   },
-  // Roman Urdu/Hindi. The approved customer line stays Urdu script.
+  // Roman Urdu/Hindi. Detection only. The customer line is English.
   hinglish: {
     roles: ['insaan', 'insan', 'banda', 'agent', 'human', 'person'],
     acts: ['chahiye', 'chahie', 'baat', 'milao', 'jodo'],
@@ -303,7 +335,8 @@ function scoreWords(text, words) {
 }
 
 // Roman Urdu function words. These outweigh English fillers (please, sir, hi)
-// so a mixed line such as "janab please mujhe agent chahiye" stays Urdu.
+// so a mixed line such as "janab please mujhe agent chahiye" is detected as
+// Urdu. The posted line is still English.
 const ROMAN_URDU_CUES = ['mujhe', 'chahiye', 'hai', 'karna', 'baat', 'kisi', 'se', 'ko', 'ka'];
 const ENGLISH_FILLER = ['please', 'sir', 'hi'];
 
@@ -324,13 +357,13 @@ function detectLatinLanguage(text) {
       bestScore = score;
     }
   }
-  // A Hindi courtesy word in Latin script (kripya) does not select the Hindi
-  // line when Roman Urdu grammar is present. Devanagari is what selects Hindi.
-  // The locked line stays the Roman Urdu / Hinglish line.
+  // A Hindi courtesy word in Latin script (kripya) does not select Hindi when
+  // Roman Urdu grammar is present. Devanagari is what selects Hindi. The
+  // posted line is English either way.
   if (best === 'hi' && scoreWords(text, ROMAN_URDU_CUES) > 0 && (scores.ur || 0) === 0) return 'hinglish';
   if (best !== 'en' && bestScore > (scores.en || 0)) return best;
   // Latin South Asian without Devanagari or Urdu-only letters is Hinglish.
-  // The handoff line stays the approved Urdu line unless a Roman one is approved.
+  // The posted line is the English handoff line.
   if (south > 0 && (scores.hi || 0) === 0 && (scores.ur || 0) === 0) return 'hinglish';
   return 'en';
 }
@@ -901,17 +934,12 @@ function isAccountNumberQuestion(text) {
 // is not changed in chat. No extra ask, no handoff promise.
 const ACCOUNT_QUESTION_LINES = Object.freeze({
   en: 'For MT5, the account number is in the email that was sent with the trading login. Those details cannot be changed.',
-  ur: 'MT5 پر اکاؤنٹ نمبر اس ای میل میں ہے جو ٹریڈنگ لاگ اِن کے ساتھ بھیجی گئی تھی۔ یہ تفصیلات تبدیل نہیں ہوتیں۔',
-  ar: 'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغيَّر.',
-  hi: 'MT5 पर खाता नंबर उस ईमेल में है जो ट्रेडिंग लॉगिन के साथ भेजी गई थी। ये विवरण बदले नहीं जाते।',
-  it: "Su MT5 il numero di conto è nell'email inviata con i dati di accesso. Questi dati non si cambiano.",
-  hinglish: 'MT5 par account number us email mein hai jo trading login ke sath bheji gayi thi. Yeh details change nahi hoti.',
 });
 
 function looksLikePromiseOrAsk(plain) {
   const s = String(plain || '');
   if (!s.trim()) return true;
-  if (Object.values(FIXED_MESSAGES).includes(s.replace(/\s+/g, ' ').trim())) return true;
+  if (isKnownHandoffLine(s)) return true;
   if (/\b(i['’]?ll|i will|we['’]?ll|we will)\s+(pass|forward|send|escalate)\b/i.test(s)) return true;
   if (/\b(pass|forward)\b[^.?!]{0,40}\b(teammate|team)\b/i.test(s)) return true;
   if (/\b(please\s+share|can you send|before i pass)\b/i.test(s)) return true;
@@ -920,12 +948,20 @@ function looksLikePromiseOrAsk(plain) {
 }
 
 function accountQuestionCustomerLine(text, draft) {
-  const lang = detectLanguage(text);
+  void text;
   const plain = stripHtml(draft || '').replace(/\s+/g, ' ').trim();
   // A spread-template draft is not an account-number answer, even when the
-  // customer asked for the account number in the same turn.
-  if (plain.length >= 12 && !looksLikePromiseOrAsk(plain) && !isSpreadTemplateDraft(plain)) return plain;
-  if (Object.prototype.hasOwnProperty.call(ACCOUNT_QUESTION_LINES, lang)) return ACCOUNT_QUESTION_LINES[lang];
+  // customer asked for the account number in the same turn. A non-English
+  // draft is not posted. The approved fact is the English line.
+  if (
+    plain.length >= 12 &&
+    !looksLikePromiseOrAsk(plain) &&
+    !isSpreadTemplateDraft(plain) &&
+    !/[\u0600-\u06FF\u0750-\u077F\u0900-\u097F\u0400-\u04FF\u3040-\u30FF\u4E00-\u9FFF]/.test(plain) &&
+    detectLanguage(plain) === 'en'
+  ) {
+    return plain;
+  }
   return ACCOUNT_QUESTION_LINES.en;
 }
 
@@ -941,21 +977,14 @@ function arsalSpoke(parts, botId) {
   return false;
 }
 
-function fixedMessageFor(lang) {
-  if (lang === 'hinglish') {
-    if (Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, 'hinglish')) return FIXED_MESSAGES.hinglish;
-    return FIXED_MESSAGES.ur;
-  }
-  if (Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lang)) return FIXED_MESSAGES[lang];
+function fixedMessageFor(_lang) {
   return FIXED_MESSAGES.en;
 }
 
-// Italian has an approved line only for the existing live-agent phrases.
-// Any other Italian handoff uses the English line instead of staying silent.
-function handoffLineLanguage(text, detected) {
-  const lang = detected || detectLanguage(text);
-  if (lang === 'it' && !softEdges.clientRequestedLiveAgent(text)) return 'en';
-  return lang;
+// Every handoff posts the English line. Detection still runs so a non-English
+// request is a handoff. It does not choose a translation.
+function handoffLineLanguage(_text, _detected) {
+  return 'en';
 }
 
 function isKnowledgeQuestion(text) {
@@ -1087,12 +1116,7 @@ function decide(input) {
   }
   const lineLang = handoffLineLanguage(text, lang);
   const message = fixedMessageFor(lineLang);
-  const language =
-    lineLang === 'hinglish' && message === FIXED_MESSAGES.ur
-      ? 'ur'
-      : Object.prototype.hasOwnProperty.call(FIXED_MESSAGES, lineLang)
-        ? lineLang
-        : 'en';
+  const language = 'en';
   return {
     action: 'fixed_message',
     silent: false,
@@ -1327,7 +1351,7 @@ function assigneeFromParts(parts, conversation, botId) {
 }
 
 function fixedLineInParts(parts, message) {
-  const wanted = new Set(Object.values(FIXED_MESSAGES));
+  const wanted = new Set(Object.values(FIXED_MESSAGES).concat(RETIRED_HANDOFF_LINES));
   const one = String(message || '').replace(/\s+/g, ' ').trim();
   if (one) wanted.add(one);
   for (const p of parts || []) {
@@ -1529,18 +1553,18 @@ async function commit(ctx) {
   if (decision.route === 'normal' || decision.action === 'route_normal') {
     return finish({ reason: decision.reason || 'route_normal', route: 'normal', progress });
   }
-  let message = redactCredentials(decision.message || '');
+  let message = customerHandoffLine(decision.message || '');
   const priorOwed = src.conversationId && src.botId ? writeOpStore.latestOwedFixedLine(src.conversationId, src.botId) : null;
   const priorAssignOp = src.conversationId && src.botId ? writeOpStore.latestHandoffAssignment(src.conversationId, src.botId) : null;
   const enteredNoteConfirmed = progress.noteConfirmed === true;
   const owedParts = owedFixedLineFromParts(src.parts, src.botId, src.ownershipOpts || {});
   if (src.conversationId && src.botId) {
     const storedLine = writeOpStore.latestOwedFixedLine(src.conversationId, src.botId);
-    if (storedLine && Object.values(FIXED_MESSAGES).includes(String(storedLine.message || ''))) {
-      message = String(storedLine.message);
+    if (storedLine && isKnownHandoffLine(storedLine.message)) {
+      message = customerHandoffLine(storedLine.message);
     }
   }
-  if (!message || !Object.values(FIXED_MESSAGES).includes(message)) {
+  if (!message || !isApprovedHandoffLine(message)) {
     return finish({ reason: 'no_fixed_message', withhold: true, progress });
   }
   if (src.conversationId && src.botId) {
@@ -1644,13 +1668,13 @@ async function commit(ctx) {
     progress.noteConfirmed = false;
   }
   const commentMiss = isCommentMiss(progress);
-  const storeHasLine = !!(priorOwed && Object.values(FIXED_MESSAGES).includes(String(priorOwed.message || '')));
+  const storeHasLine = !!(priorOwed && isKnownHandoffLine(priorOwed.message));
   const assignmentLanded = !!(partsAssignOk || seatHeld || owedParts.owed || (progress.assignConfirmed && progress.assigneeId));
   // The customer comment missed and the note is gone. The owed line is the
   // op-store body. Rewriting the note is not required and a replay of the
   // confirmed note must not drop the line.
   if (commentMiss && storeHasLine && assignmentLanded && !verifiedNote) {
-    message = String(priorOwed.message);
+    message = customerHandoffLine(priorOwed.message);
     progress.noteConfirmed = true;
     progress.noteAmbiguous = false;
     if (!progress.assigneeId) progress.assigneeId = String(priorOwed.assigneeId || owedParts.assigneeId || '');
@@ -2004,7 +2028,7 @@ function plainFaqCustomerLine(text) {
   } catch (_) {
     title = '';
   }
-  if (title && !/team will review/i.test(title) && !Object.values(FIXED_MESSAGES).includes(title)) {
+  if (title && !/team will review/i.test(title) && !isKnownHandoffLine(title)) {
     return 'The FAQ article "' + title + '" covers this. Which challenge is the question about?';
   }
   return 'Which challenge is this question about? I can quote that rule from the FAQ.';
@@ -2074,7 +2098,7 @@ function passwordPolicyPublicLine(text, draft) {
     !isTerminalHedge(plain) &&
     !isSpreadTemplateDraft(plain) &&
     !isLegitimateClarification(plain) &&
-    !Object.values(FIXED_MESSAGES).includes(plain) &&
+    !isKnownHandoffLine(plain) &&
     !looksLikePromiseOrAsk(plain)
   ) {
     return plain;
@@ -2131,10 +2155,7 @@ function supportedFigureDraft(original, current, knowledge) {
 }
 
 function languageForFixedMessage(message) {
-  const line = String(message || '');
-  for (const lang of Object.keys(FIXED_MESSAGES)) {
-    if (FIXED_MESSAGES[lang] === line) return lang;
-  }
+  void message;
   return 'en';
 }
 
@@ -2296,7 +2317,7 @@ function activeOwedFixedLine(src) {
   const assigneeId = String((rec && rec.assigneeId) || fromParts.assigneeId || '');
   // The body stored at owe-time is the line, including when the assignment has
   // not landed yet. The retry turn's text does not choose a different line.
-  const stored = rec && Object.values(FIXED_MESSAGES).includes(String(rec.message || '')) ? String(rec.message) : '';
+  const stored = rec && isKnownHandoffLine(rec.message) ? customerHandoffLine(rec.message) : '';
   if (stored) {
     return { message: stored, assigneeId, priorText: fromParts.priorText || '' };
   }
@@ -2310,7 +2331,7 @@ function activeOwedFixedLine(src) {
     priorText: fromParts.priorText,
   });
   const message = fixedMessageFor(handoffLineLanguage(languageSource, scriptOf(languageSource) || detectLanguage(languageSource)));
-  if (!Object.values(FIXED_MESSAGES).includes(message)) return null;
+  if (!isApprovedHandoffLine(message)) return null;
   return { message, assigneeId, priorText: fromParts.priorText || '' };
 }
 
@@ -2408,6 +2429,7 @@ hydrateDeclaredSecrets();
 module.exports = {
   STATUS,
   FIXED_MESSAGES,
+  RETIRED_HANDOFF_LINES,
   redactCredentials,
   redactUnlabeledSecrets,
   rememberInboundSecrets,

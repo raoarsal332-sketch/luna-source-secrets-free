@@ -2645,9 +2645,7 @@ function isVagueOrLiveAgentOnlyAsk(text) {
 function lockedFinHandoffWelcome(clientName, latestClientText = '') {
   const first = firstNameFromClient(clientName);
   const name = first ? (' ' + first) : '';
-  if (/[\u0600-\u06ff]/.test(String(latestClientText || ''))) return 'السلام علیکم' + name + '، میں آپ کی کیا مدد کر سکتا ہوں؟';
-  if (/\b(?:ciao|buongiorno|salve|aiuto|aiutarmi)\b/i.test(String(latestClientText || ''))) return 'Ciao' + name + ', come posso aiutarti?';
-  if (/\b(?:kya|aap|ap|tum|mujhe|madad|salam)\b/i.test(String(latestClientText || ''))) return 'Salam' + name + ', main aap ki kis cheez mein madad kar sakta hoon?';
+  void latestClientText;
   return 'Hello' + name + ', how can I help?';
 }
 
@@ -2914,15 +2912,9 @@ function ensureFirstReplyWelcomeIntro(body, clientName, parts, latestClientText 
   text = assistantIdentityGuard.stripPersonalAlias(text);
   const first = firstNameFromClient(clientName);
   const clientText = String(latestClientText || '');
-  const hasGreeting = /^(?:hello|hi|hey|ciao|salve|salam|assalam|السلام)/i.test(text);
+  const hasGreeting = /^(?:hello|hi|hey)\b/i.test(text);
   if (hasGreeting) return text;
-  const italian = /\b(ciao|sono|aiutarti|per favore)\b/i.test(text) || /\b(?:ciao|buongiorno|salve|aiuto|aiutarmi)\b/i.test(clientText);
-  if (italian) {
-    const greet = first ? ('Ciao ' + first + ',') : 'Ciao,';
-    return greet + '\n\n' + text.replace(/^(ciao[,\s]+)+/i, '').trim();
-  }
-  if (/[\u0600-\u06ff]/.test(clientText)) return (first ? ('السلام علیکم ' + first + '،') : 'السلام علیکم،') + '\n\n' + text;
-  if (/\b(?:kya|aap|ap|tum|mujhe|madad|salam)\b/i.test(clientText)) return (first ? ('Salam ' + first + ',') : 'Salam,') + '\n\n' + text;
+  void clientText;
   const greet = first ? ('Hello ' + first + ',') : 'Hello,';
   let rest = text.replace(/^(hello|hi|hey)[,\s]+[A-Za-zÀ-ÿ'\-]*[,\s]*/i, '').trim();
   if (!rest) rest = text;
@@ -3315,7 +3307,7 @@ const OWNER_CMD_SYSTEM_OVERLAY = [
   'Still never invent FundedElite facts. Do not @mention forbidden seats in notes.',
   'Do not use client-visible MT5 wording unless the locked spread-test template applies, or the owner explicitly demands that wording.',
   'Escalations/Risk are normally silent note-only; if the owner explicitly orders a public client reply on THIS ticket, honor it.',
-  'INTERNAL NOTES ALWAYS ENGLISH: NOTE / CLARIFY / auth-confirm style BODY text must be English only , never Roman Urdu, Urdu, or Italian for notes. Client REPLY language still follows existing client-language locks.',
+  'INTERNAL NOTES AND CLIENT REPLIES ARE ENGLISH ONLY: NOTE / CLARIFY / auth-confirm style BODY text and any client REPLY must be English only. Never Roman Urdu, Urdu, Italian, Hindi, Arabic, or any other language.',
   'Choose exactly one ACTION. Prefer NOTE for internal-only asks (summarize, analyze, explain to owner). Prefer REPLY only when they want the client messaged.',
   'When the owner asks to mention a teammate and have them reply (e.g. "mention Anjsha and ask him to reply"), prefer ACTION: NOTE with BODY that starts with @TeammateName so the bot can post a real Intercom entity_mention (example BODY: "@Anjsha Please reply on this ticket."). Do not @mention forbidden seats (Jerry escalate rules / supportjp / teamfutureselite / SAQII / Arsal / Elite AI / Risk).',
   'Output format (nothing before ACTION):',
@@ -4554,7 +4546,7 @@ const handleWebhook = async (req, res) => {
           userMsg +=
             '\n\nHARD SEPTEMBER 2026 PROMOTION FACT (authoritative factual payload, not client-facing copy; do not invent %, codes, eligibility, bulk, or activation-fee claims beyond this):\n' +
             promoResolved.reply +
-            '\nUse these facts, but write the answer yourself in natural language matched to the client and conversation. Never paste the factual payload verbatim or use a compressed parenthetical list of every code. Answer what was asked, briefly explain the relevant option(s), and ask only one useful challenge/eligibility question when needed. If the client repeated the question, acknowledge that and explain it from a different angle instead of repeating the prior wording. Do NOT ask for account number or email. Do NOT escalate a general promo FAQ. Preserve promo topic across short follow-ups; Free Retry+Lite same SEP35 , do not ask which; bulk = natural wording, auto-increase, final % at checkout , never canned 1=35%/2=40% script.';
+            '\nUse these facts, but write the answer yourself in natural English. Never paste the factual payload verbatim or use a compressed parenthetical list of every code. Answer what was asked, briefly explain the relevant option(s), and ask only one useful challenge/eligibility question when needed. If the client repeated the question, acknowledge that and explain it from a different angle instead of repeating the prior wording. Do NOT ask for account number or email. Do NOT escalate a general promo FAQ. Preserve promo topic across short follow-ups; Free Retry+Lite same SEP35 , do not ask which; bulk = natural wording, auto-increase, final % at checkout , never canned 1=35%/2=40% script.';
           console.log('PROMO_INJECT', conversationId, promoResolved.product || '');
         }
       } catch (e) {

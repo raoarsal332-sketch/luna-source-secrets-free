@@ -210,18 +210,18 @@ function r11Structural(text) {
 
 tests.push(test('R11 handoffs stay handoffs, and Arabic stems are added on top', () => {
   const handoffs = [
-    ['ar', 'أريد التحدث مع موظف', handoff.FIXED_MESSAGES.ar],
-    ['ur', 'مجھے ایک انسان سے بات کرنی ہے', handoff.FIXED_MESSAGES.ur],
-    ['hi', 'मुझे एक इंसान से बात करनी है', handoff.FIXED_MESSAGES.hi],
+    ['ar', 'أريد التحدث مع موظف', handoff.FIXED_MESSAGES.en],
+    ['ur', 'مجھے ایک انسان سے بات کرنی ہے', handoff.FIXED_MESSAGES.en],
+    ['hi', 'मुझे एक इंसान से बात करनी है', handoff.FIXED_MESSAGES.en],
     ['en', 'live agent please', handoff.FIXED_MESSAGES.en],
     ['en', 'please get me a human', handoff.FIXED_MESSAGES.en],
-    ['ur', 'مجھے نمائندے سے بات کرنی ہے', handoff.FIXED_MESSAGES.ur],
-    ['ur', 'نمائندوں سے بات کرنی ہے', handoff.FIXED_MESSAGES.ur],
-    ['ur', 'مجھے ایک نمائندہ چاہیے', handoff.FIXED_MESSAGES.ur],
-    ['ur', 'میں نمایندے سے بات کرنا چاہتا ہوں', handoff.FIXED_MESSAGES.ur],
-    ['ar', 'أريد التحدث مع الموظفين', handoff.FIXED_MESSAGES.ar],
-    ['hi', 'मुझे प्रतिनिधियों से बात करनी है', handoff.FIXED_MESSAGES.hi],
-    ['hi', 'मुझे एजेंटों से बात करनी है', handoff.FIXED_MESSAGES.hi],
+    ['ur', 'مجھے نمائندے سے بات کرنی ہے', handoff.FIXED_MESSAGES.en],
+    ['ur', 'نمائندوں سے بات کرنی ہے', handoff.FIXED_MESSAGES.en],
+    ['ur', 'مجھے ایک نمائندہ چاہیے', handoff.FIXED_MESSAGES.en],
+    ['ur', 'میں نمایندے سے بات کرنا چاہتا ہوں', handoff.FIXED_MESSAGES.en],
+    ['ar', 'أريد التحدث مع الموظفين', handoff.FIXED_MESSAGES.en],
+    ['hi', 'मुझे प्रतिनिधियों से बात करनी है', handoff.FIXED_MESSAGES.en],
+    ['hi', 'मुझे एजेंटों से बात करनी है', handoff.FIXED_MESSAGES.en],
     ['en', 'je veux parler à un agent', handoff.FIXED_MESSAGES.en],
     ['en', 'ich möchte mit einem Menschen sprechen', handoff.FIXED_MESSAGES.en],
     ['en', 'ik wil graag met een medewerker spreken', handoff.FIXED_MESSAGES.en],
@@ -233,8 +233,8 @@ tests.push(test('R11 handoffs stay handoffs, and Arabic stems are added on top',
     ['en', 'хочу говорить с оператором', handoff.FIXED_MESSAGES.en],
     ['en', '我要转接人工', handoff.FIXED_MESSAGES.en],
     ['en', '担当者にお願いします', handoff.FIXED_MESSAGES.en],
-    ['it', 'voglio un operatore', handoff.FIXED_MESSAGES.it],
-    ['ur', 'mujhe ek insaan chahiye', handoff.FIXED_MESSAGES.ur],
+    ['it', 'voglio un operatore', handoff.FIXED_MESSAGES.en],
+    ['ur', 'mujhe ek insaan chahiye', handoff.FIXED_MESSAGES.en],
   ];
   const r11Only = new Set([
     'أريد التحدث مع موظف',
@@ -261,7 +261,7 @@ tests.push(test('R11 handoffs stay handoffs, and Arabic stems are added on top',
     assert.strictEqual(handoff.isStructuralHandoffAsk(text), true, text);
     const decision = welcome(text, text.indexOf('mujhe') === 0 ? { path: 'main_escalate', force: true } : {});
     assert.strictEqual(decision.action, 'fixed_message', text);
-    assert.strictEqual(decision.language, language, text);
+    assert.strictEqual(decision.language, 'en', text);
     assert.strictEqual(decision.message, message, text);
   }
 
@@ -312,8 +312,8 @@ tests.push(test('R11 handoffs stay handoffs, and Arabic stems are added on top',
     assert.strictEqual(handoff.detectLanguage(long), 'ar', text);
     assert.strictEqual(handoff.isStructuralHandoffAsk(long), true, text);
     assert.strictEqual(decision.action, 'fixed_message', text);
-    assert.strictEqual(decision.language, 'ar', text);
-    assert.strictEqual(decision.message, handoff.FIXED_MESSAGES.ar, text);
+    assert.strictEqual(decision.language, 'en', text);
+    assert.strictEqual(decision.message, handoff.FIXED_MESSAGES.en, text);
   }
 
   const withdrawal = welcome('ما هي قواعد السحب؟');

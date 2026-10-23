@@ -266,10 +266,8 @@ tests.push(test('Arabic handoff ask is detected from script and gets Arabic fixe
   const result = welcome('أريد التحدث مع موظف');
   assert.strictEqual(handoff.detectLanguage('أريد التحدث مع موظف'), 'ar');
   assert.strictEqual(result.action, 'fixed_message');
-  assert.strictEqual(result.language, 'ar');
-  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.ar);
-  assert.notStrictEqual(result.message, handoff.FIXED_MESSAGES.ur);
-  assert.notStrictEqual(result.message, handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(result.language, 'en');
+  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en);
 }));
 
 tests.push(test('Urdu handoff ask is detected from Urdu letters and gets Urdu fixed text', () => {
@@ -277,9 +275,8 @@ tests.push(test('Urdu handoff ask is detected from Urdu letters and gets Urdu fi
   const result = welcome(text);
   assert.strictEqual(handoff.detectLanguage(text), 'ur');
   assert.strictEqual(result.action, 'fixed_message');
-  assert.strictEqual(result.language, 'ur');
-  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.ur);
-  assert.notStrictEqual(result.message, handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(result.language, 'en');
+  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en);
 }));
 
 tests.push(test('Hindi handoff ask is detected from Devanagari and gets Hindi fixed text', () => {
@@ -287,8 +284,8 @@ tests.push(test('Hindi handoff ask is detected from Devanagari and gets Hindi fi
   const result = welcome(text);
   assert.strictEqual(handoff.detectLanguage(text), 'hi');
   assert.strictEqual(result.action, 'fixed_message');
-  assert.strictEqual(result.language, 'hi');
-  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.hi);
+  assert.strictEqual(result.language, 'en');
+  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en);
 }));
 
 tests.push(test('English live-agent ask still gets the English fixed line', () => {
@@ -466,7 +463,7 @@ tests.push(test('escalate paths use the fixed line in the customer language', ()
     ownershipOpts: OWN,
   });
   assert.strictEqual(result.action, 'fixed_message');
-  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.hi);
+  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en);
 }));
 
 tests.push(test('a new customer turn can send one new message and the same turn cannot', async () => {

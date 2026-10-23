@@ -246,7 +246,7 @@ tests.push(test('fresh account-number questions are answered, including Italian,
     assert.strictEqual(handoff.isAccountNumberQuestion(text), true, text);
     assert.strictEqual(handoff.detectLanguage(text), 'it', text);
     assert.strictEqual(decide(text, 'welcome').action, 'route_normal');
-    assert.strictEqual(handoff.accountQuestionCustomerLine(text, ''), handoff.ACCOUNT_QUESTION_LINES.it);
+    assert.strictEqual(handoff.accountQuestionCustomerLine(text, ''), handoff.ACCOUNT_QUESTION_LINES.en);
   }
   for (const text of ['número de cuenta', 'numéro de compte', 'kontonummer', 'rekeningnummer']) {
     assert.strictEqual(handoff.isAccountNumberQuestion(text), true, text);
@@ -348,8 +348,8 @@ tests.push(test('an emptied known-account re-ask escalates, and Italian live-age
     assert.strictEqual(handoff.isAccountNumberQuestion(text), false, text);
     const welcome = decide(text, 'welcome');
     assert.strictEqual(welcome.action, 'fixed_message');
-    assert.strictEqual(welcome.language, 'it');
-    assert.strictEqual(welcome.message, handoff.FIXED_MESSAGES.it);
+    assert.strictEqual(welcome.language, 'en');
+    assert.strictEqual(welcome.message, handoff.FIXED_MESSAGES.en);
   }
   const src = indexSrc();
   assert.strictEqual(src.includes('SKIP empty after strip'), false);

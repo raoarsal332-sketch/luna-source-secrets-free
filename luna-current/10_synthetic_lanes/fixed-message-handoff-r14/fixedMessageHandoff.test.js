@@ -121,15 +121,14 @@ tests.push(test('Urdu lexical cues select the Urdu line on Arabic-script text', 
     assert.strictEqual(handoff.detectLanguage(text), 'ur', text);
     const result = decide(text);
     assert.strictEqual(result.action, 'fixed_message', text);
-    assert.strictEqual(result.language, 'ur', text);
-    assert.strictEqual(result.message, handoff.FIXED_MESSAGES.ur, text);
-    assert.notStrictEqual(result.message, handoff.FIXED_MESSAGES.ar, text);
+    assert.strictEqual(result.language, 'en', text);
+    assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en, text);
   }
   const arabic = decide('أريد التحدث مع موظف');
   assert.strictEqual(handoff.detectLanguage('أريد التحدث مع موظف'), 'ar');
   assert.strictEqual(arabic.action, 'fixed_message');
-  assert.strictEqual(arabic.language, 'ar');
-  assert.strictEqual(arabic.message, handoff.FIXED_MESSAGES.ar);
+  assert.strictEqual(arabic.language, 'en');
+  assert.strictEqual(arabic.message, handoff.FIXED_MESSAGES.en);
 }));
 
 tests.push(test('short Roman agent sentences follow the actual language', () => {
@@ -143,11 +142,11 @@ tests.push(test('short Roman agent sentences follow the actual language', () => 
     const result = decide(text);
     assert.strictEqual(handoff.detectLanguage(text), 'hinglish', text);
     assert.strictEqual(result.action, 'fixed_message', text);
-    assert.strictEqual(result.language, 'ur', text);
-    assert.strictEqual(result.message, handoff.FIXED_MESSAGES.ur, text);
+    assert.strictEqual(result.language, 'en', text);
+    assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en, text);
   }
   const italian = decide('voglio un operatore');
-  assert.strictEqual(italian.message, handoff.FIXED_MESSAGES.it);
+  assert.strictEqual(italian.message, handoff.FIXED_MESSAGES.en);
 }));
 
 tests.push(test('a welcome route_normal FAQ is not forced on a non-welcome path', () => {
@@ -255,7 +254,7 @@ tests.push(test('a landed owed seat is not treated as human-owned', () => {
   });
   assert.strictEqual(faq.action, 'fixed_message');
   assert.notStrictEqual(faq.reason, 'human_assignee');
-  assert.strictEqual(faq.message, handoff.FIXED_MESSAGES.ur);
+  assert.strictEqual(faq.message, handoff.FIXED_MESSAGES.en);
   const human = parts.concat([{
     part_type: 'comment',
     created_at: 3,

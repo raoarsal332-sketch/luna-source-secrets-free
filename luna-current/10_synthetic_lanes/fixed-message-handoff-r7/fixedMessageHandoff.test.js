@@ -99,7 +99,7 @@ tests.push(test('status stays the R3 candidate and is not approved', () => {
   assert.strictEqual(handoff.STATUS.candidate, 'fixed-message-handoff-r3');
   assert.strictEqual(handoff.STATUS.approved, false);
   assert.strictEqual(handoff.STATUS.release, false);
-  assert.deepStrictEqual(Object.keys(handoff.FIXED_MESSAGES).sort(), ['ar', 'en', 'hi', 'it', 'ur']);
+  assert.deepStrictEqual(Object.keys(handoff.FIXED_MESSAGES).sort(), ['en']);
 }));
 
 tests.push(test('ownership suppression runs before every new public path', () => {
@@ -424,7 +424,6 @@ tests.push(test('new languages use structure and the English line when no transl
     assert.strictEqual(handoff.isAccountNumberQuestion(text), true, text);
     const line = handoff.accountQuestionCustomerLine(text, '');
     assert.strictEqual(line, handoff.ACCOUNT_QUESTION_LINES.en, text);
-    assert.notStrictEqual(line, handoff.ACCOUNT_QUESTION_LINES.it);
   }
   const agents = [
     ['fr', 'je veux parler à un agent'],
@@ -445,18 +444,17 @@ tests.push(test('new languages use structure and the English line when no transl
     assert.strictEqual(result.action, 'fixed_message', text);
     assert.strictEqual(result.language, 'en', text);
     assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en, text);
-    assert.notStrictEqual(result.message, handoff.FIXED_MESSAGES.it);
   }
   const italian = decide('voglio un operatore', 'welcome');
-  assert.strictEqual(italian.message, handoff.FIXED_MESSAGES.it);
+  assert.strictEqual(italian.message, handoff.FIXED_MESSAGES.en);
   const hinglish = decide('mujhe ek insaan chahiye', 'main_escalate');
   assert.strictEqual(handoff.detectLanguage('mujhe ek insaan chahiye'), 'hinglish');
-  assert.strictEqual(hinglish.message, handoff.FIXED_MESSAGES.ur);
-  assert.strictEqual(hinglish.language, 'ur');
+  assert.strictEqual(hinglish.message, handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(hinglish.language, 'en');
   const arabic = decide('ما هي قواعد السحب؟', 'welcome', { finHandoff: true });
   assert.strictEqual(arabic.action, 'route_normal');
   assert.strictEqual(handoff.isAccountNumberQuestion('numero di conto'), true);
-  assert.strictEqual(handoff.accountQuestionCustomerLine('numero di conto', ''), handoff.ACCOUNT_QUESTION_LINES.it);
+  assert.strictEqual(handoff.accountQuestionCustomerLine('numero di conto', ''), handoff.ACCOUNT_QUESTION_LINES.en);
   assert.strictEqual(handoff.isAccountNumberQuestion('my account number is 189143'), false);
   assert.strictEqual(decide('my account number is 189143', 'main_escalate').action, 'fixed_message');
 }));

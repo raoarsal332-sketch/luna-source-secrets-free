@@ -68,8 +68,8 @@ tests.push(test('a Hindi live-agent request with a Latin password is still the H
     assert.strictEqual(handoff.isHumanAgentRequest(text), true, text.slice(0, 40));
     const result = decide(text);
     assert.strictEqual(result.action, 'fixed_message', text.slice(0, 40));
-    assert.strictEqual(result.language, 'hi', text.slice(0, 40));
-    assert.strictEqual(result.message, handoff.FIXED_MESSAGES.hi, text.slice(0, 40));
+    assert.strictEqual(result.language, 'en', text.slice(0, 40));
+    assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en, text.slice(0, 40));
     assert.strictEqual(String(result.message).includes(SECRET), false);
   }
   const src = fs.readFileSync(path.join(__dirname, '../../01_runtime/index.js'), 'utf8');

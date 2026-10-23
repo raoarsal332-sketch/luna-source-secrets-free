@@ -23,7 +23,7 @@ const store = require('../../01_runtime/writeOpStore');
 const policy = require('../../02_statePresend/policyEvidence');
 
 const FIXED = handoff.FIXED_MESSAGES.en;
-const URDU = handoff.FIXED_MESSAGES.ur;
+const URDU = handoff.FIXED_MESSAGES.en;
 const HEDGE = "I can't confirm that figure from the approved details, so I won't guess a number.";
 const CLARIFIER = 'Please tell me which challenge you mean.';
 const EVIDENCE = 'DLL 5%/3%, MLL 8%.';
@@ -101,7 +101,7 @@ tests.push(test('an unlanded assignment retry posts the owed body, not the retry
   assert.deepStrictEqual(first.calls.map((c) => c.op), ['note', 'assign']);
   const owed = store.latestOwedFixedLine(id, 'seat-a');
   assert.strictEqual(owed.message, URDU);
-  assert.strictEqual(owed.language, 'ur');
+  assert.strictEqual(owed.language, 'en');
   assert.strictEqual(owed.messageSent, false);
 
   const retry = transport({
@@ -160,7 +160,7 @@ tests.push(test('a note timeout stays held on the same turn and the next turn po
 
   const missed = transport({ note: { ok: false, status: 500, data: {} } });
   const turn0 = await handoff.commit({
-    decision: decision(handoff.FIXED_MESSAGES.ar),
+    decision: decision(handoff.FIXED_MESSAGES.en),
     noteHtml: 'Account: 1<br>Problem: x',
     assigneeId: 'human-7',
     botId: 'seat-a',
@@ -172,7 +172,7 @@ tests.push(test('a note timeout stays held on the same turn and the next turn po
   });
   assert.strictEqual(turn0.sent, false);
   assert.strictEqual(turn0.progress.noteAmbiguous, true);
-  assert.strictEqual(store.latestOwedFixedLine('c-note-land', 'seat-a').message, handoff.FIXED_MESSAGES.ar);
+  assert.strictEqual(store.latestOwedFixedLine('c-note-land', 'seat-a').message, handoff.FIXED_MESSAGES.en);
   assert.deepStrictEqual(missed.calls.map((c) => c.op), ['note']);
 
   const next = transport({
@@ -192,7 +192,7 @@ tests.push(test('a note timeout stays held on the same turn and the next turn po
   });
   assert.strictEqual(turn1.sent, true);
   assert.deepStrictEqual(next.calls.map((c) => c.op), ['note', 'assign', 'message']);
-  assert.strictEqual(next.calls.find((c) => c.op === 'message').body, handoff.FIXED_MESSAGES.ar);
+  assert.strictEqual(next.calls.find((c) => c.op === 'message').body, handoff.FIXED_MESSAGES.en);
   assert.notStrictEqual(next.calls.find((c) => c.op === 'message').body, 'A teammate can help with that.');
 
   const src = fs.readFileSync(path.join(__dirname, '../../01_runtime/index.js'), 'utf8');

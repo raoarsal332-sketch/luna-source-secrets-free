@@ -35,20 +35,6 @@ const PERSONAL_BOUNDARY_VARIANTS = {
     "I can't discuss personal-life questions. If you need help with your FundedElite account or services, I'm here.",
     "I don't discuss personal matters in this chat. Tell me how I can help with FundedElite.",
   ],
-  romanUrdu: [
-    'Personal cheezein yahan discuss nahi kar sakta. FundedElite se related kisi bhi sawal mein madad kar sakta hoon.',
-    'Personal-life topics par baat nahi kar sakta. Agar FundedElite account ya services mein help chahiye ho to batayein.',
-    'Yahan personal masail discuss nahi hote. FundedElite se related jo madad chahiye, zaroor likhein.',
-  ],
-  italian: [
-    'Non posso discutere argomenti personali qui. Dimmi come posso aiutarti con FundedElite.',
-    'Le questioni di vita personale non rientrano in questa chat. Se ti serve aiuto su FundedElite, sono qui.',
-    'Non parlo di temi personali in questa conversazione. Come posso aiutarti con FundedElite?',
-  ],
-  urdu: [
-    'ذاتی موضوعات پر یہاں بات نہیں کر سکتا۔ FundedElite سے متعلق مدد چاہیے تو بتائیں۔',
-    'ذاتی معاملات اس چیٹ میں زیر نہیں ہوتے۔ FundedElite اکاؤنٹ یا سروسز میں مدد درکار ہو تو بتائیں۔',
-  ],
 };
 
 function isDirectIdentityQuestion(text) {
@@ -61,14 +47,6 @@ function isAssistantPersonalQuestion(text) {
   return PERSONAL_QUESTION_PATTERNS.some((pattern) => pattern.test(value));
 }
 
-function detectLanguage(text) {
-  const value = String(text || '');
-  if (/[\u0600-\u06ff]/.test(value)) return 'urdu';
-  if (/\b(?:quanti|anni|dove|vivi|sposat[oa]|moglie|marito|fidanzat[oa]|famiglia|figli|parlami)\b/i.test(value)) return 'italian';
-  if (/\b(?:kya|aap|ap|tum|ho|hain|insaan|biwi|shohar|walid|walida|bachay|umar|mazhab|ya)\b/i.test(value)) return 'romanUrdu';
-  return 'english';
-}
-
 function hashSeed(value) {
   let hash = 2166136261;
   for (const char of String(value || '')) {
@@ -79,24 +57,14 @@ function hashSeed(value) {
 }
 
 function personalBoundaryFor(text, seed = '', priorBotTexts = []) {
-  const variants = PERSONAL_BOUNDARY_VARIANTS[detectLanguage(text)];
+  const variants = PERSONAL_BOUNDARY_VARIANTS.english;
   const previous = new Set((priorBotTexts || []).slice(-10).map((item) => String(item || '').replace(/\s+/g, ' ').trim().toLowerCase()));
   const unused = variants.filter((item) => !previous.has(item.replace(/\s+/g, ' ').trim().toLowerCase()));
   const choices = unused.length ? unused : variants;
   return choices[hashSeed([seed, text].join('|')) % choices.length];
 }
 
-function disclosureFor(text) {
-  const value = String(text || '');
-  if (/[\u0600-\u06ff]/.test(value)) {
-    return 'میں FundedElite کا AI اسسٹنٹ ہوں۔ میں آپ کے سوالات میں مدد کر سکتا ہوں اور ضرورت پڑنے پر سپورٹ ٹیم کو شامل کر سکتا ہوں۔';
-  }
-  if (/\b(?:sei|umano|umana|persona|intelligenza|artificiale)\b/i.test(value)) {
-    return 'Sono un assistente AI di FundedElite. Posso aiutarti con le tue domande e coinvolgere il team di supporto quando serve.';
-  }
-  if (/\b(?:kya|aap|ap|tum|ho|hain|insaan|ya)\b/i.test(value)) {
-    return 'Main FundedElite ka AI assistant hoon. Main aap ke sawalat mein madad kar sakta hoon aur zarurat par support team ko involve kar sakta hoon.';
-  }
+function disclosureFor(_text) {
   return "I'm an AI assistant for FundedElite. I can help with your questions and involve the support team when needed.";
 }
 

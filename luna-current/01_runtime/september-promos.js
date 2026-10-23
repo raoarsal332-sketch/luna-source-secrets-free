@@ -91,7 +91,7 @@ const FUNDEDELITE_SEPTEMBER_PROMOS = {
  'Free Retry and Lite share the same SEP35 promo within a step family - answer both; never ask which; never say rules/features differ for the promo.',
  'Preserve promo topic across short follow-ups (e.g. "2 step", "both", "instant", "300K").',
  'Do not switch to challenge rules unless client explicitly asks rules/features without a promo signal.',
- 'Match client language: Roman Urdu/Urdu vs English.',
+ 'Customer replies are English only.',
  'Keep replies short and concise.',
  'Weekly payout addon pre-applied under SEP35 on eligible products.',
  'Never invent FLASH5 activation fee amounts; activation is separate after pass.',
@@ -101,16 +101,8 @@ const FUNDEDELITE_SEPTEMBER_PROMOS = {
  ],
 };
 
-function prefersRomanUrdu(question) {
- const t = String(question || '').toLowerCase();
- return (
- /\b(kya|chal|rahi|raha|hai|kitna|mujhe|mera|meri|kaunsa|kaunsi|batao|bataein|chahiye|kese|kaise|kaisa|nahi|nhi|haan|karna|krna|doon|dena|lagega|lagta|waly|wali)\b/.test(
- t
- ) &&
- /\b(kya|chal|rahi|raha|hai|kitna|mujhe|mera|meri|kaunsa|kaunsi|batao|chahiye|kese|kaise|nahi|nhi)\b/.test(
- t
- )
- );
+function prefersRomanUrdu(_question) {
+ return false;
 }
 
 function normalizeHistory(conversationHistory) {
@@ -382,15 +374,8 @@ function inferStepFamilyFromHistory(conversationHistory) {
  * Flat SEP35 reply - 35% + weekly pre-applied; bulk only as "may increase with quantity"
  * (NO 35/40 example unless includeBulkExample).
  */
-function sep35FlatReply(productName, urdu) {
+function sep35FlatReply(productName, _urdu) {
  // Non-bulk product answers: soft quantity hint only - never volunteer bulk % numbers.
- if (urdu) {
- return (
- `Haan - ${productName} pe SEP35 se 35% discount milta hai. ` +
- `Weekly payout addon pehle se apply hota hai (alag se add karne ki zarurat nahi); payout 7 din baad request kar sakte ho (account rules ke mutabiq). ` +
- `Zyada quantity lene pe discount automatically barh sakta hai.`
- );
- }
  return (
  `Yes - ${productName}: 35% off with SEP35. ` +
  `Weekly payout addon is pre-applied (no need to add separately); payout can be requested after 7 days, subject to account rules. ` +
@@ -401,15 +386,8 @@ function sep35FlatReply(productName, urdu) {
 /**
  * Free Retry + Lite same SEP35 - never ask which; never "rules and features differ".
  */
-function sep35FamilyReply(stepLabel, urdu) {
+function sep35FamilyReply(stepLabel, _urdu) {
  // Family replies: soft quantity hint only - never volunteer bulk % numbers.
- if (urdu) {
- return (
- `Haan - ${stepLabel} Free Retry aur ${stepLabel} Lite dono pe same SEP35 promo: 35% off. ` +
- `Weekly payout addon pehle se apply hota hai (alag add karne ki zarurat nahi); payout 7 din baad request ho sakta hai (account rules ke mutabiq). ` +
- `Zyada quantity pe discount automatically barh sakta hai.`
- );
- }
  return (
  `Yes - both ${stepLabel} Free Retry and ${stepLabel} Lite get the same SEP35 promo: 35% off. ` +
  `Weekly payout addon is pre-applied (no need to add separately); payout can be requested after 7 days, subject to account rules. ` +
@@ -417,13 +395,7 @@ function sep35FamilyReply(stepLabel, urdu) {
  );
 }
 
-function sep35InstantOnly(urdu) {
- if (urdu) {
- return (
- `Instant pe SEP35 se 35% discount milta hai. ` +
- `Weekly payout addon pehle se apply hota hai (alag add karne ki zarurat nahi); payout 7 din baad request ho sakta hai (account rules ke mutabiq).`
- );
- }
+function sep35InstantOnly(_urdu) {
  return (
  `Instant: 35% off with SEP35. ` +
  `Weekly payout addon is pre-applied (you do not need to add it separately); payout can be requested after 7 days, subject to account rules.`
@@ -435,29 +407,10 @@ function sep35InstantOnly(urdu) {
  * Internal teaching (35→40 scaling) may softly inform tone but must not be copy-pasted as canned.
  * Never invent other exact tiers (qty3=45% etc.).
  */
-function bulkNaturalReply(question, urdu) {
+function bulkNaturalReply(question, _urdu) {
  const t = String(question || '').toLowerCase();
  const asksHow = /\bhow\b|\bkaise\b|\bkese\b|\bexplain\b|\bwork/.test(t);
  const asksCheckout = /checkout|final|exact|kitna\s*%|what\s*%|percentage/.test(t);
-
- if (urdu) {
- if (asksCheckout) {
- return (
- 'SEP35 pe ek se zyada challenges lene pe discount automatically barh sakta hai. ' +
- 'Exact final percentage checkout pe dikhega - hum invent nahi karte ke har quantity pe kitna % hoga.'
- );
- }
- if (asksHow) {
- return (
- 'Bulk aise kaam karta hai: SEP35 pe jab aap ek se zyada challenges kharido, discount quantity ke sath automatically scale ho sakta hai. ' +
- 'Base single-challenge rate 35% hai, aur zyada lene pe wo further increase ho sakta hai. Final % checkout pe confirm hota hai.'
- );
- }
- return (
- 'Haan - SEP35 pe bulk available hai: ek se zyada challenges lene pe discount automatically barh sakta hai. ' +
- 'Final percentage checkout pe dikhega.'
- );
- }
 
  if (asksCheckout) {
  return (
@@ -477,68 +430,52 @@ function bulkNaturalReply(question, urdu) {
  );
 }
 
-function replyForProduct(product, question, urdu) {
+function replyForProduct(product, question, _urdu) {
  if (product === 'catalyst') {
- return urdu
- ? 'Catalyst Challenge pe abhi koi promotional discount active nahi hai. SEP35, FLASH5, ya NEW50 is pe apply nahi hote.'
- : 'No promotional discount is currently active on the Catalyst Challenge. SEP35, FLASH5, and NEW50 do not apply.';
+ return 'No promotional discount is currently active on the Catalyst Challenge. SEP35, FLASH5, and NEW50 do not apply.';
  }
 
  if (product === 'flash') {
- return urdu
- ? 'FLASH5 (sirf Flash Activation): Buy 1 Get 4 Free. $5 mein 1 challenge lo, 4 accounts free - total 5. Free = challenge fees, activation nahi. Pass ke baad har account ki alag activation fee size ke hisaab se deni hoti hai (exact fee invent nahi). Flash pe SEP35 use mat karo.'
- : 'FLASH5 (Flash Activation only): Buy 1 Get 4 Free. Pay $5 for 1 challenge and get 4 more free (5 total). Free covers challenge fees, not activation. After passing, each account needs a separate activation fee by size (we do not invent fee amounts). Never use SEP35 for Flash.';
+ return 'FLASH5 (Flash Activation only): Buy 1 Get 4 Free. Pay $5 for 1 challenge and get 4 more free (5 total). Free covers challenge fees, not activation. After passing, each account needs a separate activation fee by size (we do not invent fee amounts). Never use SEP35 for Flash.';
  }
 
  if (product === 'instant_elite') {
  const size = detectInstantEliteSize(question);
  if (!size) {
- return urdu
- ? 'Instant Elite pe SEP35: 50k/100k/200k = 35% off, 300k/400k = 50% off. Weekly payout addon sab sizes pe pre-applied. Kaunsa size chahiye?'
- : 'Instant Elite with SEP35: 50k/100k/200k = 35% off; 300k/400k = 50% off. Weekly payout addon is pre-applied on all sizes. Which size are you looking at?';
+ return 'Instant Elite with SEP35: 50k/100k/200k = 35% off; 300k/400k = 50% off. Weekly payout addon is pre-applied on all sizes. Which size are you looking at?';
  }
  const pct = FUNDEDELITE_SEPTEMBER_PROMOS.instantEliteBySize[size].percentOff;
- return urdu
- ? `Instant Elite ${size}: SEP35 se ${pct}% discount + weekly payout addon (pre-applied).`
- : `Instant Elite ${size}: ${pct}% off with SEP35 + weekly payout addon (pre-applied).`;
+ return `Instant Elite ${size}: ${pct}% off with SEP35 + weekly payout addon (pre-applied).`;
  }
 
- if (product === '1_step_family') return sep35FamilyReply('1-Step', urdu);
- if (product === '2_step_family') return sep35FamilyReply('2-Step', urdu);
+ if (product === '1_step_family') return sep35FamilyReply('1-Step', false);
+ if (product === '2_step_family') return sep35FamilyReply('2-Step', false);
  if (product === 'family_both') {
- return sep35FamilyReply('2-Step', urdu);
+ return sep35FamilyReply('2-Step', false);
  }
 
- if (product === '1_step_free_retry') return sep35FlatReply('1-Step Free Retry', urdu);
- if (product === '1_step_lite') return sep35FlatReply('1-Step Lite', urdu);
- if (product === '2_step_free_retry') return sep35FlatReply('2-Step Free Retry', urdu);
- if (product === '2_step_lite') return sep35FlatReply('2-Step Lite', urdu);
- if (product === 'instant') return sep35InstantOnly(urdu);
+ if (product === '1_step_free_retry') return sep35FlatReply('1-Step Free Retry', false);
+ if (product === '1_step_lite') return sep35FlatReply('1-Step Lite', false);
+ if (product === '2_step_free_retry') return sep35FlatReply('2-Step Free Retry', false);
+ if (product === '2_step_lite') return sep35FlatReply('2-Step Lite', false);
+ if (product === 'instant') return sep35InstantOnly(false);
 
  if (product === 'new50') {
  if (isExistingCustomer(question)) {
- return urdu
- ? 'NEW50 sirf brand-new clients ke liye hai jo pehle kabhi purchase nahi kiye - existing customers ke liye apply nahi hota.'
- : 'NEW50 is only for brand-new clients who have never purchased before - it does not apply to existing customers.';
+ return 'NEW50 is only for brand-new clients who have never purchased before - it does not apply to existing customers.';
  }
- return urdu
- ? 'NEW50 sirf brand-new clients ke liye hai (pehle kabhi purchase na kiya ho). Ye expire nahi hota.'
- : 'NEW50 is only for brand-new clients who have never purchased before. It never expires.';
+ return 'NEW50 is only for brand-new clients who have never purchased before. It never expires.';
  }
 
  if (product === 'weekly_payout') {
- return urdu
- ? 'SEP35 wali eligible challenges pe weekly payout addon pehle se apply hota hai; payout 7 din baad request kar sakte ho (account rules ke mutabiq). Alag se add karne ki zarurat nahi.'
- : 'On SEP35-eligible challenges, the weekly payout addon is pre-applied; payout can be requested after 7 days, subject to account rules. You do not need to add it separately.';
+ return 'On SEP35-eligible challenges, the weekly payout addon is pre-applied; payout can be requested after 7 days, subject to account rules. You do not need to add it separately.';
  }
 
  if (product === 'bulk') {
- return bulkNaturalReply(question, urdu);
+ return bulkNaturalReply(question, false);
  }
 
- return urdu
- ? 'Haan - SEP35 (eligible challenges pe discount + weekly payout), FLASH5 (Flash Activation), NEW50 (sirf brand-new clients). Kaunsi challenge pooch rahe ho?'
- : 'Yes - SEP35 (discount + weekly payout on eligible challenges), FLASH5 (Flash Activation), NEW50 (brand-new clients only). Which challenge are you asking about?';
+ return 'Yes - SEP35 (discount + weekly payout on eligible challenges), FLASH5 (Flash Activation), NEW50 (brand-new clients only). Which challenge are you asking about?';
 }
 
 /**
@@ -701,7 +638,6 @@ function handleCustomerMessage(question, conversationHistory) {
  return null;
  }
 
- const urdu = !!intent.urdu;
  let product = intent.product || 'general';
  const qForReply = intent.questionForReply || question;
 
@@ -711,12 +647,10 @@ function handleCustomerMessage(question, conversationHistory) {
 
  if (product === 'instant_elite' && intent.size) {
  const pct = FUNDEDELITE_SEPTEMBER_PROMOS.instantEliteBySize[intent.size].percentOff;
- return urdu
- ? `Instant Elite ${intent.size}: SEP35 se ${pct}% discount + weekly payout addon (pre-applied).`
- : `Instant Elite ${intent.size}: ${pct}% off with SEP35 + weekly payout addon (pre-applied).`;
+ return `Instant Elite ${intent.size}: ${pct}% off with SEP35 + weekly payout addon (pre-applied).`;
  }
 
- return replyForProduct(product, qForReply, urdu);
+ return replyForProduct(product, qForReply, false);
 }
 
 /**
@@ -726,12 +660,11 @@ function answerPromotionQuestion(question, conversationHistory) {
  if (conversationHistory !== undefined && conversationHistory !== null) {
  return handleCustomerMessage(question, conversationHistory);
  }
- const urdu = prefersRomanUrdu(question);
  const product = detectProduct(question);
  if ((isExplicitRulesRequest(question) || isPlanDifferenceOrFeaturesAsk(question)) && !isPromoSignal(question)) {
  return null;
  }
- return replyForProduct(product, question, urdu);
+ return replyForProduct(product, question, false);
 }
 
 if (typeof module !== 'undefined' && module.exports) {

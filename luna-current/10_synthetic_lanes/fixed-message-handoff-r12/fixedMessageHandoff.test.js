@@ -106,22 +106,22 @@ tests.push(test('inflected Urdu, Arabic, and Hindi human requests match by stem'
     assert.strictEqual(handoff.detectLanguage(text), 'ur', text);
     assert.strictEqual(handoff.isStructuralHandoffAsk(text), true, text);
     assert.strictEqual(decision.action, 'fixed_message', text);
-    assert.strictEqual(decision.language, 'ur', text);
-    assert.strictEqual(decision.message, handoff.FIXED_MESSAGES.ur, text);
+    assert.strictEqual(decision.language, 'en', text);
+    assert.strictEqual(decision.message, handoff.FIXED_MESSAGES.en, text);
   }
 
   const arabic = welcome('أريد التحدث مع الموظفين');
   assert.strictEqual(handoff.detectLanguage('أريد التحدث مع الموظفين'), 'ar');
   assert.strictEqual(arabic.action, 'fixed_message');
-  assert.strictEqual(arabic.language, 'ar');
-  assert.strictEqual(arabic.message, handoff.FIXED_MESSAGES.ar);
+  assert.strictEqual(arabic.language, 'en');
+  assert.strictEqual(arabic.message, handoff.FIXED_MESSAGES.en);
 
   for (const text of ['मुझे प्रतिनिधियों से बात करनी है', 'मुझे एजेंटों से बात करनी है']) {
     const decision = welcome(text);
     assert.strictEqual(handoff.detectLanguage(text), 'hi', text);
     assert.strictEqual(decision.action, 'fixed_message', text);
-    assert.strictEqual(decision.language, 'hi', text);
-    assert.strictEqual(decision.message, handoff.FIXED_MESSAGES.hi, text);
+    assert.strictEqual(decision.language, 'en', text);
+    assert.strictEqual(decision.message, handoff.FIXED_MESSAGES.en, text);
   }
 
   const withdrawal = welcome('ما هي قواعد السحب؟');
@@ -405,37 +405,20 @@ tests.push(test('an empty clarifier result is posted and does not throw', async 
   assert.notStrictEqual(out.body, FIXED);
 }));
 
-tests.push(test('every fixed line matches its approved bytes', () => {
-  const fixedHex = {
-    en: '41207465616d6d617465206e6f7720686173207468697320636f6e766572736174696f6e2e',
-    ur: 'db8cdb8120daafd981d8aadaafd98820d8a7d8a820d8a7db8cdaa920d8b3d8a7d8aadabedb8c20daa9db9220d9bed8a7d8b320db81db92db94',
-    ar: 'd987d8b0d98720d8a7d984d985d8add8a7d8afd8abd8a920d8a7d984d8a2d98620d984d8afd98920d8a3d8add8af20d8a7d984d8b2d985d984d8a7d8a12e',
-    hi: 'e0a4afe0a4b920e0a4ace0a4bee0a4a4e0a49ae0a580e0a4a420e0a485e0a4ac20e0a48fe0a49520e0a4b8e0a4bee0a4a5e0a58020e0a495e0a58720e0a4aae0a4bee0a4b820e0a4b9e0a588e0a5a4',
-    it: '556e20636f6c6c656761206861206f72612071756573746120636f6e76657273617a696f6e652e',
-  };
-  for (const lang of Object.keys(fixedHex)) {
-    const actual = Buffer.from(handoff.FIXED_MESSAGES[lang]);
-    const expected = Buffer.from(fixedHex[lang], 'hex');
-    assert.strictEqual(Buffer.compare(actual, expected), 0, lang);
-  }
-  const accountHex = {
-    en: '466f72204d54352c20746865206163636f756e74206e756d62657220697320696e2074686520656d61696c2074686174207761732073656e742077697468207468652074726164696e67206c6f67696e2e2054686f73652064657461696c732063616e6e6f74206265206368616e6765642e',
-    ur: '4d543520d9bed8b120d8a7daa9d8a7d8a4d986d9b920d986d985d8a8d8b120d8a7d8b320d8a7db8c20d985db8cd98420d985db8cdaba20db81db9220d8acd98820d9b9d8b1db8cda88d986daaf20d984d8a7daaf20d8a7d990d98620daa9db9220d8b3d8a7d8aadabe20d8a8dabedb8cd8acdb8c20daafd8a6db8c20d8aadabedb8cdb9420db8cdb8120d8aad981d8b5db8cd984d8a7d8aa20d8aad8a8d8afdb8cd98420d986db81db8cdaba20db81d988d8aadb8cdabadb94',
-    ar: 'd981d98a204d5435d88c20d8b1d982d98520d8a7d984d8add8b3d8a7d8a820d985d988d8acd988d8af20d981d98a20d8a7d984d8a8d8b1d98ad8af20d8a7d984d8b0d98a20d8a3d98fd8b1d8b3d98420d985d8b920d8a8d98ad8a7d986d8a7d8aa20d8a7d984d8afd8aed988d9842e20d987d8b0d98720d8a7d984d8aad981d8a7d8b5d98ad98420d984d8a720d8aad98fd8bad98ad98ed991d8b12e',
-    hi: '4d543520e0a4aae0a4b020e0a496e0a4bee0a4a4e0a4be20e0a4a8e0a482e0a4ace0a4b020e0a489e0a4b820e0a488e0a4aee0a587e0a4b220e0a4aee0a587e0a48220e0a4b9e0a58820e0a49ce0a58b20e0a49fe0a58de0a4b0e0a587e0a4a1e0a4bfe0a482e0a49720e0a4b2e0a589e0a497e0a4bfe0a4a820e0a495e0a58720e0a4b8e0a4bee0a4a520e0a4ade0a587e0a49ce0a58020e0a497e0a48820e0a4a5e0a580e0a5a420e0a4afe0a58720e0a4b5e0a4bfe0a4b5e0a4b0e0a4a320e0a4ace0a4a6e0a4b2e0a58720e0a4a8e0a4b9e0a580e0a48220e0a49ce0a4bee0a4a4e0a587e0a5a4',
-    it: '5375204d543520696c206e756d65726f20646920636f6e746f20c3a8206e656c6c27656d61696c20696e766961746120636f6e20692064617469206469206163636573736f2e205175657374692064617469206e6f6e2073692063616d6269616e6f2e',
-    hinglish: '4d543520706172206163636f756e74206e756d62657220757320656d61696c206d65696e20686169206a6f2074726164696e67206c6f67696e206b652073617468206268656a692067617969207468692e205965682064657461696c73206368616e6765206e61686920686f74692e',
-  };
-  for (const lang of Object.keys(accountHex)) {
-    const actual = Buffer.from(handoff.ACCOUNT_QUESTION_LINES[lang]);
-    const expected = Buffer.from(accountHex[lang], 'hex');
-    assert.strictEqual(Buffer.compare(actual, expected), 0, lang);
-  }
-  const built = 'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغي' + '\u064E\u0651' + 'ر.';
-  const oldOrder = 'في MT5، رقم الحساب موجود في البريد الذي أُرسل مع بيانات الدخول. هذه التفاصيل لا تُغي' + '\u0651\u064E' + 'ر.';
-  assert.strictEqual(Buffer.compare(Buffer.from(handoff.ACCOUNT_QUESTION_LINES.ar), Buffer.from(built)), 0);
-  assert.notStrictEqual(Buffer.compare(Buffer.from(handoff.ACCOUNT_QUESTION_LINES.ar), Buffer.from(oldOrder)), 0);
-  assert.strictEqual(handoff.ACCOUNT_QUESTION_LINES.ar.normalize('NFC'), handoff.ACCOUNT_QUESTION_LINES.ar);
+tests.push(test('the only approved customer lines are the English bytes', () => {
+  const fixedHex = '41207465616d6d617465206e6f7720686173207468697320636f6e766572736174696f6e2e';
+  const accountHex = '466f72204d54352c20746865206163636f756e74206e756d62657220697320696e2074686520656d61696c2074686174207761732073656e742077697468207468652074726164696e67206c6f67696e2e2054686f73652064657461696c732063616e6e6f74206265206368616e6765642e';
+  assert.deepStrictEqual(Object.keys(handoff.FIXED_MESSAGES), ['en']);
+  assert.deepStrictEqual(Object.keys(handoff.ACCOUNT_QUESTION_LINES), ['en']);
+  assert.strictEqual(Buffer.compare(Buffer.from(handoff.FIXED_MESSAGES.en), Buffer.from(fixedHex, 'hex')), 0);
+  assert.strictEqual(Buffer.compare(Buffer.from(handoff.ACCOUNT_QUESTION_LINES.en), Buffer.from(accountHex, 'hex')), 0);
+  assert.strictEqual(handoff.fixedMessageFor('ur'), handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(handoff.fixedMessageFor('ar'), handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(handoff.fixedMessageFor('hi'), handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(handoff.fixedMessageFor('it'), handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(handoff.fixedMessageFor('hinglish'), handoff.FIXED_MESSAGES.en);
+  assert.strictEqual(handoff.accountQuestionCustomerLine('مجھے اکاؤنٹ نمبر چاہیے', ''), handoff.ACCOUNT_QUESTION_LINES.en);
+  assert.strictEqual(handoff.accountQuestionCustomerLine('numero di conto', ''), handoff.ACCOUNT_QUESTION_LINES.en);
 }));
 
 Promise.all(tests)

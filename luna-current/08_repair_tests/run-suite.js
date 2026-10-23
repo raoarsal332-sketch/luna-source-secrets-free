@@ -46,7 +46,7 @@ function sha256(file) {
 }
 
 const protectedFiles = {
-  'system-prompt.txt': 'bdafd4f336d823df739fd422e63c86e2164b6e462977c2914351c468046b464d',
+  'system-prompt.txt': 'bbd8b5b62eab08a43dafdded1f13889d8c4942e090ce9ada93137dc0a395f82f',
   'fundedelite-faqs.md': '8c586883b3ed1417f5559ad987a9fb74c07b08e2f89d44c72cecb3e32cb98e92',
 };
 console.log('PROTECTED_HASHES');

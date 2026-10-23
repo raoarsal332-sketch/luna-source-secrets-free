@@ -261,15 +261,15 @@ test('an empty or number-hedge password draft posts the clarifier through handle
 test('human requests are detected on Fin-wait and later turns through handleWebhook', async () => {
   global.__lunaReply = 'ACTION: REPLY\nI can help with that.';
   const hindi = await webhook('मुझे agent से बात करनी है', { topic: 'conversation.user.created', createdAgo: 5 });
-  assert.deepStrictEqual(hindi.comments, [handoff.FIXED_MESSAGES.hi], JSON.stringify(hindi.comments));
+  assert.deepStrictEqual(hindi.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(hindi.comments));
   const hindiNoise = await webhook('मुझे agent से बात करनी है ' + NOISE, { topic: 'conversation.user.created', createdAgo: 5 });
-  assert.deepStrictEqual(hindiNoise.comments, [handoff.FIXED_MESSAGES.hi], JSON.stringify(hindiNoise.comments));
+  assert.deepStrictEqual(hindiNoise.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(hindiNoise.comments));
   assert.strictEqual(hindiNoise.notes.join('\n').includes(NOISE), false);
   const hindiSecret = await webhook('मुझे agent से बात करनी है password: ' + SECRET, { topic: 'conversation.user.created', createdAgo: 5 });
-  assert.deepStrictEqual(hindiSecret.comments, [handoff.FIXED_MESSAGES.hi], JSON.stringify(hindiSecret.comments));
+  assert.deepStrictEqual(hindiSecret.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(hindiSecret.comments));
   assert.strictEqual(JSON.stringify(hindiSecret).includes(SECRET), false);
   const janab = await webhook('janab mujhe agent chahiye', { priorBot: true });
-  assert.deepStrictEqual(janab.comments, [handoff.FIXED_MESSAGES.ur], JSON.stringify(janab.comments));
+  assert.deepStrictEqual(janab.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(janab.comments));
   const human = await webhook('please get me a human ' + NOISE, { topic: 'conversation.user.created', createdAgo: 5 });
   assert.deepStrictEqual(human.comments, [handoff.FIXED_MESSAGES.en], JSON.stringify(human.comments));
   assert.strictEqual(human.notes.join('\n').includes(NOISE), false);

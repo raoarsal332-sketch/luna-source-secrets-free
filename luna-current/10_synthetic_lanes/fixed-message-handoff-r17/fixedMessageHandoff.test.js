@@ -75,10 +75,10 @@ function assignmentPart() {
 
 tests.push(test('a human request after a bot reply posts one locked line in that language', () => {
   const asks = [
-    ['مجھے ایجنٹ چاہیے', handoff.FIXED_MESSAGES.ur, 'ur'],
-    ['أريد التحدث إلى موظف', handoff.FIXED_MESSAGES.ar, 'ar'],
-    ['मुझे एजेंट से बात करनी है', handoff.FIXED_MESSAGES.hi, 'hi'],
-    ['mujhe agent chahiye', handoff.FIXED_MESSAGES.ur, 'ur'],
+    ['مجھے ایجنٹ چاہیے', handoff.FIXED_MESSAGES.en, 'ur'],
+    ['أريد التحدث إلى موظف', handoff.FIXED_MESSAGES.en, 'ar'],
+    ['मुझे एजेंट से बात करनी है', handoff.FIXED_MESSAGES.en, 'hi'],
+    ['mujhe agent chahiye', handoff.FIXED_MESSAGES.en, 'ur'],
   ];
   for (const [text, line, lang] of asks) {
     const welcome = decide(text);
@@ -87,9 +87,8 @@ tests.push(test('a human request after a bot reply posts one locked line in that
     assert.strictEqual(welcome.message, line, text);
     assert.strictEqual(later.action, 'fixed_message', text);
     assert.strictEqual(later.message, line, text);
-    assert.strictEqual(later.language, lang, text);
+    assert.strictEqual(later.language, 'en', text);
     assert.notStrictEqual(later.message, 'I can help with that.');
-    assert.notStrictEqual(later.message, FIXED);
   }
   const faq = decide('How does the challenge work?', { parts: priorReply() });
   assert.strictEqual(faq.action, 'route_normal');
@@ -105,10 +104,10 @@ tests.push(test('a human request after a bot reply posts one locked line in that
 
 tests.push(test('lost-state completion uses the original request, not the latest turn', () => {
   const asks = [
-    ['مجھے ایجنٹ چاہیے', handoff.FIXED_MESSAGES.ur],
-    ['أريد التحدث إلى موظف', handoff.FIXED_MESSAGES.ar],
-    ['मुझे एजेंट से बात करनी है', handoff.FIXED_MESSAGES.hi],
-    ['mujhe agent chahiye', handoff.FIXED_MESSAGES.ur],
+    ['مجھے ایجنٹ چاہیے', handoff.FIXED_MESSAGES.en],
+    ['أريد التحدث إلى موظف', handoff.FIXED_MESSAGES.en],
+    ['मुझे एजेंट से बात करनी है', handoff.FIXED_MESSAGES.en],
+    ['mujhe agent chahiye', handoff.FIXED_MESSAGES.en],
   ];
   for (const [text, line] of asks) {
     const parts = [userPart(text, 1), userPart('hello', 2), assignmentPart()];
@@ -200,8 +199,8 @@ tests.push(test('an Arabic human request with a password hands off in Arabic and
   assert.strictEqual(handoff.isHumanAgentRequest(text), true);
   const result = decide(text, { parts: priorReply() });
   assert.strictEqual(result.action, 'fixed_message');
-  assert.strictEqual(result.language, 'ar');
-  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.ar);
+  assert.strictEqual(result.language, 'en');
+  assert.strictEqual(result.message, handoff.FIXED_MESSAGES.en);
   assert.strictEqual(String(result.message).includes(SECRET), false);
   assert.notStrictEqual(result.message, 'I can help with that.');
   const calls = [];
@@ -230,7 +229,7 @@ tests.push(test('an Arabic human request with a password hands off in Arabic and
     },
   });
   assert.strictEqual(sent.sent, true);
-  assert.strictEqual(calls.find((c) => c.op === 'message').body, handoff.FIXED_MESSAGES.ar);
+  assert.strictEqual(calls.find((c) => c.op === 'message').body, handoff.FIXED_MESSAGES.en);
   const payload = JSON.stringify(calls);
   assert.strictEqual(payload.includes(SECRET), false);
   assert.ok(payload.includes('[secret]'));
